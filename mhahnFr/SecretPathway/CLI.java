@@ -19,7 +19,12 @@
 
 package mhahnFr.SecretPathway;
 
+import mhahnFr.SecretPathway.gui.MainWindow;
+
+import java.awt.EventQueue;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * This class contains all functions related to the command line interface.
@@ -28,8 +33,10 @@ import java.util.Arrays;
  * @author mhahnFr
  */
 public class CLI {
-    /** Indicates whether windows have been opened using the arguments. */
-    private boolean hadWindows;
+    /** The hostname or the IP address to connect to. */
+    private String  hostname;
+    /** The port to use for the connection.           */
+    private Integer port;
 
     /**
      * Prints a help text.
@@ -39,19 +46,18 @@ public class CLI {
             SecretPathway usage:
             
             -h
-            --help            Shows this help
+            --help     Shows this help
             
             -l
-            --license         Prints a license notice
+            --license  Prints a license notice
             
-            -w        [count]
-            --windows [count] Opens as many windows as given
+            -a
+            --address
+            --hostname The hostname or IP address to connect to
+            
+            -p
+            --port     The port to use to connect
             """);
-    }
-
-    private void openWindows(int count) {
-        hadWindows = true;
-        // TODO
     }
 
     /**
@@ -79,6 +85,49 @@ public class CLI {
     }
 
     /**
+     * Prints an error message using the given arguments.
+     *
+     * @param parameter the parameter raising the error
+     * @param message   a descriptive message
+     */
+    private void printError(String parameter, String message) {
+        System.err.println(parameter + ": " + message);
+    }
+
+    /**
+     * Tries to parse the hostname or IP address. Prints a descriptive message on error.
+     *
+     * @param it the iterator used to access the parameter of the CLI argument
+     */
+    private void setHostname(Iterator<String> it) {
+        if (!it.hasNext()) {
+            printError("--hostname", "Missing argument!");
+            return;
+        }
+        hostname = it.next();
+    }
+
+    /**
+     * Tries to parse the port number. Prints a descriptive message on error.
+     *
+     * @param it the iterator used to access the parameter of the CLI argument
+     */
+    private void setPort(Iterator<String> it) {
+        try {
+            port = Integer.decode(it.next());
+        } catch (NumberFormatException | NoSuchElementException e) {
+            printError("--port", "Could not set port!");
+        }
+    }
+
+    /**
+     * Displays an instance of the {@link MainWindow} using the parsed hostname and port.
+     */
+    private void openWindow() {
+        EventQueue.invokeLater(() -> new MainWindow(hostname, port).setVisible(true));
+    }
+
+    /**
      * Processes the given arguments.
      *
      * @param args the arguments
@@ -88,20 +137,15 @@ public class CLI {
         while (it.hasNext()) {
             var arg = it.next();
             switch (arg) {
-                case "-h", "--help"    -> printHelp();
-                case "-l", "--license" -> printLicense();
-                case "-w", "--windows" -> {
-                    try {
-                        openWindows(Integer.decode(it.next()));
-                    } catch (Exception e) {
-                        System.err.println("--windows: Could not process the given argument!");
-                    }
-                }
+                case "-h", "--help"                  -> printHelp();
+                case "-l", "--license"               -> printLicense();
+                case "-a", "--address", "--hostname" -> setHostname(it);
+                case "-p", "--port"                  -> setPort(it);
 
                 default -> System.err.println("Argument \"" + arg + "\" dropped.");
             }
         }
-        if (!hadWindows) openWindows(1);
+        openWindow();
     }
 
     public static void main(String[] args) {
