@@ -121,7 +121,8 @@ public class CLI {
     }
 
     /**
-     * Displays an instance of the {@link MainWindow} using the parsed hostname and port.
+     * Displays an instance of the {@link MainWindow} using the parsed {@link CLI#hostname}
+     * and {@link CLI#port}.
      */
     private void openWindow() {
         EventQueue.invokeLater(() -> new MainWindow(hostname, port).setVisible(true));
