@@ -21,6 +21,20 @@ package mhahnFr.SecretPathway.gui;
 
 import javax.swing.*;
 
+/**
+ * Instances of this class represent a window in which the user can play a MUD.
+ *
+ * @since 31.10.2022
+ * @author mhahnFr
+ */
 public class MainWindow extends JFrame {
+    /**
+     * Constructs a MainWindow. The two arguments are used to connect to a MUD if given,
+     * otherwise, the last connection is reestablished. If that also fails, the user is
+     * prompted to enter the necessary information.
+     *
+     * @param hostname the optional hostname
+     * @param port     the optional port
+     */
     public MainWindow(String hostname, Integer port) {}
 }
