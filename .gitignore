@@ -47,3 +47,4 @@ out/
 .idea/
 .eclipse/
 *.iml
+.DS_Store
