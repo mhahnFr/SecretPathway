@@ -19,8 +19,27 @@
 
 package mhahnFr.SecretPathway;
 
+/**
+ * This class contains all functions related to the command line interface.
+ *
+ * @since 29.08.2022
+ * @author mhahnFr
+ */
 public class CLI {
+    /**
+     * Processes the given arguments.
+     *
+     * @param args the arguments
+     */
+    private void process(String... args) {
+        // TODO
+        System.out.println("SecretPathway - the arguments:");
+        for (var arg : args) {
+            System.out.println(arg);
+        }
+    }
+
     public static void main(String[] args) {
-        System.out.println("This is the CLI of the SecretPathway!");
+        new CLI().process(args);
     }
 }
