@@ -85,6 +85,13 @@ public class CLI {
     }
 
     /**
+     * Prints the version information.
+     */
+    private void printVersion() {
+        System.out.println("Version 0.1");
+    }
+
+    /**
      * Prints an error message using the given arguments.
      *
      * @param parameter the parameter raising the error
@@ -140,6 +147,7 @@ public class CLI {
             switch (arg) {
                 case "-h", "--help"                  -> printHelp();
                 case "-l", "--license"               -> printLicense();
+                case "-v", "--version"               -> printVersion();
                 case "-a", "--address", "--hostname" -> setHostname(it);
                 case "-p", "--port"                  -> setPort(it);
 
