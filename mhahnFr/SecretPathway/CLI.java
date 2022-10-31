@@ -20,7 +20,6 @@
 package mhahnFr.SecretPathway;
 
 import java.util.Arrays;
-import java.util.Iterator;
 
 /**
  * This class contains all functions related to the command line interface.
