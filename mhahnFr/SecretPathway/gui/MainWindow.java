@@ -64,14 +64,20 @@ public class MainWindow extends JFrame {
      * @return a valid connection instance created from the details entered by the user
      */
     private Connection promptConnection() {
-        var panel     = new JPanel(new GridLayout(4, 1));
-        var hostField = new JTextField(); // TODO: User hint
-        var portField = new JTextField(); // TODO: User hint
+        var panel     = new JPanel(new GridLayout(2, 1));
 
-        panel.add(new JLabel("Enter the hostname or the IP address of the MUD server:"));
-        panel.add(hostField);
-        panel.add(new JLabel("Enter the port to be used:"));
-        panel.add(portField);
+        var hostPanel = new JPanel(new GridLayout(2, 1));
+        var hostField = new JTextField(); // TODO: User hint
+        hostPanel.add(new JLabel("Enter the hostname or the IP address of the MUD server:"));
+        hostPanel.add(hostField);
+
+        var portPanel = new JPanel(new GridLayout(2, 1));
+        var portField = new JTextField(); // TODO: User hint
+        portPanel.add(new JLabel("Enter the port to be used:"));
+        portPanel.add(portField);
+
+        panel.add(hostPanel);
+        panel.add(portPanel);
 
         if (JOptionPane.showConfirmDialog(this, panel,
                 Constants.NAME + ": New connection", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) {
