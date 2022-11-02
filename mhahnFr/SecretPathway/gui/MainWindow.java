@@ -19,10 +19,12 @@
 
 package mhahnFr.SecretPathway.gui;
 
+import mhahnFr.SecretPathway.core.Constants;
 import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.SecretPathway.core.net.Connection;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * Instances of this class represent a window in which the user can play a MUD.
@@ -62,8 +64,21 @@ public class MainWindow extends JFrame {
      * @return a valid connection instance created from the details entered by the user
      */
     private Connection promptConnection() {
-        // TODO
-        return null;
+        var panel     = new JPanel(new GridLayout(4, 1));
+        var hostField = new JTextField(); // TODO: User hint
+        var portField = new JTextField(); // TODO: User hint
+
+        panel.add(new JLabel("Enter the hostname or the IP address of the MUD server:"));
+        panel.add(hostField);
+        panel.add(new JLabel("Enter the port to be used:"));
+        panel.add(portField);
+
+        if (JOptionPane.showConfirmDialog(this, panel,
+                Constants.NAME + ": New connection", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) {
+            System.exit(0);
+        }
+        // TODO: Make bullet proof
+        return Connection.create(hostField.getText(), Integer.decode(portField.getText()));
     }
 
     /**
