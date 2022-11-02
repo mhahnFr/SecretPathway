@@ -26,8 +26,42 @@ package mhahnFr.SecretPathway.core.net;
  * @author mhahnFr
  */
 public class Connection {
-    public static Connection create(String hostname, Integer port) {
+    /** The hostname or the IP address of the endpoint of this connection instance. */
+    private final String hostname;
+    /** The port on which to connect to the {@link Connection#hostname}.            */
+    private final int port;
+
+    /**
+     * Constructs a new connection using the given hostname and port.
+     *
+     * @param hostname the hostname or the IP address to connect to
+     * @param port the port on which to connect
+     * @throws IllegalArgumentException if the given hostname or port are invalid
+     */
+    public Connection(String hostname, int port) {
+        if (port <= 0 || hostname == null || hostname.isBlank()) {
+            throw new IllegalArgumentException("Invalid hostname or port: \"" + hostname + ":" + port + "\"!");
+        }
+        this.hostname = hostname;
+        this.port     = port;
+    }
+
+    public void establishConnection() {
         // TODO
-        return null;
+    }
+
+    /**
+     * Tries to create a new {@link Connection} instance. Returns {@code null} on error.
+     *
+     * @param hostname the hostname or the IP address to connect to
+     * @param port the port on which to connect to the given endpoint
+     * @return a new {@link Connection} instance or {@code null} on error
+     */
+    public static Connection create(String hostname, Integer port) {
+        try {
+            return new Connection(hostname, port);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
