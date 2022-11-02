@@ -19,6 +19,7 @@
 
 package mhahnFr.SecretPathway;
 
+import mhahnFr.SecretPathway.core.net.Connection;
 import mhahnFr.SecretPathway.gui.MainWindow;
 
 import java.awt.EventQueue;
@@ -132,7 +133,7 @@ public class CLI {
      * and {@link CLI#port}.
      */
     private void openWindow() {
-        EventQueue.invokeLater(() -> new MainWindow(hostname, port).setVisible(true));
+        EventQueue.invokeLater(() -> new MainWindow(Connection.create(hostname, port)).setVisible(true));
     }
 
     /**

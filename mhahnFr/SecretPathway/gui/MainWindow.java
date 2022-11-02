@@ -19,6 +19,8 @@
 
 package mhahnFr.SecretPathway.gui;
 
+import mhahnFr.SecretPathway.core.net.Connection;
+
 import javax.swing.*;
 
 /**
@@ -28,13 +30,33 @@ import javax.swing.*;
  * @author mhahnFr
  */
 public class MainWindow extends JFrame {
+    /** The connection associated with this window. */
+    private final Connection connection;
+
     /**
-     * Constructs a MainWindow. The two arguments are used to connect to a MUD if given,
+     * Constructs a MainWindow. The given connection is used to connect to a MUD if given,
      * otherwise, the last connection is reestablished. If that also fails, the user is
      * prompted to enter the necessary information.
      *
-     * @param hostname the optional hostname
-     * @param port     the optional port
+     * @param connection the {@link Connection} instance used as connection
      */
-    public MainWindow(String hostname, Integer port) {}
+    public MainWindow(final Connection connection) {
+        // TODO: Recreate previous connection if exists
+        this.connection = connection == null ? promptConnection() : connection;
+
+        // TODO: GUI setup
+    }
+
+    /**
+     * Constructs a MainWindow. If the stored previous connection could not be reestablished,
+     * the user is prompted for the connection details.
+     */
+    public MainWindow() {
+        this(null);
+    }
+
+    private Connection promptConnection() {
+        // TODO
+        return null;
+    }
 }
