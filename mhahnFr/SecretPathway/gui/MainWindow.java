@@ -79,12 +79,17 @@ public class MainWindow extends JFrame {
         panel.add(hostPanel);
         panel.add(portPanel);
 
-        if (JOptionPane.showConfirmDialog(this, panel,
-                Constants.NAME + ": New connection", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) {
-            System.exit(0);
-        }
-        // TODO: Make bullet proof
-        return Connection.create(hostField.getText(), Integer.decode(portField.getText()));
+        Connection toReturn = null;
+
+        do {
+            if (JOptionPane.showConfirmDialog(this, panel,
+                    Constants.NAME + ": New connection", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) {
+                System.exit(0);
+            }
+            // TODO: Make bullet proof
+            toReturn = Connection.create(hostField.getText(), Integer.decode(portField.getText()));
+        } while (toReturn == null);
+        return toReturn;
     }
 
     /**
