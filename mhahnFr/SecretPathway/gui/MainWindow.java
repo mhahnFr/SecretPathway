@@ -19,6 +19,7 @@
 
 package mhahnFr.SecretPathway.gui;
 
+import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.SecretPathway.core.net.Connection;
 
 import javax.swing.*;
@@ -40,9 +41,8 @@ public class MainWindow extends JFrame {
      *
      * @param connection the {@link Connection} instance used as connection
      */
-    public MainWindow(final Connection connection) {
-        // TODO: Recreate previous connection if exists
-        this.connection = connection == null ? promptConnection() : connection;
+    public MainWindow(Connection connection) {
+        this.connection = connection == null ? restoreOrPromptConnection() : connection;
 
         // TODO: GUI setup
     }
@@ -55,8 +55,29 @@ public class MainWindow extends JFrame {
         this(null);
     }
 
+    /**
+     * Prompts the user to enter the necessary connection details. Returns a valid connection
+     * instance.
+     *
+     * @return a valid connection instance created from the details entered by the user
+     */
     private Connection promptConnection() {
         // TODO
         return null;
+    }
+
+    /**
+     * Tries to reconstruct the previous connection. If that fails, the user is prompted to
+     * enter the connection details using the method {@link MainWindow#promptConnection()}.
+     *
+     * @return a valid connection instance
+     * @see #promptConnection()
+     */
+    private Connection restoreOrPromptConnection() {
+        Connection toReturn = Connection.create(Settings.getInstance().getHostname(), Settings.getInstance().getPort());
+        if (toReturn == null) {
+            toReturn = promptConnection();
+        }
+        return toReturn;
     }
 }
