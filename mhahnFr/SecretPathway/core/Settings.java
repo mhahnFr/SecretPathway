@@ -97,6 +97,20 @@ public final class Settings {
     }
 
     /**
+     * Removes all previously stored settings.
+     *
+     * @return whether the underlying {@link Preferences} instance was cleared successfully
+     */
+    public boolean removeAll() {
+        try {
+            preferences.clear();
+        } catch (BackingStoreException e) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Returns the single instance of this class.
      *
      * @return the one and only instance of this class
@@ -106,7 +120,7 @@ public final class Settings {
     /**
      * Helper class that contains the keys used to store the settings.
      */
-    public static final class Keys {
+    private static final class Keys {
         /** The identifier used for all keys.   */
         private static final String BUNDLE_ID = "mhahnFr.SecretPathway";
 
