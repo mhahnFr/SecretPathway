@@ -19,13 +19,15 @@
 
 package mhahnFr.SecretPathway.core.net;
 
+import java.io.Closeable;
+
 /**
  * This class represents a connection to a MUD driver.
  *
  * @since 02.11.2022
  * @author mhahnFr
  */
-public class Connection {
+public class Connection implements Closeable, AutoCloseable {
     /** The hostname or the IP address of the endpoint of this connection instance. */
     private final String hostname;
     /** The port on which to connect to the {@link Connection#hostname}.            */
@@ -46,7 +48,21 @@ public class Connection {
         this.port     = port;
     }
 
+    public String getHostname() { return hostname; }
+
+    public int getPort() { return port; }
+
     public void establishConnection() {
+        // TODO
+    }
+
+    public boolean isClosed() {
+        // TODO
+        return false;
+    }
+
+    @Override
+    public void close() {
         // TODO
     }
 
