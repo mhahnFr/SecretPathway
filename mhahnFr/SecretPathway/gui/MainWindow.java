@@ -72,9 +72,15 @@ public class MainWindow extends JFrame {
         super.dispose();
     }
 
+    /**
+     * Prompts the user to confirm the closing of the connection.
+     *
+     * @return whether the user wishes to proceed
+     */
     private boolean promptConnectionClosing() {
-        // TODO
-        return true;
+        return JOptionPane.showConfirmDialog(this, "The connection will be closed.\nContinue?",
+                Constants.NAME + ": Closing connection", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE)
+                == JOptionPane.OK_OPTION;
     }
 
     /**
