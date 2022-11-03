@@ -104,8 +104,9 @@ public final class Settings {
      *
      * @param hostname the hostname to store
      */
-    public void setHostname(String hostname) {
+    public Settings setHostname(String hostname) {
         preferences.put(Keys.HOSTNAME, hostname);
+        return this;
     }
 
     /**
@@ -113,8 +114,9 @@ public final class Settings {
      *
      * @param port the port number to store
      */
-    public void setPort(int port) {
+    public Settings setPort(int port) {
         preferences.putInt(Keys.PORT, port);
+        return this;
     }
 
     /**
@@ -123,9 +125,10 @@ public final class Settings {
      * @param x the X-coordinate of the window position
      * @param y the Y-coordinate of the window postion
      */
-    public void setWindowLocation(int x, int y) {
+    public Settings setWindowLocation(int x, int y) {
         preferences.putInt(Keys.WINDOW_LOCATION_X, x);
         preferences.putInt(Keys.WINDOW_LOCATION_Y, y);
+        return this;
     }
 
     /**
@@ -134,9 +137,10 @@ public final class Settings {
      * @param width the width of the window
      * @param height the height of the window
      */
-    public void setWindowSize(int width, int height) {
+    public Settings setWindowSize(int width, int height) {
         preferences.putInt(Keys.WINDOW_WIDTH, width);
         preferences.putInt(Keys.WINDOW_HEIGHT, height);
+        return this;
     }
 
     /**
