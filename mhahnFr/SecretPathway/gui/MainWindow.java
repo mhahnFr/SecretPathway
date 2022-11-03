@@ -59,6 +59,24 @@ public class MainWindow extends JFrame {
         this(null);
     }
 
+    @Override
+    public void dispose() {
+        if (!connection.isClosed() && promptConnectionClosing()) {
+            connection.close();
+        }
+        Settings.getInstance().setHostname(connection.getHostname())
+                              .setPort(connection.getPort())
+                              .setWindowLocation(getX(), getY())
+                              .setWindowSize(getWidth(), getHeight());
+        Settings.getInstance().flush();
+        super.dispose();
+    }
+
+    private boolean promptConnectionClosing() {
+        // TODO
+        return true;
+    }
+
     /**
      * Prompts the user to enter the necessary connection details. Returns a valid connection
      * instance.
