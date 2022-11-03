@@ -65,7 +65,8 @@ public class MainWindow extends JFrame {
 
     @Override
     public void dispose() {
-        if (!connection.isClosed() && promptConnectionClosing()) {
+        if (!connection.isClosed()) {
+            if (!promptConnectionClosing()) { return; }
             connection.close();
         }
         Settings.getInstance().setHostname(connection.getHostname())
