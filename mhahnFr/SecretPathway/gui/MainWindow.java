@@ -25,6 +25,8 @@ import mhahnFr.SecretPathway.core.net.Connection;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 /**
  * Instances of this class represent a window in which the user can play a MUD.
@@ -64,6 +66,9 @@ public class MainWindow extends JFrame {
      * @return a valid connection instance created from the details entered by the user
      */
     private Connection promptConnection() {
+        final String hostHint = "hostname or IP address, ex: 127.0.0.1",
+                     portHint = "port, ex: 4242";
+
         var wrapPanel = new JPanel(new BorderLayout());
 
         var errorLabel = new JLabel();
@@ -73,12 +78,49 @@ public class MainWindow extends JFrame {
         var panel     = new JPanel(new GridLayout(2, 1));
 
         var hostPanel = new JPanel(new GridLayout(2, 1));
-        var hostField = new JTextField(); // TODO: User hint
+        var hostField = new JTextField(hostHint);
+        hostField.setForeground(Color.lightGray);
+        hostField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (hostField.getText().equals(hostHint)) {
+                    hostField.setText("");
+                    hostField.setForeground(Color.black);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (hostField.getText().isBlank()) {
+                    hostField.setText(hostHint);
+                    hostField.setForeground(Color.lightGray);
+                }
+            }
+        });
         hostPanel.add(new JLabel("Enter the hostname or the IP address of the MUD server:"));
         hostPanel.add(hostField);
 
         var portPanel = new JPanel(new GridLayout(2, 1));
-        var portField = new JTextField(); // TODO: User hint
+        var portField = new JTextField();
+        portField.setText(portHint);
+        portField.setForeground(Color.lightGray);
+        portField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (portField.getText().equals(portHint)) {
+                    portField.setText("");
+                    portField.setForeground(Color.black);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (portField.getText().isBlank()) {
+                    portField.setText(portHint);
+                    portField.setForeground(Color.lightGray);
+                }
+            }
+        });
         portPanel.add(new JLabel("Enter the port to be used:"));
         portPanel.add(portField);
 
@@ -99,7 +141,6 @@ public class MainWindow extends JFrame {
                 toReturn = Connection.create(hostField.getText(), Integer.decode(portField.getText()));
                 errorLabel.setText("Invalid parameters!");
             } catch (NumberFormatException e) {
-                portField.setText("");
                 errorLabel.setText("Invalid port!");
             }
             errorLabel.setVisible(true);
