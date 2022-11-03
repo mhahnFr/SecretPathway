@@ -46,9 +46,13 @@ public class MainWindow extends JFrame {
      * @param connection the {@link Connection} instance used as connection
      */
     public MainWindow(Connection connection) {
+        super(Constants.NAME);
         this.connection = connection == null ? restoreOrPromptConnection() : connection;
 
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         // TODO: GUI setup
+
+        restoreBounds();
     }
 
     /**
@@ -185,5 +189,29 @@ public class MainWindow extends JFrame {
             toReturn = promptConnection();
         }
         return toReturn;
+    }
+
+    /**
+     * Attempts to restore the bounds of this window from the stored state.
+     * If this is not possible, the location and the position are set to default
+     * values.
+     */
+    private void restoreBounds() {
+        final int width  = Settings.getInstance().getWindowWidth(),
+                  height = Settings.getInstance().getWindowHeight(),
+                  x      = Settings.getInstance().getWindowLocationX(),
+                  y      = Settings.getInstance().getWindowLocationY();
+
+        if (width < 0 || height < 0) {
+            pack();
+        } else {
+            setSize(width, height);
+        }
+
+        if (x < 0 || y < 0) {
+            setLocationRelativeTo(null);
+        } else {
+            setLocation(x, y);
+        }
     }
 }
