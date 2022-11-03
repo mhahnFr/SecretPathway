@@ -48,8 +48,18 @@ public class Connection implements Closeable, AutoCloseable {
         this.port     = port;
     }
 
+    /**
+     * Returns the hostname that is used by this connection instance.
+     *
+     * @return the associated hostname
+     */
     public String getHostname() { return hostname; }
 
+    /**
+     * Returns the port that is used by this connection instance.
+     *
+     * @return the associated port
+     */
     public int getPort() { return port; }
 
     public void establishConnection() {
