@@ -156,6 +156,8 @@ public class CLI {
             }
         }
         openWindow();
+        // Debug only!!!
+        mhahnFr.SecretPathway.core.Settings.getInstance().removeAll();
     }
 
     public static void main(String[] args) {
