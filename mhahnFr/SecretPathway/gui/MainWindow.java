@@ -50,7 +50,9 @@ public class MainWindow extends JFrame {
         this.connection = connection == null ? restoreOrPromptConnection() : connection;
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        // TODO: GUI setup
+
+        createMenuBar();
+        createContent();
 
         restoreBounds();
     }
@@ -61,6 +63,20 @@ public class MainWindow extends JFrame {
      */
     public MainWindow() {
         this(null);
+    }
+
+    /**
+     * Creates a menu bar for this window. Adds to default menu items as well.
+     */
+    private void createMenuBar() {
+        // TODO
+    }
+
+    /**
+     * Creates the content for this window.
+     */
+    private void createContent() {
+        // TODO
     }
 
     @Override
