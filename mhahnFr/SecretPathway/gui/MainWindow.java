@@ -64,6 +64,12 @@ public class MainWindow extends JFrame {
      * @return a valid connection instance created from the details entered by the user
      */
     private Connection promptConnection() {
+        var wrapPanel = new JPanel(new BorderLayout());
+
+        var errorLabel = new JLabel();
+        errorLabel.setForeground(Color.red);
+        errorLabel.setVisible(false);
+
         var panel     = new JPanel(new GridLayout(2, 1));
 
         var hostPanel = new JPanel(new GridLayout(2, 1));
@@ -79,15 +85,24 @@ public class MainWindow extends JFrame {
         panel.add(hostPanel);
         panel.add(portPanel);
 
+        wrapPanel.add(errorLabel, BorderLayout.NORTH);
+        wrapPanel.add(panel, BorderLayout.CENTER);
+
         Connection toReturn = null;
 
         do {
-            if (JOptionPane.showConfirmDialog(this, panel,
+            if (JOptionPane.showConfirmDialog(this, wrapPanel,
                     Constants.NAME + ": New connection", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) {
                 System.exit(0);
             }
-            // TODO: Make bullet proof
-            toReturn = Connection.create(hostField.getText(), Integer.decode(portField.getText()));
+            try {
+                toReturn = Connection.create(hostField.getText(), Integer.decode(portField.getText()));
+                errorLabel.setText("Invalid parameters!");
+            } catch (NumberFormatException e) {
+                portField.setText("");
+                errorLabel.setText("Invalid port!");
+            }
+            errorLabel.setVisible(true);
         } while (toReturn == null);
         return toReturn;
     }
