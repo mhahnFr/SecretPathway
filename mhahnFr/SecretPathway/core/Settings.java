@@ -63,18 +63,38 @@ public final class Settings {
         return preferences.getInt(Keys.PORT, -1);
     }
 
+    /**
+     * Returns the saved width of the main window or -1 if not set.
+     *
+     * @return the saved width of the main window
+     */
     public int getWindowWidth() {
         return preferences.getInt(Keys.WINDOW_WIDTH, -1);
     }
 
+    /**
+     * Returns the saved height of the main window or -1 if not set.
+     *
+     * @return the saved height of the main window
+     */
     public int getWindowHeight() {
         return preferences.getInt(Keys.WINDOW_HEIGHT, -1);
     }
 
+    /**
+     * Returns the saved X-coordinate of the window location or -1 if not set.
+     *
+     * @return the saved X-coordinate of the window
+     */
     public int getWindowLocationX() {
         return preferences.getInt(Keys.WINDOW_LOCATION_X, -1);
     }
 
+    /**
+     * Returns the saved Y-coordinate of the window location or -1 if not set.
+     *
+     * @return the saved Y-coordinate of the window
+     */
     public int getWindowLocationY() {
         return preferences.getInt(Keys.WINDOW_LOCATION_Y, -1);
     }
@@ -97,11 +117,23 @@ public final class Settings {
         preferences.putInt(Keys.PORT, port);
     }
 
+    /**
+     * Stores the window location.
+     *
+     * @param x the X-coordinate of the window position
+     * @param y the Y-coordinate of the window postion
+     */
     public void setWindowLocation(int x, int y) {
         preferences.putInt(Keys.WINDOW_LOCATION_X, x);
         preferences.putInt(Keys.WINDOW_LOCATION_Y, y);
     }
 
+    /**
+     * Stores the window size.
+     *
+     * @param width the width of the window
+     * @param height the height of the window
+     */
     public void setWindowSize(int width, int height) {
         preferences.putInt(Keys.WINDOW_WIDTH, width);
         preferences.putInt(Keys.WINDOW_HEIGHT, height);
@@ -147,16 +179,20 @@ public final class Settings {
      * Helper class that contains the keys used to store the settings.
      */
     private static final class Keys {
-        /** The identifier used for all keys.   */
+        /** The identifier used for all keys. */
         private static final String BUNDLE_ID = "mhahnFr.SecretPathway";
 
-        /** Key for the hostname or IP address. */
+        /** Key for the hostname or IP address.              */
         public static final String HOSTNAME          = BUNDLE_ID + ".hostname";
-        /** Key for the port.                   */
+        /** Key for the port.                                */
         public static final String PORT              = BUNDLE_ID + ".port";
+        /** Key for the width of the main window.            */
         public static final String WINDOW_WIDTH      = BUNDLE_ID + ".windowWidth";
+        /** Key for the height of the main window.           */
         public static final String WINDOW_HEIGHT     = BUNDLE_ID + ".windowHeight";
+        /** Key for the X-coordinate of the window position. */
         public static final String WINDOW_LOCATION_X = BUNDLE_ID + ".windowLocationX";
+        /** Key for the Y-coordinate of the window position. */
         public static final String WINDOW_LOCATION_Y = BUNDLE_ID + ".windowLocationY";
     }
 }
