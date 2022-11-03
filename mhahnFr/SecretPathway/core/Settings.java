@@ -63,6 +63,22 @@ public final class Settings {
         return preferences.getInt(Keys.PORT, -1);
     }
 
+    public int getWindowWidth() {
+        return preferences.getInt(Keys.WINDOW_WIDTH, -1);
+    }
+
+    public int getWindowHeight() {
+        return preferences.getInt(Keys.WINDOW_HEIGHT, -1);
+    }
+
+    public int getWindowLocationX() {
+        return preferences.getInt(Keys.WINDOW_LOCATION_X, -1);
+    }
+
+    public int getWindowLocationY() {
+        return preferences.getInt(Keys.WINDOW_LOCATION_Y, -1);
+    }
+
     /**
      * Stores the given hostname.
      *
@@ -79,6 +95,16 @@ public final class Settings {
      */
     public void setPort(int port) {
         preferences.putInt(Keys.PORT, port);
+    }
+
+    public void setWindowLocation(int x, int y) {
+        preferences.putInt(Keys.WINDOW_LOCATION_X, x);
+        preferences.putInt(Keys.WINDOW_LOCATION_Y, y);
+    }
+
+    public void setWindowSize(int width, int height) {
+        preferences.putInt(Keys.WINDOW_WIDTH, width);
+        preferences.putInt(Keys.WINDOW_HEIGHT, height);
     }
 
     /**
@@ -125,8 +151,12 @@ public final class Settings {
         private static final String BUNDLE_ID = "mhahnFr.SecretPathway";
 
         /** Key for the hostname or IP address. */
-        public static final String HOSTNAME = BUNDLE_ID + ".hostname";
+        public static final String HOSTNAME          = BUNDLE_ID + ".hostname";
         /** Key for the port.                   */
-        public static final String PORT     = BUNDLE_ID + ".port";
+        public static final String PORT              = BUNDLE_ID + ".port";
+        public static final String WINDOW_WIDTH      = BUNDLE_ID + ".windowWidth";
+        public static final String WINDOW_HEIGHT     = BUNDLE_ID + ".windowHeight";
+        public static final String WINDOW_LOCATION_X = BUNDLE_ID + ".windowLocationX";
+        public static final String WINDOW_LOCATION_Y = BUNDLE_ID + ".windowLocationY";
     }
 }
