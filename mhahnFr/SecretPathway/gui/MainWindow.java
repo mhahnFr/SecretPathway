@@ -116,61 +116,61 @@ public class MainWindow extends JFrame {
 
         var wrapPanel = new JPanel(new BorderLayout());
 
-        var errorLabel = new JLabel();
-        errorLabel.setForeground(Color.red);
-        errorLabel.setVisible(false);
+            var errorLabel = new JLabel();
+            errorLabel.setForeground(Color.red);
+            errorLabel.setVisible(false);
 
-        var panel     = new JPanel(new GridLayout(2, 1));
+            var panel = new JPanel(new GridLayout(2, 1));
 
-        var hostPanel = new JPanel(new GridLayout(2, 1));
-        var hostField = new JTextField(hostHint);
-        hostField.setForeground(Color.lightGray);
-        hostField.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                if (hostField.getText().equals(hostHint)) {
-                    hostField.setText("");
-                    hostField.setForeground(Color.black);
-                }
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                if (hostField.getText().isBlank()) {
-                    hostField.setText(hostHint);
+                var hostPanel = new JPanel(new GridLayout(2, 1));
+                    var hostField = new JTextField(hostHint);
                     hostField.setForeground(Color.lightGray);
-                }
-            }
-        });
-        hostPanel.add(new JLabel("Enter the hostname or the IP address of the MUD server:"));
-        hostPanel.add(hostField);
+                    hostField.addFocusListener(new FocusListener() {
+                        @Override
+                        public void focusGained(FocusEvent e) {
+                            if (hostField.getText().equals(hostHint)) {
+                                hostField.setText("");
+                                hostField.setForeground(Color.black);
+                            }
+                        }
 
-        var portPanel = new JPanel(new GridLayout(2, 1));
-        var portField = new JTextField();
-        portField.setText(portHint);
-        portField.setForeground(Color.lightGray);
-        portField.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                if (portField.getText().equals(portHint)) {
-                    portField.setText("");
-                    portField.setForeground(Color.black);
-                }
-            }
+                        @Override
+                        public void focusLost(FocusEvent e) {
+                            if (hostField.getText().isBlank()) {
+                                hostField.setText(hostHint);
+                                hostField.setForeground(Color.lightGray);
+                            }
+                        }
+                    });
+                    hostPanel.add(new JLabel("Enter the hostname or the IP address of the MUD server:"));
+                    hostPanel.add(hostField);
 
-            @Override
-            public void focusLost(FocusEvent e) {
-                if (portField.getText().isBlank()) {
+                var portPanel = new JPanel(new GridLayout(2, 1));
+                    var portField = new JTextField();
                     portField.setText(portHint);
                     portField.setForeground(Color.lightGray);
-                }
-            }
-        });
-        portPanel.add(new JLabel("Enter the port to be used:"));
-        portPanel.add(portField);
+                    portField.addFocusListener(new FocusListener() {
+                        @Override
+                        public void focusGained(FocusEvent e) {
+                            if (portField.getText().equals(portHint)) {
+                                portField.setText("");
+                                portField.setForeground(Color.black);
+                            }
+                        }
 
-        panel.add(hostPanel);
-        panel.add(portPanel);
+                        @Override
+                        public void focusLost(FocusEvent e) {
+                            if (portField.getText().isBlank()) {
+                                portField.setText(portHint);
+                                portField.setForeground(Color.lightGray);
+                            }
+                        }
+                    });
+                    portPanel.add(new JLabel("Enter the port to be used:"));
+                    portPanel.add(portField);
+
+            panel.add(hostPanel);
+            panel.add(portPanel);
 
         wrapPanel.add(errorLabel, BorderLayout.NORTH);
         wrapPanel.add(panel, BorderLayout.CENTER);
