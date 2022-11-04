@@ -119,7 +119,7 @@ public class MainWindow extends JFrame {
      */
     private void createContent() {
         final var panel = new JPanel(new BorderLayout());
-            final var statusLabel = new JLabel("Is it connected?");
+            final var statusLabel = new JLabel("Is it connected?", SwingConstants.CENTER);
 
             final var textPane   = new JTextPane();
             final var scrollPane = new JScrollPane(textPane);
