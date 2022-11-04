@@ -118,7 +118,26 @@ public class MainWindow extends JFrame {
      * Creates the content for this window.
      */
     private void createContent() {
-        // TODO
+        final var panel = new JPanel(new BorderLayout());
+            final var statusLabel = new JLabel("Is it connected?");
+
+            final var textPane   = new JTextPane();
+            final var scrollPane = new JScrollPane(textPane);
+
+            final var promptPanel = new JPanel();
+            promptPanel.setLayout(new BoxLayout(promptPanel, BoxLayout.X_AXIS));
+                final var promptField = new JTextField("Send me");
+
+                final var sendButton = new JButton("Send");
+
+            promptPanel.add(promptField);
+            promptPanel.add(sendButton);
+
+        panel.add(statusLabel, BorderLayout.NORTH);
+        panel.add(scrollPane, BorderLayout.CENTER);
+        panel.add(promptPanel, BorderLayout.SOUTH);
+
+        getContentPane().add(panel);
     }
 
     @Override
