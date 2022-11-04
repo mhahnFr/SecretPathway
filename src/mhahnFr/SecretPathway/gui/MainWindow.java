@@ -69,7 +69,16 @@ public class MainWindow extends JFrame {
      * Creates a menu bar for this window. Adds to default menu items as well.
      */
     private void createMenuBar() {
-        // TODO
+        if (Desktop.getDesktop().isSupported(Desktop.Action.APP_QUIT_HANDLER)) {
+            Desktop.getDesktop().setQuitHandler((e, response) -> {
+                if (!connection.isClosed()) {
+                    if (!promptConnectionClosing()) {
+                        response.cancelQuit();
+                    }
+                }
+                response.performQuit();
+            });
+        }
     }
 
     /**
