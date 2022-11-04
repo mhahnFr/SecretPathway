@@ -85,13 +85,16 @@ public class MainWindow extends JFrame {
         }
     }
 
+    /**
+     * Creates and displays a modal About dialog.
+     */
     private void showAboutWindow() {
         final var window = new JDialog(this, Constants.NAME + ": About", true);
 
         final var panel = new JPanel(new GridLayout(3, 1));
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
             final var topPanel = new JPanel(new GridLayout(2, 1));
-                topPanel.add(new JLabel("<html><b>The SecretPathway</b></html>", SwingConstants.CENTER));
+                topPanel.add(new JLabel("<html><b>The " + Constants.NAME + "</b></html>", SwingConstants.CENTER));
                 topPanel.add(new JLabel("Version x.x.x",                         SwingConstants.CENTER));
 
             final var spacer = new JPanel();
