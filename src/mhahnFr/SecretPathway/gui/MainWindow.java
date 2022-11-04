@@ -123,10 +123,11 @@ public class MainWindow extends JFrame {
 
             final var textPane   = new JTextPane();
             final var scrollPane = new JScrollPane(textPane);
+            textPane.setEditable(false);
 
             final var promptPanel = new JPanel();
             promptPanel.setLayout(new BoxLayout(promptPanel, BoxLayout.X_AXIS));
-                final var promptField = new JTextField("Send me");
+                final var promptField = new HintTextField("Enter some text...");
 
                 final var sendButton = new JButton("Send");
 
