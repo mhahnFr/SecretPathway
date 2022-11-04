@@ -26,6 +26,7 @@ import mhahnFr.SecretPathway.core.net.Connection;
 import mhahnFr.utils.gui.HintTextField;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 /**
@@ -79,6 +80,35 @@ public class MainWindow extends JFrame {
                 response.performQuit();
             });
         }
+        if (Desktop.getDesktop().isSupported(Desktop.Action.APP_ABOUT)) {
+            Desktop.getDesktop().setAboutHandler(e -> showAboutWindow());
+        }
+    }
+
+    private void showAboutWindow() {
+        final var window = new JDialog(this, Constants.NAME + ": About", true);
+
+        final var panel = new JPanel(new GridLayout(3, 1));
+        panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+            final var topPanel = new JPanel(new GridLayout(2, 1));
+                topPanel.add(new JLabel("<html><b>The SecretPathway</b></html>", SwingConstants.CENTER));
+                topPanel.add(new JLabel("Version x.x.x",                         SwingConstants.CENTER));
+
+            final var spacer = new JPanel();
+
+            final var bottomPanel = new JPanel(new GridLayout(3, 1));
+                bottomPanel.add(new JLabel("<html>© Copyright 2022 (<u>https://www.github.com/mhahnFr</u>)</html>",              SwingConstants.CENTER));
+                bottomPanel.add(new JLabel("<html>Licensed under the terms of the <b>GPL 3.0</b>.</html>",                       SwingConstants.CENTER));
+                bottomPanel.add(new JLabel("<html>More information: <u>https://www.github.com/mhahnFr/SecretPathway</u></html>", SwingConstants.CENTER));
+
+        panel.add(topPanel);
+        panel.add(spacer);
+        panel.add(bottomPanel);
+
+        window.getContentPane().add(panel);
+        window.pack();
+        window.setLocationRelativeTo(this);
+        window.setVisible(true);
     }
 
     /**
