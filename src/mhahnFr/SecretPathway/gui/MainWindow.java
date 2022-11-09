@@ -138,6 +138,8 @@ public class MainWindow extends JFrame {
         panel.add(scrollPane, BorderLayout.CENTER);
         panel.add(promptPanel, BorderLayout.SOUTH);
 
+        panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+
         getContentPane().add(panel);
 
         setMinimumSize  (new Dimension(300, 200));
