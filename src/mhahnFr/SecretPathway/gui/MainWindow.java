@@ -139,6 +139,9 @@ public class MainWindow extends JFrame {
         panel.add(promptPanel, BorderLayout.SOUTH);
 
         getContentPane().add(panel);
+
+        setMinimumSize  (new Dimension(300, 200));
+        setPreferredSize(new Dimension(750, 500));
     }
 
     @Override
