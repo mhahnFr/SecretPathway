@@ -47,8 +47,9 @@ public class MainWindow extends JFrame {
      * @param connection the {@link Connection} instance used as connection
      */
     public MainWindow(Connection connection) {
-        super(Constants.NAME);
         this.connection = connection == null ? restoreOrPromptConnection() : connection;
+
+        setTitle(Constants.NAME + ": " + this.connection.getName());
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 

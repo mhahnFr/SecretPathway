@@ -32,6 +32,8 @@ public class Connection implements Closeable, AutoCloseable {
     private final String hostname;
     /** The port on which to connect to the {@link Connection#hostname}.            */
     private final int port;
+    /** The name of the connection. Defaults to hostname : port.                    */
+    private String name;
 
     /**
      * Constructs a new connection using the given hostname and port.
@@ -46,6 +48,7 @@ public class Connection implements Closeable, AutoCloseable {
         }
         this.hostname = hostname;
         this.port     = port;
+        this.name     = hostname + ":" + port;
     }
 
     /**
@@ -61,6 +64,13 @@ public class Connection implements Closeable, AutoCloseable {
      * @return the associated port
      */
     public int getPort() { return port; }
+
+    /**
+     * Returns the name of the connection.
+     *
+     * @return the name of the connection
+     */
+    public String getName() { return name; }
 
     public void establishConnection() {
         // TODO
