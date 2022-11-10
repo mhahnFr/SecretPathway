@@ -210,16 +210,15 @@ public class MainWindow extends JFrame {
                     Constants.NAME + ": New connection", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) {
                 System.exit(0);
             }
-            if (!hostField.isShowingHint() && !portField.isShowingHint()) {
-                try {
-                    toReturn = Connection.create(hostField.getText(), Integer.decode(portField.getText()));
-                } catch (NumberFormatException e) {
-                    errorLabel.setText("Invalid port!");
-                }
+            try {
+                toReturn = Connection.create(hostField.getText(), Integer.decode(portField.getText()));
+                errorLabel.setText("Invalid parameters!");
+            } catch (NumberFormatException e) {
+                errorLabel.setText("Invalid port!");
             }
-            errorLabel.setText("Invalid parameters!");
             errorLabel.setVisible(true);
         } while (toReturn == null);
+
         return toReturn;
     }
 
