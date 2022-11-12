@@ -23,6 +23,7 @@ import mhahnFr.SecretPathway.core.Constants;
 import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.SecretPathway.core.net.Connection;
 
+import mhahnFr.SecretPathway.core.net.ConnectionFactory;
 import mhahnFr.utils.gui.HintTextField;
 
 import javax.swing.*;
@@ -221,7 +222,7 @@ public class MainWindow extends JFrame {
                 System.exit(0);
             }
             try {
-                toReturn = Connection.create(hostField.getText(), Integer.decode(portField.getText()));
+                toReturn = ConnectionFactory.create(hostField.getText(), Integer.decode(portField.getText()));
                 errorLabel.setText("Invalid parameters!");
             } catch (NumberFormatException e) {
                 errorLabel.setText("Invalid port!");
@@ -240,7 +241,7 @@ public class MainWindow extends JFrame {
      * @see #promptConnection()
      */
     private Connection restoreOrPromptConnection() {
-        Connection toReturn = Connection.create(Settings.getInstance().getHostname(), Settings.getInstance().getPort());
+        Connection toReturn = ConnectionFactory.create(Settings.getInstance().getHostname(), Settings.getInstance().getPort());
         if (toReturn == null) {
             toReturn = promptConnection();
         }

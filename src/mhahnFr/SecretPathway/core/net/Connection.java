@@ -27,13 +27,13 @@ import java.io.Closeable;
  * @since 02.11.2022
  * @author mhahnFr
  */
-public class Connection implements Closeable, AutoCloseable {
+public abstract class Connection implements Closeable, AutoCloseable {
     /** The hostname or the IP address of the endpoint of this connection instance. */
-    private final String hostname;
+    protected final String hostname;
     /** The port on which to connect to the {@link Connection#hostname}.            */
-    private final int port;
+    protected final int port;
     /** The name of the connection. Defaults to hostname : port.                    */
-    private String name;
+    protected String name;
 
     /**
      * Constructs a new connection using the given hostname and port.
@@ -42,7 +42,7 @@ public class Connection implements Closeable, AutoCloseable {
      * @param port the port on which to connect
      * @throws IllegalArgumentException if the given hostname or port are invalid
      */
-    public Connection(String hostname, int port) {
+    protected Connection(String hostname, int port) {
         if (port <= 0 || hostname == null || hostname.isBlank()) {
             throw new IllegalArgumentException("Invalid hostname or port: \"" + hostname + ":" + port + "\"!");
         }
@@ -72,32 +72,10 @@ public class Connection implements Closeable, AutoCloseable {
      */
     public String getName() { return name; }
 
-    public void establishConnection() {
-        // TODO
-    }
+    public abstract void establishConnection();
 
-    public boolean isClosed() {
-        // TODO
-        return false;
-    }
+    public abstract boolean isClosed();
 
     @Override
-    public void close() {
-        // TODO
-    }
-
-    /**
-     * Tries to create a new {@link Connection} instance. Returns {@code null} on error.
-     *
-     * @param hostname the hostname or the IP address to connect to
-     * @param port the port on which to connect to the given endpoint
-     * @return a new {@link Connection} instance or {@code null} on error
-     */
-    public static Connection create(String hostname, Integer port) {
-        try {
-            return new Connection(hostname, port);
-        } catch (Exception e) {
-            return null;
-        }
-    }
+    public abstract void close();
 }
