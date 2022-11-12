@@ -78,6 +78,7 @@ public class MainWindow extends JFrame {
                         response.cancelQuit();
                     }
                 }
+                saveSettings();
                 response.performQuit();
             });
         }
@@ -153,12 +154,20 @@ public class MainWindow extends JFrame {
             if (!promptConnectionClosing()) { return; }
             connection.close();
         }
+        saveSettings();
+        super.dispose();
+    }
+
+    /**
+     * Stores the state of the application.
+     */
+    private void saveSettings() {
         Settings.getInstance().setHostname(connection.getHostname())
                               .setPort(connection.getPort())
                               .setWindowLocation(getX(), getY())
-                              .setWindowSize(getWidth(), getHeight());
-        Settings.getInstance().flush();
-        super.dispose();
+                              .setWindowSize(getWidth(), getHeight())
+                              .flush();
+
     }
 
     /**
