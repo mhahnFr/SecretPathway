@@ -72,8 +72,16 @@ public abstract class Connection implements Closeable, AutoCloseable {
      */
     public String getName() { return name; }
 
+    /**
+     * This method establishes a connection to the remote host.
+     */
     public abstract void establishConnection();
 
+    /**
+     * Returns whether this connection has been closed.
+     *
+     * @return whether the connection has been closed
+     */
     public abstract boolean isClosed();
 
     @Override

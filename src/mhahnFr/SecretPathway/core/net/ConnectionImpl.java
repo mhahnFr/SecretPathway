@@ -19,7 +19,20 @@
 
 package mhahnFr.SecretPathway.core.net;
 
+/**
+ * This class contains the connection implementation for Java on desktop
+ * computers.
+ *
+ * @since 12.11.2022
+ * @author mhahnFr
+ */
 public class ConnectionImpl extends Connection {
+    /**
+     * Constructs this connection representation.
+     *
+     * @param host the hostname or the IP address to connect to
+     * @param port the port number to be used
+     */
     public ConnectionImpl(String host, int port) {
         super(host, port);
     }
