@@ -117,12 +117,20 @@ public class ConnectionImpl extends Connection {
 
     @Override
     public boolean isClosed() {
-        // TODO
-        return false;
+        return closed;
     }
 
     @Override
     public void close() {
-        // TODO
+        if (!closed) {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                if (listener != null) {
+                    listener.handleError(e);
+                }
+            }
+            closed = true;
+        }
     }
 }
