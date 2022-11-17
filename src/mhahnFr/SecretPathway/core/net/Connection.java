@@ -94,6 +94,23 @@ public abstract class Connection implements Closeable, AutoCloseable {
     public abstract void establishConnection();
 
     /**
+     * Attempts to send the given piece of data.
+     *
+     * @param data the bytes to be sent
+     * @return whether the data could be sent
+     */
+    public boolean send(byte[] data) { return send(data, data.length); }
+
+    /**
+     * Attempts to send the given amount of data.
+     *
+     * @param data   the buffer containing the data
+     * @param length the amount of bytes to take from the buffer
+     * @return whether the data could be sent
+     */
+    public abstract boolean send(byte[] data, int length);
+
+    /**
      * Returns whether this connection has been closed.
      *
      * @return whether the connection has been closed
