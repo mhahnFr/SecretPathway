@@ -30,8 +30,9 @@ public interface ConnectionListener {
      * Called when new data has been received.
      *
      * @param data the received piece of data
+     * @param length the actual content length
      */
-    void receive(byte[] data);
+    void receive(byte[] data, int length);
 
     /**
      * Called when an error happens somewhere in the connection process.

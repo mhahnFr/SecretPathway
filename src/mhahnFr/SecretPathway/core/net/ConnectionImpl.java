@@ -19,6 +19,15 @@
 
 package mhahnFr.SecretPathway.core.net;
 
+import mhahnFr.utils.Pair;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This class contains the connection implementation for Java on desktop
  * computers.
@@ -27,6 +36,17 @@ package mhahnFr.SecretPathway.core.net;
  * @author mhahnFr
  */
 public class ConnectionImpl extends Connection {
+    /** The underlying socket.                                            */
+    private Socket socket;
+    /** The input stream associated with the held socket.                 */
+    private BufferedInputStream in;
+    /** The output stream associated with the held socket.                */
+    private BufferedOutputStream out;
+    /** Indicates whether this connection has been closed.                */
+    private boolean closed;
+    /** A buffer used to buffer incoming data before the listener is set. */
+    private List<Pair<byte[], Integer>> emergencyBuffer = new ArrayList<>();
+
     /**
      * Constructs this connection representation.
      *
@@ -37,9 +57,62 @@ public class ConnectionImpl extends Connection {
         super(host, port);
     }
 
+    /**
+     * Settles the streams.
+     *
+     * @throws IOException as thrown by the underlying streams and socket
+     */
+    private void setupStreams() throws IOException {
+        in  = new BufferedInputStream(socket.getInputStream());
+        out = new BufferedOutputStream(socket.getOutputStream());
+    }
+
+    private void startReceiving() {
+        var buffer = new byte[65536];
+        int length;
+
+        while (!closed) {
+            try {
+                length = in.read(buffer);
+                if (listener != null) {
+                    listener.receive(buffer, length);
+                } else {
+                    emergencyBuffer.add(new Pair<>(buffer, length));
+                }
+            } catch (IOException e) {
+                if (listener != null) {
+                    listener.handleError(e);
+                }
+            }
+        }
+    }
+
     @Override
     public void establishConnection() {
-        // TODO
+        try {
+            socket = new Socket(hostname, port);
+            setupStreams();
+            startReceiving();
+        } catch (IOException e) {
+            if (listener != null) {
+                listener.handleError(e);
+            }
+        }
+    }
+
+    @Override
+    public void setConnectionListener(ConnectionListener listener) {
+        super.setConnectionListener(listener);
+        if (listener != null && !emergencyBuffer.isEmpty()) {
+            for (var bufferPair : emergencyBuffer) {
+                listener.receive(bufferPair.getFirst(), bufferPair.getSecond());
+            }
+        }
+    }
+
+    @Override
+    public boolean send(byte[] data, int length) {
+        return false;
     }
 
     @Override
