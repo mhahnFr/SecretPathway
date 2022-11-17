@@ -67,6 +67,16 @@ public class ConnectionImpl extends Connection {
         out = new BufferedOutputStream(socket.getOutputStream());
     }
 
+    /**
+     * Starts reading from the socket. Received content is buffered and flushed
+     * into the {@link ConnectionListener}. The reading is stopped once this
+     * connection is closed.
+     *
+     * @see #listener
+     * @see #closed
+     * @see #close()
+     * @see #isClosed()
+     */
     private void startReceiving() {
         var buffer = new byte[65536];
         int length;
