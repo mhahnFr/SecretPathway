@@ -34,6 +34,8 @@ public abstract class Connection implements Closeable, AutoCloseable {
     protected final int port;
     /** The name of the connection. Defaults to hostname : port.                    */
     protected String name;
+    /** The listener to be called for relevant events.                              */
+    protected ConnectionListener listener;
 
     /**
      * Constructs a new connection using the given hostname and port.
@@ -71,6 +73,20 @@ public abstract class Connection implements Closeable, AutoCloseable {
      * @return the name of the connection
      */
     public String getName() { return name; }
+
+    /**
+     * Sets the connection listener. It may be {@code null}.
+     *
+     * @param listener the new listener
+     */
+    public void setConnectionListener(ConnectionListener listener) { this.listener = listener; }
+
+    /**
+     * Returns the connection listener associated with this connection.
+     *
+     * @return the connection listener associated with this instance
+     */
+    public ConnectionListener getConnectionListener() { return listener; }
 
     /**
      * This method establishes a connection to the remote host.
