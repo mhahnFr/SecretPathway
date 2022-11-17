@@ -139,9 +139,9 @@ public class MainWindow extends JFrame {
             final var scrollPane = new DarkComponent<>(new JScrollPane(textPane), components).getComponent();
             textPane.setEditable(false);
 
-            final var promptPanel = new JPanel();
+            final var promptPanel = new DarkComponent<>(new JPanel(), components).getComponent();
             promptPanel.setLayout(new BoxLayout(promptPanel, BoxLayout.X_AXIS));
-                final var promptField = new HintTextField("Enter some text...");
+                final var promptField = new DarkTextComponent<>(new HintTextField("Enter some text..."), components).getComponent();
 
                 final var sendButton = new JButton("Send");
 
