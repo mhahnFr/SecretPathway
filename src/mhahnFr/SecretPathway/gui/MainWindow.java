@@ -24,11 +24,15 @@ import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.SecretPathway.core.net.Connection;
 
 import mhahnFr.SecretPathway.core.net.ConnectionFactory;
+import mhahnFr.utils.gui.DarkComponent;
+import mhahnFr.utils.gui.DarkTextComponent;
 import mhahnFr.utils.gui.HintTextField;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Instances of this class represent a window in which the user can play a MUD.
@@ -39,6 +43,7 @@ import java.awt.*;
 public class MainWindow extends JFrame {
     /** The connection associated with this window. */
     private final Connection connection;
+    private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
 
     /**
      * Constructs a MainWindow. The given connection is used to connect to a MUD if given,
@@ -66,6 +71,12 @@ public class MainWindow extends JFrame {
      */
     public MainWindow() {
         this(null);
+    }
+
+    private void setDark(final boolean dark) {
+        for (var component : components) {
+            component.setDark(dark);
+        }
     }
 
     /**
@@ -121,11 +132,11 @@ public class MainWindow extends JFrame {
      * Creates the content for this window.
      */
     private void createContent() {
-        final var panel = new JPanel(new BorderLayout());
-            final var statusLabel = new JLabel("Is it connected?", SwingConstants.CENTER);
+        final var panel = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
+            final var statusLabel = new DarkComponent<>(new JLabel("Is it connected?", SwingConstants.CENTER), components).getComponent();
 
-            final var textPane   = new JTextPane();
-            final var scrollPane = new JScrollPane(textPane);
+            final var textPane   = new DarkTextComponent<>(new JTextPane(), components).getComponent();
+            final var scrollPane = new DarkComponent<>(new JScrollPane(textPane), components).getComponent();
             textPane.setEditable(false);
 
             final var promptPanel = new JPanel();
