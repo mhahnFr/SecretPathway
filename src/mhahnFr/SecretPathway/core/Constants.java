@@ -19,6 +19,8 @@
 
 package mhahnFr.SecretPathway.core;
 
+import java.awt.Font;
+
 /**
  * This class contains some constant values used in the whole project.
  *
@@ -30,4 +32,12 @@ public final class Constants {
     public static final String NAME    = "SecretPathway";
     /** The version as String.                  */
     public static final String VERSION = "1.0";
+
+    public static final class Actions {
+        public static final String SEND = "send";
+    }
+
+    public static final class UI {
+        public static final Font FONT = new Font("monospaced", Font.PLAIN, 12);
+    }
 }

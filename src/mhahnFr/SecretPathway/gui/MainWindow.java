@@ -31,10 +31,16 @@ import mhahnFr.utils.gui.HintTextField;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.*;
 
 /**
  * Instances of this class represent a window in which the user can play a MUD.
@@ -42,13 +48,16 @@ import java.util.List;
  * @since 31.10.2022
  * @author mhahnFr
  */
-public class MainWindow extends JFrame {
+public class MainWindow extends JFrame implements ActionListener {
     /** The connection associated with this window.                       */
     private final Connection connection;
     /** The delegate of the connection.                                   */
     private final ConnectionDelegate delegate;
     /** A list with the components that should be capable to become dark. */
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
+    /** The main {@link JTextPane} which contains the incoming text.      */
+    private JTextPane mainPane;
+    private JTextField promptField;
 
     /**
      * Constructs a MainWindow. The given connection is used to connect to a MUD if given,
@@ -69,8 +78,7 @@ public class MainWindow extends JFrame {
 
         restoreBounds();
 
-        delegate = new ConnectionDelegate();
-        settleConnection();
+        delegate = new ConnectionDelegate(this.connection);
     }
 
     /**
@@ -79,14 +87,6 @@ public class MainWindow extends JFrame {
      */
     public MainWindow() {
         this(null);
-    }
-
-    /**
-     * Settles up the underlying connection.
-     */
-    private void settleConnection() {
-        connection.setConnectionListener(delegate);
-        connection.establishConnection();
     }
 
     /**
@@ -156,15 +156,33 @@ public class MainWindow extends JFrame {
         final var panel = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
             final var statusLabel = new DarkComponent<>(new JLabel("Is it connected?", SwingConstants.CENTER), components).getComponent();
 
-            final var textPane   = new DarkTextComponent<>(new JTextPane(), components).getComponent();
-            final var scrollPane = new DarkComponent<>(new JScrollPane(textPane), components).getComponent();
-            textPane.setEditable(false);
+                      mainPane   = new DarkTextComponent<>(new JTextPane(), components).getComponent();
+            final var scrollPane = new DarkComponent<>(new JScrollPane(mainPane), components).getComponent();
+            mainPane.setEditable(false);
+            mainPane.setFont(Constants.UI.FONT);
+            mainPane.getDocument().addDocumentListener(new DocumentListener() {
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    mainPane.setCaretPosition(mainPane.getText().length());
+                }
+
+                @Override
+                public void removeUpdate(DocumentEvent e) {}
+
+                @Override
+                public void changedUpdate(DocumentEvent e) {}
+            });
 
             final var promptPanel = new DarkComponent<>(new JPanel(), components).getComponent();
             promptPanel.setLayout(new BoxLayout(promptPanel, BoxLayout.X_AXIS));
-                final var promptField = new DarkTextComponent<>(new HintTextField("Enter some text..."), components).getComponent();
+                promptField = new DarkTextComponent<>(new HintTextField("Enter some text..."), components).getComponent();
+                promptField.setFont(Constants.UI.FONT);
+                promptField.setActionCommand(Constants.Actions.SEND);
+                promptField.addActionListener(this);
 
                 final var sendButton = new JButton("Send");
+                sendButton.setActionCommand(Constants.Actions.SEND);
+                sendButton.addActionListener(this);
 
             promptPanel.add(promptField);
             promptPanel.add(sendButton);
@@ -179,6 +197,20 @@ public class MainWindow extends JFrame {
 
         setMinimumSize  (new Dimension(300, 200));
         setPreferredSize(new Dimension(750, 500));
+    }
+
+    private void sendText() {
+        delegate.send(promptField.getText());
+        promptField.setText("");
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        switch (e.getActionCommand()) {
+            case Constants.Actions.SEND -> sendText();
+            
+            default -> throw new IllegalStateException("Unexpected action command: " + e.getActionCommand());
+        }
     }
 
     @Override
@@ -307,10 +339,37 @@ public class MainWindow extends JFrame {
     /**
      * An implementation of the {@link ConnectionListener} for this MainWindow.
      */
-    private static class ConnectionDelegate implements ConnectionListener {
+    private class ConnectionDelegate implements ConnectionListener {
+        private final Connection connection;
+        private final Future<?> listenFuture;
+        private final ExecutorService threads = Executors.newCachedThreadPool();
+
+        ConnectionDelegate(final Connection connection) {
+            this.connection = connection;
+            this.connection.setConnectionListener(this);
+            listenFuture = threads.submit(connection::establishConnection);
+        }
+
+        void send(final String text) {
+            final var tmpText = text + '\n';
+
+            final var document = mainPane.getDocument();
+            try {
+                document.insertString(document.getLength(), tmpText, null);
+            } catch (BadLocationException e) {
+                throw new RuntimeException(e);
+            }
+            threads.execute(() -> connection.send(tmpText.getBytes(StandardCharsets.UTF_8)));
+        }
+
         @Override
         public void receive(byte[] data, int length) {
-            System.out.println(new String(data, 0, length, StandardCharsets.UTF_8));
+            var document = mainPane.getDocument();
+            try {
+                document.insertString(document.getLength(), new String(data, 0, length, StandardCharsets.UTF_8), null);
+            } catch (BadLocationException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         @Override

@@ -124,7 +124,16 @@ public class ConnectionImpl extends Connection {
 
     @Override
     public boolean send(byte[] data, int length) {
-        return false;
+        try {
+            out.write(data, 0, length);
+            out.flush();
+        } catch (IOException e) {
+            if (listener != null) {
+                listener.handleError(e);
+            }
+            return false;
+        }
+        return true;
     }
 
     @Override
