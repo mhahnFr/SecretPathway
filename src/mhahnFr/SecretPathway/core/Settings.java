@@ -99,6 +99,11 @@ public final class Settings {
         return preferences.getInt(Keys.WINDOW_LOCATION_Y, -1);
     }
 
+    /**
+     * Returns the stored font size.
+     *
+     * @return the store font size
+     */
     public int getFontSize() {
         return preferences.getInt(Keys.FONT_SIZE, 12);
     }
@@ -147,6 +152,12 @@ public final class Settings {
         return this;
     }
 
+    /**
+     * Sets the font size.
+     *
+     * @param size the new font size
+     * @return this instance
+     */
     public Settings setFontSize(int size) {
         preferences.putInt(Keys.FONT_SIZE, size);
         return this;
@@ -207,6 +218,7 @@ public final class Settings {
         public static final String WINDOW_LOCATION_X = BUNDLE_ID + ".windowLocationX";
         /** Key for the Y-coordinate of the window position. */
         public static final String WINDOW_LOCATION_Y = BUNDLE_ID + ".windowLocationY";
+        /** The key used to store the font size.             */
         public static final String FONT_SIZE         = BUNDLE_ID + ".fontSize";
     }
 }

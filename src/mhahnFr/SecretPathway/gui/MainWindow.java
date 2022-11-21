@@ -124,6 +124,9 @@ public class MainWindow extends JFrame implements ActionListener {
         }
     }
 
+    /**
+     * Displays the settings.
+     */
     private void showSettings() {
         final var window = new JDialog(this, Constants.NAME + ": Settings", true);
         window.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
