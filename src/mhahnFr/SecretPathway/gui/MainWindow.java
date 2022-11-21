@@ -24,6 +24,7 @@ import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.SecretPathway.core.net.Connection;
 
 import mhahnFr.SecretPathway.core.net.ConnectionFactory;
+import mhahnFr.SecretPathway.core.net.ConnectionListener;
 import mhahnFr.utils.gui.DarkComponent;
 import mhahnFr.utils.gui.DarkTextComponent;
 import mhahnFr.utils.gui.HintTextField;
@@ -31,6 +32,7 @@ import mhahnFr.utils.gui.HintTextField;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +45,8 @@ import java.util.List;
 public class MainWindow extends JFrame {
     /** The connection associated with this window. */
     private final Connection connection;
+    /** The delegate of the connection.             */
+    private final ConnectionDelegate delegate;
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
 
     /**
@@ -63,6 +67,9 @@ public class MainWindow extends JFrame {
         createContent();
 
         restoreBounds();
+
+        delegate = new ConnectionDelegate();
+        settleConnection();
     }
 
     /**
@@ -71,6 +78,14 @@ public class MainWindow extends JFrame {
      */
     public MainWindow() {
         this(null);
+    }
+
+    /**
+     * Settles up the underlying connection.
+     */
+    private void settleConnection() {
+        connection.setConnectionListener(delegate);
+        connection.establishConnection();
     }
 
     private void setDark(final boolean dark) {
@@ -280,6 +295,21 @@ public class MainWindow extends JFrame {
             setLocationRelativeTo(null);
         } else {
             setLocation(x, y);
+        }
+    }
+
+    /**
+     * An implementation of the {@link ConnectionListener} for this MainWindow.
+     */
+    private static class ConnectionDelegate implements ConnectionListener {
+        @Override
+        public void receive(byte[] data, int length) {
+            System.out.println(new String(data, 0, length, StandardCharsets.UTF_8));
+        }
+
+        @Override
+        public void handleError(Exception exception) {
+            exception.printStackTrace();
         }
     }
 }
