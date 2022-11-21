@@ -45,7 +45,7 @@ public class ConnectionImpl extends Connection {
     /** Indicates whether this connection has been closed.                */
     private boolean closed;
     /** A buffer used to buffer incoming data before the listener is set. */
-    private List<Pair<byte[], Integer>> emergencyBuffer = new ArrayList<>();
+    private final List<Pair<byte[], Integer>> emergencyBuffer = new ArrayList<>();
 
     /**
      * Constructs this connection representation.
@@ -65,6 +65,8 @@ public class ConnectionImpl extends Connection {
     private void setupStreams() throws IOException {
         in  = new BufferedInputStream(socket.getInputStream());
         out = new BufferedOutputStream(socket.getOutputStream());
+
+        emergencyBuffer.clear();
     }
 
     /**
