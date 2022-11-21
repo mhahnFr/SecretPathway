@@ -119,6 +119,38 @@ public class MainWindow extends JFrame implements ActionListener {
         if (Desktop.getDesktop().isSupported(Desktop.Action.APP_ABOUT)) {
             Desktop.getDesktop().setAboutHandler(e -> showAboutWindow());
         }
+        if (Desktop.getDesktop().isSupported(Desktop.Action.APP_PREFERENCES)) {
+            Desktop.getDesktop().setPreferencesHandler(__ -> showSettings());
+        }
+    }
+
+    private void showSettings() {
+        final var window = new JDialog(this, Constants.NAME + ": Settings", true);
+        window.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        window.setResizable(false);
+
+        final var panel = new JPanel(new GridLayout(2, 1));
+        panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+            final var spinnerPanel = new JPanel();
+            spinnerPanel.setLayout(new BoxLayout(spinnerPanel, BoxLayout.X_AXIS));
+
+                final var stepperLabel = new JLabel("The font size:");
+
+                final var stepper = new JSpinner();
+                stepper.setValue(Settings.getInstance().getFontSize());
+
+            spinnerPanel.add(stepperLabel);
+            spinnerPanel.add(stepper);
+
+            final var darkMode = new JCheckBox("Enable dark mode");
+
+        panel.add(spinnerPanel);
+        panel.add(darkMode);
+
+        window.getContentPane().add(panel);
+        window.pack();
+        window.setLocationRelativeTo(this);
+        window.setVisible(true);
     }
 
     /**
@@ -126,6 +158,7 @@ public class MainWindow extends JFrame implements ActionListener {
      */
     private void showAboutWindow() {
         final var window = new JDialog(this, Constants.NAME + ": About", true);
+        window.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
         final var panel = new JPanel(new GridLayout(3, 1));
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));

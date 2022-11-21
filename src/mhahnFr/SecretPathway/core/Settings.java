@@ -99,6 +99,10 @@ public final class Settings {
         return preferences.getInt(Keys.WINDOW_LOCATION_Y, -1);
     }
 
+    public int getFontSize() {
+        return preferences.getInt(Keys.FONT_SIZE, 12);
+    }
+
     /**
      * Stores the given hostname.
      *
@@ -140,6 +144,11 @@ public final class Settings {
     public Settings setWindowSize(int width, int height) {
         preferences.putInt(Keys.WINDOW_WIDTH, width);
         preferences.putInt(Keys.WINDOW_HEIGHT, height);
+        return this;
+    }
+
+    public Settings setFontSize(int size) {
+        preferences.putInt(Keys.FONT_SIZE, size);
         return this;
     }
 
@@ -198,5 +207,6 @@ public final class Settings {
         public static final String WINDOW_LOCATION_X = BUNDLE_ID + ".windowLocationX";
         /** Key for the Y-coordinate of the window position. */
         public static final String WINDOW_LOCATION_Y = BUNDLE_ID + ".windowLocationY";
+        public static final String FONT_SIZE         = BUNDLE_ID + ".fontSize";
     }
 }
