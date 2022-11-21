@@ -43,10 +43,11 @@ import java.util.List;
  * @author mhahnFr
  */
 public class MainWindow extends JFrame {
-    /** The connection associated with this window. */
+    /** The connection associated with this window.                       */
     private final Connection connection;
-    /** The delegate of the connection.             */
+    /** The delegate of the connection.                                   */
     private final ConnectionDelegate delegate;
+    /** A list with the components that should be capable to become dark. */
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
 
     /**
@@ -88,6 +89,11 @@ public class MainWindow extends JFrame {
         connection.establishConnection();
     }
 
+    /**
+     * Sets whether the dark mode should be active.
+     *
+     * @param dark indicating whether to enable or disable the dark mode
+     */
     private void setDark(final boolean dark) {
         for (var component : components) {
             component.setDark(dark);
