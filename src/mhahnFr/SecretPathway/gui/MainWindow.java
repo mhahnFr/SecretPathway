@@ -57,6 +57,7 @@ public class MainWindow extends JFrame implements ActionListener {
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
     /** The main {@link JTextPane} which contains the incoming text.      */
     private JTextPane mainPane;
+    /** The text field for text to be sent.                               */
     private JTextField promptField;
 
     /**
@@ -199,6 +200,9 @@ public class MainWindow extends JFrame implements ActionListener {
         setPreferredSize(new Dimension(750, 500));
     }
 
+    /**
+     * Sends the text currently in the prompt text field. Clears the text field.
+     */
     private void sendText() {
         delegate.send(promptField.getText());
         promptField.setText("");
@@ -208,7 +212,7 @@ public class MainWindow extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
             case Constants.Actions.SEND -> sendText();
-            
+
             default -> throw new IllegalStateException("Unexpected action command: " + e.getActionCommand());
         }
     }
@@ -338,18 +342,39 @@ public class MainWindow extends JFrame implements ActionListener {
 
     /**
      * An implementation of the {@link ConnectionListener} for this MainWindow.
+     *
+     * @since 21.11.2022
+     * @author mhahnFr
      */
     private class ConnectionDelegate implements ConnectionListener {
+        /** The underlying connection to be controlled.                          */
         private final Connection connection;
+        /** The future representing the running listening end of the connection. */
         private final Future<?> listenFuture;
+        /** The thread pool to be used.                                          */
         private final ExecutorService threads = Executors.newCachedThreadPool();
 
+        /**
+         * Constructs this delegate.
+         *
+         * @param connection the connection to be controlled by this delegate
+         * @throws IllegalArgumentException if the given connection is {@code null}
+         */
         ConnectionDelegate(final Connection connection) {
+            if (connection == null) throw new IllegalArgumentException("The connection must not be null!");
+
             this.connection = connection;
             this.connection.setConnectionListener(this);
             listenFuture = threads.submit(connection::establishConnection);
         }
 
+        /**
+         * Sends the given text. Appends a newline character to the given text and
+         * inserts the text into the main text pane.
+         *
+         * @param text the text to be sent
+         * @see #mainPane
+         */
         void send(final String text) {
             final var tmpText = text + '\n';
 
