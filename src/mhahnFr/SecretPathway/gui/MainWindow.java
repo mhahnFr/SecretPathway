@@ -169,6 +169,14 @@ public class MainWindow extends JFrame implements ActionListener {
             darkMode.setSelected(true);
         }
 
+        stepper.addChangeListener(event -> {
+            final int size = (int) stepper.getValue();
+
+            Settings.getInstance().setFontSize(size);
+
+            mainPane.setFont(mainPane.getFont().deriveFont((float) size));
+        });
+
         window.getContentPane().add(panel);
         window.pack();
         window.setLocationRelativeTo(this);
@@ -220,7 +228,7 @@ public class MainWindow extends JFrame implements ActionListener {
                       mainPane   = new DarkTextComponent<>(new JTextPane(), components).getComponent();
             final var scrollPane = new DarkComponent<>(new JScrollPane(mainPane), components).getComponent();
             mainPane.setEditable(false);
-            mainPane.setFont(Constants.UI.FONT);
+            mainPane.setFont(Constants.UI.FONT.deriveFont((float) Settings.getInstance().getFontSize()));
             mainPane.getDocument().addDocumentListener(new DocumentListener() {
                 @Override
                 public void insertUpdate(DocumentEvent e) {
