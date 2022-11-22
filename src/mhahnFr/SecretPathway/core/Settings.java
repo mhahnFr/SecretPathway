@@ -109,6 +109,15 @@ public final class Settings {
     }
 
     /**
+     * Returns whether the dark mode should be enabled.
+     *
+     * @return whether the dark mode is enabled
+     */
+    public boolean getDarkMode() {
+        return preferences.getInt(Keys.DARK_MODE, 0) != 0;
+    }
+
+    /**
      * Stores the given hostname.
      *
      * @param hostname the hostname to store
@@ -160,6 +169,17 @@ public final class Settings {
      */
     public Settings setFontSize(int size) {
         preferences.putInt(Keys.FONT_SIZE, size);
+        return this;
+    }
+
+    /**
+     * Sets whether the dark mode should be enabled.
+     *
+     * @param enabled whether the dark mode is enabled
+     * @return this instance
+     */
+    public Settings setDarkMode(boolean enabled) {
+        preferences.putInt(Keys.DARK_MODE, enabled ? 1 : 0);
         return this;
     }
 
@@ -220,5 +240,7 @@ public final class Settings {
         public static final String WINDOW_LOCATION_Y = BUNDLE_ID + ".windowLocationY";
         /** The key used to store the font size.             */
         public static final String FONT_SIZE         = BUNDLE_ID + ".fontSize";
+        /** The key used to store the dark mode state.       */
+        public static final String DARK_MODE         = BUNDLE_ID + ".darkMode";
     }
 }
