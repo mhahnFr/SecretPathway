@@ -52,12 +52,12 @@ import java.util.concurrent.*;
  * @author mhahnFr
  */
 public class MainWindow extends JFrame implements ActionListener {
-    /** The connection associated with this window.                       */
-    private final Connection connection;
-    /** The delegate of the connection.                                   */
-    private final ConnectionDelegate delegate;
     /** A list with the components that should be capable to become dark. */
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
+    /** The connection associated with this window.                       */
+    private Connection connection;
+    /** The delegate of the connection.                                   */
+    private ConnectionDelegate delegate;
     /** The main {@link JTextPane} which contains the incoming text.      */
     private JTextPane mainPane;
     /** The text field for text to be sent.                               */
@@ -205,10 +205,26 @@ public class MainWindow extends JFrame implements ActionListener {
             mainPane.setFont(mainPane.getFont().deriveFont((float) size));
         });
 
-        window.addWindowStateListener(new WindowAdapter() {
+        window.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                // TODO: Read connection fields
+                final var newHost = hostField.getText();
+                final int newPort;
+                try {
+                    newPort = Integer.decode(portField.getText());
+                } catch (NumberFormatException exception) {
+                    return;
+                }
+
+                final var newConnection = ConnectionFactory.create(hostField.getText(), newPort);
+
+                if (!newHost.equals(connection.getHostname()) || newPort != connection.getPort() && newConnection != null) {
+                    if (promptConnectionClosing()) {
+                        delegate.closeConnection();
+                        connection = newConnection;
+                        delegate = new ConnectionDelegate(connection);
+                    }
+                }
             }
         });
 
@@ -488,6 +504,14 @@ public class MainWindow extends JFrame implements ActionListener {
                 throw new RuntimeException(e);
             }
             threads.execute(() -> connection.send(tmpText.getBytes(StandardCharsets.UTF_8)));
+        }
+
+        /**
+         * Closes the underlying connection and all other active resources this delegate uses.
+         */
+        void closeConnection() {
+            connection.close();
+            threads.shutdown();
         }
 
         @Override
