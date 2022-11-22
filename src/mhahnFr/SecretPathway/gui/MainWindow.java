@@ -30,6 +30,7 @@ import mhahnFr.utils.gui.DarkTextComponent;
 import mhahnFr.utils.gui.HintTextField;
 
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -37,6 +38,8 @@ import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -136,7 +139,8 @@ public class MainWindow extends JFrame implements ActionListener {
         window.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         window.setResizable(false);
 
-        final var panel = new DarkComponent<>(new JPanel(new GridLayout(2, 1)), components).getComponent();
+        final var panel = new DarkComponent<>(new JPanel(), components).getComponent();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
             final var spinnerPanel = new DarkComponent<>(new JPanel(), components).getComponent();
             spinnerPanel.setLayout(new BoxLayout(spinnerPanel, BoxLayout.X_AXIS));
@@ -149,10 +153,34 @@ public class MainWindow extends JFrame implements ActionListener {
             spinnerPanel.add(stepperLabel);
             spinnerPanel.add(stepper);
 
-            final var darkMode = new DarkComponent<>(new JCheckBox("Enable dark mode"), components).getComponent();
+            final var darkPanel = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
+                final var darkMode = new DarkComponent<>(new JCheckBox("Enable dark mode"), components).getComponent();
+
+                final var spacer = new DarkComponent<>(new JPanel(), components).getComponent();
+
+            darkPanel.add(darkMode, BorderLayout.WEST);
+            darkPanel.add(spacer, BorderLayout.CENTER);
+
+            final var connectionPanel = new DarkComponent<>(new JPanel(new GridLayout(2, 2)), components).getComponent();
+            connectionPanel.setBorder(new BevelBorder(BevelBorder.RAISED));
+
+                final var hostLabel = new DarkComponent<>(new JLabel("The hostname:"), components).getComponent();
+                final var hostField = new DarkTextComponent<>(new HintTextField("The hostname or IP-address"), components).getComponent();
+
+                final var portLabel = new DarkComponent<>(new JLabel("The port:"), components).getComponent();
+                final var portField = new DarkTextComponent<>(new HintTextField("the port"), components).getComponent();
+
+            connectionPanel.add(hostLabel);
+            connectionPanel.add(hostField);
+            connectionPanel.add(portLabel);
+            connectionPanel.add(portField);
 
         panel.add(spinnerPanel);
-        panel.add(darkMode);
+        panel.add(darkPanel);
+        panel.add(connectionPanel);
+
+        hostField.setText(connection.getHostname());
+        portField.setText(Integer.toString(connection.getPort()));
 
         darkMode.addItemListener(event -> {
             final boolean dark = darkMode.isSelected();
@@ -175,6 +203,13 @@ public class MainWindow extends JFrame implements ActionListener {
             Settings.getInstance().setFontSize(size);
 
             mainPane.setFont(mainPane.getFont().deriveFont((float) size));
+        });
+
+        window.addWindowStateListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                // TODO: Read connection fields
+            }
         });
 
         window.getContentPane().add(panel);
