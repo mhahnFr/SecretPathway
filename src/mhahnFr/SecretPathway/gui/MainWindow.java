@@ -59,7 +59,9 @@ public class MainWindow extends JFrame implements ActionListener {
     private JTextPane mainPane;
     /** The text field for text to be sent.                               */
     private JTextField promptField;
+    /** The label for the message overlay.                                */
     private JLabel messageLabel;
+    /** The timer for the message overlay.                                */
     private Timer messageTimer;
     /** Indicates whether the dark mode is active.                        */
     private boolean dark;
@@ -125,6 +127,21 @@ public class MainWindow extends JFrame implements ActionListener {
                 messageTimer.setRepeats(false);
                 messageTimer.start();
             }
+        }
+    }
+
+    /**
+     * Displays the given string in the status label if the sender is the delegate.
+     *
+     * @param sender the sender of the message
+     * @param message the message to be displayed
+     * @param color the color to be used for the message
+     * @param timeout the duration in milliseconds to display the message
+     * @see #showMessage(String, Color, int)
+     */
+    private void showMessageFrom(Object sender, String message, Color color, int timeout) {
+        if (sender == delegate) {
+            showMessage(message, color, timeout);
         }
     }
 
@@ -456,7 +473,6 @@ public class MainWindow extends JFrame implements ActionListener {
     private void maybeReconnect() {
         if (maybeCloseConnection()) {
             connection = ConnectionFactory.create(connection.getHostname(), connection.getPort());
-            //connection = promptConnection();
             delegate = new ConnectionDelegate(connection);
         }
     }
@@ -610,6 +626,8 @@ public class MainWindow extends JFrame implements ActionListener {
         private final Future<?> listenFuture;
         /** The thread pool to be used.                                          */
         private final ExecutorService threads = Executors.newCachedThreadPool();
+        /** Indicates whether something has been received on this connection.    */
+        private boolean firstReceive = true;
 
         /**
          * Constructs this delegate.
@@ -622,6 +640,9 @@ public class MainWindow extends JFrame implements ActionListener {
 
             this.connection = connection;
             this.connection.setConnectionListener(this);
+
+            showMessageFrom(this, "Connecting...", null, 0);
+
             listenFuture = threads.submit(connection::establishConnection);
         }
 
@@ -652,8 +673,24 @@ public class MainWindow extends JFrame implements ActionListener {
             threads.shutdown();
         }
 
+        /**
+         * Prints the stack trace of the given exception. Indicates that it has been handled.
+         *
+         * @param exception the exception to print
+         */
+        private void printException(Exception exception) {
+            System.err.println("Handled error:");
+            exception.printStackTrace();
+            System.err.println("--------------");
+        }
+
         @Override
         public void receive(byte[] data, int length) {
+            if (firstReceive) {
+                firstReceive = false;
+                EventQueue.invokeLater(() -> showMessageFrom(this, "Connected.", Color.green, 5000));
+            }
+
             var document = mainPane.getDocument();
             try {
                 document.insertString(document.getLength(), new String(data, 0, length, StandardCharsets.UTF_8), null);
@@ -664,15 +701,14 @@ public class MainWindow extends JFrame implements ActionListener {
 
         @Override
         public void handleError(Exception exception) {
-            exception.printStackTrace();
+            EventQueue.invokeLater(() -> showMessageFrom(this, "Error happened: " + exception.getLocalizedMessage(), Color.red, 0));
+            printException(exception);
         }
 
         @Override
         public void handleEOF(Exception exception) {
-            // TODO: Handle properly
-            System.err.println("Connection closed");
-            handleError(exception);
-            System.err.println("Connection closed");
+            EventQueue.invokeLater(() -> showMessageFrom(this, "Connection closed.", Color.yellow, 0));
+            printException(exception);
         }
     }
 }
