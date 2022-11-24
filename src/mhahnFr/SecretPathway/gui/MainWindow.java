@@ -36,10 +36,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -127,6 +124,35 @@ public class MainWindow extends JFrame implements ActionListener {
         if (Desktop.getDesktop().isSupported(Desktop.Action.APP_PREFERENCES)) {
             Desktop.getDesktop().setPreferencesHandler(__ -> showSettings());
         }
+        if (Desktop.getDesktop().isSupported(Desktop.Action.APP_MENU_BAR)) {
+            Desktop.getDesktop().setDefaultMenuBar(generateJMenuBar());
+        } else {
+            // TODO add buttons
+        }
+    }
+
+    private JMenuBar generateJMenuBar() {
+        var toReturn = new JMenuBar();
+
+        var connectionMenu = new JMenu("Connection");
+
+            var closeItem = new JMenuItem("Close");
+            closeItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PERIOD, KeyEvent.META_DOWN_MASK));
+            closeItem.setActionCommand(Constants.Actions.CLOSE);
+            closeItem.addActionListener(this);
+
+            var reconnectItem = new JMenuItem("Reconnect");
+            reconnectItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.META_DOWN_MASK));
+            reconnectItem.setActionCommand(Constants.Actions.RECONNECT);
+            reconnectItem.addActionListener(this);
+
+        connectionMenu.add(closeItem);
+        connectionMenu.addSeparator();
+        connectionMenu.add(reconnectItem);
+
+        toReturn.add(connectionMenu);
+
+        return toReturn;
     }
 
     /**
@@ -330,7 +356,9 @@ public class MainWindow extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
-            case Constants.Actions.SEND -> sendText();
+            case Constants.Actions.SEND      -> sendText();
+            case Constants.Actions.CLOSE     -> maybeCloseConnection();
+            case Constants.Actions.RECONNECT -> maybeReconnect();
 
             default -> throw new IllegalStateException("Unexpected action command: " + e.getActionCommand());
         }
@@ -338,12 +366,34 @@ public class MainWindow extends JFrame implements ActionListener {
 
     @Override
     public void dispose() {
-        if (!connection.isClosed()) {
-            if (!promptConnectionClosing()) { return; }
-            connection.close();
-        }
+        if (!maybeCloseConnection()) { return; }
         saveSettings();
         super.dispose();
+    }
+
+    /**
+     * Asks the user if he wishes to close the connection if one is active.
+     *
+     * @return whether the connection has been closed
+     */
+    private boolean maybeCloseConnection() {
+        if (!connection.isClosed()) {
+            if (!promptConnectionClosing()) { return false; }
+            delegate.closeConnection();
+        }
+        return true;
+    }
+
+    /**
+     * Asks the user if he wishes to close a probably established connection.
+     * Establishes a connection to the same connection again.
+     */
+    private void maybeReconnect() {
+        if (maybeCloseConnection()) {
+            connection = ConnectionFactory.create(connection.getHostname(), connection.getPort());
+            //connection = promptConnection();
+            delegate = new ConnectionDelegate(connection);
+        }
     }
 
     /**
@@ -365,7 +415,7 @@ public class MainWindow extends JFrame implements ActionListener {
      */
     private boolean promptConnectionClosing() {
         return JOptionPane.showConfirmDialog(this, "The connection will be closed.\nContinue?",
-                Constants.NAME + ": Closing connection", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE)
+                Constants.NAME + ": Closing connection", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE)
                 == JOptionPane.OK_OPTION;
     }
 

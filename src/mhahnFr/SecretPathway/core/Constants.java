@@ -37,8 +37,12 @@ public final class Constants {
      * Constants for use with actions.
      */
     public static final class Actions {
-        /** Action command for sending a message. */
-        public static final String SEND = "send";
+        /** Action command for sending a message.                       */
+        public static final String SEND      = "send";
+        /** Action command for closing a connection.                    */
+        public static final String CLOSE     = "close";
+        /** Action command for reconnecting to the connection endpoint. */
+        public static final String RECONNECT = "reconnect";
     }
 
     /**
