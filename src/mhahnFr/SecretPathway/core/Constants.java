@@ -43,6 +43,8 @@ public final class Constants {
         public static final String CLOSE     = "close";
         /** Action command for reconnecting to the connection endpoint. */
         public static final String RECONNECT = "reconnect";
+        /** Action command for creating a new connection.               */
+        public static final String NEW       = "new";
     }
 
     /**

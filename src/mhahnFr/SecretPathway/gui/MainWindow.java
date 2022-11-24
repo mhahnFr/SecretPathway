@@ -131,10 +131,20 @@ public class MainWindow extends JFrame implements ActionListener {
         }
     }
 
+    /**
+     * Creates and returns a menu bar.
+     *
+     * @return the main menu bar
+     */
     private JMenuBar generateJMenuBar() {
         var toReturn = new JMenuBar();
 
         var connectionMenu = new JMenu("Connection");
+
+            var newItem = new JMenuItem("New...");
+            newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.META_DOWN_MASK));
+            newItem.setActionCommand(Constants.Actions.NEW);
+            newItem.addActionListener(this);
 
             var closeItem = new JMenuItem("Close");
             closeItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PERIOD, KeyEvent.META_DOWN_MASK));
@@ -146,6 +156,7 @@ public class MainWindow extends JFrame implements ActionListener {
             reconnectItem.setActionCommand(Constants.Actions.RECONNECT);
             reconnectItem.addActionListener(this);
 
+        connectionMenu.add(newItem);
         connectionMenu.add(closeItem);
         connectionMenu.addSeparator();
         connectionMenu.add(reconnectItem);
@@ -359,6 +370,7 @@ public class MainWindow extends JFrame implements ActionListener {
             case Constants.Actions.SEND      -> sendText();
             case Constants.Actions.CLOSE     -> maybeCloseConnection();
             case Constants.Actions.RECONNECT -> maybeReconnect();
+            case Constants.Actions.NEW       -> maybeNewConnection();
 
             default -> throw new IllegalStateException("Unexpected action command: " + e.getActionCommand());
         }
@@ -369,6 +381,20 @@ public class MainWindow extends JFrame implements ActionListener {
         if (!maybeCloseConnection()) { return; }
         saveSettings();
         super.dispose();
+    }
+
+    /**
+     * Prompts the user to enter the details of a new connection. If the
+     * user does not cancel, he is asked whether to close the maybe running
+     * connection. Reconnects using the new connection.
+     */
+    private void maybeNewConnection() {
+        final var connection = promptConnectionNoFail();
+        if (connection != null && promptConnectionClosing()) {
+            delegate.closeConnection();
+            this.connection = connection;
+            delegate = new ConnectionDelegate(this.connection);
+        }
     }
 
     /**
@@ -420,12 +446,34 @@ public class MainWindow extends JFrame implements ActionListener {
     }
 
     /**
+     * Prompts the user to enter the details of a connection. If the
+     * user cancels the action, {@code null} is returned.
+     *
+     * @return a valid connection instance or {@code null}
+     */
+    private Connection promptConnectionNoFail() {
+        return promptConnection(false);
+    }
+
+    /**
+     * Prompts the user to enter the details of a connection. If the
+     * user cancels the action, {@link System#exit(int)} is called.
+     *
+     * @return a valid connection instance
+     */
+    private Connection promptConnection() {
+        return promptConnection(true);
+    }
+
+    /**
      * Prompts the user to enter the necessary connection details. Returns a valid connection
      * instance.
      *
-     * @return a valid connection instance created from the details entered by the user
+     * @param exitOnFail indicates whether to exit if the user cancels the connection
+     * @return a valid connection instance created from the details entered by the user or
+     * {@code null} if {@code exitOnFail} is set to {@code true}
      */
-    private Connection promptConnection() {
+    private Connection promptConnection(boolean exitOnFail) {
 
         var wrapPanel = new JPanel(new BorderLayout());
 
@@ -456,7 +504,8 @@ public class MainWindow extends JFrame implements ActionListener {
         do {
             if (JOptionPane.showConfirmDialog(this, wrapPanel,
                     Constants.NAME + ": New connection", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) {
-                System.exit(0);
+                if (exitOnFail) { System.exit(0); }
+                else return null;
             }
             try {
                 toReturn = ConnectionFactory.create(hostField.getText(), Integer.decode(portField.getText()));
