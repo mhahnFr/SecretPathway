@@ -61,6 +61,8 @@ public class MainWindow extends JFrame implements ActionListener {
     private JTextField promptField;
     private JLabel messageLabel;
     private Timer messageTimer;
+    /** Indicates whether the dark mode is active.                        */
+    private boolean dark;
 
     /**
      * Constructs a MainWindow. The given connection is used to connect to a MUD if given,
@@ -112,6 +114,7 @@ public class MainWindow extends JFrame implements ActionListener {
             messageLabel.setVisible(false);
         } else {
             messageLabel.setText(message);
+            if (color == null) { color = dark ? Color.white : Color.black; }
             messageLabel.setForeground(color);
             messageLabel.setVisible(true);
             if (timeout > 0) {
@@ -131,6 +134,8 @@ public class MainWindow extends JFrame implements ActionListener {
      * @param dark indicating whether to enable or disable the dark mode
      */
     private void setDark(final boolean dark) {
+        this.dark = dark;
+
         for (var component : components) {
             component.setDark(dark);
         }
