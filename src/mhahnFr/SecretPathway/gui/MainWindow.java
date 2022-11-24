@@ -627,5 +627,13 @@ public class MainWindow extends JFrame implements ActionListener {
         public void handleError(Exception exception) {
             exception.printStackTrace();
         }
+
+        @Override
+        public void handleEOF(Exception exception) {
+            // TODO: Handle properly
+            System.err.println("Connection closed");
+            handleError(exception);
+            System.err.println("Connection closed");
+        }
     }
 }

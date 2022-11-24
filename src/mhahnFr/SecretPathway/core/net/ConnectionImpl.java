@@ -92,9 +92,23 @@ public class ConnectionImpl extends Connection {
                     emergencyBuffer.add(new Pair<>(buffer, length));
                 }
             } catch (IOException e) {
-                if (listener != null) {
-                    listener.handleError(e);
-                }
+                handleException(e);
+            }
+        }
+    }
+
+    /**
+     * Handles the given exception. If a listener is registered, it is called
+     * accordingly to the given exception and state of this connection.
+     *
+     * @param exception the exception to be handled
+     */
+    private void handleException(IOException exception) {
+        if (listener != null) {
+            if (closed) {
+                listener.handleEOF(exception);
+            } else {
+                listener.handleError(exception);
             }
         }
     }
@@ -106,9 +120,7 @@ public class ConnectionImpl extends Connection {
             setupStreams();
             startReceiving();
         } catch (IOException e) {
-            if (listener != null) {
-                listener.handleError(e);
-            }
+            handleException(e);
         }
     }
 

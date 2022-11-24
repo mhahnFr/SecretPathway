@@ -40,4 +40,11 @@ public interface ConnectionListener {
      * @param exception the thrown exception
      */
     void handleError(Exception exception);
+
+    /**
+     * Called when the connection has been closed.
+     *
+     * @param exception the exception that was caused by the closed connection
+     */
+    void handleEOF(Exception exception);
 }
