@@ -670,6 +670,7 @@ public class MainWindow extends JFrame implements ActionListener {
          */
         void closeConnection() {
             connection.close();
+            listenFuture.cancel(false);
             threads.shutdown();
         }
 
