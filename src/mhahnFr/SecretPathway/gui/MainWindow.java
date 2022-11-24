@@ -622,10 +622,11 @@ public class MainWindow extends JFrame implements ActionListener {
     private class ConnectionDelegate implements ConnectionListener {
         /** The underlying connection to be controlled.                          */
         private final Connection connection;
-        /** The future representing the running listening end of the connection. */
-        private final Future<?> listenFuture;
         /** The thread pool to be used.                                          */
         private final ExecutorService threads = Executors.newCachedThreadPool();
+        /** The future representing the running listening end of the connection. */
+        private Future<?> listenFuture;
+        private Timer reconnectTimer;
         /** Indicates whether something has been received on this connection.    */
         private boolean firstReceive = true;
 
@@ -675,6 +676,27 @@ public class MainWindow extends JFrame implements ActionListener {
         }
 
         /**
+         * Starts a timer to reconnect to the connection. Only started if none is running and the connection
+         * has never been established.
+         */
+        private void maybeRetry() {
+            if (firstReceive && (reconnectTimer == null || !reconnectTimer.isRunning())) {
+                reconnectTimer = new Timer(2500, __ -> listenFuture = threads.submit(connection::establishConnection));
+                reconnectTimer.start();
+            }
+        }
+
+        /**
+         * Stops the reconnection timer if one is running.
+         */
+        private void stopTimer() {
+            if (reconnectTimer != null) {
+                reconnectTimer.stop();
+                reconnectTimer = null;
+            }
+        }
+
+        /**
          * Prints the stack trace of the given exception. Indicates that it has been handled.
          *
          * @param exception the exception to print
@@ -688,6 +710,7 @@ public class MainWindow extends JFrame implements ActionListener {
         @Override
         public void receive(byte[] data, int length) {
             if (firstReceive) {
+                stopTimer();
                 firstReceive = false;
                 EventQueue.invokeLater(() -> showMessageFrom(this, "Connected.", Color.green, 5000));
             }
@@ -704,10 +727,12 @@ public class MainWindow extends JFrame implements ActionListener {
         public void handleError(Exception exception) {
             EventQueue.invokeLater(() -> showMessageFrom(this, "Error happened: " + exception.getLocalizedMessage(), Color.red, 0));
             printException(exception);
+            maybeRetry();
         }
 
         @Override
         public void handleEOF(Exception exception) {
+            stopTimer();
             EventQueue.invokeLater(() -> showMessageFrom(this, "Connection closed.", Color.yellow, 0));
             printException(exception);
         }
