@@ -140,9 +140,7 @@ public class ConnectionImpl extends Connection {
             out.write(data, 0, length);
             out.flush();
         } catch (IOException e) {
-            if (listener != null) {
-                listener.handleError(e);
-            }
+            handleException(e);
             return false;
         }
         return true;
@@ -159,9 +157,7 @@ public class ConnectionImpl extends Connection {
             try {
                 socket.close();
             } catch (IOException e) {
-                if (listener != null) {
-                    listener.handleError(e);
-                }
+                handleException(e);
             }
             closed = true;
         }
