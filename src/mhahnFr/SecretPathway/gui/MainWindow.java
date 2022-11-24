@@ -59,6 +59,8 @@ public class MainWindow extends JFrame implements ActionListener {
     private JTextPane mainPane;
     /** The text field for text to be sent.                               */
     private JTextField promptField;
+    private JLabel messageLabel;
+    private Timer messageTimer;
 
     /**
      * Constructs a MainWindow. The given connection is used to connect to a MUD if given,
@@ -90,6 +92,37 @@ public class MainWindow extends JFrame implements ActionListener {
      */
     public MainWindow() {
         this(null);
+    }
+
+    /**
+     * Displays the given string in the status label. If {@code message} is {@code null},
+     * the text is hided. A timer that might be pending is stopped by this method. A new
+     * timer is started if the timeout is bigger than zero.
+     *
+     * @param message the message to be displayed
+     * @param color the color to be used to display the message
+     * @param timeout the time in milliseconds after which the text is hided
+     */
+    private void showMessage(String message, Color color, int timeout) {
+        if (messageTimer != null) {
+            messageTimer.stop();
+            messageTimer = null;
+        }
+        if (message == null) {
+            messageLabel.setVisible(false);
+        } else {
+            messageLabel.setText(message);
+            messageLabel.setForeground(color);
+            messageLabel.setVisible(true);
+            if (timeout > 0) {
+                messageTimer = new Timer(timeout, __ -> {
+                    messageLabel.setVisible(false);
+                    this.messageTimer = null;
+                });
+                messageTimer.setRepeats(false);
+                messageTimer.start();
+            }
+        }
     }
 
     /**
@@ -311,7 +344,8 @@ public class MainWindow extends JFrame implements ActionListener {
      */
     private void createContent() {
         final var panel = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
-            final var statusLabel = new DarkComponent<>(new JLabel("Is it connected?", SwingConstants.CENTER), components).getComponent();
+            messageLabel = new DarkComponent<>(new JLabel(Constants.NAME + " " + Constants.VERSION, SwingConstants.CENTER), components).getComponent();
+            messageLabel.setVisible(false);
 
                       mainPane   = new DarkTextComponent<>(new JTextPane(), components).getComponent();
             final var scrollPane = new DarkComponent<>(new JScrollPane(mainPane), components).getComponent();
@@ -344,7 +378,7 @@ public class MainWindow extends JFrame implements ActionListener {
             promptPanel.add(promptField);
             promptPanel.add(sendButton);
 
-        panel.add(statusLabel, BorderLayout.NORTH);
+        panel.add(messageLabel, BorderLayout.NORTH);
         panel.add(scrollPane, BorderLayout.CENTER);
         panel.add(promptPanel, BorderLayout.SOUTH);
 
