@@ -771,12 +771,21 @@ public class MainWindow extends JFrame implements ActionListener {
 
             var appendix = new String(ByteHelper.castToByte(text.toArray(new Byte[0])), StandardCharsets.UTF_8);
             try {
-                //if (closedStyles.isEmpty()) {
+                if (closedStyles.isEmpty()) {
                     document.insertString(document.getLength(), appendix, current.asStyle(defaultStyle));
-                /*} else {
+                } else {
                     final var factor = byteCount > 0 ? (double) appendix.length() / byteCount : 1;
-                    // TODO
-                }*/
+                    for (int i = 0; i < closedStyles.size(); ++i) {
+                        final int len;
+                        if (i + 1 < closedStyles.size()) {
+                            len = (int) (closedStyles.get(i + 1).getFirst() - closedStyles.get(i).getFirst() * factor);
+                        } else {
+                            len = (int) (appendix.length() - closedStyles.get(i).getFirst() * factor);
+                        }
+
+                        document.insertString(document.getLength(), appendix.substring((int) (closedStyles.get(i).getFirst() * factor), len), closedStyles.get(i).getSecond().asStyle(defaultStyle));
+                    }
+                }
             } catch (BadLocationException e) {
                 throw new RuntimeException(e);
             }
