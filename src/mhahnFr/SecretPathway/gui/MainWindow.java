@@ -25,9 +25,12 @@ import mhahnFr.SecretPathway.core.net.Connection;
 
 import mhahnFr.SecretPathway.core.net.ConnectionFactory;
 import mhahnFr.SecretPathway.core.net.ConnectionListener;
+import mhahnFr.utils.ByteHelper;
+import mhahnFr.utils.Pair;
 import mhahnFr.utils.gui.DarkComponent;
 import mhahnFr.utils.gui.DarkTextComponent;
 import mhahnFr.utils.gui.HintTextField;
+import mhahnFr.utils.gui.abstraction.FStyle;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -35,11 +38,13 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
 import java.awt.*;
 import java.awt.event.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 import java.util.concurrent.*;
 
 /**
@@ -620,15 +625,22 @@ public class MainWindow extends JFrame implements ActionListener {
      * @author mhahnFr
      */
     private class ConnectionDelegate implements ConnectionListener {
-        /** The underlying connection to be controlled.                          */
+        /** The underlying connection to be controlled.                             */
         private final Connection connection;
-        /** The thread pool to be used.                                          */
+        private final Style defaultStyle;
+        /** The thread pool to be used.                                             */
         private final ExecutorService threads = Executors.newCachedThreadPool();
-        /** The future representing the running listening end of the connection. */
+        /** The future representing the running listening end of the connection.    */
         private Future<?> listenFuture;
         private Timer reconnectTimer;
-        /** Indicates whether something has been received on this connection.    */
+        /** Indicates whether something has been received on this connection.       */
         private boolean firstReceive = true;
+        /** Indicates whether incoming data should be treated as ANSI escape codes. */
+        private boolean wasAnsi = false;
+        /** The style currently used for incoming data.                             */
+        private FStyle current;
+        /** A buffer used for escape codes.                                         */
+        private Vector<Byte> buffer;
 
         /**
          * Constructs this delegate.
@@ -641,6 +653,9 @@ public class MainWindow extends JFrame implements ActionListener {
 
             this.connection = connection;
             this.connection.setConnectionListener(this);
+
+            defaultStyle = mainPane.getLogicalStyle();
+            current = new FStyle(defaultStyle);
 
             showMessageFrom(this, "Connecting...", null, 0);
 
@@ -707,6 +722,10 @@ public class MainWindow extends JFrame implements ActionListener {
             System.err.println("--------------");
         }
 
+        private boolean parseAnsiBuffer(Vector<Byte> buffer) {
+            return false;
+        }
+
         @Override
         public void receive(byte[] data, int length) {
             if (firstReceive) {
@@ -716,8 +735,48 @@ public class MainWindow extends JFrame implements ActionListener {
             }
 
             var document = mainPane.getDocument();
+
+            var text      = new Vector<Byte>();
+            var ansiBegin = 0;
+            var byteCount = 0;
+
+            var closedStyles = new Vector<Pair<Integer, FStyle>>();
+
+            for (int i = 0; i < length; ++i) {
+                if (data[i] == 0x1B) {
+                    wasAnsi   = true;
+                    ansiBegin = byteCount;
+                    buffer.clear();
+                } else if (data[i] == 0x6D && wasAnsi) {
+                    wasAnsi = false;
+
+                    var oldCurrent = new FStyle(current);
+                    if (parseAnsiBuffer(buffer)) {
+                        if (ansiBegin != 0 && closedStyles.isEmpty()) {
+                            closedStyles.add(new Pair<>(0, oldCurrent));
+                        }
+                        closedStyles.add(new Pair<>(ansiBegin, current));
+                    } else {
+                        System.err.println("Error while parsing ANSI escape code!");
+                    }
+                } else {
+                    if (wasAnsi) {
+                        buffer.add(data[i]);
+                    } else {
+                        text.add(data[i]);
+                        ++byteCount;
+                    }
+                }
+            }
+
+            var appendix = new String(ByteHelper.castToByte(text.toArray(new Byte[0])), StandardCharsets.UTF_8);
             try {
-                document.insertString(document.getLength(), new String(data, 0, length, StandardCharsets.UTF_8), null);
+                //if (closedStyles.isEmpty()) {
+                    document.insertString(document.getLength(), appendix, current.asStyle(defaultStyle));
+                /*} else {
+                    final var factor = byteCount > 0 ? (double) appendix.length() / byteCount : 1;
+                    // TODO
+                }*/
             } catch (BadLocationException e) {
                 throw new RuntimeException(e);
             }
