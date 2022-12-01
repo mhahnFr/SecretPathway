@@ -722,8 +722,60 @@ public class MainWindow extends JFrame implements ActionListener {
             System.err.println("--------------");
         }
 
-        private boolean parseAnsiBuffer(Vector<Byte> buffer) {
-            return false;
+        private boolean parseAnsiBuffer(byte[] buffer) {
+            var str = new String(buffer, StandardCharsets.US_ASCII);
+
+            final var before = new FStyle(current, false);
+
+            try {
+                str = str.substring(1);
+                for (final var split : str.split(";")) {
+                    switch (Integer.parseInt(split)) {
+                        case 0  -> current = new FStyle();
+                        case 1  -> current.setBold(true);
+                        case 3  -> current.setItalic(true);
+                        case 4  -> current.setUnderlined(true);
+                        case 21 -> current.setBold(false);
+                        case 23 -> current.setItalic(false);
+                        case 24 -> current.setUnderlined(false);
+
+                        // Foreground
+                        case 30 -> current.setForeground(Color.black);
+                        case 31 -> current.setForeground(Color.red);
+                        case 32 -> current.setForeground(Color.green);
+                        case 33 -> current.setForeground(Color.yellow);
+                        case 34 -> current.setForeground(Color.blue);
+                        case 35 -> current.setForeground(Color.magenta);
+                        case 36 -> current.setForeground(Color.cyan);
+                        case 37 -> current.setForeground(Color.lightGray);
+                        case 39 -> current.setForeground(null);
+                        case 90 -> current.setForeground(Color.darkGray);
+                        case 97 -> current.setForeground(Color.white);
+
+                        // Background
+                        case 40  -> current.setBackground(Color.black);
+                        case 41  -> current.setBackground(Color.red);
+                        case 42  -> current.setBackground(Color.green);
+                        case 43  -> current.setBackground(Color.yellow);
+                        case 44  -> current.setBackground(Color.blue);
+                        case 45  -> current.setBackground(Color.magenta);
+                        case 46  -> current.setBackground(Color.cyan);
+                        case 47  -> current.setBackground(Color.lightGray);
+                        case 49  -> current.setBackground(null);
+                        case 100 -> current.setBackground(Color.darkGray);
+                        case 107 -> current.setBackground(Color.white);
+
+                        // TODO: 256 bit colour, RGB colour...
+
+                        default -> System.err.println("Code not supported: " + split + "!");
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                current = before;
+                return false;
+            }
+            return true;
         }
 
         @Override
@@ -750,8 +802,8 @@ public class MainWindow extends JFrame implements ActionListener {
                 } else if (data[i] == 0x6D && wasAnsi) {
                     wasAnsi = false;
 
-                    var oldCurrent = new FStyle(current);
-                    if (parseAnsiBuffer(buffer)) {
+                    var oldCurrent = new FStyle(current, false);
+                    if (parseAnsiBuffer(ByteHelper.castToByte(buffer.toArray(new Byte[0])))) {
                         if (ansiBegin != 0 && closedStyles.isEmpty()) {
                             closedStyles.add(new Pair<>(0, oldCurrent));
                         }
