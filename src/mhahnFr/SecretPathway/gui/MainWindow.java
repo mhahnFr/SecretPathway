@@ -813,9 +813,9 @@ public class MainWindow extends JFrame implements ActionListener {
                     var oldCurrent = new FStyle(current, false);
                     if (parseAnsiBuffer(ByteHelper.castToByte(buffer.toArray(new Byte[0])))) {
                         if (ansiBegin != 0 && closedStyles.isEmpty()) {
-                            closedStyles.add(new Pair<>(0, oldCurrent));
+                            closedStyles.add(new Pair<>(0, new FStyle(oldCurrent, false)));
                         }
-                        closedStyles.add(new Pair<>(ansiBegin, current));
+                        closedStyles.add(new Pair<>(ansiBegin, new FStyle(current, false)));
                     } else {
                         System.err.println("Error while parsing ANSI escape code!");
                     }
