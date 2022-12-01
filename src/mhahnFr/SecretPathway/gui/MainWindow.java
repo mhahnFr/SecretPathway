@@ -103,6 +103,14 @@ public class MainWindow extends JFrame implements ActionListener {
         this(null);
     }
 
+    @Override
+    public void setVisible(boolean b) {
+        super.setVisible(b);
+        if (b) {
+            promptField.requestFocusInWindow();
+        }
+    }
+
     /**
      * Displays the given string in the status label. If {@code message} is {@code null},
      * the text is hided. A timer that might be pending is stopped by this method. A new
