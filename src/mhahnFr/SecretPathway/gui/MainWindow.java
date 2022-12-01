@@ -640,7 +640,7 @@ public class MainWindow extends JFrame implements ActionListener {
         /** The style currently used for incoming data.                             */
         private FStyle current;
         /** A buffer used for escape codes.                                         */
-        private Vector<Byte> buffer;
+        private final Vector<Byte> buffer = new Vector<>();
 
         /**
          * Constructs this delegate.
@@ -655,7 +655,7 @@ public class MainWindow extends JFrame implements ActionListener {
             this.connection.setConnectionListener(this);
 
             defaultStyle = mainPane.getLogicalStyle();
-            current = new FStyle(defaultStyle);
+            current = new FStyle();
 
             showMessageFrom(this, "Connecting...", null, 0);
 
