@@ -836,12 +836,7 @@ public class MainWindow extends JFrame implements ActionListener {
                 } else {
                     final var factor = byteCount > 0 ? (double) appendix.length() / byteCount : 1;
                     for (int i = 0; i < closedStyles.size(); ++i) {
-                        final int len;
-                        if (i + 1 < closedStyles.size()) {
-                            len = (int) (closedStyles.get(i + 1).getFirst() - closedStyles.get(i).getFirst() * factor);
-                        } else {
-                            len = (int) (appendix.length() - closedStyles.get(i).getFirst() * factor);
-                        }
+                        final int len = (i + 1 < closedStyles.size() ? (int) (closedStyles.get(i + 1).getFirst() * factor) : appendix.length());
 
                         document.insertString(document.getLength(), appendix.substring((int) (closedStyles.get(i).getFirst() * factor), len), closedStyles.get(i).getSecond().asStyle(defaultStyle));
                     }
