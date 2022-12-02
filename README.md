@@ -2,7 +2,7 @@
 The SecretPathway is a MUD client, written in Java.
 
 ## Usage
-To use this client, you can either download an executable here.  
+To use this client, you can either download an executable [here](https://github.com/mhahnFr/SecretPathway/releases).  
 To run it simply open the `.jar` file.
 
 Or you can build it from source:
