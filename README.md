@@ -17,4 +17,6 @@ Basic ANSI escape codes are supported at the moment.
 ### Final notes
 A special *macOS* version can be found [here](https://www.github.com/mhahnFr/SecretPathway_macOS).
 
-(c) Copyright 2022 [mhahnFr](https://www.github.com/mhahnFr)
+This project is licensed under the terms of the GPL 3.0.
+
+© Copyright 2022 [mhahnFr](https://www.github.com/mhahnFr)
