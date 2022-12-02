@@ -12,7 +12,9 @@ Or you can build it from source:
 To run it from the commandline: `java -cp src/:JUtilites/ mhahnFr.SecretPathway.CLI`
 
 ## Supported protocols
+Basic ANSI escape codes are supported at the moment.
 
 ### Final notes
+A special *macOS* version can be found [here](https://www.github.com/mhahnFr/SecretPathway_macOS).
 
 (c) Copyright 2022 [mhahnFr](https://www.github.com/mhahnFr)
