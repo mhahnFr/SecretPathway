@@ -38,13 +38,15 @@ public final class Constants {
      */
     public static final class Actions {
         /** Action command for sending a message.                       */
-        public static final String SEND      = "send";
+        public static final String SEND           = "send";
         /** Action command for closing a connection.                    */
-        public static final String CLOSE     = "close";
+        public static final String CLOSE          = "close";
         /** Action command for reconnecting to the connection endpoint. */
-        public static final String RECONNECT = "reconnect";
+        public static final String RECONNECT      = "reconnect";
         /** Action command for creating a new connection.               */
-        public static final String NEW       = "new";
+        public static final String NEW            = "new";
+        /** Action command for showing additional buttons.              */
+        public static final String EXPAND_BUTTONS = "expand_buttons";
     }
 
     /**

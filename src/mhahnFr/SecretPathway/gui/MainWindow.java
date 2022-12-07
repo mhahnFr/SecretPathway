@@ -66,10 +66,18 @@ public class MainWindow extends JFrame implements ActionListener {
     private JTextField promptField;
     /** The label for the message overlay.                                */
     private JLabel messageLabel;
+    /** The panel with the buttons.                                       */
+    private JPanel buttonPanel;
+    /** The panel with buttons to be hidden by default.                   */
+    private JPanel otherButtons;
+    /** The button responsible for expanding invisible buttons.           */
+    private JButton expandButton;
     /** The timer for the message overlay.                                */
     private Timer messageTimer;
     /** Indicates whether the dark mode is active.                        */
     private boolean dark;
+    /** Indicates whether the additional buttons are currently visible.   */
+    private boolean otherButtonsVisible;
 
     /**
      * Constructs a MainWindow. The given connection is used to connect to a MUD if given,
@@ -85,8 +93,8 @@ public class MainWindow extends JFrame implements ActionListener {
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        createMenuBar();
         createContent();
+        createMenuBar();
 
         restoreBounds();
 
@@ -192,10 +200,34 @@ public class MainWindow extends JFrame implements ActionListener {
         if (Desktop.getDesktop().isSupported(Desktop.Action.APP_PREFERENCES)) {
             Desktop.getDesktop().setPreferencesHandler(__ -> showSettings());
         }
-        if (Desktop.getDesktop().isSupported(Desktop.Action.APP_MENU_BAR)) {
+        if (!Desktop.getDesktop().isSupported(Desktop.Action.APP_MENU_BAR)) {
             Desktop.getDesktop().setDefaultMenuBar(generateJMenuBar());
         } else {
             // TODO add buttons
+            expandButton = new JButton("<");
+            expandButton.addActionListener(this);
+            expandButton.setActionCommand(Constants.Actions.EXPAND_BUTTONS);
+
+            otherButtons = new DarkComponent<>(new JPanel(), components).getComponent();
+            otherButtons.setLayout(new BoxLayout(otherButtons, BoxLayout.X_AXIS));
+                final var connectionButton = new JButton("Connection");
+                connectionButton.addActionListener(__ -> connectionButton.getComponentPopupMenu().show(connectionButton, connectionButton.getX(),
+                                                                                                    connectionButton.getY() + connectionButton.getHeight()));
+
+                    final var contextMenu = new JPopupMenu();
+                        final var newConnection = new JMenuItem("New...");
+                        newConnection.addActionListener(this);
+                        newConnection.setActionCommand(Constants.Actions.NEW);
+
+                    contextMenu.add(newConnection);
+                connectionButton.setComponentPopupMenu(contextMenu);
+
+            otherButtons.add(connectionButton);
+
+            buttonPanel.add(expandButton);
+            buttonPanel.add(otherButtons);
+
+            otherButtons.setVisible(false);
         }
     }
 
@@ -406,12 +438,16 @@ public class MainWindow extends JFrame implements ActionListener {
                 promptField.setActionCommand(Constants.Actions.SEND);
                 promptField.addActionListener(this);
 
-                final var sendButton = new JButton("Send");
-                sendButton.setActionCommand(Constants.Actions.SEND);
-                sendButton.addActionListener(this);
+                buttonPanel = new DarkComponent<>(new JPanel(), components).getComponent();
+                buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+                    final var sendButton = new JButton("Send");
+                    sendButton.setActionCommand(Constants.Actions.SEND);
+                    sendButton.addActionListener(this);
+
+                buttonPanel.add(sendButton);
 
             promptPanel.add(promptField);
-            promptPanel.add(sendButton);
+            promptPanel.add(buttonPanel);
 
         panel.add(messageLabel, BorderLayout.NORTH);
         panel.add(scrollPane, BorderLayout.CENTER);
@@ -433,13 +469,23 @@ public class MainWindow extends JFrame implements ActionListener {
         promptField.setText("");
     }
 
+    /**
+     * Expands normally invisible buttons.
+     */
+    private void expandButtons() {
+        otherButtonsVisible = !otherButtonsVisible;
+        otherButtons.setVisible(otherButtonsVisible);
+        expandButton.setText(otherButtonsVisible ? ">" : "<");
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
-            case Constants.Actions.SEND      -> sendText();
-            case Constants.Actions.CLOSE     -> maybeCloseConnection();
-            case Constants.Actions.RECONNECT -> maybeReconnect();
-            case Constants.Actions.NEW       -> maybeNewConnection();
+            case Constants.Actions.SEND           -> sendText();
+            case Constants.Actions.CLOSE          -> maybeCloseConnection();
+            case Constants.Actions.RECONNECT      -> maybeReconnect();
+            case Constants.Actions.NEW            -> maybeNewConnection();
+            case Constants.Actions.EXPAND_BUTTONS -> expandButtons();
 
             default -> throw new IllegalStateException("Unexpected action command: " + e.getActionCommand());
         }
