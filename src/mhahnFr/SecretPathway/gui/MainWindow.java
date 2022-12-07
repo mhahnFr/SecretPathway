@@ -202,7 +202,7 @@ public class MainWindow extends JFrame implements ActionListener {
      * Creates a menu bar for this window. Adds to default menu items as well.
      */
     private void createMenuBar() {
-        if (!Desktop.getDesktop().isSupported(Desktop.Action.APP_QUIT_HANDLER)) {
+        if (Desktop.getDesktop().isSupported(Desktop.Action.APP_QUIT_HANDLER)) {
             Desktop.getDesktop().setQuitHandler((e, response) -> {
                 if (!connection.isClosed()) {
                     if (!promptConnectionClosing()) {
@@ -213,7 +213,7 @@ public class MainWindow extends JFrame implements ActionListener {
                 response.performQuit();
             });
         }
-        if (!Desktop.getDesktop().isSupported(Desktop.Action.APP_ABOUT)) {
+        if (Desktop.getDesktop().isSupported(Desktop.Action.APP_ABOUT)) {
             Desktop.getDesktop().setAboutHandler(e -> showAboutWindow());
         } else {
             maybeCreateButtonField();
@@ -223,7 +223,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
             otherButtons.add(aboutButton);
         }
-        if (!Desktop.getDesktop().isSupported(Desktop.Action.APP_PREFERENCES)) {
+        if (Desktop.getDesktop().isSupported(Desktop.Action.APP_PREFERENCES)) {
             Desktop.getDesktop().setPreferencesHandler(__ -> showSettings());
         } else {
             maybeCreateButtonField();
@@ -233,7 +233,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
             otherButtons.add(settingsButton);
         }
-        if (!Desktop.getDesktop().isSupported(Desktop.Action.APP_MENU_BAR)) {
+        if (Desktop.getDesktop().isSupported(Desktop.Action.APP_MENU_BAR)) {
             Desktop.getDesktop().setDefaultMenuBar(generateJMenuBar());
         } else {
             maybeCreateButtonField();
@@ -259,7 +259,7 @@ public class MainWindow extends JFrame implements ActionListener {
                 contextMenu.add(closeConnection);
                 contextMenu.addSeparator();
                 contextMenu.add(reconnectConnection);
-                
+
             connectionButton.setComponentPopupMenu(contextMenu);
 
             otherButtons.add(connectionButton);
