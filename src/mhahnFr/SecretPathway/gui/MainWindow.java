@@ -180,10 +180,29 @@ public class MainWindow extends JFrame implements ActionListener {
     }
 
     /**
+     * Creates the button field for optional, additional buttons.
+     */
+    private void maybeCreateButtonField() {
+        if (expandButton == null) {
+            expandButton = new JButton("<");
+            expandButton.addActionListener(this);
+            expandButton.setActionCommand(Constants.Actions.EXPAND_BUTTONS);
+
+            otherButtons = new DarkComponent<>(new JPanel(), components).getComponent();
+            otherButtons.setLayout(new BoxLayout(otherButtons, BoxLayout.X_AXIS));
+
+            buttonPanel.add(expandButton);
+            buttonPanel.add(otherButtons);
+
+            otherButtons.setVisible(otherButtonsVisible);
+        }
+    }
+
+    /**
      * Creates a menu bar for this window. Adds to default menu items as well.
      */
     private void createMenuBar() {
-        if (Desktop.getDesktop().isSupported(Desktop.Action.APP_QUIT_HANDLER)) {
+        if (!Desktop.getDesktop().isSupported(Desktop.Action.APP_QUIT_HANDLER)) {
             Desktop.getDesktop().setQuitHandler((e, response) -> {
                 if (!connection.isClosed()) {
                     if (!promptConnectionClosing()) {
@@ -194,40 +213,44 @@ public class MainWindow extends JFrame implements ActionListener {
                 response.performQuit();
             });
         }
-        if (Desktop.getDesktop().isSupported(Desktop.Action.APP_ABOUT)) {
+        if (!Desktop.getDesktop().isSupported(Desktop.Action.APP_ABOUT)) {
             Desktop.getDesktop().setAboutHandler(e -> showAboutWindow());
+        } else {
+            maybeCreateButtonField();
+
+            final var aboutButton = new JButton("About");
+            aboutButton.addActionListener(__ -> showAboutWindow());
+
+            otherButtons.add(aboutButton);
         }
-        if (Desktop.getDesktop().isSupported(Desktop.Action.APP_PREFERENCES)) {
+        if (!Desktop.getDesktop().isSupported(Desktop.Action.APP_PREFERENCES)) {
             Desktop.getDesktop().setPreferencesHandler(__ -> showSettings());
+        } else {
+            maybeCreateButtonField();
+
+            final var settingsButton = new JButton("Settings");
+            settingsButton.addActionListener(__ -> showSettings());
+
+            otherButtons.add(settingsButton);
         }
         if (!Desktop.getDesktop().isSupported(Desktop.Action.APP_MENU_BAR)) {
             Desktop.getDesktop().setDefaultMenuBar(generateJMenuBar());
         } else {
-            // TODO add buttons
-            expandButton = new JButton("<");
-            expandButton.addActionListener(this);
-            expandButton.setActionCommand(Constants.Actions.EXPAND_BUTTONS);
+            maybeCreateButtonField();
 
-            otherButtons = new DarkComponent<>(new JPanel(), components).getComponent();
-            otherButtons.setLayout(new BoxLayout(otherButtons, BoxLayout.X_AXIS));
-                final var connectionButton = new JButton("Connection");
-                connectionButton.addActionListener(__ -> connectionButton.getComponentPopupMenu().show(connectionButton, connectionButton.getX(),
-                                                                                                    connectionButton.getY() + connectionButton.getHeight()));
+            final var connectionButton = new JButton("Connection");
+            connectionButton.addActionListener(__ -> connectionButton.getComponentPopupMenu().show(connectionButton, connectionButton.getX(),
+                                                                                                connectionButton.getY() + connectionButton.getHeight()));
 
-                    final var contextMenu = new JPopupMenu();
-                        final var newConnection = new JMenuItem("New...");
-                        newConnection.addActionListener(this);
-                        newConnection.setActionCommand(Constants.Actions.NEW);
+                final var contextMenu = new JPopupMenu();
+                    final var newConnection = new JMenuItem("New...");
+                    newConnection.addActionListener(this);
+                    newConnection.setActionCommand(Constants.Actions.NEW);
 
-                    contextMenu.add(newConnection);
-                connectionButton.setComponentPopupMenu(contextMenu);
+                contextMenu.add(newConnection);
+            connectionButton.setComponentPopupMenu(contextMenu);
 
             otherButtons.add(connectionButton);
-
-            buttonPanel.add(expandButton);
-            buttonPanel.add(otherButtons);
-
-            otherButtons.setVisible(false);
         }
     }
 
