@@ -244,10 +244,22 @@ public class MainWindow extends JFrame implements ActionListener {
 
                 final var contextMenu = new JPopupMenu();
                     final var newConnection = new JMenuItem("New...");
-                    newConnection.addActionListener(this);
                     newConnection.setActionCommand(Constants.Actions.NEW);
+                    newConnection.addActionListener(this);
+
+                    final var closeConnection = new JMenuItem("Close");
+                    closeConnection.setActionCommand(Constants.Actions.CLOSE);
+                    closeConnection.addActionListener(this);
+
+                    final var reconnectConnection = new JMenuItem("Reconnect");
+                    reconnectConnection.setActionCommand(Constants.Actions.RECONNECT);
+                    reconnectConnection.addActionListener(this);
 
                 contextMenu.add(newConnection);
+                contextMenu.add(closeConnection);
+                contextMenu.addSeparator();
+                contextMenu.add(reconnectConnection);
+                
             connectionButton.setComponentPopupMenu(contextMenu);
 
             otherButtons.add(connectionButton);
