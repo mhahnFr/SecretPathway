@@ -869,9 +869,15 @@ public class MainWindow extends JFrame implements ActionListener {
 
                         case 48 -> {
                             ++i;
-                        }
 
-                        // TODO: 256 bit colour, RGB colour...
+                            final var code = Integer.parseInt(splits[i]);
+                            if (code == 5) {
+                                System.err.println("256 bit colours not supported!");
+                            } else if (code == 2) {
+                                current.setBackground(new Color(Integer.parseInt(splits[i + 1]), Integer.parseInt(splits[i + 2]), Integer.parseInt(splits[i + 3])));
+                                i += 3;
+                            }
+                        }
 
                         default -> System.err.println("Code not supported: " + splits[i] + "!");
                     }
