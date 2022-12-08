@@ -818,8 +818,9 @@ public class MainWindow extends JFrame implements ActionListener {
 
             try {
                 str = str.substring(1);
-                for (final var split : str.split(";")) {
-                    switch (Integer.parseInt(split)) {
+                final var splits = str.split(";");
+                for (int i = 0; i < splits.length; ++i) {
+                    switch (Integer.parseInt(splits[i])) {
                         case 0  -> current = new FStyle();
                         case 1  -> current.setBold(true);
                         case 3  -> current.setItalic(true);
@@ -854,9 +855,25 @@ public class MainWindow extends JFrame implements ActionListener {
                         case 100 -> current.setBackground(Color.darkGray);
                         case 107 -> current.setBackground(Color.white);
 
+                        case 38 -> {
+                            ++i;
+
+                            final var code = Integer.parseInt(splits[i]);
+                            if (code == 5) {
+                                System.err.println("256 bit colours not supported!");
+                            } else if (code == 2) {
+                                current.setForeground(new Color(Integer.parseInt(splits[i + 1]), Integer.parseInt(splits[i + 2]), Integer.parseInt(splits[i + 3])));
+                                 i += 3;
+                            }
+                        }
+
+                        case 48 -> {
+                            ++i;
+                        }
+
                         // TODO: 256 bit colour, RGB colour...
 
-                        default -> System.err.println("Code not supported: " + split + "!");
+                        default -> System.err.println("Code not supported: " + splits[i] + "!");
                     }
                 }
             } catch (Exception e) {
