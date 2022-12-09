@@ -239,8 +239,6 @@ public class MainWindow extends JFrame implements ActionListener {
             maybeCreateButtonField();
 
             final var connectionButton = new JButton("Connection");
-            connectionButton.addActionListener(__ -> connectionButton.getComponentPopupMenu().show(connectionButton, connectionButton.getX(),
-                                                                                                connectionButton.getY() + connectionButton.getHeight()));
 
                 final var contextMenu = new JPopupMenu();
                     final var newConnection = new JMenuItem("New...");
@@ -261,6 +259,11 @@ public class MainWindow extends JFrame implements ActionListener {
                 contextMenu.add(reconnectConnection);
 
             connectionButton.setComponentPopupMenu(contextMenu);
+            connectionButton.addActionListener(__ -> {
+                final var location = connectionButton.getLocation();
+
+                connectionButton.getComponentPopupMenu().show(connectionButton, location.x, location.y + connectionButton.getHeight());
+            });
 
             otherButtons.add(connectionButton);
         }
