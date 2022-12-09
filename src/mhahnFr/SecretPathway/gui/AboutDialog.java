@@ -28,9 +28,22 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This instances of this class act as About window.
+ *
+ * @author mhahnFr
+ * @since 09.12.22
+ */
 public class AboutDialog extends JDialog {
+    /** The list with all components with a dark mode. */
     final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
 
+    /**
+     * Constructs an About window.
+     *
+     * @param owner the owner of this window
+     * @param modal whether this dialog is modal
+     */
     public AboutDialog(Frame owner, boolean modal) {
         super(owner, Constants.NAME + ": About", modal);
 
@@ -57,6 +70,11 @@ public class AboutDialog extends JDialog {
         pack();
     }
 
+    /**
+     * Toggles the dark mode.
+     *
+     * @param dark whether to enable the dark mode
+     */
     public void setDark(final boolean dark) {
         for (final var component : components) {
             component.setDark(dark);
