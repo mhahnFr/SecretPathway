@@ -103,14 +103,6 @@ public class MainWindow extends JFrame implements ActionListener {
         delegate = new ConnectionDelegate(this.connection);
     }
 
-    /**
-     * Constructs a MainWindow. If the stored previous connection could not be reestablished,
-     * the user is prompted for the connection details.
-     */
-    public MainWindow() {
-        this(null);
-    }
-
     @Override
     public void setVisible(boolean b) {
         super.setVisible(b);
