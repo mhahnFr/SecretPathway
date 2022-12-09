@@ -19,6 +19,7 @@
 
 package mhahnFr.SecretPathway;
 
+import mhahnFr.SecretPathway.core.Constants;
 import mhahnFr.SecretPathway.core.net.ConnectionFactory;
 import mhahnFr.SecretPathway.gui.MainWindow;
 
@@ -89,7 +90,7 @@ public class CLI {
      * Prints the version information.
      */
     private void printVersion() {
-        System.out.println("Version 0.1");
+        System.out.println("Version " + Constants.VERSION);
     }
 
     /**
