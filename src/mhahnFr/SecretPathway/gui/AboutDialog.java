@@ -49,25 +49,32 @@ public class AboutDialog extends JDialog {
 
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
+        createContent();
+        pack();
+    }
+
+    /**
+     * Creates the content of this window.
+     */
+    private void createContent() {
         final var panel = new DarkComponent<>(new JPanel(new GridLayout(3, 1)), components).getComponent();
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        final var topPanel = new DarkComponent<>(new JPanel(new GridLayout(2, 1)), components).getComponent();
-        topPanel.add(new DarkComponent<>(new JLabel("<html><b>The " + Constants.NAME + "</b></html>", SwingConstants.CENTER), components).getComponent());
-        topPanel.add(new DarkComponent<>(new JLabel("Version " + Constants.VERSION,                   SwingConstants.CENTER), components).getComponent());
+            final var topPanel = new DarkComponent<>(new JPanel(new GridLayout(2, 1)), components).getComponent();
+            topPanel.add(new DarkComponent<>(new JLabel("<html><b>The " + Constants.NAME + "</b></html>", SwingConstants.CENTER), components).getComponent());
+            topPanel.add(new DarkComponent<>(new JLabel("Version " + Constants.VERSION,                   SwingConstants.CENTER), components).getComponent());
 
-        final var spacer = new DarkComponent<>(new JPanel(), components).getComponent();
+            final var spacer = new DarkComponent<>(new JPanel(), components).getComponent();
 
-        final var bottomPanel = new DarkComponent<>(new JPanel(new GridLayout(3, 1)), components).getComponent();
-        bottomPanel.add(new DarkComponent<>(new JLabel("<html>© Copyright 2022 (<u>https://www.github.com/mhahnFr</u>)</html>",              SwingConstants.CENTER), components).getComponent());
-        bottomPanel.add(new DarkComponent<>(new JLabel("<html>Licensed under the terms of the <b>GPL 3.0</b>.</html>",                       SwingConstants.CENTER), components).getComponent());
-        bottomPanel.add(new DarkComponent<>(new JLabel("<html>More information: <u>https://www.github.com/mhahnFr/SecretPathway</u></html>", SwingConstants.CENTER), components).getComponent());
+            final var bottomPanel = new DarkComponent<>(new JPanel(new GridLayout(3, 1)), components).getComponent();
+            bottomPanel.add(new DarkComponent<>(new JLabel("<html>© Copyright 2022 (<u>https://www.github.com/mhahnFr</u>)</html>",              SwingConstants.CENTER), components).getComponent());
+            bottomPanel.add(new DarkComponent<>(new JLabel("<html>Licensed under the terms of the <b>GPL 3.0</b>.</html>",                       SwingConstants.CENTER), components).getComponent());
+            bottomPanel.add(new DarkComponent<>(new JLabel("<html>More information: <u>https://www.github.com/mhahnFr/SecretPathway</u></html>", SwingConstants.CENTER), components).getComponent());
 
         panel.add(topPanel);
         panel.add(spacer);
         panel.add(bottomPanel);
 
         getContentPane().add(panel);
-        pack();
     }
 
     /**
