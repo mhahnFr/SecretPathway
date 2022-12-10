@@ -21,6 +21,7 @@ package mhahnFr.SecretPathway.gui;
 
 import mhahnFr.SecretPathway.core.net.Connection;
 import mhahnFr.SecretPathway.core.net.ConnectionListener;
+import mhahnFr.SecretPathway.core.spp.SPPConstants;
 import mhahnFr.SecretPathway.gui.helper.MessageReceiver;
 import mhahnFr.utils.ByteHelper;
 import mhahnFr.utils.Pair;
@@ -43,28 +44,32 @@ import java.util.concurrent.Future;
  * @author mhahnFr
  */
 class ConnectionDelegate implements ConnectionListener {
-    /** The underlying connection to be controlled.                              */
+    /** The underlying connection to be controlled.                               */
     private final Connection connection;
-    /** The default style used by the main text pane.                            */
+    /** The default style used by the main text pane.                             */
     private final Style defaultStyle;
-    /** The text pane used to write the output.                                  */
+    /** The text pane used to write the output.                                   */
     private final JTextPane pane;
-    /** The receiver of messages to be displayed for a specified amount of time. */
+    /** The receiver of messages to be displayed for a specified amount of time.  */
     private final MessageReceiver receiver;
-    /** The thread pool to be used.                                             */
+    /** The thread pool to be used.                                               */
     private final ExecutorService threads = Executors.newCachedThreadPool();
-    /** The future representing the running listening end of the connection.     */
+    /** The future representing the running listening end of the connection.      */
     private Future<?> listenFuture;
-    /** A timer triggering reconnection tries if necessary.                      */
+    /** A timer triggering reconnection tries if necessary.                       */
     private Timer reconnectTimer;
-    /** Indicates whether something has been received on this connection.        */
+    /** Indicates whether something has been received on this connection.         */
     private boolean firstReceive = true;
-    /** Indicates whether incoming data should be treated as ANSI escape codes.  */
+    /** Indicates whether incoming data should be treated as ANSI escape codes.   */
     private boolean wasAnsi = false;
-    /** The style currently used for incoming data.                              */
+    /** Indicates whether incoming data should be treated as SPP escape sequence. */
+    private boolean wasSPP = false;
+    /** The style currently used for incoming data.                               */
     private FStyle current;
-    /** A buffer used for escape codes.                                          */
-    private final Vector<Byte> buffer = new Vector<>();
+    /** A buffer used for ANSI escape codes.                                      */
+    private final Vector<Byte> ansiBuffer = new Vector<>();
+    /** A buffer used for SPP escape sequences.                                   */
+    private final Vector<Byte> sppBuffer = new Vector<>();
 
     /**
      * Constructs this delegate.
@@ -237,6 +242,20 @@ class ConnectionDelegate implements ConnectionListener {
         return true;
     }
 
+    /**
+     * Parses the contents of the given SPP buffer. If the buffer could not be
+     * parsed, {@code false} is returned.
+     *
+     * @param buffer the buffer to be parsed
+     * @return whether the buffer was parsed successfully
+     */
+    private boolean parseSPPBuffer(byte[] buffer) {
+        // TODO: Implement SPP
+
+        System.out.println("SPP buffer: " + new String(buffer));
+        return false;
+    }
+
     @Override
     public void receive(byte[] data, int length) {
         if (firstReceive) {
@@ -254,15 +273,15 @@ class ConnectionDelegate implements ConnectionListener {
         var closedStyles = new Vector<Pair<Integer, FStyle>>();
 
         for (int i = 0; i < length; ++i) {
-            if (data[i] == 0x1B) {
+            if (data[i] == 0x1B && !wasSPP) {
                 wasAnsi   = true;
                 ansiBegin = byteCount;
-                buffer.clear();
+                ansiBuffer.clear();
             } else if (data[i] == 0x6D && wasAnsi) {
                 wasAnsi = false;
 
                 var oldCurrent = new FStyle(current, false);
-                if (parseAnsiBuffer(ByteHelper.castToByte(buffer.toArray(new Byte[0])))) {
+                if (parseAnsiBuffer(ByteHelper.castToByte(ansiBuffer.toArray(new Byte[0])))) {
                     if (ansiBegin != 0 && closedStyles.isEmpty()) {
                         closedStyles.add(new Pair<>(0, new FStyle(oldCurrent, false)));
                     }
@@ -270,9 +289,22 @@ class ConnectionDelegate implements ConnectionListener {
                 } else {
                     System.err.println("Error while parsing ANSI escape code!");
                 }
+            } else if (data[i] == SPPConstants.BEGIN && !wasAnsi) {
+                wasSPP = true;
+                sppBuffer.clear();
+            } else if (data[i] == SPPConstants.END && wasSPP) {
+                wasSPP = false;
+
+                if (parseSPPBuffer(ByteHelper.castToByte(sppBuffer.toArray(new Byte[0])))) {
+                    // TODO: Need to do something?
+                } else {
+                    System.err.println("Error while parsing SPP escape sequence!");
+                }
             } else {
                 if (wasAnsi) {
-                    buffer.add(data[i]);
+                    ansiBuffer.add(data[i]);
+                } else if (wasSPP) {
+                    sppBuffer.add(data[i]);
                 } else {
                     text.add(data[i]);
                     ++byteCount;
