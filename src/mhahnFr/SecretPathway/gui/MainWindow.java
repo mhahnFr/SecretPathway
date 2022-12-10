@@ -687,11 +687,13 @@ public class MainWindow extends JFrame implements ActionListener {
     private class ConnectionDelegate implements ConnectionListener {
         /** The underlying connection to be controlled.                             */
         private final Connection connection;
+        /** The default style used by the main text pane.                           */
         private final Style defaultStyle;
         /** The thread pool to be used.                                             */
         private final ExecutorService threads = Executors.newCachedThreadPool();
         /** The future representing the running listening end of the connection.    */
         private Future<?> listenFuture;
+        /** A timer triggering reconnection tries if necessary.                     */
         private Timer reconnectTimer;
         /** Indicates whether something has been received on this connection.       */
         private boolean firstReceive = true;
