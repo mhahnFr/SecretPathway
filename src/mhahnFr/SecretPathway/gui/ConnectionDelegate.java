@@ -43,25 +43,27 @@ import java.util.concurrent.Future;
  * @author mhahnFr
  */
 class ConnectionDelegate implements ConnectionListener {
-    /** The underlying connection to be controlled.                             */
+    /** The underlying connection to be controlled.                              */
     private final Connection connection;
-    /** The default style used by the main text pane.                           */
+    /** The default style used by the main text pane.                            */
     private final Style defaultStyle;
+    /** The text pane used to write the output.                                  */
     private final JTextPane pane;
+    /** The receiver of messages to be displayed for a specified amount of time. */
     private final MessageReceiver receiver;
     /** The thread pool to be used.                                             */
     private final ExecutorService threads = Executors.newCachedThreadPool();
-    /** The future representing the running listening end of the connection.    */
+    /** The future representing the running listening end of the connection.     */
     private Future<?> listenFuture;
-    /** A timer triggering reconnection tries if necessary.                     */
+    /** A timer triggering reconnection tries if necessary.                      */
     private Timer reconnectTimer;
-    /** Indicates whether something has been received on this connection.       */
+    /** Indicates whether something has been received on this connection.        */
     private boolean firstReceive = true;
-    /** Indicates whether incoming data should be treated as ANSI escape codes. */
+    /** Indicates whether incoming data should be treated as ANSI escape codes.  */
     private boolean wasAnsi = false;
-    /** The style currently used for incoming data.                             */
+    /** The style currently used for incoming data.                              */
     private FStyle current;
-    /** A buffer used for escape codes.                                         */
+    /** A buffer used for escape codes.                                          */
     private final Vector<Byte> buffer = new Vector<>();
 
     /**
@@ -148,6 +150,14 @@ class ConnectionDelegate implements ConnectionListener {
         System.err.println("--------------");
     }
 
+    /**
+     * Parses the contents of the given ANSI buffer. If the buffer could not be parsed
+     * properly, {@code false} is returned and the {@link #current current style} is
+     * left untouched.
+     *
+     * @param buffer the ANSI buffer to parse
+     * @return whether the buffer was parsed successfully
+     */
     private boolean parseAnsiBuffer(byte[] buffer) {
         var str = new String(buffer, StandardCharsets.US_ASCII);
 

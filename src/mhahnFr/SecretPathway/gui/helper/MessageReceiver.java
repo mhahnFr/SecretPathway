@@ -21,6 +21,22 @@ package mhahnFr.SecretPathway.gui.helper;
 
 import java.awt.Color;
 
+/**
+ * This interface defines a function used to broadcast a message.
+ *
+ * @author mhahnFr
+ * @since 10.12.22
+ */
 public interface MessageReceiver {
+    /**
+     * Called when a new message should be displayed. Using the sender parameter,
+     * the implementing receiver can distinguish between the different sending
+     * objects.
+     *
+     * @param sender the sending object
+     * @param message the message to be displayed
+     * @param color the colour to be used for the display
+     * @param timeout amount of time in milliseconds after which the message should disappear
+     */
     void showMessageFrom(Object sender, String message, Color color, int timeout);
 }
