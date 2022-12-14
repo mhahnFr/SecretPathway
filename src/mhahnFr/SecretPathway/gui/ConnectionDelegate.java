@@ -70,6 +70,7 @@ class ConnectionDelegate implements ConnectionListener {
     private final Vector<Byte> ansiBuffer = new Vector<>();
     /** A buffer used for SPP escape sequences.                                   */
     private final Vector<Byte> sppBuffer = new Vector<>();
+    private final Vector<Byte> unicodeBuffer = new Vector<>();
 
     /**
      * Constructs this delegate.
@@ -266,9 +267,11 @@ class ConnectionDelegate implements ConnectionListener {
 
         var document = pane.getDocument();
 
-        var text      = new Vector<Byte>();
+        var text      = new Vector<>(unicodeBuffer);
         var ansiBegin = 0;
         var byteCount = 0;
+
+        unicodeBuffer.clear();
 
         var closedStyles = new Vector<Pair<Integer, FStyle>>();
 
@@ -309,6 +312,30 @@ class ConnectionDelegate implements ConnectionListener {
                     text.add(data[i]);
                     ++byteCount;
                 }
+            }
+        }
+
+        final int last = text.lastElement() & 0xff;
+        if ((last >> 7) == 1) {
+            if ((last >> 6) == 2) {
+                final var exCount = text.size();
+
+                var index = exCount - 2;
+                while (((text.elementAt(index) & 0xff) >> 7) == 1 && ((text.elementAt(index) & 0xff) >> 6) == 2) {
+                    --index;
+                }
+
+                final var shifted = (text.elementAt(index) & 0xff) >> 4;
+                final var oneCount = shifted == 0b1100 ? 2
+                                        : (shifted == 0b1110) ? 3 : 4;
+
+                if (text.size() - index < oneCount) {
+                    for (int i = 0; i < oneCount; ++i) {
+                        unicodeBuffer.add(text.remove(index));
+                    }
+                }
+            } else {
+                unicodeBuffer.add(text.remove(text.size() - 1));
             }
         }
 
