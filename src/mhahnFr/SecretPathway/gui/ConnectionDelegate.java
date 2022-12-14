@@ -317,9 +317,8 @@ class ConnectionDelegate implements ConnectionListener {
             }
         }
 
-        final int last = text.lastElement() & 0xff;
-        if ((last >> 7) == 1) {
-            if ((last >> 6) == 2) {
+        if (!text.isEmpty() && ((text.lastElement() & 0xff) >> 7) == 1) {
+            if (((text.lastElement() & 0xff) >> 6) == 2) {
                 final var exCount = text.size();
 
                 var index = exCount - 2;
@@ -332,7 +331,7 @@ class ConnectionDelegate implements ConnectionListener {
                                         : (shifted == 0b1110) ? 3 : 4;
 
                 if (text.size() - index < oneCount) {
-                    for (int i = 0; i < oneCount; ++i) {
+                    for (int i = 0; i < oneCount - 1; ++i) {
                         unicodeBuffer.add(text.remove(index));
                     }
                 }
