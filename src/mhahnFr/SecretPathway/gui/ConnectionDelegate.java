@@ -269,7 +269,7 @@ class ConnectionDelegate implements ConnectionListener {
 
         var text      = new Vector<>(unicodeBuffer);
         var ansiBegin = 0;
-        var byteCount = 0;
+        var charCount = unicodeBuffer.size() > 0 ? 1 : 0;
 
         unicodeBuffer.clear();
 
@@ -278,7 +278,7 @@ class ConnectionDelegate implements ConnectionListener {
         for (int i = 0; i < length; ++i) {
             if (data[i] == 0x1B && !wasSPP) {
                 wasAnsi   = true;
-                ansiBegin = byteCount;
+                ansiBegin = charCount;
                 ansiBuffer.clear();
             } else if (data[i] == 0x6D && wasAnsi) {
                 wasAnsi = false;
@@ -310,7 +310,9 @@ class ConnectionDelegate implements ConnectionListener {
                     sppBuffer.add(data[i]);
                 } else {
                     text.add(data[i]);
-                    ++byteCount;
+                    if (((data[i] & 0xff) >> 7) == 0 || ((data[i] & 0xff) >> 6) == 3) {
+                        ++charCount;
+                    }
                 }
             }
         }
@@ -344,11 +346,12 @@ class ConnectionDelegate implements ConnectionListener {
             if (closedStyles.isEmpty()) {
                 document.insertString(document.getLength(), appendix, current.asStyle(defaultStyle));
             } else {
-                final var factor = byteCount > 0 ? (double) appendix.length() / byteCount : 1;
                 for (int i = 0; i < closedStyles.size(); ++i) {
-                    final int len = (i + 1 < closedStyles.size() ? (int) (closedStyles.get(i + 1).getFirst() * factor) : appendix.length());
+                    final var element = closedStyles.get(i);
 
-                    document.insertString(document.getLength(), appendix.substring((int) (closedStyles.get(i).getFirst() * factor), len), closedStyles.get(i).getSecond().asStyle(defaultStyle));
+                    final int len = i + 1 < closedStyles.size() ? closedStyles.get(i + 1).getFirst() : appendix.length();
+
+                    document.insertString(document.getLength(), appendix.substring(element.getFirst(), len), element.getSecond().asStyle(defaultStyle));
                 }
             }
         } catch (BadLocationException e) {
