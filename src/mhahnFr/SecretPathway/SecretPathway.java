@@ -30,11 +30,12 @@ import java.util.NoSuchElementException;
 
 /**
  * This class contains all functions related to the command line interface.
+ * It is named as the project for the JVM to display the correct name in the GUI.
  *
  * @since 29.08.2022
  * @author mhahnFr
  */
-public class CLI {
+public class SecretPathway {
     /** The hostname or the IP address to connect to. */
     private String  hostname;
     /** The port to use for the connection.           */
@@ -130,8 +131,8 @@ public class CLI {
     }
 
     /**
-     * Displays an instance of the {@link MainWindow} using the parsed {@link CLI#hostname}
-     * and {@link CLI#port}.
+     * Displays an instance of the {@link MainWindow} using the parsed {@link SecretPathway#hostname}
+     * and {@link SecretPathway#port}.
      */
     private void openWindow() {
         EventQueue.invokeLater(() -> new MainWindow(ConnectionFactory.create(hostname, port)).setVisible(true));
@@ -160,6 +161,6 @@ public class CLI {
     }
 
     public static void main(String[] args) {
-        new CLI().process(args);
+        new SecretPathway().process(args);
     }
 }

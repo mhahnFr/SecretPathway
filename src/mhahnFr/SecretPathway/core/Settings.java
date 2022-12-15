@@ -19,7 +19,7 @@
 
 package mhahnFr.SecretPathway.core;
 
-import mhahnFr.SecretPathway.CLI;
+import mhahnFr.SecretPathway.SecretPathway;
 
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -42,7 +42,7 @@ public final class Settings {
      * Constructs this settings object.
      */
     private Settings() {
-        preferences = Preferences.userNodeForPackage(CLI.class);
+        preferences = Preferences.userNodeForPackage(SecretPathway.class);
     }
 
     /**
