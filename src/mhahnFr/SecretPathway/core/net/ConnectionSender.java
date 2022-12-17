@@ -27,5 +27,10 @@ package mhahnFr.SecretPathway.core.net;
  * @since 17.12.22
  */
 public interface ConnectionSender {
+    /**
+     * Sends the given bytes.
+     *
+     * @param bytes the bytes to be sent
+     */
     void send(byte[] bytes);
 }
