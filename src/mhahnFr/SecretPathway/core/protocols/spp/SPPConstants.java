@@ -17,7 +17,7 @@
  * this program, see the file LICENSE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package mhahnFr.SecretPathway.core.spp;
+package mhahnFr.SecretPathway.core.protocols.spp;
 
 /**
  * This class defines the constants used for the SecretPathwayProtocol (SPP).

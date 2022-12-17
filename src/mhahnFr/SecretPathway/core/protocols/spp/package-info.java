@@ -24,4 +24,4 @@
  * @author mhahnFr
  * @since 10.12.22
  */
-package mhahnFr.SecretPathway.core.spp;
+package mhahnFr.SecretPathway.core.protocols.spp;
