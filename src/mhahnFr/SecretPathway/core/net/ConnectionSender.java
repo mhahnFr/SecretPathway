@@ -17,18 +17,15 @@
  * this program, see the file LICENSE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package mhahnFr.SecretPathway.core.protocols;
-
-import mhahnFr.SecretPathway.core.net.ConnectionSender;
+package mhahnFr.SecretPathway.core.net;
 
 /**
- * TODO: Write documentation
+ * This interface defines the functionality a connection sender
+ * should be capable of.
  *
  * @author mhahnFr
  * @since 17.12.22
  */
-public interface ProtocolPlugin {
-    boolean isBegin(byte b);
-
-    boolean process(byte b, ConnectionSender sender);
+public interface ConnectionSender {
+    void send(byte[] bytes);
 }
