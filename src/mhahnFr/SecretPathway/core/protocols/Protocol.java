@@ -19,6 +19,11 @@
 
 package mhahnFr.SecretPathway.core.protocols;
 
+import mhahnFr.SecretPathway.core.net.ConnectionSender;
+
+import java.util.Arrays;
+import java.util.Vector;
+
 /**
  * Instances of this class act as a protocol abstraction.
  * This class consists of a state machine to determine the
@@ -31,4 +36,20 @@ package mhahnFr.SecretPathway.core.protocols;
  * @since 17.12.22
  */
 public class Protocol {
+    private final Vector<ProtocolPlugin> plugins;
+    private final ConnectionSender sender;
+    private ProtocolPlugin lastPlugin;
+
+    public Protocol(final ConnectionSender sender, ProtocolPlugin... plugins) {
+        this.plugins = new Vector<>(Arrays.asList(plugins));
+        this.sender  = sender;
+    }
+
+    public void add(final ProtocolPlugin plugin) {
+        plugins.add(plugin);
+    }
+
+    public void process(byte b) {
+        // TODO: Implement
+    }
 }
