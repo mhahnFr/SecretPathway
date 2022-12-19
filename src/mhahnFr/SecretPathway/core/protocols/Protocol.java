@@ -49,7 +49,22 @@ public class Protocol {
         plugins.add(plugin);
     }
 
-    public void process(byte b) {
-        // TODO: Implement
+    public boolean process(byte b) {
+        if (lastPlugin != null) {
+            if (!lastPlugin.process(b, sender)) {
+                lastPlugin = null;
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            for (final var plugin : plugins) {
+                if (plugin.isBegin(b)) {
+                    lastPlugin = plugin;
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
