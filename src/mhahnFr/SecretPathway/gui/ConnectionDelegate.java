@@ -23,6 +23,7 @@ import mhahnFr.SecretPathway.core.net.Connection;
 import mhahnFr.SecretPathway.core.net.ConnectionListener;
 import mhahnFr.SecretPathway.core.protocols.Protocol;
 import mhahnFr.SecretPathway.core.protocols.spp.SPPPlugin;
+import mhahnFr.SecretPathway.core.protocols.telnet.TelnetPlugin;
 import mhahnFr.SecretPathway.gui.helper.MessageReceiver;
 import mhahnFr.utils.ByteHelper;
 import mhahnFr.utils.Pair;
@@ -93,7 +94,8 @@ class ConnectionDelegate implements ConnectionListener {
 
         defaultStyle = this.pane.getLogicalStyle();
         current = new FStyle();
-        protocols = new Protocol(null, new SPPPlugin());
+        protocols = new Protocol(null, new SPPPlugin(),
+                                       new TelnetPlugin());
 
         receiver.showMessageFrom(this, "Connecting...", null, 0);
 
