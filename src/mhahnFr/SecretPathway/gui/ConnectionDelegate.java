@@ -70,6 +70,7 @@ class ConnectionDelegate implements ConnectionListener {
     private final Vector<Byte> ansiBuffer = new Vector<>();
     /** A buffer used for SPP escape sequences.                                   */
     private final Vector<Byte> sppBuffer = new Vector<>();
+    /** A buffer used for broken unicode characters.                              */
     private final Vector<Byte> unicodeBuffer = new Vector<>();
 
     /**

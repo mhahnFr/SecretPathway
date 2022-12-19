@@ -36,19 +36,49 @@ import java.util.Vector;
  * @since 17.12.22
  */
 public class Protocol {
+    /** The underlying vector of plugins.                                            */
     private final Vector<ProtocolPlugin> plugins;
+    /** The {@link ConnectionSender} used by the plugins to send optional responses. */
     private final ConnectionSender sender;
+    /** The {@link ProtocolPlugin} currently responsible for handling incoming data. */
     private ProtocolPlugin lastPlugin;
 
+    /**
+     * Constructs this instance using the given sender and the given plugins.
+     * More plugins can be added later on.
+     *
+     * @param sender the sender used by the plugins to send optional responses
+     * @param plugins the plugins initially available
+     * @see #add(ProtocolPlugin)
+     */
     public Protocol(final ConnectionSender sender, ProtocolPlugin... plugins) {
         this.plugins = new Vector<>(Arrays.asList(plugins));
         this.sender  = sender;
     }
 
+    /**
+     * Adds the given plugin to the list of used {@link ProtocolPlugin}s.
+     * It will be used after the potential currently active plugin has
+     * finished.
+     *
+     * @param plugin the new plugin to be used
+     */
     public void add(final ProtocolPlugin plugin) {
         plugins.add(plugin);
     }
 
+    /**
+     * Processes the given byte of input. If the internal state machine
+     * is in the state of a plugin being responsible for processing
+     * incoming data, the byte is passed to that plugin. Otherwise,
+     * all plugins are asked whether they handle the given byte.
+     * <br>
+     * This function is meant to be used in a state machine, so it returns
+     * whether it should keep sending incoming input to this instance.
+     *
+     * @param b the incoming byte
+     * @return whether the next input should be sent to this instance
+     */
     public boolean process(byte b) {
         if (lastPlugin != null) {
             if (!lastPlugin.process(b, sender)) {
