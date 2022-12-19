@@ -22,7 +22,7 @@ package mhahnFr.SecretPathway.gui;
 import mhahnFr.SecretPathway.core.net.Connection;
 import mhahnFr.SecretPathway.core.net.ConnectionListener;
 import mhahnFr.SecretPathway.core.protocols.Protocol;
-import mhahnFr.SecretPathway.core.protocols.spp.SPPConstants;
+import mhahnFr.SecretPathway.core.protocols.spp.SPPPlugin;
 import mhahnFr.SecretPathway.gui.helper.MessageReceiver;
 import mhahnFr.utils.ByteHelper;
 import mhahnFr.utils.Pair;
@@ -93,7 +93,7 @@ class ConnectionDelegate implements ConnectionListener {
 
         defaultStyle = this.pane.getLogicalStyle();
         current = new FStyle();
-        protocols = new Protocol(null);
+        protocols = new Protocol(null, new SPPPlugin());
 
         receiver.showMessageFrom(this, "Connecting...", null, 0);
 

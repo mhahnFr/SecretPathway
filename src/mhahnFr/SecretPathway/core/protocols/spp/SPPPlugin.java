@@ -19,15 +19,23 @@
 
 package mhahnFr.SecretPathway.core.protocols.spp;
 
+import mhahnFr.SecretPathway.core.net.ConnectionSender;
+import mhahnFr.SecretPathway.core.protocols.ProtocolPlugin;
+
 /**
- * This class defines the constants used for the SecretPathwayProtocol (SPP).
+ * This class acts as plugin for the SecretPathwayProtocol (SPP).
  *
  * @author mhahnFr
- * @since 10.12.22
+ * @since 19.12.22
  */
-public abstract class SPPConstants {
-    /** Indicates the start of an SPP escape sequence. */
-    public static final char BEGIN = 0x02;
-    /** Indicates the end of an SPP escape sequence.   */
-    public static final char END = 0x03;
+public class SPPPlugin implements ProtocolPlugin {
+    @Override
+    public boolean isBegin(byte b) {
+        return b == 0x2;
+    }
+
+    @Override
+    public boolean process(byte b, ConnectionSender sender) {
+        return b == 0x3;
+    }
 }
