@@ -21,6 +21,7 @@ package mhahnFr.SecretPathway.gui;
 
 import mhahnFr.SecretPathway.core.net.Connection;
 import mhahnFr.SecretPathway.core.net.ConnectionListener;
+import mhahnFr.SecretPathway.core.protocols.Protocol;
 import mhahnFr.SecretPathway.core.protocols.spp.SPPConstants;
 import mhahnFr.SecretPathway.gui.helper.MessageReceiver;
 import mhahnFr.utils.ByteHelper;
@@ -44,33 +45,33 @@ import java.util.concurrent.Future;
  * @author mhahnFr
  */
 class ConnectionDelegate implements ConnectionListener {
-    /** The underlying connection to be controlled.                               */
+    /** The underlying connection to be controlled.                                */
     private final Connection connection;
-    /** The default style used by the main text pane.                             */
+    /** The default style used by the main text pane.                              */
     private final Style defaultStyle;
-    /** The text pane used to write the output.                                   */
+    /** The text pane used to write the output.                                    */
     private final JTextPane pane;
-    /** The receiver of messages to be displayed for a specified amount of time.  */
+    /** The receiver of messages to be displayed for a specified amount of time.   */
     private final MessageReceiver receiver;
-    /** The thread pool to be used.                                               */
+    /** The protocol abstraction.                                                  */
+    private final Protocol protocols;
+    /** The thread pool to be used.                                                */
     private final ExecutorService threads = Executors.newCachedThreadPool();
-    /** The future representing the running listening end of the connection.      */
+    /** The future representing the running listening end of the connection.       */
     private Future<?> listenFuture;
-    /** A timer triggering reconnection tries if necessary.                       */
+    /** A timer triggering reconnection tries if necessary.                        */
     private Timer reconnectTimer;
-    /** Indicates whether something has been received on this connection.         */
+    /** Indicates whether something has been received on this connection.          */
     private boolean firstReceive = true;
-    /** Indicates whether incoming data should be treated as ANSI escape codes.   */
+    /** Indicates whether incoming data should be treated as ANSI escape codes.    */
     private boolean wasAnsi = false;
-    /** Indicates whether incoming data should be treated as SPP escape sequence. */
-    private boolean wasSPP = false;
-    /** The style currently used for incoming data.                               */
+    /** Indicates whether incoming data should be sent to the protocol abstraction.*/
+    private boolean wasSpecial = false;
+    /** The style currently used for incoming data.                                */
     private FStyle current;
-    /** A buffer used for ANSI escape codes.                                      */
+    /** A buffer used for ANSI escape codes.                                       */
     private final Vector<Byte> ansiBuffer = new Vector<>();
-    /** A buffer used for SPP escape sequences.                                   */
-    private final Vector<Byte> sppBuffer = new Vector<>();
-    /** A buffer used for broken unicode characters.                              */
+    /** A buffer used for broken unicode characters.                               */
     private final Vector<Byte> unicodeBuffer = new Vector<>();
 
     /**
@@ -92,6 +93,7 @@ class ConnectionDelegate implements ConnectionListener {
 
         defaultStyle = this.pane.getLogicalStyle();
         current = new FStyle();
+        protocols = new Protocol(null);
 
         receiver.showMessageFrom(this, "Connecting...", null, 0);
 
@@ -244,20 +246,6 @@ class ConnectionDelegate implements ConnectionListener {
         return true;
     }
 
-    /**
-     * Parses the contents of the given SPP buffer. If the buffer could not be
-     * parsed, {@code false} is returned.
-     *
-     * @param buffer the buffer to be parsed
-     * @return whether the buffer was parsed successfully
-     */
-    private boolean parseSPPBuffer(byte[] buffer) {
-        // TODO: Implement SPP
-
-        System.out.println("SPP buffer: " + new String(buffer));
-        return false;
-    }
-
     @Override
     public void receive(byte[] data, int length) {
         if (firstReceive) {
@@ -277,7 +265,7 @@ class ConnectionDelegate implements ConnectionListener {
         var closedStyles = new Vector<Pair<Integer, FStyle>>();
 
         for (int i = 0; i < length; ++i) {
-            if (data[i] == 0x1B && !wasSPP) {
+            if (data[i] == 0x1B) {
                 wasAnsi   = true;
                 ansiBegin = charCount;
                 ansiBuffer.clear();
@@ -293,26 +281,17 @@ class ConnectionDelegate implements ConnectionListener {
                 } else {
                     System.err.println("Error while parsing ANSI escape code!");
                 }
-            } else if (data[i] == SPPConstants.BEGIN && !wasAnsi) {
-                wasSPP = true;
-                sppBuffer.clear();
-            } else if (data[i] == SPPConstants.END && wasSPP) {
-                wasSPP = false;
-
-                if (parseSPPBuffer(ByteHelper.castToByte(sppBuffer.toArray(new Byte[0])))) {
-                    // TODO: Need to do something?
-                } else {
-                    System.err.println("Error while parsing SPP escape sequence!");
-                }
             } else {
                 if (wasAnsi) {
                     ansiBuffer.add(data[i]);
-                } else if (wasSPP) {
-                    sppBuffer.add(data[i]);
                 } else {
-                    text.add(data[i]);
-                    if (((data[i] & 0xff) >> 7) == 0 || ((data[i] & 0xff) >> 6) == 3) {
-                        ++charCount;
+                    wasSpecial = protocols.process(data[i]);
+
+                    if (!wasSpecial) {
+                        text.add(data[i]);
+                        if (((data[i] & 0xff) >> 7) == 0 || ((data[i] & 0xff) >> 6) == 3) {
+                            ++charCount;
+                        }
                     }
                 }
             }
