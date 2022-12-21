@@ -22,6 +22,8 @@ package mhahnFr.SecretPathway.core.protocols.telnet;
 import mhahnFr.SecretPathway.core.net.ConnectionSender;
 import mhahnFr.SecretPathway.core.protocols.ProtocolPlugin;
 
+import java.util.Vector;
+
 /**
  * This plugin adds telnet functionality.
  *
@@ -102,19 +104,61 @@ public class TelnetPlugin implements ProtocolPlugin {
     abstract static class MudExtensions {
     }
 
+    private Boolean hasEnd;
+    private short last = TelnetFunction.IAC;
+    private Vector<Short> buffer = new Vector<>();
+
     @Override
     public boolean isBegin(byte b) {
-        return (b & 0xff) == 0xff;
+        return (b & 0xff) == TelnetFunction.IAC;
     }
 
     @Override
     public boolean process(byte b, ConnectionSender sender) {
-        final int bb = b & 0xff;
+        final short bb = (short) (b & 0xff);
         System.out.println(bb);
-        switch (bb) {
-            case 240                     -> { return false; }
-            case 250, 251, 252, 253, 254 -> { return true;  }
+
+        var result = false;
+
+        if (hasEnd != null) {
+            if (hasEnd) {
+                if (bb == TelnetFunction.IAC) {
+                    if (last == TelnetFunction.IAC) {
+                        buffer.add(bb);
+                    } else {
+                        last = TelnetFunction.IAC;
+                    }
+                    result = true;
+                } else if (bb == TelnetFunction.SE && last == TelnetFunction.IAC) {
+                    // Parse buffer
+                } else {
+                    buffer.add(bb);
+                    result = true;
+                }
+            } else {
+                // Handle single option
+            }
+        } else {
+            switch (bb) {
+                case TelnetFunction.WILL, TelnetFunction.WONT, TelnetFunction.DO, TelnetFunction.DONT -> {
+                    hasEnd = false;
+                    result = true;
+                }
+
+                case TelnetFunction.SB -> {
+                    hasEnd = true;
+                    result = true;
+                }
+            }
+            last = bb;
         }
-        return false;
+
+        if (!result) {
+            hasEnd = null;
+            buffer.clear();
+            last = TelnetFunction.IAC;
+        }
+
+        return result;
     }
 }
