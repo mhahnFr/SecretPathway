@@ -99,6 +99,13 @@ public class TelnetPlugin implements ProtocolPlugin {
         final static short DONT = 254;
         final static short IAC  = 255;
 
+        /**
+         * Returns the opposite of the given telnet option. If the number
+         * given has no opposite or is no telnet code, it is simply returned.
+         *
+         * @param option the option to be negated
+         * @return the negated option
+         */
         static short opposite(final short option) {
             var result = option;
 
@@ -121,8 +128,11 @@ public class TelnetPlugin implements ProtocolPlugin {
     abstract static class MudExtensions {
     }
 
+    /** Indicates whether the currently received telnet sequence ends with IAC SE. */
     private Boolean hasEnd = null;
+    /** The last telnet function received. Defaults to IAC.                        */
     private short last = TelnetFunction.IAC;
+    /** A buffer storing longer received telnet sequences.                         */
     private Vector<Short> buffer = new Vector<>();
 
     @Override
@@ -179,10 +189,24 @@ public class TelnetPlugin implements ProtocolPlugin {
         return result;
     }
 
+    /**
+     * Parses the given telnet buffer. It should consist of the contents
+     * of a SB sub negotiation, but without the telnet control characters.
+     *
+     * @param buffer the buffer to be parsed
+     * @param sender the sender used for sending back the response
+     */
     private void parseBuffer(final Vector<Short> buffer, ConnectionSender sender) {
         // TODO: Parse buffer
     }
 
+    /**
+     * This method handles a single telnet function.
+     *
+     * @param previous the previously received telnet option such as DO
+     * @param option the telnet function to handle
+     * @param sender the sender used for sending back the response
+     */
     private void handleSingleOption(final short previous, final short option, ConnectionSender sender) {
         // TODO: Handle single telnet function
         switch (option) {
@@ -190,6 +214,14 @@ public class TelnetPlugin implements ProtocolPlugin {
         }
     }
 
+    /**
+     * Sends back a single telnet function response. The sent message looks
+     * like: {@code IAC <previous> <option>}.
+     *
+     * @param previous the mode to send to the remote host, such as {@code WILL}
+     * @param option the code of the telnet function
+     * @param sender the sender used for sending the response
+     */
     private void sendSingle(final short previous, final short option, ConnectionSender sender) {
         final var bytes = new byte[3];
 
