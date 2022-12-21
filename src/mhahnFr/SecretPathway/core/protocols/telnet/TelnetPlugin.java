@@ -147,7 +147,7 @@ public class TelnetPlugin implements ProtocolPlugin {
                     }
                     result = true;
                 } else if (bb == TelnetFunction.SE && last == TelnetFunction.IAC) {
-                    // Parse buffer
+                    parseBuffer(buffer, sender);
                 } else {
                     buffer.add(bb);
                     result = true;
@@ -179,6 +179,10 @@ public class TelnetPlugin implements ProtocolPlugin {
         return result;
     }
 
+    private void parseBuffer(final Vector<Short> buffer, ConnectionSender sender) {
+        // TODO: Parse buffer
+    }
+
     private void handleSingleOption(final short previous, final short option, ConnectionSender sender) {
         // TODO: Handle single telnet function
         switch (option) {
@@ -193,10 +197,8 @@ public class TelnetPlugin implements ProtocolPlugin {
         bytes[1] = (byte) previous;
         bytes[2] = (byte) option;
 
-        for (final var b : bytes) System.out.println(b);
-
         System.out.println("IAC " + previous + " " + option);
 
-        //sender.send(bytes);
+        sender.send(bytes);
     }
 }
