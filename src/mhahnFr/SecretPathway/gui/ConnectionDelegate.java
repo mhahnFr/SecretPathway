@@ -286,6 +286,8 @@ class ConnectionDelegate implements ConnectionListener {
             } else {
                 if (wasAnsi) {
                     ansiBuffer.add(data[i]);
+                } else if (wasSpecial) {
+                    wasSpecial = protocols.process(data[i]);
                 } else {
                     wasSpecial = protocols.process(data[i]);
 
