@@ -98,13 +98,30 @@ public class TelnetPlugin implements ProtocolPlugin {
         final static short DO   = 253;
         final static short DONT = 254;
         final static short IAC  = 255;
+
+        static short opposite(final short option) {
+            var result = option;
+
+            switch (option) {
+                case SE -> result = SB;
+                case SB -> result = SE;
+
+                case WILL -> result = WONT;
+                case WONT -> result = WILL;
+
+                case DO   -> result = DONT;
+                case DONT -> result = DO;
+            }
+
+            return result;
+        }
     }
 
     /** An enumeration containing MUD specific additions. */
     abstract static class MudExtensions {
     }
 
-    private Boolean hasEnd;
+    private Boolean hasEnd = null;
     private short last = TelnetFunction.IAC;
     private Vector<Short> buffer = new Vector<>();
 
@@ -136,7 +153,7 @@ public class TelnetPlugin implements ProtocolPlugin {
                     result = true;
                 }
             } else {
-                // Handle single option
+                handleSingleOption(last, bb, sender);
             }
         } else {
             switch (bb) {
@@ -160,5 +177,26 @@ public class TelnetPlugin implements ProtocolPlugin {
         }
 
         return result;
+    }
+
+    private void handleSingleOption(final short previous, final short option, ConnectionSender sender) {
+        // TODO: Handle single telnet function
+        switch (option) {
+            default -> sendSingle(TelnetFunction.opposite(previous), option, sender);
+        }
+    }
+
+    private void sendSingle(final short previous, final short option, ConnectionSender sender) {
+        final var bytes = new byte[3];
+
+        bytes[0] = (byte) TelnetFunction.IAC;
+        bytes[1] = (byte) previous;
+        bytes[2] = (byte) option;
+
+        for (final var b : bytes) System.out.println(b);
+
+        System.out.println("IAC " + previous + " " + option);
+
+        //sender.send(bytes);
     }
 }
