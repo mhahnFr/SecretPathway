@@ -193,21 +193,21 @@ class ConnectionDelegate implements ConnectionListener, ConnectionSender {
 
         if (colourCode < 16) {
             switch (colourCode) {
-                case 0 -> result = new Color(0, 0, 0);
-                case 1 -> result = new Color(128, 0, 0);
-                case 2 -> result = new Color(0, 128, 0);
-                case 3 -> result = new Color(128, 128, 0);
-                case 4 -> result = new Color(0, 0, 128);
-                case 5 -> result = new Color(128, 0, 128);
-                case 6 -> result = new Color(0, 128, 128);
-                case 7 -> result = new Color(192, 192, 192);
-                case 8 -> result = new Color(128, 128, 128);
-                case 9 -> result = new Color(255, 0, 0);
+                case 0  -> result = new Color(0,   0,   0);
+                case 1  -> result = new Color(128, 0,   0);
+                case 2  -> result = new Color(0,   128, 0);
+                case 3  -> result = new Color(128, 128, 0);
+                case 4  -> result = new Color(0,   0,   128);
+                case 5  -> result = new Color(128, 0,   128);
+                case 6  -> result = new Color(0,   128, 128);
+                case 7  -> result = new Color(192, 192, 192);
+                case 8  -> result = new Color(128, 128, 128);
+                case 9  -> result = new Color(255, 0,   0);
                 case 10 -> result = new Color(255, 255, 0);
-                case 11 -> result = new Color(0, 255, 0);
-                case 12 -> result = new Color(0, 0, 255);
-                case 13 -> result = new Color(255, 0, 255);
-                case 14 -> result = new Color(0, 255, 255);
+                case 11 -> result = new Color(0,   255, 0);
+                case 12 -> result = new Color(0,   0,   255);
+                case 13 -> result = new Color(255, 0,   255);
+                case 14 -> result = new Color(0,   255, 255);
                 case 15 -> result = new Color(255, 255, 255);
             }
         } else if (colourCode < 232) {
