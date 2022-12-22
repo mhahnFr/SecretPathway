@@ -133,7 +133,7 @@ public class TelnetPlugin implements ProtocolPlugin {
     /** The last telnet function received. Defaults to IAC.                        */
     private short last = TelnetFunction.IAC;
     /** A buffer storing longer received telnet sequences.                         */
-    private Vector<Short> buffer = new Vector<>();
+    private final Vector<Short> buffer = new Vector<>();
 
     @Override
     public boolean isBegin(byte b) {
@@ -191,7 +191,7 @@ public class TelnetPlugin implements ProtocolPlugin {
 
     /**
      * Parses the given telnet buffer. It should consist of the contents
-     * of a SB sub negotiation, but without the telnet control characters.
+     * of an SB sub negotiation, but without the telnet control characters.
      *
      * @param buffer the buffer to be parsed
      * @param sender the sender used for sending back the response

@@ -141,7 +141,7 @@ public final class Settings {
      * Stores the window location.
      *
      * @param x the X-coordinate of the window position
-     * @param y the Y-coordinate of the window postion
+     * @param y the Y-coordinate of the window position
      */
     public Settings setWindowLocation(int x, int y) {
         preferences.putInt(Keys.WINDOW_LOCATION_X, x);
