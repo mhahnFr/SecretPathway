@@ -167,12 +167,27 @@ class ConnectionDelegate implements ConnectionListener, ConnectionSender {
         System.err.println("--------------");
     }
 
+    /**
+     * Calculates the colour cube value using the given colour code
+     * and the given code.
+     *
+     * @param color the colour code
+     * @param code the code used for the calculations
+     * @return the colour cube value
+     */
     private int color256CubeCalc(int color, int code) {
         final var tmp = ((color - 16) / code) % 6;
         return tmp == 0 ? 0 :
                 (14135 + 10280 * tmp) / 256;
     }
 
+    /**
+     * Returns the {@link Color} decoded from the given colour code.
+     * If it cannot be decoded, {@code null} is returned.
+     *
+     * @param colourCode the code of the 256-bit colour cube
+     * @return the decoded colour
+     */
     private Color colourFrom256Bit(int colourCode) {
         Color result = null;
 
