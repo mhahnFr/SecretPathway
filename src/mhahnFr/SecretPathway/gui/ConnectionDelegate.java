@@ -167,6 +167,44 @@ class ConnectionDelegate implements ConnectionListener, ConnectionSender {
         System.err.println("--------------");
     }
 
+    private int color256CubeCalc(int color, int code) {
+        final var tmp = ((color - 16) / code) % 6;
+        return tmp == 0 ? 0 :
+                (14135 + 10280 * tmp) / 256;
+    }
+
+    private Color colourFrom256Bit(int colourCode) {
+        Color result = null;
+
+        if (colourCode < 16) {
+            switch (colourCode) {
+                case 0 -> result = new Color(0, 0, 0);
+                case 1 -> result = new Color(128, 0, 0);
+                case 2 -> result = new Color(0, 128, 0);
+                case 3 -> result = new Color(128, 128, 0);
+                case 4 -> result = new Color(0, 0, 128);
+                case 5 -> result = new Color(128, 0, 128);
+                case 6 -> result = new Color(0, 128, 128);
+                case 7 -> result = new Color(192, 192, 192);
+                case 8 -> result = new Color(128, 128, 128);
+                case 9 -> result = new Color(255, 0, 0);
+                case 10 -> result = new Color(255, 255, 0);
+                case 11 -> result = new Color(0, 255, 0);
+                case 12 -> result = new Color(0, 0, 255);
+                case 13 -> result = new Color(255, 0, 255);
+                case 14 -> result = new Color(0, 255, 255);
+                case 15 -> result = new Color(255, 255, 255);
+            }
+        } else if (colourCode < 232) {
+            result = new Color(color256CubeCalc(colourCode, 36), color256CubeCalc(colourCode, 6), color256CubeCalc(colourCode, 1));
+        } else if (colourCode < 256) {
+            final var value = ((float) ((2056 + 2570 * (colourCode - 232))) / 256) / 255;
+            result = new Color(value, value, value);
+        }
+
+        return result;
+    }
+
     /**
      * Parses the contents of the given ANSI buffer. If the buffer could not be parsed
      * properly, {@code false} is returned and the {@link #current current style} is
@@ -224,7 +262,8 @@ class ConnectionDelegate implements ConnectionListener, ConnectionSender {
 
                         final var code = Integer.parseInt(splits[i]);
                         if (code == 5) {
-                            System.err.println("256 bit colours not supported!");
+                            current.setForeground(colourFrom256Bit(Integer.parseInt(splits[i + 1])));
+                            ++i;
                         } else if (code == 2) {
                             current.setForeground(new Color(Integer.parseInt(splits[i + 1]), Integer.parseInt(splits[i + 2]), Integer.parseInt(splits[i + 3])));
                             i += 3;
@@ -236,7 +275,8 @@ class ConnectionDelegate implements ConnectionListener, ConnectionSender {
 
                         final var code = Integer.parseInt(splits[i]);
                         if (code == 5) {
-                            System.err.println("256 bit colours not supported!");
+                            current.setBackground(colourFrom256Bit(Integer.parseInt(splits[i + 1])));
+                            ++i;
                         } else if (code == 2) {
                             current.setBackground(new Color(Integer.parseInt(splits[i + 1]), Integer.parseInt(splits[i + 2]), Integer.parseInt(splits[i + 3])));
                             i += 3;
