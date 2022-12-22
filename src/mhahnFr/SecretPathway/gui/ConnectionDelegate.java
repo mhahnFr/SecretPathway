@@ -254,6 +254,36 @@ class ConnectionDelegate implements ConnectionListener, ConnectionSender {
         return true;
     }
 
+    /**
+     * Fixes unicode characters that might not be received entirely.
+     *
+     * @param text the vector containing the received bytes
+     */
+    private void fixUnicode(Vector<Byte> text) {
+        if (!text.isEmpty() && ((text.lastElement() & 0xff) >> 7) == 1) {
+            if (((text.lastElement() & 0xff) >> 6) == 2) {
+                final var exCount = text.size();
+
+                var index = exCount - 2;
+                while (((text.elementAt(index) & 0xff) >> 7) == 1 && ((text.elementAt(index) & 0xff) >> 6) == 2) {
+                    --index;
+                }
+
+                final var shifted = (text.elementAt(index) & 0xff) >> 4;
+                final var oneCount = shifted == 0b1100 ? 2
+                        : (shifted == 0b1110) ? 3 : 4;
+
+                if (text.size() - index < oneCount) {
+                    for (int i = 0; i < oneCount - 1; ++i) {
+                        unicodeBuffer.add(text.remove(index));
+                    }
+                }
+            } else {
+                unicodeBuffer.add(text.remove(text.size() - 1));
+            }
+        }
+    }
+
     @Override
     public void receive(byte[] data, int length) {
         if (firstReceive) {
@@ -307,28 +337,7 @@ class ConnectionDelegate implements ConnectionListener, ConnectionSender {
             }
         }
 
-        if (!text.isEmpty() && ((text.lastElement() & 0xff) >> 7) == 1) {
-            if (((text.lastElement() & 0xff) >> 6) == 2) {
-                final var exCount = text.size();
-
-                var index = exCount - 2;
-                while (((text.elementAt(index) & 0xff) >> 7) == 1 && ((text.elementAt(index) & 0xff) >> 6) == 2) {
-                    --index;
-                }
-
-                final var shifted = (text.elementAt(index) & 0xff) >> 4;
-                final var oneCount = shifted == 0b1100 ? 2
-                                        : (shifted == 0b1110) ? 3 : 4;
-
-                if (text.size() - index < oneCount) {
-                    for (int i = 0; i < oneCount - 1; ++i) {
-                        unicodeBuffer.add(text.remove(index));
-                    }
-                }
-            } else {
-                unicodeBuffer.add(text.remove(text.size() - 1));
-            }
-        }
+        fixUnicode(text);
 
         var appendix = new String(ByteHelper.castToByte(text.toArray(new Byte[0])), StandardCharsets.UTF_8);
         try {
