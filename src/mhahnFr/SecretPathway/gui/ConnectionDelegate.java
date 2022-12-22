@@ -21,6 +21,7 @@ package mhahnFr.SecretPathway.gui;
 
 import mhahnFr.SecretPathway.core.net.Connection;
 import mhahnFr.SecretPathway.core.net.ConnectionListener;
+import mhahnFr.SecretPathway.core.net.ConnectionSender;
 import mhahnFr.SecretPathway.core.protocols.Protocol;
 import mhahnFr.SecretPathway.core.protocols.spp.SPPPlugin;
 import mhahnFr.SecretPathway.core.protocols.telnet.TelnetPlugin;
@@ -45,7 +46,7 @@ import java.util.concurrent.Future;
  * @since 21.11.2022
  * @author mhahnFr
  */
-class ConnectionDelegate implements ConnectionListener {
+class ConnectionDelegate implements ConnectionListener, ConnectionSender {
     /** The underlying connection to be controlled.                                */
     private final Connection connection;
     /** The default style used by the main text pane.                              */
@@ -94,7 +95,7 @@ class ConnectionDelegate implements ConnectionListener {
 
         defaultStyle = this.pane.getLogicalStyle();
         current = new FStyle();
-        protocols = new Protocol(null, new SPPPlugin(),
+        protocols = new Protocol(this, new SPPPlugin(),
                                        new TelnetPlugin());
 
         receiver.showMessageFrom(this, "Connecting...", null, 0);
@@ -117,7 +118,12 @@ class ConnectionDelegate implements ConnectionListener {
         } catch (BadLocationException e) {
             throw new RuntimeException(e);
         }
-        threads.execute(() -> connection.send(tmpText.getBytes(StandardCharsets.UTF_8)));
+        send(tmpText.getBytes(StandardCharsets.UTF_8));
+    }
+
+    @Override
+    public void send(byte[] bytes) {
+        threads.execute(() -> connection.send(bytes));
     }
 
     /**
