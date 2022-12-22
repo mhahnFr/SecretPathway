@@ -508,6 +508,7 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
             delegate.closeConnection();
             this.connection = connection;
             delegate = new ConnectionDelegate(this.connection, this, mainPane);
+            setTitle(Constants.NAME + ": " + this.connection.getName());
         }
     }
 
