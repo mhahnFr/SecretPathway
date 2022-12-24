@@ -248,15 +248,21 @@ class ConnectionDelegate implements ConnectionListener, ConnectionSender {
 
                     // Foreground
                     case 30 -> current.setForeground(Color.black);
-                    case 31 -> current.setForeground(Color.red);
-                    case 32 -> current.setForeground(Color.green);
-                    case 33 -> current.setForeground(Color.yellow);
-                    case 34 -> current.setForeground(Color.blue);
-                    case 35 -> current.setForeground(Color.magenta);
-                    case 36 -> current.setForeground(Color.cyan);
+                    case 31 -> current.setForeground(new Color(192, 0, 0));
+                    case 32 -> current.setForeground(new Color(0, 192, 0));
+                    case 33 -> current.setForeground(new Color(192, 192, 0));
+                    case 34 -> current.setForeground(new Color(0, 0, 192));
+                    case 35 -> current.setForeground(new Color(192, 0, 192));
+                    case 36 -> current.setForeground(new Color(0, 192, 192));
                     case 37 -> current.setForeground(Color.lightGray);
                     case 39 -> current.setForeground(null);
                     case 90 -> current.setForeground(Color.darkGray);
+                    case 91 -> current.setForeground(new Color(255, 0, 0));
+                    case 92 -> current.setForeground(new Color(0, 255, 0));
+                    case 93 -> current.setForeground(new Color(255, 255, 0));
+                    case 94 -> current.setForeground(new Color(0, 0, 255));
+                    case 95 -> current.setForeground(new Color(255, 0, 255));
+                    case 96 -> current.setForeground(new Color(0, 255, 255));
                     case 97 -> current.setForeground(Color.white);
 
                     // Background
