@@ -203,8 +203,8 @@ class ConnectionDelegate implements ConnectionListener, ConnectionSender {
                 case 7  -> result = new Color(192, 192, 192);
                 case 8  -> result = new Color(128, 128, 128);
                 case 9  -> result = new Color(255, 0,   0);
-                case 10 -> result = new Color(255, 255, 0);
-                case 11 -> result = new Color(0,   255, 0);
+                case 10 -> result = new Color(0,   255, 0);
+                case 11 -> result = new Color(255, 255, 0);
                 case 12 -> result = new Color(0,   0,   255);
                 case 13 -> result = new Color(255, 0,   255);
                 case 14 -> result = new Color(0,   255, 255);
