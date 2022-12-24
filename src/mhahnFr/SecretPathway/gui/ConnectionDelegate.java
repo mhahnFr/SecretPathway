@@ -248,34 +248,40 @@ class ConnectionDelegate implements ConnectionListener, ConnectionSender {
 
                     // Foreground
                     case 30 -> current.setForeground(Color.black);
-                    case 31 -> current.setForeground(new Color(192, 0, 0));
-                    case 32 -> current.setForeground(new Color(0, 192, 0));
+                    case 31 -> current.setForeground(new Color(192, 0,   0));
+                    case 32 -> current.setForeground(new Color(0,   192, 0));
                     case 33 -> current.setForeground(new Color(192, 192, 0));
-                    case 34 -> current.setForeground(new Color(0, 0, 192));
-                    case 35 -> current.setForeground(new Color(192, 0, 192));
-                    case 36 -> current.setForeground(new Color(0, 192, 192));
+                    case 34 -> current.setForeground(new Color(0,   0,   192));
+                    case 35 -> current.setForeground(new Color(192, 0,   192));
+                    case 36 -> current.setForeground(new Color(0,   192, 192));
                     case 37 -> current.setForeground(Color.lightGray);
                     case 39 -> current.setForeground(null);
                     case 90 -> current.setForeground(Color.darkGray);
-                    case 91 -> current.setForeground(new Color(255, 0, 0));
-                    case 92 -> current.setForeground(new Color(0, 255, 0));
+                    case 91 -> current.setForeground(new Color(255, 0,   0));
+                    case 92 -> current.setForeground(new Color(0,   255, 0));
                     case 93 -> current.setForeground(new Color(255, 255, 0));
-                    case 94 -> current.setForeground(new Color(0, 0, 255));
-                    case 95 -> current.setForeground(new Color(255, 0, 255));
-                    case 96 -> current.setForeground(new Color(0, 255, 255));
+                    case 94 -> current.setForeground(new Color(0,   0,   255));
+                    case 95 -> current.setForeground(new Color(255, 0,   255));
+                    case 96 -> current.setForeground(new Color(0,   255, 255));
                     case 97 -> current.setForeground(Color.white);
 
                     // Background
                     case 40  -> current.setBackground(Color.black);
-                    case 41  -> current.setBackground(Color.red);
-                    case 42  -> current.setBackground(Color.green);
-                    case 43  -> current.setBackground(Color.yellow);
-                    case 44  -> current.setBackground(Color.blue);
-                    case 45  -> current.setBackground(Color.magenta);
-                    case 46  -> current.setBackground(Color.cyan);
+                    case 41  -> current.setBackground(new Color(192, 0,   0));
+                    case 42  -> current.setBackground(new Color(0,   192, 0));
+                    case 43  -> current.setBackground(new Color(192, 192, 0));
+                    case 44  -> current.setBackground(new Color(0,   0,   192));
+                    case 45  -> current.setBackground(new Color(192, 0,   192));
+                    case 46  -> current.setBackground(new Color(0,   192, 192));
                     case 47  -> current.setBackground(Color.lightGray);
                     case 49  -> current.setBackground(null);
                     case 100 -> current.setBackground(Color.darkGray);
+                    case 101 -> current.setBackground(new Color(255, 0,   0));
+                    case 102 -> current.setBackground(new Color(0,   255, 0));
+                    case 103 -> current.setBackground(new Color(255, 255, 0));
+                    case 104 -> current.setBackground(new Color(0,   0,   255));
+                    case 105 -> current.setBackground(new Color(255, 0,   255));
+                    case 106 -> current.setBackground(new Color(0,   255, 255));
                     case 107 -> current.setBackground(Color.white);
 
                     case 38 -> {
