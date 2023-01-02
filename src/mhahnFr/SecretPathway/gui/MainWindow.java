@@ -1,7 +1,7 @@
 /*
  * SecretPathway - A MUD client.
  *
- * Copyright (C) 2022  mhahnFr
+ * Copyright (C) 2022 - 2023  mhahnFr
  *
  * This file is part of the SecretPathway. This program is free software:
  * you can redistribute it and/or modify it under the terms of the
@@ -27,13 +27,13 @@ import mhahnFr.SecretPathway.core.net.ConnectionFactory;
 import mhahnFr.SecretPathway.gui.helper.MessageReceiver;
 import mhahnFr.utils.gui.DarkComponent;
 import mhahnFr.utils.gui.DarkTextComponent;
+import mhahnFr.utils.gui.DocumentAdapter;
 import mhahnFr.utils.gui.HintTextField;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -417,17 +417,11 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
             final var scrollPane = new DarkComponent<>(new JScrollPane(mainPane), components).getComponent();
             mainPane.setEditable(false);
             mainPane.setFont(Constants.UI.FONT.deriveFont((float) Settings.getInstance().getFontSize()));
-            mainPane.getDocument().addDocumentListener(new DocumentListener() {
+            mainPane.getDocument().addDocumentListener(new DocumentAdapter() {
                 @Override
                 public void insertUpdate(DocumentEvent e) {
                     mainPane.setCaretPosition(mainPane.getText().length());
                 }
-
-                @Override
-                public void removeUpdate(DocumentEvent e) {}
-
-                @Override
-                public void changedUpdate(DocumentEvent e) {}
             });
 
             final var promptPanel = new DarkComponent<>(new JPanel(), components).getComponent();
