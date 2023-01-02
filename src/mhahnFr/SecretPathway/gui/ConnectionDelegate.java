@@ -1,7 +1,7 @@
 /*
  * SecretPathway - A MUD client.
  *
- * Copyright (C) 2022  mhahnFr
+ * Copyright (C) 2022 - 2023  mhahnFr
  *
  * This file is part of the SecretPathway. This program is free software:
  * you can redistribute it and/or modify it under the terms of the
@@ -211,7 +211,9 @@ class ConnectionDelegate implements ConnectionListener, ConnectionSender {
                 case 15 -> result = new Color(255, 255, 255);
             }
         } else if (colourCode < 232) {
-            result = new Color(color256CubeCalc(colourCode, 36), color256CubeCalc(colourCode, 6), color256CubeCalc(colourCode, 1));
+            result = new Color(color256CubeCalc(colourCode, 36),
+                               color256CubeCalc(colourCode, 6),
+                               color256CubeCalc(colourCode, 1));
         } else if (colourCode < 256) {
             final var value = ((float) ((2056 + 2570 * (colourCode - 232))) / 256) / 255;
             result = new Color(value, value, value);
@@ -292,7 +294,9 @@ class ConnectionDelegate implements ConnectionListener, ConnectionSender {
                             current.setForeground(colourFrom256Bit(Integer.parseInt(splits[i + 1])));
                             ++i;
                         } else if (code == 2) {
-                            current.setForeground(new Color(Integer.parseInt(splits[i + 1]), Integer.parseInt(splits[i + 2]), Integer.parseInt(splits[i + 3])));
+                            current.setForeground(new Color(Integer.parseInt(splits[i + 1]),
+                                                            Integer.parseInt(splits[i + 2]),
+                                                            Integer.parseInt(splits[i + 3])));
                             i += 3;
                         }
                     }
@@ -305,7 +309,9 @@ class ConnectionDelegate implements ConnectionListener, ConnectionSender {
                             current.setBackground(colourFrom256Bit(Integer.parseInt(splits[i + 1])));
                             ++i;
                         } else if (code == 2) {
-                            current.setBackground(new Color(Integer.parseInt(splits[i + 1]), Integer.parseInt(splits[i + 2]), Integer.parseInt(splits[i + 3])));
+                            current.setBackground(new Color(Integer.parseInt(splits[i + 1]),
+                                                            Integer.parseInt(splits[i + 2]),
+                                                            Integer.parseInt(splits[i + 3])));
                             i += 3;
                         }
                     }
