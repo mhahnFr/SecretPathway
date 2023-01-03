@@ -42,7 +42,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
- * An implementation of the {@link ConnectionListener} for this MainWindow.
+ * An implementation of the {@link ConnectionListener}.
  *
  * @since 21.11.2022
  * @author mhahnFr
@@ -66,6 +66,7 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
     private Timer reconnectTimer;
     /** Indicates whether something has been received on this connection.          */
     private boolean firstReceive = true;
+    /** Indicates whether the {@link #current current style} has been changed.     */
     private boolean styleChanged = false;
     /** Indicates whether incoming data should be sent to the protocol abstraction.*/
     private boolean wasSpecial = false;
@@ -166,10 +167,20 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
         System.err.println("--------------");
     }
 
+    /**
+     * Returns the currently used {@link FStyle}.
+     *
+     * @return the currently used style
+     */
     public FStyle getCurrentStyle() {
         return current;
     }
 
+    /**
+     * Sets the given style to be the new style to be used.
+     *
+     * @param newStyle the new style to be used
+     */
     public void setCurrentStyle(final FStyle newStyle) {
         current = newStyle;
         styleChanged = true;
