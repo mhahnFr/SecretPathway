@@ -1,7 +1,7 @@
 /*
  * SecretPathway - A MUD client.
  *
- * Copyright (C) 2023.  mhahnFr
+ * Copyright (C) 2023  mhahnFr
  *
  * This file is part of the SecretPathway. This program is free software:
  * you can redistribute it and/or modify it under the terms of the
@@ -30,10 +30,23 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Vector;
 
+/**
+ * This class acts as a plugin for ANSI escape codes.
+ *
+ * @author mhahnFr
+ * @since 03.01.23
+ */
 public class ANSIPlugin implements ProtocolPlugin {
+    /** The buffer for the incoming ANSI escape sequence.            */
     private final List<Byte> buffer = new Vector<>();
+    /** The owner of this plugin, used for altering the text styles. */
     private final ConnectionDelegate owner;
 
+    /**
+     * Initializes this plugin using the given owner.
+     *
+     * @param owner the owner of this plugin
+     */
     public ANSIPlugin(ConnectionDelegate owner) {
         this.owner = owner;
     }
