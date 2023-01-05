@@ -19,6 +19,8 @@
 
 package mhahnFr.SecretPathway.gui.editor;
 
+import mhahnFr.SecretPathway.core.Constants;
+import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.utils.gui.DarkComponent;
 import mhahnFr.utils.gui.DarkTextComponent;
 
@@ -40,13 +42,16 @@ public class EditorView extends JPanel {
     public EditorView() {
         super(new BorderLayout());
             final var textPane = new DarkTextComponent<>(new JTextPane(), components).getComponent();
+            textPane.setFont(Constants.UI.FONT.deriveFont((float) Settings.getInstance().getFontSize()));
             final var scrollPane = new DarkComponent<>(new JScrollPane(textPane), components).getComponent();
 
             final var south = new DarkComponent<>(new JPanel(new GridLayout(2, 1)), components).getComponent();
                 final var buttons = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
                     final var highlight = new DarkComponent<>(new JCheckBox("Syntax highlighting"), components).getComponent();
+                    highlight.addItemListener(__ -> toggleSyntaxHighlighting(highlight.isSelected()));
 
                     final var saveButton = new JButton("Save");
+                    saveButton.addActionListener(__ -> saveText());
                 buttons.add(highlight, BorderLayout.CENTER);
                 buttons.add(saveButton, BorderLayout.EAST);
 
@@ -62,5 +67,14 @@ public class EditorView extends JPanel {
         for (final var component : components) {
             component.setDark(dark);
         }
+    }
+
+    private void saveText() {
+        // TODO: Save the text
+        System.out.println("Saving...");
+    }
+
+    private void toggleSyntaxHighlighting(final boolean enabled) {
+        // TODO: Implement
     }
 }
