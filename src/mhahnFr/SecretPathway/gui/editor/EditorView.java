@@ -37,8 +37,12 @@ import java.util.List;
  * @since 05.01.23
  */
 public class EditorView extends JPanel {
+    /** A list consisting of all components enabling the dark mode. */
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
 
+    /**
+     * Initializes this EditorView.
+     */
     public EditorView() {
         super(new BorderLayout());
             final var textPane = new DarkTextComponent<>(new JTextPane(), components).getComponent();
@@ -63,17 +67,30 @@ public class EditorView extends JPanel {
         setBorder(new EmptyBorder(5, 5, 5, 5));
     }
 
+    /**
+     * Sets whether this component should appear in the dark mode.
+     *
+     * @param dark whether to use the dark mode
+     */
     public void setDark(final boolean dark) {
         for (final var component : components) {
             component.setDark(dark);
         }
     }
 
+    /**
+     * Saves the text of the editor by sending a message to the server.
+     */
     private void saveText() {
         // TODO: Save the text
         System.out.println("Saving...");
     }
 
+    /**
+     * Toggles the syntax highlighting. If it is disabled, the text styling is reset.
+     *
+     * @param enabled whether to apply syntax highlighting
+     */
     private void toggleSyntaxHighlighting(final boolean enabled) {
         // TODO: Implement
     }
