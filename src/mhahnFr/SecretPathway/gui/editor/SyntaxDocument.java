@@ -92,7 +92,11 @@ public class SyntaxDocument extends DefaultStyledDocument {
                     style.setForeground(Color.orange);
                 }
 
-                default -> style.setForeground(StyleConstants.getForeground(def));
+                default -> {
+                    style.setForeground(StyleConstants.getForeground(def));
+                    style.setBold(false);
+                    style.setItalic(false);
+                }
             }
             setCharacterAttributes(token.begin(), token.end() - token.begin(), style.asStyle(def), true);
         }
