@@ -26,7 +26,7 @@ import mhahnFr.utils.StringStream;
 import mhahnFr.utils.gui.abstraction.FStyle;
 
 import javax.swing.text.*;
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * This class serves as a syntax aware document for LPC
@@ -36,7 +36,9 @@ import java.awt.*;
  * @since 07.01.23
  */
 public class SyntaxDocument extends DefaultStyledDocument {
+    /** The default underlying style.                         */
     private final Style def = getLogicalStyle(0);
+    /** Indicates whether the syntax highlighting is enabled. */
     private boolean highlighting;
 
     @Override
@@ -51,6 +53,11 @@ public class SyntaxDocument extends DefaultStyledDocument {
         updateHighlight();
     }
 
+    /**
+     * Returns the whole text of this document.
+     *
+     * @return the whole text
+     */
     public String getAllText() {
         try {
             return getText(0, getLength());
@@ -59,6 +66,9 @@ public class SyntaxDocument extends DefaultStyledDocument {
         }
     }
 
+    /**
+     * Updates the syntax highlight.
+     */
     private void updateHighlight() {
         final var tokenizer = new Tokenizer(new StringStream(getAllText()));
         tokenizer.setCommentTokensEnabled(true);
@@ -88,10 +98,21 @@ public class SyntaxDocument extends DefaultStyledDocument {
         }
     }
 
+    /**
+     * Returns whether the syntax highlighting is currently enabled.
+     *
+     * @return whether the syntax highlighting is enabled
+     */
     public boolean isHighlighting() {
         return highlighting;
     }
 
+    /**
+     * Sets whether the syntax highlighting is enabled. If {@code false}
+     * is passed, the highlight is reset.
+     *
+     * @param highlighting whether to highlight the syntax
+     */
     public void setHighlighting(boolean highlighting) {
         this.highlighting = highlighting;
     }
