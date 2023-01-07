@@ -39,13 +39,16 @@ import java.util.List;
 public class EditorView extends JPanel {
     /** A list consisting of all components enabling the dark mode. */
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
+    private final SyntaxDocument document;
 
     /**
      * Initializes this EditorView.
      */
     public EditorView() {
         super(new BorderLayout());
-            final var textPane = new DarkTextComponent<>(new JTextPane(), components).getComponent();
+            document = new SyntaxDocument();
+            document.setHighlighting(true);
+            final var textPane = new DarkTextComponent<>(new JTextPane(document), components).getComponent();
             textPane.setFont(Constants.UI.FONT.deriveFont((float) Settings.getInstance().getFontSize()));
             final var scrollPane = new DarkComponent<>(new JScrollPane(textPane), components).getComponent();
 
