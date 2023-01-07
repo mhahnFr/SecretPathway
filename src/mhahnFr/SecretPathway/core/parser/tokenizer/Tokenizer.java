@@ -230,7 +230,11 @@ public class Tokenizer {
         stream.skip(2);
 
         final var buffer = new StringBuilder();
-        while (stream.hasNext() && !isSpecial(stream.peek())) {
+        while (stream.hasNext() && (Character.isAlphabetic(stream.peek()) ||
+                                    Character.isDigit(stream.peek())      ||
+                                    stream.peek() == '_'                  ||
+                                    stream.peek() == '$'                  ||
+                                    stream.peek() == '#')) {
             buffer.append(stream.next());
         }
         return buffer.toString();
