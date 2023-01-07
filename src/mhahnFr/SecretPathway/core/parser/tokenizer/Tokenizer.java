@@ -98,8 +98,8 @@ public class Tokenizer {
                 return nextToken();
             }
         }
-        else if (stream.peek('('))   return new Token(stream.getIndex(), TokenType.LEFT_BRACKET,       null, stream.skip());
-        else if (stream.peek(')'))   return new Token(stream.getIndex(), TokenType.RIGHT_BRACKET,      null, stream.skip());
+        else if (stream.peek('('))   return new Token(stream.getIndex(), TokenType.LEFT_PAREN,         null, stream.skip());
+        else if (stream.peek(')'))   return new Token(stream.getIndex(), TokenType.RIGHT_PAREN,        null, stream.skip());
         else if (stream.peek('['))   return new Token(stream.getIndex(), TokenType.LEFT_BRACKET,       null, stream.skip());
         else if (stream.peek(']'))   return new Token(stream.getIndex(), TokenType.RIGHT_BRACKET,      null, stream.skip());
         else if (stream.peek('{'))   return new Token(stream.getIndex(), TokenType.LEFT_CURLY,         null, stream.skip());
@@ -137,6 +137,9 @@ public class Tokenizer {
         else if (stream.peek("--"))  return new Token(stream.getIndex(), TokenType.DECREMENT,          null, stream.skip(2));
         else if (stream.peek('+'))   return new Token(stream.getIndex(), TokenType.PLUS,               null, stream.skip());
         else if (stream.peek('-'))   return new Token(stream.getIndex(), TokenType.MINUS,              null, stream.skip());
+        else if (stream.peek('*'))   return new Token(stream.getIndex(), TokenType.STAR,               null, stream.skip());
+        else if (stream.peek('/'))   return new Token(stream.getIndex(), TokenType.SLASH,              null, stream.skip());
+        else if (stream.peek('%'))   return new Token(stream.getIndex(), TokenType.PERCENT,            null, stream.skip());
         else if (stream.peek('"'))   return new Token(stream.getIndex(), TokenType.STRING, readTill("\""), stream.getIndex());
         else if (stream.peek('\''))  return new Token(stream.getIndex(), TokenType.CHAR,   readTill("'"),  stream.getIndex());
         else if (stream.peek("#'"))  return new Token(stream.getIndex(), TokenType.SYMBOL, readTill("'"),  stream.getIndex());
