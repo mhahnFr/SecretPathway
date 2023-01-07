@@ -46,6 +46,7 @@ public class EditorView extends JPanel {
      */
     public EditorView() {
         super(new BorderLayout());
+        components.add(new DarkComponent<>(this));
             document = new SyntaxDocument();
             document.setHighlighting(true);
             final var textPane = new DarkTextComponent<>(new JTextPane(document), components).getComponent();
