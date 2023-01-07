@@ -148,6 +148,11 @@ public class Tokenizer {
         return nextWord();
     }
 
+    /**
+     * Constructs and returns a token from the next word read in the stream.
+     *
+     * @return a token constructed from the next read word
+     */
     private Token nextWord() {
         final var begin = stream.getIndex();
         final var word  = readWord();
@@ -205,6 +210,11 @@ public class Tokenizer {
         }
     }
 
+    /**
+     * Reads and returns a word from the stream.
+     *
+     * @return the read word
+     */
     private String readWord() {
         final var buffer = new StringBuilder();
         while (stream.hasNext() && !isSpecial(stream.peek())) {
@@ -226,6 +236,11 @@ public class Tokenizer {
         }
     }
 
+    /**
+     * Reads and returns a symbol name from the stream.
+     *
+     * @return the read symbol name
+     */
     private String readSymbol() {
         stream.skip(2);
 
@@ -240,6 +255,13 @@ public class Tokenizer {
         return buffer.toString();
     }
 
+    /**
+     * Reads a string from the stream until the given string has been
+     * read or the end of the stream has been reached.
+     *
+     * @param string the string the read one should end with
+     * @return the read string
+     */
     private String readTill(final String string) {
         return readTill(string, 1);
     }
