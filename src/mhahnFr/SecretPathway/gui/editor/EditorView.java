@@ -22,6 +22,7 @@ package mhahnFr.SecretPathway.gui.editor;
 import mhahnFr.SecretPathway.core.Constants;
 import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.utils.gui.DarkComponent;
+import mhahnFr.utils.gui.DarkModeListener;
 import mhahnFr.utils.gui.DarkTextComponent;
 
 import javax.swing.*;
@@ -36,7 +37,7 @@ import java.util.List;
  * @author mhahnFr
  * @since 05.01.23
  */
-public class EditorView extends JPanel {
+public class EditorView extends JPanel implements DarkModeListener {
     /** A list consisting of all components enabling the dark mode. */
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
     /** The document responsible for highlighting the source code.  */
@@ -57,7 +58,7 @@ public class EditorView extends JPanel {
                 final var buttons = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
                     final var highlight = new DarkComponent<>(new JCheckBox("Syntax highlighting"), components).getComponent();
                     highlight.addItemListener(__ -> toggleSyntaxHighlighting(highlight.isSelected()));
-                    highlight.setSelected(true); // - for now. (mhahnFr)
+                    highlight.setSelected(Settings.getInstance().getSyntaxHighlighting());
 
                     final var saveButton = new JButton("Save");
                     saveButton.addActionListener(__ -> saveText());
@@ -70,6 +71,13 @@ public class EditorView extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
         add(south,      BorderLayout.SOUTH);
         setBorder(new EmptyBorder(5, 5, 5, 5));
+
+        Settings.getInstance().addDarkModeListener(this);
+    }
+
+    @Override
+    public void darkModeToggled(boolean dark) {
+        setDark(dark);
     }
 
     /**
@@ -98,5 +106,9 @@ public class EditorView extends JPanel {
      */
     private void toggleSyntaxHighlighting(final boolean enabled) {
         document.setHighlighting(enabled);
+    }
+
+    public void dispose() {
+        Settings.getInstance().removeDarkModeListener(this);
     }
 }
