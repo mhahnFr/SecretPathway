@@ -54,11 +54,14 @@ public class EditorView extends JPanel implements DarkModeListener {
             textPane.setFont(Constants.UI.FONT.deriveFont((float) Settings.getInstance().getFontSize()));
             final var scrollPane = new DarkComponent<>(new JScrollPane(textPane), components).getComponent();
 
-            final var south = new DarkComponent<>(new JPanel(new GridLayout(2, 1)), components).getComponent();
+            final var south = new DarkComponent<>(new JPanel(new GridLayout(3, 1)), components).getComponent();
                 final var buttons = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
                     final var highlight = new DarkComponent<>(new JCheckBox("Syntax highlighting"), components).getComponent();
                     highlight.addItemListener(__ -> toggleSyntaxHighlighting(highlight.isSelected()));
                     highlight.setSelected(Settings.getInstance().getSyntaxHighlighting());
+
+                    final var closeButton = new JButton("Close");
+                    closeButton.addActionListener(__ -> dispose());
 
                     final var saveButton = new JButton("Save");
                     saveButton.addActionListener(__ -> saveText());
