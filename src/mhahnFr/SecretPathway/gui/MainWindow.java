@@ -90,7 +90,12 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
 
         restoreBounds();
 
-        setDark(Settings.getInstance().getDarkMode());
+        final var settings = Settings.getInstance();
+
+        settings.addDarkModeListener(this::setDark);
+        settings.addFontSizeListener(this::changeFontSize);
+
+        setDark(settings.getDarkMode());
 
         delegate = new ConnectionDelegate(this.connection, this, mainPane);
     }
@@ -101,6 +106,10 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
         if (b) {
             promptField.requestFocusInWindow();
         }
+    }
+
+    private void changeFontSize(final int size) {
+        mainPane.setFont(mainPane.getFont().deriveFont((float) size));
     }
 
     /**
@@ -293,104 +302,8 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
      * Displays the settings.
      */
     private void showSettings() {
-        final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
+        final var window = new SettingsWindow(this);
 
-        final var window = new JDialog(this, Constants.NAME + ": Settings", true);
-        window.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        window.setResizable(false);
-
-        final var panel = new DarkComponent<>(new JPanel(), components).getComponent();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(new EmptyBorder(5, 5, 5, 5));
-            final var spinnerPanel = new DarkComponent<>(new JPanel(), components).getComponent();
-            spinnerPanel.setLayout(new BoxLayout(spinnerPanel, BoxLayout.X_AXIS));
-                final var stepperLabel = new DarkComponent<>(new JLabel("The font size:"), components).getComponent();
-
-                final var stepper = new DarkComponent<>(new JSpinner(), components).getComponent();
-                stepper.setValue(Settings.getInstance().getFontSize());
-            spinnerPanel.add(stepperLabel);
-            spinnerPanel.add(stepper);
-
-            final var checkBoxes = new DarkComponent<>(new JPanel(new GridLayout(3, 1)), components).getComponent();
-                final var darkMode = new DarkComponent<>(new JCheckBox("Enable dark mode"), components).getComponent();
-
-                final var editorInlined = new DarkComponent<>(new JCheckBox("Use inlined editor"), components).getComponent();
-
-                final var editorHighlighting = new DarkComponent<>(new JCheckBox("Automatically enable syntax highlighting in the editor"), components).getComponent();
-            checkBoxes.add(darkMode);
-            checkBoxes.add(editorInlined);
-            checkBoxes.add(editorHighlighting);
-
-            final var connectionPanel = new DarkComponent<>(new JPanel(new GridLayout(2, 2)), components).getComponent();
-            connectionPanel.setBorder(new BevelBorder(BevelBorder.RAISED));
-                final var hostLabel = new DarkComponent<>(new JLabel("The hostname:"), components).getComponent();
-                final var hostField = new DarkTextComponent<>(new HintTextField("The hostname or IP-address"), components).getComponent();
-
-                final var portLabel = new DarkComponent<>(new JLabel("The port:"), components).getComponent();
-                final var portField = new DarkTextComponent<>(new HintTextField("the port"), components).getComponent();
-            connectionPanel.add(hostLabel);
-            connectionPanel.add(hostField);
-            connectionPanel.add(portLabel);
-            connectionPanel.add(portField);
-
-        panel.add(spinnerPanel);
-        panel.add(checkBoxes);
-        panel.add(connectionPanel);
-
-        hostField.setText(connection.getHostname());
-        portField.setText(Integer.toString(connection.getPort()));
-
-        darkMode.setSelected(Settings.getInstance().getDarkMode());
-        editorInlined.setSelected(Settings.getInstance().getEditorInlined());
-        editorHighlighting.setSelected(Settings.getInstance().getSyntaxHighlighting());
-
-        darkMode.addItemListener(event -> {
-            final boolean dark = darkMode.isSelected();
-
-            setDark(dark);
-
-            for (var component : components) {
-                component.setDark(dark);
-            }
-
-            Settings.getInstance().setDarkMode(dark);
-        });
-        editorInlined.addItemListener(__ -> Settings.getInstance().setEditorInlined(editorInlined.isSelected()));
-        editorHighlighting.addItemListener(__ -> Settings.getInstance().setSyntaxHighlighting(editorHighlighting.isSelected()));
-
-        stepper.addChangeListener(event -> {
-            final int size = (int) stepper.getValue();
-
-            Settings.getInstance().setFontSize(size);
-
-            mainPane.setFont(mainPane.getFont().deriveFont((float) size));
-        });
-
-        window.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                final var newHost = hostField.getText();
-                final int newPort;
-                try {
-                    newPort = Integer.decode(portField.getText());
-                } catch (NumberFormatException exception) {
-                    return;
-                }
-
-                final var newConnection = ConnectionFactory.create(hostField.getText(), newPort);
-
-                if (!newHost.equals(connection.getHostname()) || newPort != connection.getPort() && newConnection != null) {
-                    if (promptConnectionClosing()) {
-                        delegate.closeConnection();
-                        connection = newConnection;
-                        delegate = new ConnectionDelegate(connection, MainWindow.this, mainPane);
-                    }
-                }
-            }
-        });
-
-        window.getContentPane().add(panel);
-        window.pack();
         window.setLocationRelativeTo(this);
         window.setVisible(true);
     }

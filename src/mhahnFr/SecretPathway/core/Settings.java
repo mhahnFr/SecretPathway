@@ -20,7 +20,11 @@
 package mhahnFr.SecretPathway.core;
 
 import mhahnFr.SecretPathway.SecretPathway;
+import mhahnFr.utils.gui.DarkModeListener;
+import mhahnFr.utils.gui.FontSizeListener;
 
+import java.util.List;
+import java.util.Vector;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -37,12 +41,32 @@ public final class Settings {
 
     /** The {@link Preferences} instance.        */
     private final Preferences preferences;
+    private final List<DarkModeListener> darkListeners;
+    private final List<FontSizeListener> fontListeners;
 
     /**
      * Constructs this settings object.
      */
     private Settings() {
-        preferences = Preferences.userNodeForPackage(SecretPathway.class);
+        preferences   = Preferences.userNodeForPackage(SecretPathway.class);
+        darkListeners = new Vector<>();
+        fontListeners = new Vector<>();
+    }
+
+    public void addDarkModeListener(final DarkModeListener listener) {
+        darkListeners.add(listener);
+    }
+
+    public void addFontSizeListener(final FontSizeListener listener) {
+        fontListeners.add(listener);
+    }
+
+    public void removeDarkModeListener(final DarkModeListener listener) {
+        darkListeners.remove(listener);
+    }
+
+    public void removeFontSizeListener(final FontSizeListener listener) {
+        fontListeners.remove(listener);
     }
 
     /**
@@ -189,6 +213,11 @@ public final class Settings {
      */
     public Settings setFontSize(int size) {
         preferences.putInt(Keys.FONT_SIZE, size);
+
+        for (final var listener : fontListeners) {
+            listener.fontSizeChangedTo(size);
+        }
+
         return this;
     }
 
@@ -200,6 +229,11 @@ public final class Settings {
      */
     public Settings setDarkMode(boolean enabled) {
         preferences.putInt(Keys.DARK_MODE, enabled ? 1 : 0);
+
+        for (final var listener : darkListeners) {
+            listener.darkModeToggled(enabled);
+        }
+
         return this;
     }
 
