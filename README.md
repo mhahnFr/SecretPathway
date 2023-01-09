@@ -22,4 +22,4 @@ The optimized **macOS** version can be found [here](https://www.github.com/mhahn
 
 This project is licensed under the terms of the GPL 3.0.
 
-© Copyright 2022 [mhahnFr](https://www.github.com/mhahnFr)
+© Copyright 2022 - 2023 [mhahnFr](https://www.github.com/mhahnFr)
