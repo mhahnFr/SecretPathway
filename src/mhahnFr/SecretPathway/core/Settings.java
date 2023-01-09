@@ -1,7 +1,7 @@
 /*
  * SecretPathway - A MUD client.
  *
- * Copyright (C) 2022  mhahnFr
+ * Copyright (C) 2022 - 2023  mhahnFr
  *
  * This file is part of the SecretPathway. This program is free software:
  * you can redistribute it and/or modify it under the terms of the
@@ -35,7 +35,7 @@ public final class Settings {
     /** The one and only instance of this class. */
     private static final Settings instance = new Settings();
 
-    /** The {@link Preferences} instance.       */
+    /** The {@link Preferences} instance.        */
     private final Preferences preferences;
 
     /**
@@ -118,6 +118,26 @@ public final class Settings {
     }
 
     /**
+     * Returns whether the syntax highlighting should be enabled
+     * by default in the LPC editor.
+     *
+     * @return whether to enable the syntax highlighting by default
+     */
+    public boolean getSyntaxHighlighting() {
+        return preferences.getInt(Keys.EDITOR_SYNTAX_HIGHLIGHTING, 1) != 0;
+    }
+
+    /**
+     * Returns whether the LPC editor should be inlined into the
+     * main window.
+     *
+     * @return whether to inline the editor
+     */
+    public boolean getEditorInlined() {
+        return preferences.getInt(Keys.EDITOR_INLINED, 0) != 0;
+    }
+
+    /**
      * Stores the given hostname.
      *
      * @param hostname the hostname to store
@@ -184,6 +204,30 @@ public final class Settings {
     }
 
     /**
+     * Sets whether the syntax highlighting should be enabled by
+     * default in the LPC editor.
+     *
+     * @param enabled whether to enable the syntax highlighting
+     * @return this instance
+     */
+    public Settings setSyntaxHighlighting(final boolean enabled) {
+        preferences.putInt(Keys.EDITOR_SYNTAX_HIGHLIGHTING, enabled ? 1 : 0);
+        return this;
+    }
+
+    /**
+     * Sets whether the LPC editor should be inlined into the
+     * main window.
+     *
+     * @param inlined whether to inline the editor
+     * @return this instance
+     */
+    public Settings setEditorInlined(final boolean inlined) {
+        preferences.putInt(Keys.EDITOR_INLINED, inlined ? 1 : 0);
+        return this;
+    }
+
+    /**
      * Attempts to flush the underlying {@link Preferences}. Returns whether the
      * operation was successful.
      *
@@ -226,21 +270,25 @@ public final class Settings {
         /** The identifier used for all keys. */
         private static final String BUNDLE_ID = "mhahnFr.SecretPathway";
 
-        /** Key for the hostname or IP address.              */
-        public static final String HOSTNAME          = BUNDLE_ID + ".hostname";
-        /** Key for the port.                                */
-        public static final String PORT              = BUNDLE_ID + ".port";
-        /** Key for the width of the main window.            */
-        public static final String WINDOW_WIDTH      = BUNDLE_ID + ".windowWidth";
-        /** Key for the height of the main window.           */
-        public static final String WINDOW_HEIGHT     = BUNDLE_ID + ".windowHeight";
-        /** Key for the X-coordinate of the window position. */
-        public static final String WINDOW_LOCATION_X = BUNDLE_ID + ".windowLocationX";
-        /** Key for the Y-coordinate of the window position. */
-        public static final String WINDOW_LOCATION_Y = BUNDLE_ID + ".windowLocationY";
-        /** The key used to store the font size.             */
-        public static final String FONT_SIZE         = BUNDLE_ID + ".fontSize";
-        /** The key used to store the dark mode state.       */
-        public static final String DARK_MODE         = BUNDLE_ID + ".darkMode";
+        /** Key for the hostname or IP address.                  */
+        public static final String HOSTNAME                   = BUNDLE_ID + ".hostname";
+        /** Key for the port.                                    */
+        public static final String PORT                       = BUNDLE_ID + ".port";
+        /** Key for the width of the main window.                */
+        public static final String WINDOW_WIDTH               = BUNDLE_ID + ".windowWidth";
+        /** Key for the height of the main window.               */
+        public static final String WINDOW_HEIGHT              = BUNDLE_ID + ".windowHeight";
+        /** Key for the X-coordinate of the window position.     */
+        public static final String WINDOW_LOCATION_X          = BUNDLE_ID + ".windowLocationX";
+        /** Key for the Y-coordinate of the window position.     */
+        public static final String WINDOW_LOCATION_Y          = BUNDLE_ID + ".windowLocationY";
+        /** The key used to store the font size.                 */
+        public static final String FONT_SIZE                  = BUNDLE_ID + ".fontSize";
+        /** The key used to store the dark mode state.           */
+        public static final String DARK_MODE                  = BUNDLE_ID + ".darkMode";
+        /** The key used to store the syntax highlighting state. */
+        public static final String EDITOR_SYNTAX_HIGHLIGHTING = BUNDLE_ID + ".editorSyntaxHighlighting";
+        /** The key used to store the editor inlining state.     */
+        public static final String EDITOR_INLINED             = BUNDLE_ID + ".editorInlined";
     }
 }
