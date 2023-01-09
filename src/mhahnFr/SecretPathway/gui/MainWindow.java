@@ -304,43 +304,45 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
             final var spinnerPanel = new DarkComponent<>(new JPanel(), components).getComponent();
             spinnerPanel.setLayout(new BoxLayout(spinnerPanel, BoxLayout.X_AXIS));
-
                 final var stepperLabel = new DarkComponent<>(new JLabel("The font size:"), components).getComponent();
 
                 final var stepper = new DarkComponent<>(new JSpinner(), components).getComponent();
                 stepper.setValue(Settings.getInstance().getFontSize());
-
             spinnerPanel.add(stepperLabel);
             spinnerPanel.add(stepper);
 
-            final var darkPanel = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
+            final var checkBoxes = new DarkComponent<>(new JPanel(new GridLayout(3, 1)), components).getComponent();
                 final var darkMode = new DarkComponent<>(new JCheckBox("Enable dark mode"), components).getComponent();
 
-                final var spacer = new DarkComponent<>(new JPanel(), components).getComponent();
+                final var editorInlined = new DarkComponent<>(new JCheckBox("Use inlined editor"), components).getComponent();
 
-            darkPanel.add(darkMode, BorderLayout.WEST);
-            darkPanel.add(spacer, BorderLayout.CENTER);
+                final var editorHighlighting = new DarkComponent<>(new JCheckBox("Automatically enable syntax highlighting in the editor"), components).getComponent();
+            checkBoxes.add(darkMode);
+            checkBoxes.add(editorInlined);
+            checkBoxes.add(editorHighlighting);
 
             final var connectionPanel = new DarkComponent<>(new JPanel(new GridLayout(2, 2)), components).getComponent();
             connectionPanel.setBorder(new BevelBorder(BevelBorder.RAISED));
-
                 final var hostLabel = new DarkComponent<>(new JLabel("The hostname:"), components).getComponent();
                 final var hostField = new DarkTextComponent<>(new HintTextField("The hostname or IP-address"), components).getComponent();
 
                 final var portLabel = new DarkComponent<>(new JLabel("The port:"), components).getComponent();
                 final var portField = new DarkTextComponent<>(new HintTextField("the port"), components).getComponent();
-
             connectionPanel.add(hostLabel);
             connectionPanel.add(hostField);
             connectionPanel.add(portLabel);
             connectionPanel.add(portField);
 
         panel.add(spinnerPanel);
-        panel.add(darkPanel);
+        panel.add(checkBoxes);
         panel.add(connectionPanel);
 
         hostField.setText(connection.getHostname());
         portField.setText(Integer.toString(connection.getPort()));
+
+        darkMode.setSelected(Settings.getInstance().getDarkMode());
+        editorInlined.setSelected(Settings.getInstance().getEditorInlined());
+        editorHighlighting.setSelected(Settings.getInstance().getSyntaxHighlighting());
 
         darkMode.addItemListener(event -> {
             final boolean dark = darkMode.isSelected();
@@ -353,9 +355,8 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
 
             Settings.getInstance().setDarkMode(dark);
         });
-        if (Settings.getInstance().getDarkMode()) {
-            darkMode.setSelected(true);
-        }
+        editorInlined.addItemListener(__ -> Settings.getInstance().setEditorInlined(editorInlined.isSelected()));
+        editorHighlighting.addItemListener(__ -> Settings.getInstance().setSyntaxHighlighting(editorHighlighting.isSelected()));
 
         stepper.addChangeListener(event -> {
             final int size = (int) stepper.getValue();
