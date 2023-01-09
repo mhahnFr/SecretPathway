@@ -31,7 +31,6 @@ import mhahnFr.utils.gui.DocumentAdapter;
 import mhahnFr.utils.gui.HintTextField;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
@@ -459,7 +458,6 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
                               .setWindowLocation(getX(), getY())
                               .setWindowSize(getWidth(), getHeight())
                               .flush();
-
     }
 
     /**
@@ -502,28 +500,25 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
      * {@code null} if {@code exitOnFail} is set to {@code true}
      */
     private Connection promptConnection(boolean exitOnFail) {
-
         var wrapPanel = new JPanel(new BorderLayout());
-
             var errorLabel = new JLabel();
             errorLabel.setForeground(Color.red);
             errorLabel.setVisible(false);
 
             var panel = new JPanel(new GridLayout(2, 1));
-
                 var hostPanel = new JPanel(new GridLayout(2, 1));
                     var hostField = new HintTextField("hostname or IP address, ex: 127.0.0.1");
+
                     hostPanel.add(new JLabel("Enter the hostname or the IP address of the MUD server:"));
-                    hostPanel.add(hostField);
+                hostPanel.add(hostField);
 
                 var portPanel = new JPanel(new GridLayout(2, 1));
                     var portField = new HintTextField("port, ex: 4242");
-                    portPanel.add(new JLabel("Enter the port to be used:"));
-                    portPanel.add(portField);
 
+                    portPanel.add(new JLabel("Enter the port to be used:"));
+                portPanel.add(portField);
             panel.add(hostPanel);
             panel.add(portPanel);
-
         wrapPanel.add(errorLabel, BorderLayout.NORTH);
         wrapPanel.add(panel, BorderLayout.CENTER);
 
