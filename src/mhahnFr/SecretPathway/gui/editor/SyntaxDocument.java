@@ -103,6 +103,13 @@ public class SyntaxDocument extends DefaultStyledDocument {
     }
 
     /**
+     * Clears the syntax highlighting.
+     */
+    private void clearHighlight() {
+        setCharacterAttributes(0, getLength(), def, true);
+    }
+
+    /**
      * Returns whether the syntax highlighting is currently enabled.
      *
      * @return whether the syntax highlighting is enabled
@@ -119,5 +126,11 @@ public class SyntaxDocument extends DefaultStyledDocument {
      */
     public void setHighlighting(boolean highlighting) {
         this.highlighting = highlighting;
+
+        if (highlighting) {
+            updateHighlight();
+        } else {
+            clearHighlight();
+        }
     }
 }

@@ -39,6 +39,7 @@ import java.util.List;
 public class EditorView extends JPanel {
     /** A list consisting of all components enabling the dark mode. */
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
+    /** The document responsible for highlighting the source code.  */
     private final SyntaxDocument document;
 
     /**
@@ -48,7 +49,6 @@ public class EditorView extends JPanel {
         super(new BorderLayout());
         components.add(new DarkComponent<>(this));
             document = new SyntaxDocument();
-            document.setHighlighting(true);
             final var textPane = new DarkTextComponent<>(new JTextPane(document), components).getComponent();
             textPane.setFont(Constants.UI.FONT.deriveFont((float) Settings.getInstance().getFontSize()));
             final var scrollPane = new DarkComponent<>(new JScrollPane(textPane), components).getComponent();
@@ -57,6 +57,7 @@ public class EditorView extends JPanel {
                 final var buttons = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
                     final var highlight = new DarkComponent<>(new JCheckBox("Syntax highlighting"), components).getComponent();
                     highlight.addItemListener(__ -> toggleSyntaxHighlighting(highlight.isSelected()));
+                    highlight.setSelected(true); // - for now. (mhahnFr)
 
                     final var saveButton = new JButton("Save");
                     saveButton.addActionListener(__ -> saveText());
@@ -96,6 +97,6 @@ public class EditorView extends JPanel {
      * @param enabled whether to apply syntax highlighting
      */
     private void toggleSyntaxHighlighting(final boolean enabled) {
-        // TODO: Implement
+        document.setHighlighting(enabled);
     }
 }
