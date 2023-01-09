@@ -22,6 +22,7 @@ package mhahnFr.SecretPathway.gui;
 import mhahnFr.SecretPathway.core.Constants;
 import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.utils.gui.DarkComponent;
+import mhahnFr.utils.gui.DarkModeListener;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -35,7 +36,7 @@ import java.util.List;
  * @author mhahnFr
  * @since 09.01.23
  */
-public class SettingsWindow extends JDialog {
+public class SettingsWindow extends JDialog implements DarkModeListener {
     /** The list with all documents enabling their dark mode. */
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
 
@@ -110,5 +111,16 @@ public class SettingsWindow extends JDialog {
         for (final var component : components) {
             component.setDark(dark);
         }
+    }
+
+    @Override
+    public void darkModeToggled(boolean dark) {
+        setDark(dark);
+    }
+
+    @Override
+    public void dispose() {
+        Settings.getInstance().removeDarkModeListener(this);
+        super.dispose();
     }
 }
