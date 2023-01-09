@@ -29,9 +29,21 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class represents a settings window.
+ *
+ * @author mhahnFr
+ * @since 09.01.23
+ */
 public class SettingsWindow extends JDialog {
+    /** The list with all documents enabling their dark mode. */
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
 
+    /**
+     * Constructs this settings window using the given owner.
+     *
+     * @param owner the owner of this window
+     */
     public SettingsWindow(final Frame owner) {
         super(owner, Constants.NAME + ": Settings", true);
 
@@ -45,6 +57,9 @@ public class SettingsWindow extends JDialog {
         setResizable(false);
     }
 
+    /**
+     * Creates the content of this window.
+     */
     private void createContent() {
         final var panel = new DarkComponent<>(new JPanel(), components).getComponent();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -86,6 +101,11 @@ public class SettingsWindow extends JDialog {
         editorHighlighting.addItemListener(__ -> settings.setSyntaxHighlighting(editorHighlighting.isSelected()));
     }
 
+    /**
+     * Toggles the dark mode.
+     *
+     * @param dark whether to enable the dark mode
+     */
     public void setDark(final boolean dark) {
         for (final var component : components) {
             component.setDark(dark);

@@ -108,6 +108,12 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
         }
     }
 
+    /**
+     * Changes the font size of the {@link #mainPane} to the
+     * given size.
+     *
+     * @param size the new font size
+     */
     private void changeFontSize(final int size) {
         mainPane.setFont(mainPane.getFont().deriveFont((float) size));
     }
