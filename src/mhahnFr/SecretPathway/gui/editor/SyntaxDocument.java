@@ -88,9 +88,16 @@ public class SyntaxDocument extends DefaultStyledDocument {
     }
 
     /**
-     * Updates the syntax highlight.
+     * Updates the syntax highlight. If no theme is set,
+     * nothing is done.
+     *
+     * @see #getTheme()
+     * @see #setTheme(SPTheme)
+     * @see #theme
      */
     private void updateHighlight() {
+        if (theme == null) return;
+
         final var tokenizer = new Tokenizer(new StringStream(getAllText()));
         tokenizer.setCommentTokensEnabled(true);
 
