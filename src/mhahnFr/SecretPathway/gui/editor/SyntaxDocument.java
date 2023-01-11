@@ -25,10 +25,8 @@ import mhahnFr.SecretPathway.core.parser.tokenizer.Tokenizer;
 import mhahnFr.SecretPathway.gui.editor.theme.DefaultTheme;
 import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
 import mhahnFr.utils.StringStream;
-import mhahnFr.utils.gui.abstraction.FStyle;
 
 import javax.swing.text.*;
-import java.awt.Color;
 
 /**
  * This class serves as a syntax aware document for LPC
@@ -42,6 +40,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
     private final Style def = getLogicalStyle(0);
     /** Indicates whether the syntax highlighting is enabled. */
     private boolean highlighting;
+    /** The theme to be used for the syntax highlighting.     */
     private SPTheme theme = new DefaultTheme(); // For now. - mhahnFr
 
     @Override
@@ -69,10 +68,21 @@ public class SyntaxDocument extends DefaultStyledDocument {
         }
     }
 
+    /**
+     * Returns the currently used syntax highlighting theme.
+     *
+     * @return the syntax highlighting theme
+     */
     public SPTheme getTheme() {
         return theme;
     }
 
+    /**
+     * Sets the syntax highlighting theme to be used. Does not
+     * trigger a recoloring.
+     *
+     * @param theme the new theme to be used
+     */
     public void setTheme(SPTheme theme) {
         this.theme = theme;
     }

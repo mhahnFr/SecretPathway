@@ -33,8 +33,12 @@ import java.util.Map;
  * @since 10.01.23
  */
 public class DefaultTheme implements SPTheme {
+    /** The mapping containing the styles and token types. */
     private final Map<TokenType, FStyle> styles = new EnumMap<>(TokenType.class);
 
+    /**
+     * Initializes this default theme.
+     */
     public DefaultTheme() {
         final var keyword = new FStyle();
         keyword.setBold(true);
