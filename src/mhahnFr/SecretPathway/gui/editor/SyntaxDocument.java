@@ -22,6 +22,8 @@ package mhahnFr.SecretPathway.gui.editor;
 import mhahnFr.SecretPathway.core.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.core.parser.tokenizer.Tokenizer;
+import mhahnFr.SecretPathway.gui.editor.theme.DefaultTheme;
+import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
 import mhahnFr.utils.StringStream;
 import mhahnFr.utils.gui.abstraction.FStyle;
 
@@ -40,6 +42,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
     private final Style def = getLogicalStyle(0);
     /** Indicates whether the syntax highlighting is enabled. */
     private boolean highlighting;
+    private SPTheme theme = new DefaultTheme(); // For now. - mhahnFr
 
     @Override
     public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
@@ -66,6 +69,14 @@ public class SyntaxDocument extends DefaultStyledDocument {
         }
     }
 
+    public SPTheme getTheme() {
+        return theme;
+    }
+
+    public void setTheme(SPTheme theme) {
+        this.theme = theme;
+    }
+
     /**
      * Updates the syntax highlight.
      */
@@ -73,32 +84,10 @@ public class SyntaxDocument extends DefaultStyledDocument {
         final var tokenizer = new Tokenizer(new StringStream(getAllText()));
         tokenizer.setCommentTokensEnabled(true);
 
-        final var style = new FStyle();
-
         Token token;
         while ((token = tokenizer.nextToken()).type() != TokenType.EOF) {
-            switch (token.type()) {
-                case IDENTIFIER -> style.setForeground(Color.green);
-
-                case COMMENT_LINE, COMMENT_BLOCK -> {
-                    style.setItalic(true);
-                    style.setForeground(Color.gray);
-                }
-
-                case STRING -> style.setForeground(Color.red);
-
-                case INCLUDE, INHERIT, PRIVATE, PROTECTED, PUBLIC, OVERRIDE, DEPRECATED, NEW, THIS, NIL, TRUE, FALSE, SIZEOF, IS, CLASS, VOID, CHAR_KEYWORD, INT_KEYWORD, BOOL, OBJECT, STRING_KEYWORD, SYMBOL_KEYWORD, MAPPING, ANY, MIXED, AUTO, OPERATOR, LET, IF, ELSE, WHILE, DO, FOR, FOREACH, SWITCH, CASE, DEFAULT, BREAK, CONTINUE, RETURN, TRY, CATCH -> {
-                    style.setBold(true);
-                    style.setForeground(Color.orange);
-                }
-
-                default -> {
-                    style.setForeground(StyleConstants.getForeground(def));
-                    style.setBold(false);
-                    style.setItalic(false);
-                }
-            }
-            setCharacterAttributes(token.begin(), token.end() - token.begin(), style.asStyle(def), true);
+            setCharacterAttributes(token.begin(), token.end() - token.begin(),
+                    theme.styleFor(token.type()).asStyle(def), true);
         }
     }
 
