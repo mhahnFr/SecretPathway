@@ -28,42 +28,88 @@ import java.awt.Color;
  * @since 14.01.23
  */
 public class JSONColor {
+    /** The red component of the color.   */
     private int red;
+    /** The green component of the color. */
     private int green;
+    /** The blue component of the color.  */
     private int blue;
 
+    /**
+     * Default constructor. All values are zeroed.
+     */
     public JSONColor() {}
 
+    /**
+     * Copies the given color.
+     *
+     * @param color the color to be copied
+     */
     public JSONColor(final Color color) {
         red   = color.getRed();
         green = color.getGreen();
         blue  = color.getBlue();
     }
 
+    /**
+     * Returns a {@link Color} representation of this color.
+     *
+     * @return a native representation of this color
+     */
     public Color getNative() {
         return new Color(red, green, blue);
     }
 
+    /**
+     * Returns the red component of this color.
+     *
+     * @return the red component
+     */
     public int getRed() {
         return red;
     }
 
+    /**
+     * Sets the red component of this color.
+     *
+     * @param red the red component
+     */
     public void setRed(int red) {
         this.red = red;
     }
 
+    /**
+     * Returns the green component of this color.
+     *
+     * @return the green component
+     */
     public int getGreen() {
         return green;
     }
 
+    /**
+     * Sets the green component of this color.
+     *
+     * @param green the green component
+     */
     public void setGreen(int green) {
         this.green = green;
     }
 
+    /**
+     * Returns the blue component of this color.
+     *
+     * @return the blue component
+     */
     public int getBlue() {
         return blue;
     }
 
+    /**
+     * Sets the blue component of this color.
+     *
+     * @param blue the blue component
+     */
     public void setBlue(int blue) {
         this.blue = blue;
     }
