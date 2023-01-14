@@ -71,8 +71,8 @@ public class JSONStyle {
     public FStyle getNative() {
         final var toReturn = new FStyle();
 
-        toReturn.setForeground(foreground.getNative());
-        toReturn.setBackground(background.getNative());
+        toReturn.setForeground(foreground == null ? null : foreground.getNative());
+        toReturn.setBackground(background == null ? null : background.getNative());
         toReturn.setBold(bold);
         toReturn.setItalic(italic);
         toReturn.setStrikeThrough(strike);
