@@ -184,6 +184,15 @@ public final class Settings {
     }
 
     /**
+     * Returns the path to theme to be used by the editor.
+     *
+     * @return the path to the theme
+     */
+    public String getEditorThemePath() {
+        return preferences.get(Keys.EDITOR_THEME_PATH, null);
+    }
+
+    /**
      * Stores the given hostname.
      *
      * @param hostname the hostname to store
@@ -284,6 +293,17 @@ public final class Settings {
     }
 
     /**
+     * Sets the path to the theme used for the editor.
+     *
+     * @param path the path
+     * @return this instance
+     */
+    public Settings setEditorThemePath(final String path) {
+        preferences.put(Keys.EDITOR_THEME_PATH, path);
+        return this;
+    }
+
+    /**
      * Attempts to flush the underlying {@link Preferences}. Returns whether the
      * operation was successful.
      *
@@ -323,28 +343,30 @@ public final class Settings {
      * Helper class that contains the keys used to store the settings.
      */
     private static final class Keys {
-        /** The identifier used for all keys. */
+        /** The identifier used for all keys.                               */
         private static final String BUNDLE_ID = "mhahnFr.SecretPathway";
 
-        /** Key for the hostname or IP address.                  */
+        /** Key for the hostname or IP address.                             */
         public static final String HOSTNAME                   = BUNDLE_ID + ".hostname";
-        /** Key for the port.                                    */
+        /** Key for the port.                                               */
         public static final String PORT                       = BUNDLE_ID + ".port";
-        /** Key for the width of the main window.                */
+        /** Key for the width of the main window.                           */
         public static final String WINDOW_WIDTH               = BUNDLE_ID + ".windowWidth";
-        /** Key for the height of the main window.               */
+        /** Key for the height of the main window.                          */
         public static final String WINDOW_HEIGHT              = BUNDLE_ID + ".windowHeight";
-        /** Key for the X-coordinate of the window position.     */
+        /** Key for the X-coordinate of the window position.                */
         public static final String WINDOW_LOCATION_X          = BUNDLE_ID + ".windowLocationX";
-        /** Key for the Y-coordinate of the window position.     */
+        /** Key for the Y-coordinate of the window position.                */
         public static final String WINDOW_LOCATION_Y          = BUNDLE_ID + ".windowLocationY";
-        /** The key used to store the font size.                 */
+        /** The key used to store the font size.                            */
         public static final String FONT_SIZE                  = BUNDLE_ID + ".fontSize";
-        /** The key used to store the dark mode state.           */
+        /** The key used to store the dark mode state.                      */
         public static final String DARK_MODE                  = BUNDLE_ID + ".darkMode";
-        /** The key used to store the syntax highlighting state. */
+        /** The key used to store the syntax highlighting state.            */
         public static final String EDITOR_SYNTAX_HIGHLIGHTING = BUNDLE_ID + ".editorSyntaxHighlighting";
-        /** The key used to store the editor inlining state.     */
+        /** The key used to store the editor inlining state.                */
         public static final String EDITOR_INLINED             = BUNDLE_ID + ".editorInlined";
+        /** The key used to store the path to the theme used by the editor. */
+        public static final String EDITOR_THEME_PATH          = BUNDLE_ID + ".editorThemePath";
     }
 }
