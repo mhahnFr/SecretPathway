@@ -41,7 +41,9 @@ public final class Settings {
 
     /** The {@link Preferences} instance.        */
     private final Preferences preferences;
+    /** The {@link DarkModeListener}s.           */
     private final List<DarkModeListener> darkListeners;
+    /** The {@link FontSizeListener}s.           */
     private final List<FontSizeListener> fontListeners;
 
     /**
@@ -53,18 +55,38 @@ public final class Settings {
         fontListeners = new Vector<>();
     }
 
+    /**
+     * Adds a dark mode listener.
+     *
+     * @param listener the new listener to be added
+     */
     public void addDarkModeListener(final DarkModeListener listener) {
         darkListeners.add(listener);
     }
 
+    /**
+     * Adds a font size listener.
+     *
+     * @param listener the new listener to be added
+     */
     public void addFontSizeListener(final FontSizeListener listener) {
         fontListeners.add(listener);
     }
 
+    /**
+     * Removes the given dark mode listener.
+     *
+     * @param listener the listener to be removed
+     */
     public void removeDarkModeListener(final DarkModeListener listener) {
         darkListeners.remove(listener);
     }
 
+    /**
+     * Removes the given font size listener.
+     *
+     * @param listener the listener to be removed
+     */
     public void removeFontSizeListener(final FontSizeListener listener) {
         fontListeners.remove(listener);
     }
