@@ -19,10 +19,12 @@
 
 package mhahnFr.SecretPathway.gui.editor;
 
+import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.SecretPathway.core.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.core.parser.tokenizer.Tokenizer;
 import mhahnFr.SecretPathway.gui.editor.theme.DefaultTheme;
+import mhahnFr.SecretPathway.gui.editor.theme.JSONTheme;
 import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
 import mhahnFr.utils.StringStream;
 
@@ -41,7 +43,22 @@ public class SyntaxDocument extends DefaultStyledDocument {
     /** Indicates whether the syntax highlighting is enabled. */
     private boolean highlighting;
     /** The theme to be used for the syntax highlighting.     */
-    private SPTheme theme = new DefaultTheme(); // For now. - mhahnFr
+    private SPTheme theme = restoreTheme();
+
+    /**
+     * Tries to restore the previously used theme. If it is not possible,
+     * a new {@link DefaultTheme} is returned.
+     *
+     * @return the restored or a default theme
+     */
+    private SPTheme restoreTheme() {
+        final var themePath = Settings.getInstance().getEditorThemePath();
+        if (themePath != null) {
+            final var theme = JSONTheme.from(themePath);
+            if (theme != null) { return theme; }
+        }
+        return new DefaultTheme();
+    }
 
     @Override
     public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {

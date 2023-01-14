@@ -20,8 +20,12 @@
 package mhahnFr.SecretPathway.gui.editor.theme;
 
 import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
+import mhahnFr.utils.StringStream;
 import mhahnFr.utils.gui.abstraction.FStyle;
+import mhahnFr.utils.json.JSONParser;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -56,5 +60,23 @@ public class JSONTheme implements SPTheme {
             }
         }
         return new FStyle();
+    }
+
+    /**
+     * Reads a {@link JSONTheme} from the given JSON file.
+     *
+     * @param path the path to the file
+     * @return the read theme or {@code null} in case of an error
+     */
+    public static JSONTheme from(final String path) {
+        if (path == null) return null;
+
+        try (final var reader = new BufferedInputStream(new FileInputStream(path))) {
+            final var theme = new JSONTheme();
+            new JSONParser(new StringStream(new String(reader.readAllBytes(), StandardCharsets.UTF_8))).readInto(theme);
+            return theme;
+        } catch (Exception __) {
+            return null;
+        }
     }
 }
