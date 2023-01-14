@@ -17,9 +17,10 @@
  * this program, see the file LICENSE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package mhahnFr.SecretPathway.gui.editor.theme;
+package mhahnFr.SecretPathway.gui.editor.theme.json;
 
 import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
+import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
 import mhahnFr.utils.StringStream;
 import mhahnFr.utils.gui.abstraction.FStyle;
 import mhahnFr.utils.json.JSONParser;
@@ -40,7 +41,7 @@ import java.util.Map;
  */
 public class JSONTheme implements SPTheme {
     /** The list of the used styles. */
-    private List<FStyle> styles = new ArrayList<>();
+    private List<JSONStyle> styles = new ArrayList<>();
     /**
      * Maps the {@link TokenType}s to either the index of the
      * {@link FStyle} to be used or another {@link TokenType}
@@ -56,7 +57,7 @@ public class JSONTheme implements SPTheme {
                 return styleFor((TokenType) style);
             }
             if ((Integer) style > 0 && (Integer) style < styles.size()) {
-                return styles.get((Integer) style);
+                return styles.get((Integer) style).getNative();
             }
         }
         return new FStyle();

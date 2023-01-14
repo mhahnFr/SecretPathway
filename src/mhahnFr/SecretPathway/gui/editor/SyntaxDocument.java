@@ -24,7 +24,7 @@ import mhahnFr.SecretPathway.core.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.core.parser.tokenizer.Tokenizer;
 import mhahnFr.SecretPathway.gui.editor.theme.DefaultTheme;
-import mhahnFr.SecretPathway.gui.editor.theme.JSONTheme;
+import mhahnFr.SecretPathway.gui.editor.theme.json.JSONTheme;
 import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
 import mhahnFr.utils.StringStream;
 
