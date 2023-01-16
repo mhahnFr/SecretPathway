@@ -26,6 +26,7 @@ import mhahnFr.utils.gui.DarkModeListener;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,8 +84,23 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
             checkBoxes.add(darkMode);
             checkBoxes.add(editorInlined);
             checkBoxes.add(editorHighlighting);
+
+            final var themePanel = new DarkComponent<>(new JPanel(new GridLayout(2, 1)), components).getComponent();
+            themePanel.setBorder(new EtchedBorder());
+                final var themeLabel = new DarkComponent<>(new JLabel("The theme used for the editor:"), components).getComponent();
+
+                final var themeBoxPanel = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
+                    final var themeBox = new JComboBox<String>();
+                    themeBox.setEditable(false);
+
+                    final var themeButton = new JButton("Choose...");
+                themeBoxPanel.add(themeBox,    BorderLayout.CENTER);
+                themeBoxPanel.add(themeButton, BorderLayout.EAST);
+            themePanel.add(themeLabel);
+            themePanel.add(themeBoxPanel);
         panel.add(spinnerPanel);
         panel.add(checkBoxes);
+        panel.add(themePanel);
 
         getContentPane().add(panel);
         pack();
