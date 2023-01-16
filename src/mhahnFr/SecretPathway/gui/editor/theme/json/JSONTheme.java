@@ -47,17 +47,14 @@ public class JSONTheme implements SPTheme {
      * {@link FStyle} to be used or another {@link TokenType}
      * whose style is then inherited.
      */
-    private Map<TokenType, Object> tokenStyles = new EnumMap<>(TokenType.class);
+    private Map<TokenType, Integer> tokenStyles = new EnumMap<>(TokenType.class);
 
     @Override
     public FStyle styleFor(TokenType tokenType) {
         final var style = tokenStyles.get(tokenType);
         if (style != null) {
-            if (style instanceof TokenType) {
-                return styleFor((TokenType) style);
-            }
-            if ((Integer) style > 0 && (Integer) style < styles.size()) {
-                return styles.get((Integer) style).getNative();
+            if (style >= 0 && style < styles.size()) {
+                return styles.get(style).getNative();
             }
         }
         return new FStyle();

@@ -111,10 +111,10 @@ public class DefaultTheme implements SPTheme {
         styles.put(TokenType.OPERATOR,       type);
         styles.put(TokenType.LET,            type);
 
-        styles.put(TokenType.INT,    constant);
-        styles.put(TokenType.STRING, constant);
-        styles.put(TokenType.CHAR,   constant);
-        styles.put(TokenType.SYMBOL, constant);
+        styles.put(TokenType.INTEGER,   constant);
+        styles.put(TokenType.STRING,    constant);
+        styles.put(TokenType.CHARACTER, constant);
+        styles.put(TokenType.SYMBOL,    constant);
 
         styles.put(TokenType.COMMENT_BLOCK, comment);
         styles.put(TokenType.COMMENT_LINE,  comment);

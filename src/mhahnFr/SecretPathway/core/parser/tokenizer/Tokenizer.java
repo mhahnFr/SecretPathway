@@ -140,10 +140,10 @@ public class Tokenizer {
         else if (stream.peek('*'))   return new Token(stream.getIndex(), TokenType.STAR,               null, stream.skip());
         else if (stream.peek('/'))   return new Token(stream.getIndex(), TokenType.SLASH,              null, stream.skip());
         else if (stream.peek('%'))   return new Token(stream.getIndex(), TokenType.PERCENT,            null, stream.skip());
-        else if (stream.peek('"'))   return new Token(stream.getIndex(), TokenType.STRING, readTill("\""),    stream.getIndex());
-        else if (stream.peek('\''))  return new Token(stream.getIndex(), TokenType.CHAR,   readTill("'"),     stream.getIndex());
-        else if (stream.peek("#'"))  return new Token(stream.getIndex(), TokenType.SYMBOL, readTill("'", 2),  stream.getIndex());
-        else if (stream.peek("#:"))  return new Token(stream.getIndex(), TokenType.SYMBOL, readSymbol(),      stream.getIndex());
+        else if (stream.peek('"'))   return new Token(stream.getIndex(), TokenType.STRING,    readTill("\""),   stream.getIndex());
+        else if (stream.peek('\''))  return new Token(stream.getIndex(), TokenType.CHARACTER, readTill("'"),    stream.getIndex());
+        else if (stream.peek("#'"))  return new Token(stream.getIndex(), TokenType.SYMBOL,    readTill("'", 2), stream.getIndex());
+        else if (stream.peek("#:"))  return new Token(stream.getIndex(), TokenType.SYMBOL,    readSymbol(),     stream.getIndex());
 
         return nextWord();
     }
@@ -204,7 +204,7 @@ public class Tokenizer {
         }
 
         try {
-            return new Token(begin, TokenType.INT, Integer.decode(word), end);
+            return new Token(begin, TokenType.INTEGER, Integer.decode(word), end);
         } catch (NumberFormatException e) {
             return new Token(begin, TokenType.IDENTIFIER, null, end);
         }
