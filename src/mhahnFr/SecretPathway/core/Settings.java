@@ -20,6 +20,7 @@
 package mhahnFr.SecretPathway.core;
 
 import mhahnFr.SecretPathway.SecretPathway;
+import mhahnFr.utils.SettingsListener;
 import mhahnFr.utils.gui.DarkModeListener;
 import mhahnFr.utils.gui.FontSizeListener;
 
@@ -45,6 +46,8 @@ public final class Settings {
     private final List<DarkModeListener> darkListeners;
     /** The {@link FontSizeListener}s.           */
     private final List<FontSizeListener> fontListeners;
+    /** The {@link SettingsListener}s.           */
+    private final List<SettingsListener> listeners;
 
     /**
      * Constructs this settings object.
@@ -53,6 +56,7 @@ public final class Settings {
         preferences   = Preferences.userNodeForPackage(SecretPathway.class);
         darkListeners = new Vector<>();
         fontListeners = new Vector<>();
+        listeners     = new Vector<>();
     }
 
     /**
@@ -74,6 +78,15 @@ public final class Settings {
     }
 
     /**
+     * Adds the given listener to this instance.
+     *
+     * @param listener the listener to be added
+     */
+    public void addListener(final SettingsListener listener) {
+        listeners.add(listener);
+    }
+
+    /**
      * Removes the given dark mode listener.
      *
      * @param listener the listener to be removed
@@ -89,6 +102,15 @@ public final class Settings {
      */
     public void removeFontSizeListener(final FontSizeListener listener) {
         fontListeners.remove(listener);
+    }
+
+    /**
+     * Removes the given listener from this instance.
+     *
+     * @param listener the listener to be removed
+     */
+    public void removeListener(final SettingsListener listener) {
+        listeners.remove(listener);
     }
 
     /**
