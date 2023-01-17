@@ -21,6 +21,7 @@ package mhahnFr.SecretPathway.gui.editor;
 
 import mhahnFr.SecretPathway.core.Constants;
 import mhahnFr.SecretPathway.core.Settings;
+import mhahnFr.utils.SettingsListener;
 import mhahnFr.utils.gui.DarkComponent;
 import mhahnFr.utils.gui.DarkModeListener;
 import mhahnFr.utils.gui.DarkTextComponent;
@@ -37,7 +38,7 @@ import java.util.List;
  * @author mhahnFr
  * @since 05.01.23
  */
-public class EditorView extends JPanel implements DarkModeListener {
+public class EditorView extends JPanel implements DarkModeListener, SettingsListener {
     /** A list consisting of all components enabling the dark mode. */
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
     /** The document responsible for highlighting the source code.  */
@@ -79,7 +80,7 @@ public class EditorView extends JPanel implements DarkModeListener {
 
         final var settings = Settings.getInstance();
         settings.addDarkModeListener(this);
-        settings.addListener(this::settingsListener);
+        settings.addListener(this);
         setFontSize(settings.getFontSize());
     }
 
@@ -105,7 +106,7 @@ public class EditorView extends JPanel implements DarkModeListener {
      * @param key the key of the changed setting
      * @param newValue the new value of the changed setting
      */
-    private void settingsListener(final String key, final Object newValue) {
+    public void settingChanged(final String key, final Object newValue) {
         if (key.equals(Settings.Keys.FONT_SIZE)) {
             setFontSize((Float) newValue);
         }
@@ -138,7 +139,13 @@ public class EditorView extends JPanel implements DarkModeListener {
         document.setHighlighting(enabled);
     }
 
+    /**
+     * Destroys this EditorView.
+     */
     public void dispose() {
-        Settings.getInstance().removeDarkModeListener(this);
+        final var settings = Settings.getInstance();
+
+        settings.removeDarkModeListener(this);
+        settings.removeListener(this);
     }
 }
