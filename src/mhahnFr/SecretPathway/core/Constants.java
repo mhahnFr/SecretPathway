@@ -57,8 +57,13 @@ public final class Constants {
         public static final Font FONT = new Font("monospaced", Font.PLAIN, 12);
     }
 
+    /**
+     * Constants for use with the editor.
+     */
     public static final class Editor {
+        /** The string displayed for the default theme. */
         public static final String DEFAULT_THEME = "Default";
+        /** The string displayed for choosing a theme.  */
         public static final String CHOOSE_THEME = "Choose...";
     }
 }

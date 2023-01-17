@@ -49,8 +49,11 @@ import java.util.Objects;
 public class SettingsWindow extends JDialog implements DarkModeListener {
     /** The list with all documents enabling their dark mode. */
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
+    /** Convenience reference to the settings object.         */
     private final Settings settings = Settings.getInstance();
+    /** The button used to choose a theme file.               */
     private JButton themeButton;
+    /** The combo box used for choosing the theme.            */
     private JComboBox<String> themeBox;
 
     /**
@@ -144,6 +147,12 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
         themeBox.addItemListener(this::themeChanged);
     }
 
+    /**
+     * Adds functionality to the choosing process of the combo box.
+     *
+     * @param event the event
+     * @see #themeBox
+     */
     private void themeChanged(ItemEvent event) {
         final var item = (String) event.getItem();
         switch (item) {
@@ -158,6 +167,13 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
         }
     }
 
+    /**
+     * Tries to open the given file as a theme file. Shows
+     * an error message if the parsing failed.
+     *
+     * @param file the file to be opened
+     * @return whether the file was opened and parsed successfully
+     */
     private boolean tryOpen(final File file) {
         try (final var is = new BufferedInputStream(new FileInputStream(file))) {
             final var theme = new JSONTheme();
@@ -172,6 +188,13 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
         return true;
     }
 
+    /**
+     * Opens a file chooser for selecting a theme file.
+     * Tries to open it and shows an error message if it
+     * could not.
+     *
+     * @see #tryOpen(File)
+     */
     private void themeButtonClick() {
         final var chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
