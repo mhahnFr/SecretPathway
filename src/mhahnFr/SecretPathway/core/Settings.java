@@ -22,7 +22,6 @@ package mhahnFr.SecretPathway.core;
 import mhahnFr.SecretPathway.SecretPathway;
 import mhahnFr.utils.SettingsListener;
 import mhahnFr.utils.gui.DarkModeListener;
-import mhahnFr.utils.gui.FontSizeListener;
 
 import java.util.List;
 import java.util.Vector;
@@ -44,8 +43,6 @@ public final class Settings {
     private final Preferences preferences;
     /** The {@link DarkModeListener}s.           */
     private final List<DarkModeListener> darkListeners;
-    /** The {@link FontSizeListener}s.           */
-    private final List<FontSizeListener> fontListeners;
     /** The {@link SettingsListener}s.           */
     private final List<SettingsListener> listeners;
 
@@ -55,7 +52,6 @@ public final class Settings {
     private Settings() {
         preferences   = Preferences.userNodeForPackage(SecretPathway.class);
         darkListeners = new Vector<>();
-        fontListeners = new Vector<>();
         listeners     = new Vector<>();
     }
 
@@ -81,15 +77,6 @@ public final class Settings {
     }
 
     /**
-     * Adds a font size listener.
-     *
-     * @param listener the new listener to be added
-     */
-    public void addFontSizeListener(final FontSizeListener listener) {
-        fontListeners.add(listener);
-    }
-
-    /**
      * Adds the given listener to this instance.
      *
      * @param listener the listener to be added
@@ -105,15 +92,6 @@ public final class Settings {
      */
     public void removeDarkModeListener(final DarkModeListener listener) {
         darkListeners.remove(listener);
-    }
-
-    /**
-     * Removes the given font size listener.
-     *
-     * @param listener the listener to be removed
-     */
-    public void removeFontSizeListener(final FontSizeListener listener) {
-        fontListeners.remove(listener);
     }
 
     /**
@@ -285,11 +263,6 @@ public final class Settings {
     public Settings setFontSize(int size) {
         callListeners(Keys.FONT_SIZE, size);
         preferences.putInt(Keys.FONT_SIZE, size);
-
-        for (final var listener : fontListeners) {
-            listener.fontSizeChangedTo(size);
-        }
-
         return this;
     }
 
@@ -395,7 +368,7 @@ public final class Settings {
     /**
      * Helper class that contains the keys used to store the settings.
      */
-    private static final class Keys {
+    public static final class Keys {
         /** The identifier used for all keys.                               */
         private static final String BUNDLE_ID = "mhahnFr.SecretPathway";
 

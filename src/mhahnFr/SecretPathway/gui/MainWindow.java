@@ -92,7 +92,7 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
         final var settings = Settings.getInstance();
 
         settings.addDarkModeListener(this::setDark);
-        settings.addFontSizeListener(this::changeFontSize);
+        settings.addListener(this::settingsListener);
 
         setDark(settings.getDarkMode());
 
@@ -104,6 +104,18 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
         super.setVisible(b);
         if (b) {
             promptField.requestFocusInWindow();
+        }
+    }
+
+    /**
+     * The listening function for settings changes.
+     *
+     * @param key the key of the changed setting
+     * @param newValue the new value of the changed setting
+     */
+    private void settingsListener(final String key, final Object newValue) {
+        if (key.equals(Settings.Keys.FONT_SIZE)) {
+            changeFontSize((Integer) newValue);
         }
     }
 
