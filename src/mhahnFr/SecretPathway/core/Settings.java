@@ -60,6 +60,18 @@ public final class Settings {
     }
 
     /**
+     * Calls all {@link SettingsListener}s with the given values.
+     *
+     * @param key the key of the changed setting
+     * @param newValue the new value of the changed setting
+     */
+    private void callListeners(final String key, final Object newValue) {
+        for (final var listener : listeners) {
+            listener.settingChanged(key, newValue);
+        }
+    }
+
+    /**
      * Adds a dark mode listener.
      *
      * @param listener the new listener to be added
@@ -220,6 +232,7 @@ public final class Settings {
      * @param hostname the hostname to store
      */
     public Settings setHostname(String hostname) {
+        callListeners(Keys.HOSTNAME, hostname);
         preferences.put(Keys.HOSTNAME, hostname);
         return this;
     }
@@ -230,6 +243,7 @@ public final class Settings {
      * @param port the port number to store
      */
     public Settings setPort(int port) {
+        callListeners(Keys.PORT, port);
         preferences.putInt(Keys.PORT, port);
         return this;
     }
@@ -241,6 +255,8 @@ public final class Settings {
      * @param y the Y-coordinate of the window position
      */
     public Settings setWindowLocation(int x, int y) {
+        callListeners(Keys.WINDOW_LOCATION_X, x);
+        callListeners(Keys.WINDOW_LOCATION_Y, y);
         preferences.putInt(Keys.WINDOW_LOCATION_X, x);
         preferences.putInt(Keys.WINDOW_LOCATION_Y, y);
         return this;
@@ -253,6 +269,8 @@ public final class Settings {
      * @param height the height of the window
      */
     public Settings setWindowSize(int width, int height) {
+        callListeners(Keys.WINDOW_WIDTH, width);
+        callListeners(Keys.WINDOW_HEIGHT, height);
         preferences.putInt(Keys.WINDOW_WIDTH, width);
         preferences.putInt(Keys.WINDOW_HEIGHT, height);
         return this;
@@ -265,6 +283,7 @@ public final class Settings {
      * @return this instance
      */
     public Settings setFontSize(int size) {
+        callListeners(Keys.FONT_SIZE, size);
         preferences.putInt(Keys.FONT_SIZE, size);
 
         for (final var listener : fontListeners) {
@@ -281,7 +300,10 @@ public final class Settings {
      * @return this instance
      */
     public Settings setDarkMode(boolean enabled) {
-        preferences.putInt(Keys.DARK_MODE, enabled ? 1 : 0);
+        final var value = enabled ? 1 : 0;
+
+        callListeners(Keys.DARK_MODE, value);
+        preferences.putInt(Keys.DARK_MODE, value);
 
         for (final var listener : darkListeners) {
             listener.darkModeToggled(enabled);
@@ -298,7 +320,11 @@ public final class Settings {
      * @return this instance
      */
     public Settings setSyntaxHighlighting(final boolean enabled) {
-        preferences.putInt(Keys.EDITOR_SYNTAX_HIGHLIGHTING, enabled ? 1 : 0);
+        final var value = enabled ? 1 : 0;
+
+        callListeners(Keys.EDITOR_SYNTAX_HIGHLIGHTING, value);
+        preferences.putInt(Keys.EDITOR_SYNTAX_HIGHLIGHTING, value);
+
         return this;
     }
 
@@ -310,7 +336,11 @@ public final class Settings {
      * @return this instance
      */
     public Settings setEditorInlined(final boolean inlined) {
-        preferences.putInt(Keys.EDITOR_INLINED, inlined ? 1 : 0);
+        final var value = inlined ? 1 : 0;
+
+        callListeners(Keys.EDITOR_INLINED, value);
+        preferences.putInt(Keys.EDITOR_INLINED, value);
+
         return this;
     }
 
@@ -321,6 +351,7 @@ public final class Settings {
      * @return this instance
      */
     public Settings setEditorThemePath(final String path) {
+        callListeners(Keys.EDITOR_THEME_PATH, path);
         preferences.put(Keys.EDITOR_THEME_PATH, path);
         return this;
     }
