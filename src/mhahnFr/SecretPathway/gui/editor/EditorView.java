@@ -42,6 +42,8 @@ public class EditorView extends JPanel implements DarkModeListener {
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
     /** The document responsible for highlighting the source code.  */
     private final SyntaxDocument document;
+    /** The text pane.                                              */
+    private final JTextPane textPane;
 
     /**
      * Initializes this EditorView.
@@ -50,8 +52,7 @@ public class EditorView extends JPanel implements DarkModeListener {
         super(new BorderLayout());
         components.add(new DarkComponent<>(this));
             document = new SyntaxDocument();
-            final var textPane = new DarkTextComponent<>(new JTextPane(document), components).getComponent();
-            textPane.setFont(Constants.UI.FONT.deriveFont((float) Settings.getInstance().getFontSize()));
+            textPane = new DarkTextComponent<>(new JTextPane(document), components).getComponent();
             final var scrollPane = new DarkComponent<>(new JScrollPane(textPane), components).getComponent();
 
             final var south = new DarkComponent<>(new JPanel(new GridLayout(3, 1)), components).getComponent();
@@ -75,7 +76,11 @@ public class EditorView extends JPanel implements DarkModeListener {
         add(south,      BorderLayout.SOUTH);
         setBorder(new EmptyBorder(5, 5, 5, 5));
 
-        Settings.getInstance().addDarkModeListener(this);
+
+        final var settings = Settings.getInstance();
+        settings.addDarkModeListener(this);
+        settings.addListener(this::settingsListener);
+        setFontSize(settings.getFontSize());
     }
 
     @Override
@@ -92,6 +97,28 @@ public class EditorView extends JPanel implements DarkModeListener {
         for (final var component : components) {
             component.setDark(dark);
         }
+    }
+
+    /**
+     * The listening function for settings changes.
+     *
+     * @param key the key of the changed setting
+     * @param newValue the new value of the changed setting
+     */
+    private void settingsListener(final String key, final Object newValue) {
+        if (key.equals(Settings.Keys.FONT_SIZE)) {
+            setFontSize((Float) newValue);
+        }
+    }
+
+    /**
+     * Sets the font size of the main text pane.
+     *
+     * @param size the new size of the font
+     * @see #textPane
+     */
+    private void setFontSize(final float size) {
+        textPane.setFont(Constants.UI.FONT.deriveFont(size));
     }
 
     /**
