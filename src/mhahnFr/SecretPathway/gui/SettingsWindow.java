@@ -21,15 +21,24 @@ package mhahnFr.SecretPathway.gui;
 
 import mhahnFr.SecretPathway.core.Constants;
 import mhahnFr.SecretPathway.core.Settings;
+import mhahnFr.SecretPathway.gui.editor.theme.json.JSONTheme;
+import mhahnFr.utils.StringStream;
 import mhahnFr.utils.gui.DarkComponent;
 import mhahnFr.utils.gui.DarkModeListener;
+import mhahnFr.utils.json.JSONParser;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class represents a settings window.
@@ -40,6 +49,9 @@ import java.util.List;
 public class SettingsWindow extends JDialog implements DarkModeListener {
     /** The list with all documents enabling their dark mode. */
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
+    private final Settings settings = Settings.getInstance();
+    private JButton themeButton;
+    private JComboBox<String> themeBox;
 
     /**
      * Constructs this settings window using the given owner.
@@ -90,10 +102,10 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
                 final var themeLabel = new DarkComponent<>(new JLabel("The theme used for the editor:"), components).getComponent();
 
                 final var themeBoxPanel = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
-                    final var themeBox = new JComboBox<String>();
+                    themeBox = new JComboBox<>();
                     themeBox.setEditable(false);
 
-                    final var themeButton = new JButton("Choose...");
+                    themeButton = new JButton("Choose...");
                 themeBoxPanel.add(themeBox,    BorderLayout.CENTER);
                 themeBoxPanel.add(themeButton, BorderLayout.EAST);
             themePanel.add(themeLabel);
@@ -116,6 +128,65 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
         darkMode.addItemListener(__ -> settings.setDarkMode(darkMode.isSelected()));
         editorInlined.addItemListener(__ -> settings.setEditorInlined(editorInlined.isSelected()));
         editorHighlighting.addItemListener(__ -> settings.setSyntaxHighlighting(editorHighlighting.isSelected()));
+
+        themeButton.addActionListener(__ -> themeButtonClick());
+
+        themeBox.addItem(Constants.Editor.DEFAULT_THEME);
+        themeBox.addItem(Constants.Editor.CHOOSE_THEME);
+        final var themePath = settings.getEditorThemePath();
+        if (themePath != null) {
+            themeBox.addItem(themePath);
+            themeBox.setSelectedItem(themePath);
+        } else {
+            themeBox.setSelectedItem(Constants.Editor.DEFAULT_THEME);
+            themeButton.setVisible(false);
+        }
+        themeBox.addItemListener(this::themeChanged);
+    }
+
+    private void themeChanged(ItemEvent event) {
+        final var item = (String) event.getItem();
+        switch (item) {
+            case Constants.Editor.DEFAULT_THEME: themeButton.setVisible(false); break;
+
+            default:
+                if (!tryOpen(new File(item))) {
+                    themeBox.removeItem(item);
+                }
+
+            case Constants.Editor.CHOOSE_THEME: themeButton.setVisible(true); break;
+        }
+    }
+
+    private boolean tryOpen(final File file) {
+        try (final var is = new BufferedInputStream(new FileInputStream(file))) {
+            final var theme = new JSONTheme();
+            new JSONParser(new StringStream(new String(is.readAllBytes(), StandardCharsets.UTF_8))).readInto(theme);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Could not read file:\n" + e.getLocalizedMessage(),
+                    Constants.NAME + ": File error",
+                    JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+
+    private void themeButtonClick() {
+        final var chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setFileHidingEnabled(true);
+        chooser.setMultiSelectionEnabled(false);
+
+        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            final var file = chooser.getSelectedFile();
+
+            if (tryOpen(file)) {
+                final var path = file.getPath();
+                themeBox.addItem(path);
+                themeBox.setSelectedItem(path);
+            }
+        }
     }
 
     /**
@@ -136,7 +207,13 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
 
     @Override
     public void dispose() {
-        Settings.getInstance().removeDarkModeListener(this);
+        settings.removeDarkModeListener(this);
+
+        final var selected = themeBox.getSelectedItem();
+        if (!Objects.equals(selected, Constants.Editor.CHOOSE_THEME)) {
+            settings.setEditorThemePath(Objects.equals(selected, Constants.Editor.DEFAULT_THEME) ? null : (String) selected);
+        }
+
         super.dispose();
     }
 }

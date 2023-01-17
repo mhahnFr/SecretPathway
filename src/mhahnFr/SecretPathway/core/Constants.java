@@ -1,7 +1,7 @@
 /*
  * SecretPathway - A MUD client.
  *
- * Copyright (C) 2022  mhahnFr
+ * Copyright (C) 2022 - 2023  mhahnFr
  *
  * This file is part of the SecretPathway. This program is free software:
  * you can redistribute it and/or modify it under the terms of the
@@ -55,5 +55,10 @@ public final class Constants {
     public static final class UI {
         /** The default monospaced font to be used. */
         public static final Font FONT = new Font("monospaced", Font.PLAIN, 12);
+    }
+
+    public static final class Editor {
+        public static final String DEFAULT_THEME = "Default";
+        public static final String CHOOSE_THEME = "Choose...";
     }
 }
