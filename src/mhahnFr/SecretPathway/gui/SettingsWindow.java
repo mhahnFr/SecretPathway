@@ -66,7 +66,7 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
 
         createContent();
 
-        Settings.getInstance().addDarkModeListener(this::setDark);
+        Settings.getInstance().addDarkModeListener(this);
 
         setDark(Settings.getInstance().getDarkMode());
 
