@@ -1,7 +1,7 @@
 /*
  * SecretPathway - A MUD client.
  *
- * Copyright (C) 2022  mhahnFr
+ * Copyright (C) 2022 - 2023  mhahnFr
  *
  * This file is part of the SecretPathway. This program is free software:
  * you can redistribute it and/or modify it under the terms of the
@@ -20,7 +20,9 @@
 package mhahnFr.SecretPathway.gui;
 
 import mhahnFr.SecretPathway.core.Constants;
+import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.utils.gui.DarkComponent;
+import mhahnFr.utils.gui.DarkModeListener;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -34,7 +36,7 @@ import java.util.List;
  * @author mhahnFr
  * @since 09.12.22
  */
-public class AboutDialog extends JDialog {
+public class AboutDialog extends JDialog implements DarkModeListener {
     /** The list with all components with a dark mode. */
     final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
 
@@ -50,7 +52,9 @@ public class AboutDialog extends JDialog {
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
         createContent();
-        pack();
+
+        Settings.getInstance().addDarkModeListener(this);
+        setDark(Settings.getInstance().getDarkMode());
     }
 
     /**
@@ -75,6 +79,7 @@ public class AboutDialog extends JDialog {
         panel.add(bottomPanel);
 
         getContentPane().add(panel);
+        pack();
     }
 
     /**
@@ -86,5 +91,16 @@ public class AboutDialog extends JDialog {
         for (final var component : components) {
             component.setDark(dark);
         }
+    }
+
+    @Override
+    public void darkModeToggled(boolean dark) {
+        setDark(dark);
+    }
+
+    @Override
+    public void dispose() {
+        Settings.getInstance().removeDarkModeListener(this);
+        super.dispose();
     }
 }

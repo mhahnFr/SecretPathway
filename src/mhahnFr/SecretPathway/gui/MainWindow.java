@@ -331,7 +331,6 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
     private void showAboutWindow() {
         final var window = new AboutDialog(this, true);
 
-        window.setDark(Settings.getInstance().getDarkMode());
         window.setLocationRelativeTo(this);
         window.setVisible(true);
     }
