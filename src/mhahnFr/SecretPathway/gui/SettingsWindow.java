@@ -137,7 +137,7 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
         themeBox.addItem(Constants.Editor.DEFAULT_THEME);
         themeBox.addItem(Constants.Editor.CHOOSE_THEME);
         final var themePath = settings.getEditorThemePath();
-        if (themePath != null) {
+        if (!themePath.isBlank()) {
             themeBox.addItem(themePath);
             themeBox.setSelectedItem(themePath);
         } else {

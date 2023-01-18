@@ -201,7 +201,7 @@ public final class Settings {
      * @return the path to the theme
      */
     public String getEditorThemePath() {
-        return preferences.get(Keys.EDITOR_THEME_PATH, null);
+        return preferences.get(Keys.EDITOR_THEME_PATH, "");
     }
 
     /**
@@ -325,7 +325,7 @@ public final class Settings {
      */
     public Settings setEditorThemePath(final String path) {
         callListeners(Keys.EDITOR_THEME_PATH, path);
-        preferences.put(Keys.EDITOR_THEME_PATH, path);
+        preferences.put(Keys.EDITOR_THEME_PATH, path == null ? "" : path);
         return this;
     }
 

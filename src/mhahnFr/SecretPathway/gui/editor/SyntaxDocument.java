@@ -53,7 +53,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
      */
     private SPTheme restoreTheme() {
         final var themePath = Settings.getInstance().getEditorThemePath();
-        if (themePath != null) {
+        if (!themePath.isBlank()) {
             final var theme = JSONTheme.from(themePath);
             if (theme != null) { return theme; }
         }
