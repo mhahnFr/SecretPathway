@@ -205,6 +205,10 @@ public class TelnetPlugin implements ProtocolPlugin {
                 }
             }
 
+            case Code.CHARSET -> {
+                // TODO: Implement
+            }
+
             default -> throw new IllegalStateException("Sub negotiation received that was not permitted!");
         }
     }
@@ -220,12 +224,28 @@ public class TelnetPlugin implements ProtocolPlugin {
         var refuse = false;
         switch (option) {
             case Code.BINARY_TRANSMISSION -> {
-                if (previous == TelnetFunction.DO) {
-                    sender.escapeIAC(true);
-                } else if (previous == TelnetFunction.DONT) {
-                    sender.escapeIAC(false);
-                } else {
-                    refuse = true;
+                switch (previous) {
+                    case TelnetFunction.DO, TelnetFunction.WILL -> {
+                        sender.escapeIAC(true);
+                        sendSingle(previous == TelnetFunction.DO ?
+                                        TelnetFunction.WILL : TelnetFunction.DO,
+                                option, sender);
+                    }
+                    case TelnetFunction.DONT, TelnetFunction.WONT -> {
+                        sender.escapeIAC(false);
+                        sendSingle(previous == TelnetFunction.DONT ?
+                                        TelnetFunction.WONT : TelnetFunction.DONT,
+                                option, sender);
+                    }
+
+                    default -> refuse = true;
+                }
+            }
+
+            case Code.CHARSET -> {
+                switch (previous) {
+                    case TelnetFunction.WILL -> sendSingle(TelnetFunction.DO, option, sender);
+                    case TelnetFunction.DO   -> sendSingle(TelnetFunction.WILL, option, sender);
                 }
             }
 
