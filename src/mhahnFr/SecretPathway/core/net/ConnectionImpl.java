@@ -21,6 +21,8 @@ package mhahnFr.SecretPathway.core.net;
 
 import mhahnFr.utils.Pair;
 
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -110,6 +112,15 @@ public class ConnectionImpl extends Connection {
             } else {
                 listener.handleError(exception);
             }
+        }
+    }
+
+    @Override
+    public void startTLS() {
+        try {
+            socket = ((SSLSocketFactory) SSLSocketFactory.getDefault()).createSocket(socket, socket.getInetAddress().getHostAddress(), socket.getPort(), true);
+        } catch (IOException e) {
+            handleException(e);
         }
     }
 

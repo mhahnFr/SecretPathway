@@ -198,6 +198,16 @@ public class TelnetPlugin implements ProtocolPlugin {
      */
     private void parseBuffer(final Vector<Short> buffer, ConnectionSender sender) {
         // TODO: Parse buffer
+        switch (buffer.firstElement()) {
+            case Code.TELNET_START_TLS -> {
+                if (buffer.get(1) == 1) {
+                    // TODO: Start TLS...
+
+                }
+            }
+
+            default -> throw new IllegalStateException("Sub negotiation received that was not permitted!");
+        }
     }
 
     /**
@@ -210,6 +220,11 @@ public class TelnetPlugin implements ProtocolPlugin {
     private void handleSingleOption(final short previous, final short option, ConnectionSender sender) {
         // TODO: Handle single telnet function
         switch (option) {
+            case Code.TELNET_START_TLS -> {
+                sendSingle(TelnetFunction.WILL, option, sender);
+                sendSB(sender, option, (short) 1);
+            }
+
             default -> sendSingle(TelnetFunction.opposite(previous), option, sender);
         }
     }
@@ -230,6 +245,22 @@ public class TelnetPlugin implements ProtocolPlugin {
         bytes[2] = (byte) option;
 
         System.out.println("IAC " + previous + " " + option);
+
+        sender.send(bytes);
+    }
+
+    private void sendSB(ConnectionSender sender, short... codes) {
+        final var bytes = new byte[codes.length + 4];
+
+        bytes[0] = (byte) TelnetFunction.IAC;
+        bytes[1] = (byte) TelnetFunction.SB;
+
+        bytes[bytes.length - 2] = (byte) TelnetFunction.IAC;
+        bytes[bytes.length - 1] = (byte) TelnetFunction.SE;
+
+        for (int i = 0; i < codes.length; ++i) {
+            bytes[i + 2] = (byte) codes[i];
+        }
 
         sender.send(bytes);
     }

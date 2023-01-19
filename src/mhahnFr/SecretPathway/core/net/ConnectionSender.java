@@ -1,7 +1,7 @@
 /*
  * SecretPathway - A MUD client.
  *
- * Copyright (C) 2022  mhahnFr
+ * Copyright (C) 2022 - 2023  mhahnFr
  *
  * This file is part of the SecretPathway. This program is free software:
  * you can redistribute it and/or modify it under the terms of the
@@ -33,4 +33,6 @@ public interface ConnectionSender {
      * @param bytes the bytes to be sent
      */
     void send(byte[] bytes);
+
+    void startTLS();
 }

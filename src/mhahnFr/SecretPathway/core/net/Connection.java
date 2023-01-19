@@ -1,7 +1,7 @@
 /*
  * SecretPathway - A MUD client.
  *
- * Copyright (C) 2022  mhahnFr
+ * Copyright (C) 2022 - 2023  mhahnFr
  *
  * This file is part of the SecretPathway. This program is free software:
  * you can redistribute it and/or modify it under the terms of the
@@ -92,6 +92,8 @@ public abstract class Connection implements Closeable, AutoCloseable {
      * This method establishes a connection to the remote host.
      */
     public abstract void establishConnection();
+
+    public abstract void startTLS();
 
     /**
      * Attempts to send the given piece of data.

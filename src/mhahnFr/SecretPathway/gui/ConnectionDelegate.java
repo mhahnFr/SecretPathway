@@ -126,11 +126,18 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
         threads.execute(() -> connection.send(bytes));
     }
 
+    @Override
+    public void startTLS() {
+        threads.execute(connection::startTLS);
+    }
+
     /**
      * Closes the underlying connection and all other active resources this delegate uses.
      */
     void closeConnection() {
-        reconnectTimer.stop();
+        if (reconnectTimer != null) {
+            reconnectTimer.stop();
+        }
         connection.close();
         listenFuture.cancel(false);
         threads.shutdown();
