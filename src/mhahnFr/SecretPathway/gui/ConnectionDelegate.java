@@ -130,6 +130,7 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
      * Closes the underlying connection and all other active resources this delegate uses.
      */
     void closeConnection() {
+        reconnectTimer.stop();
         connection.close();
         listenFuture.cancel(false);
         threads.shutdown();
