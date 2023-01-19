@@ -205,6 +205,15 @@ public final class Settings {
     }
 
     /**
+     * Returns whether StartTLS is enabled.
+     *
+     * @return whether StartTLS is enabled
+     */
+    public boolean getStartTLS() {
+        return preferences.getInt(Keys.START_TLS, 0) == 1;
+    }
+
+    /**
      * Stores the given hostname.
      *
      * @param hostname the hostname to store
@@ -330,6 +339,21 @@ public final class Settings {
     }
 
     /**
+     * Sets whether to enable StartTLS.
+     *
+     * @param enabled whether StartTLS is enabled
+     * @return this instance
+     */
+    public Settings setStartTLS(final boolean enabled) {
+        final var value = enabled ? 1 : 0;
+
+        callListeners(Keys.START_TLS, value);
+        preferences.putInt(Keys.START_TLS, value);
+
+        return this;
+    }
+
+    /**
      * Attempts to flush the underlying {@link Preferences}. Returns whether the
      * operation was successful.
      *
@@ -388,6 +412,8 @@ public final class Settings {
         public static final String FONT_SIZE                  = BUNDLE_ID + ".fontSize";
         /** The key used to store the dark mode state.                      */
         public static final String DARK_MODE                  = BUNDLE_ID + ".darkMode";
+        /** The key used to store the StartTLS state.                       */
+        public static final String START_TLS                  = BUNDLE_ID + ".startTLS";
         /** The key used to store the syntax highlighting state.            */
         public static final String EDITOR_SYNTAX_HIGHLIGHTING = BUNDLE_ID + ".editorSyntaxHighlighting";
         /** The key used to store the editor inlining state.                */

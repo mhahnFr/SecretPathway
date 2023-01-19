@@ -90,15 +90,18 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
             spinnerPanel.add(stepperLabel);
             spinnerPanel.add(stepper);
 
-            final var checkBoxes = new DarkComponent<>(new JPanel(new GridLayout(3, 1)), components).getComponent();
+            final var checkBoxes = new DarkComponent<>(new JPanel(new GridLayout(4, 1)), components).getComponent();
                 final var darkMode = new DarkComponent<>(new JCheckBox("Enable dark mode"), components).getComponent();
 
                 final var editorInlined = new DarkComponent<>(new JCheckBox("Use inlined editor"), components).getComponent();
 
                 final var editorHighlighting = new DarkComponent<>(new JCheckBox("Automatically enable syntax highlighting in the editor"), components).getComponent();
+
+                final var enableStartTlS = new DarkComponent<>(new JCheckBox("Enable StartTLS"), components).getComponent();
             checkBoxes.add(darkMode);
             checkBoxes.add(editorInlined);
             checkBoxes.add(editorHighlighting);
+            checkBoxes.add(enableStartTlS);
 
             final var themePanel = new DarkComponent<>(new JPanel(new GridLayout(2, 1)), components).getComponent();
             themePanel.setBorder(new EtchedBorder());
@@ -127,10 +130,12 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
         darkMode.setSelected(settings.getDarkMode());
         editorInlined.setSelected(settings.getEditorInlined());
         editorHighlighting.setSelected(settings.getSyntaxHighlighting());
+        enableStartTlS.setSelected(settings.getStartTLS());
 
         darkMode.addItemListener(__ -> settings.setDarkMode(darkMode.isSelected()));
         editorInlined.addItemListener(__ -> settings.setEditorInlined(editorInlined.isSelected()));
         editorHighlighting.addItemListener(__ -> settings.setSyntaxHighlighting(editorHighlighting.isSelected()));
+        enableStartTlS.addItemListener(__ -> settings.setStartTLS(enableStartTlS.isSelected()));
 
         themeButton.addActionListener(__ -> themeButtonClick());
 

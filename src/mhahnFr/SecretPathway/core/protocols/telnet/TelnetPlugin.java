@@ -19,6 +19,7 @@
 
 package mhahnFr.SecretPathway.core.protocols.telnet;
 
+import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.SecretPathway.core.net.ConnectionSender;
 import mhahnFr.SecretPathway.core.protocols.ProtocolPlugin;
 
@@ -217,12 +218,14 @@ public class TelnetPlugin implements ProtocolPlugin {
      */
     private void handleSingleOption(final short previous, final short option, ConnectionSender sender) {
         switch (option) {
-            case Code.TELNET_START_TLS -> {
-                sendSingle(TelnetFunction.WILL, option, sender);
-                sendSB(sender, option, (short) 1);
-            }
+            case Code.TELNET_START_TLS:
+                if (Settings.getInstance().getStartTLS()) {
+                    sendSingle(TelnetFunction.WILL, option, sender);
+                    sendSB(sender, option, (short) 1);
+                    break;
+                }
 
-            default -> sendSingle(TelnetFunction.opposite(previous), option, sender);
+            default: sendSingle(TelnetFunction.opposite(previous), option, sender); break;
         }
     }
 
