@@ -47,6 +47,7 @@ public class ConnectionImpl extends Connection {
     private boolean closed;
     /** A buffer used to buffer incoming data before the listener is set. */
     private final List<Pair<byte[], Integer>> emergencyBuffer = new ArrayList<>();
+    private boolean secure;
 
     /**
      * Constructs this connection representation.
@@ -55,7 +56,12 @@ public class ConnectionImpl extends Connection {
      * @param port the port number to be used
      */
     public ConnectionImpl(String host, int port) {
+        this(host, port, false);
+    }
+
+    public ConnectionImpl(String host, int port, boolean secure) {
         super(host, port);
+        this.secure = secure;
     }
 
     /**
@@ -116,17 +122,28 @@ public class ConnectionImpl extends Connection {
 
     @Override
     public void startTLS() {
-        try {
-            socket = ((SSLSocketFactory) SSLSocketFactory.getDefault()).createSocket(socket, socket.getInetAddress().getHostAddress(), socket.getPort(), true);
-        } catch (IOException e) {
-            handleException(e);
+        if (!secure) {
+            try {
+                socket = ((SSLSocketFactory) SSLSocketFactory.getDefault()).createSocket(
+                        socket,
+                        socket.getInetAddress().getHostAddress(),
+                        socket.getPort(),
+                        true);
+                secure = true;
+            } catch (IOException e) {
+                handleException(e);
+            }
         }
     }
 
     @Override
     public void establishConnection() {
         try {
-            socket = new Socket(hostname, port);
+            if (secure) {
+                socket = SSLSocketFactory.getDefault().createSocket(hostname, port);
+            } else {
+                socket = new Socket(hostname, port);
+            }
             setupStreams();
             startReceiving();
         } catch (IOException e) {

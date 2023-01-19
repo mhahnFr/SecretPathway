@@ -1,7 +1,7 @@
 /*
  * SecretPathway - A MUD client.
  *
- * Copyright (C) 2022  mhahnFr
+ * Copyright (C) 2022 - 2023  mhahnFr
  *
  * This file is part of the SecretPathway. This program is free software:
  * you can redistribute it and/or modify it under the terms of the
@@ -38,6 +38,14 @@ public abstract class ConnectionFactory {
         try {
             return new ConnectionImpl(hostname, port);
         } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static Connection createSecure(String hostname, Integer port) {
+        try {
+            return new ConnectionImpl(hostname, port, true);
+        } catch (Exception __) {
             return null;
         }
     }
