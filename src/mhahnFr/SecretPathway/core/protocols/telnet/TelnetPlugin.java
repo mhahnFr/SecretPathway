@@ -144,7 +144,6 @@ public class TelnetPlugin implements ProtocolPlugin {
     @Override
     public boolean process(byte b, ConnectionSender sender) {
         final short bb = (short) (b & 0xff);
-        System.out.println(bb);
 
         var result = false;
 
@@ -279,8 +278,6 @@ public class TelnetPlugin implements ProtocolPlugin {
         bytes[0] = (byte) TelnetFunction.IAC;
         bytes[1] = (byte) previous;
         bytes[2] = (byte) option;
-
-        System.out.println("IAC " + previous + " " + option);
 
         sender.send(bytes);
     }
