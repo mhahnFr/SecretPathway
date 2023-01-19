@@ -528,10 +528,15 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
 
                     portPanel.add(new JLabel("Enter the port to be used:"));
                 portPanel.add(portField);
+
             panel.add(hostPanel);
             panel.add(portPanel);
+        final var secureBox = new JCheckBox("Use SSL/TLS");
+        secureBox.setSelected(true);
+
         wrapPanel.add(errorLabel, BorderLayout.NORTH);
         wrapPanel.add(panel, BorderLayout.CENTER);
+        wrapPanel.add(secureBox, BorderLayout.SOUTH);
 
         Connection toReturn = null;
 
@@ -542,7 +547,14 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
                 else return null;
             }
             try {
-                toReturn = ConnectionFactory.create(hostField.getText(), Integer.decode(portField.getText()));
+                final var text = hostField.getText();
+                final var port = Integer.decode(portField.getText());
+
+                if (secureBox.isSelected()) {
+                    toReturn = ConnectionFactory.createSecure(text, port);
+                } else {
+                    toReturn = ConnectionFactory.create(text, port);
+                }
                 errorLabel.setText("Invalid parameters!");
             } catch (NumberFormatException e) {
                 errorLabel.setText("Invalid port!");
