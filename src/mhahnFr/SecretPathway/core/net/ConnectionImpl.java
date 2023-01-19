@@ -21,7 +21,6 @@ package mhahnFr.SecretPathway.core.net;
 
 import mhahnFr.utils.Pair;
 
-import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

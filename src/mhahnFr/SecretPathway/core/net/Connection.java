@@ -93,6 +93,9 @@ public abstract class Connection implements Closeable, AutoCloseable {
      */
     public abstract void establishConnection();
 
+    /**
+     * Starts the TLS negotiation.
+     */
     public abstract void startTLS();
 
     /**

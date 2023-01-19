@@ -197,12 +197,10 @@ public class TelnetPlugin implements ProtocolPlugin {
      * @param sender the sender used for sending back the response
      */
     private void parseBuffer(final Vector<Short> buffer, ConnectionSender sender) {
-        // TODO: Parse buffer
         switch (buffer.firstElement()) {
             case Code.TELNET_START_TLS -> {
                 if (buffer.get(1) == 1) {
-                    // TODO: Start TLS...
-
+                    sender.startTLS();
                 }
             }
 
@@ -218,7 +216,6 @@ public class TelnetPlugin implements ProtocolPlugin {
      * @param sender the sender used for sending back the response
      */
     private void handleSingleOption(final short previous, final short option, ConnectionSender sender) {
-        // TODO: Handle single telnet function
         switch (option) {
             case Code.TELNET_START_TLS -> {
                 sendSingle(TelnetFunction.WILL, option, sender);
@@ -230,7 +227,7 @@ public class TelnetPlugin implements ProtocolPlugin {
     }
 
     /**
-     * Sends back a single telnet function response. The sent message looks
+     * Sends back a single telnet function response. The message sent looks
      * like: {@code IAC <previous> <option>}.
      *
      * @param previous the mode to send to the remote host, such as {@code WILL}
@@ -249,6 +246,12 @@ public class TelnetPlugin implements ProtocolPlugin {
         sender.send(bytes);
     }
 
+    /**
+     * Sends a telnet sub negotiation using the given sender.
+     *
+     * @param sender the sender used for sending the negotiation
+     * @param codes the codes to be sent
+     */
     private void sendSB(ConnectionSender sender, short... codes) {
         final var bytes = new byte[codes.length + 4];
 

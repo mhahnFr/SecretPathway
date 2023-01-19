@@ -34,5 +34,8 @@ public interface ConnectionSender {
      */
     void send(byte[] bytes);
 
+    /**
+     * Enables the TLS mode for the underlying connection.
+     */
     void startTLS();
 }
