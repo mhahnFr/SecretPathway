@@ -47,6 +47,7 @@ public class ConnectionImpl extends Connection {
     private boolean closed;
     /** A buffer used to buffer incoming data before the listener is set. */
     private final List<Pair<byte[], Integer>> emergencyBuffer = new ArrayList<>();
+    /** Indicates whether this connection is using TLS.                   */
     private boolean secure;
 
     /**
@@ -59,6 +60,13 @@ public class ConnectionImpl extends Connection {
         this(host, port, false);
     }
 
+    /**
+     * Constructs this connection representation.
+     *
+     * @param host the hostname or the IP address to connect to
+     * @param port the port number to be used
+     * @param secure whether to use TLS
+     */
     public ConnectionImpl(String host, int port, boolean secure) {
         super(host, port);
         this.secure = secure;

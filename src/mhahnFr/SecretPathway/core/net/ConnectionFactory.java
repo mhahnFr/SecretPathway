@@ -42,6 +42,13 @@ public abstract class ConnectionFactory {
         }
     }
 
+    /**
+     * Tries to create a new {@link Connection} instance. Returns {@code null} on error.
+     *
+     * @param hostname the hostname or the IP address to connect to
+     * @param port the port on which to connect to the given endpoint
+     * @return a new secure {@link Connection} instance or {@code null} on error
+     */
     public static Connection createSecure(String hostname, Integer port) {
         try {
             return new ConnectionImpl(hostname, port, true);
