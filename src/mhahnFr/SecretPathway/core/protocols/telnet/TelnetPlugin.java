@@ -1,7 +1,7 @@
 /*
  * SecretPathway - A MUD client.
  *
- * Copyright (C) 2022  mhahnFr
+ * Copyright (C) 2022 - 2023  mhahnFr
  *
  * This file is part of the SecretPathway. This program is free software:
  * you can redistribute it and/or modify it under the terms of the
@@ -113,11 +113,11 @@ public class TelnetPlugin implements ProtocolPlugin {
                 case SE -> result = SB;
                 case SB -> result = SE;
 
-                case WILL -> result = WONT;
-                case WONT -> result = WILL;
+                case WILL -> result = DONT;
+                case WONT -> result = DO;
 
-                case DO   -> result = DONT;
-                case DONT -> result = DO;
+                case DO   -> result = WONT;
+                case DONT -> result = WILL;
             }
 
             return result;
