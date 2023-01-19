@@ -217,15 +217,31 @@ public class TelnetPlugin implements ProtocolPlugin {
      * @param sender the sender used for sending back the response
      */
     private void handleSingleOption(final short previous, final short option, ConnectionSender sender) {
+        var refuse = false;
         switch (option) {
-            case Code.TELNET_START_TLS:
+            case Code.BINARY_TRANSMISSION -> {
+                if (previous == TelnetFunction.DO) {
+                    sender.escapeIAC(true);
+                } else if (previous == TelnetFunction.DONT) {
+                    sender.escapeIAC(false);
+                } else {
+                    refuse = true;
+                }
+            }
+
+            case Code.TELNET_START_TLS -> {
                 if (Settings.getInstance().getStartTLS()) {
                     sendSingle(TelnetFunction.WILL, option, sender);
                     sendSB(sender, option, (short) 1);
-                    break;
+                } else {
+                    refuse = true;
                 }
+            }
 
-            default: sendSingle(TelnetFunction.opposite(previous), option, sender); break;
+            default -> refuse = true;
+        }
+        if (refuse) {
+            sendSingle(TelnetFunction.opposite(previous), option, sender);
         }
     }
 

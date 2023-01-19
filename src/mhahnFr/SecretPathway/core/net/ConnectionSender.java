@@ -38,4 +38,11 @@ public interface ConnectionSender {
      * Enables the TLS mode for the underlying connection.
      */
     void startTLS();
+
+    /**
+     * Enables or disables the escaping of the IAC telnet command.
+     *
+     * @param escape whether to escape the IAC
+     */
+    void escapeIAC(final boolean escape);
 }

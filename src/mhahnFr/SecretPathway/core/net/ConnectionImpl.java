@@ -45,10 +45,10 @@ public class ConnectionImpl extends Connection {
     private BufferedOutputStream out;
     /** Indicates whether this connection has been closed.                */
     private boolean closed;
-    /** A buffer used to buffer incoming data before the listener is set. */
-    private final List<Pair<byte[], Integer>> emergencyBuffer = new ArrayList<>();
     /** Indicates whether this connection is using TLS.                   */
     private boolean secure;
+    /** A buffer used to buffer incoming data before the listener is set. */
+    private final List<Pair<byte[], Integer>> emergencyBuffer = new ArrayList<>();
 
     /**
      * Constructs this connection representation.

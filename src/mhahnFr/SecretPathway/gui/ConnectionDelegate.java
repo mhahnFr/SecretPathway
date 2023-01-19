@@ -70,6 +70,10 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
     private boolean styleChanged = false;
     /** Indicates whether incoming data should be sent to the protocol abstraction.*/
     private boolean wasSpecial = false;
+    /** Indicates whether the telnet IAC is escaped.                               */
+    private boolean telnetEscape = false;
+    /** Indicates whether the last received byte was telnet's IAC command.         */
+    private boolean lastWasIAC = false;
     /** The style currently used for incoming data.                                */
     private FStyle current;
     /** A buffer used for broken unicode characters.                               */
@@ -129,6 +133,11 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
     @Override
     public void startTLS() {
         threads.execute(connection::startTLS);
+    }
+
+    @Override
+    public void escapeIAC(boolean escape) {
+        telnetEscape = escape;
     }
 
     /**
@@ -245,6 +254,19 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
         var closedStyles = new Vector<Pair<Integer, FStyle>>();
 
         for (int i = 0; i < length; ++i) {
+            if (telnetEscape) {
+                if ((data[i] & 0xff) == 0xff) {
+                    if (lastWasIAC) {
+                        lastWasIAC = false;
+                    } else {
+                        lastWasIAC = true;
+                        continue;
+                    }
+                } else if (lastWasIAC) {
+                    lastWasIAC = false;
+                    wasSpecial = protocols.process((byte) 0xff);
+                }
+            }
             if (wasSpecial) {
                 wasSpecial = protocols.process(data[i]);
             } else {
