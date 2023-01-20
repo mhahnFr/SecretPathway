@@ -301,7 +301,7 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
 
         fixUnicode(text);
 
-        var appendix = new String(ByteHelper.castToByte(text.toArray(new Byte[0])), StandardCharsets.UTF_8);
+        var appendix = new String(ByteHelper.castToByte(text.toArray(new Byte[0])), currentCharset);
         try {
             if (closedStyles.isEmpty()) {
                 document.insertString(document.getLength(), appendix, current.asStyle(defaultStyle));
