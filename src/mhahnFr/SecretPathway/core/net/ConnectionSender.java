@@ -19,6 +19,8 @@
 
 package mhahnFr.SecretPathway.core.net;
 
+import java.nio.charset.Charset;
+
 /**
  * This interface defines the functionality a connection sender
  * should be capable of.
@@ -45,4 +47,11 @@ public interface ConnectionSender {
      * @param escape whether to escape the IAC
      */
     void escapeIAC(final boolean escape);
+
+    /**
+     * Sets the charset to be used for string encodings.
+     *
+     * @param charset the charset to be used
+     */
+    void setCharset(final Charset charset);
 }

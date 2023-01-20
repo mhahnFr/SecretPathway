@@ -35,6 +35,7 @@ import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import java.awt.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
@@ -76,6 +77,8 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
     private boolean lastWasIAC = false;
     /** The style currently used for incoming data.                                */
     private FStyle current;
+    /** The charset used for the encoding of strings.                              */
+    private Charset currentCharset = StandardCharsets.US_ASCII;
     /** A buffer used for broken unicode characters.                               */
     private final Vector<Byte> unicodeBuffer = new Vector<>();
 
@@ -122,7 +125,7 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
         } catch (BadLocationException e) {
             throw new RuntimeException(e);
         }
-        send(tmpText.getBytes(StandardCharsets.UTF_8));
+        send(tmpText.getBytes(currentCharset));
     }
 
     @Override
@@ -138,6 +141,11 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
     @Override
     public void escapeIAC(boolean escape) {
         telnetEscape = escape;
+    }
+
+    @Override
+    public void setCharset(Charset charset) {
+        currentCharset = charset;
     }
 
     /**

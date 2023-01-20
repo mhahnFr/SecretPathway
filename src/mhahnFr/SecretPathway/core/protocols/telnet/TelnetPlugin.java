@@ -24,6 +24,7 @@ import mhahnFr.SecretPathway.core.net.ConnectionSender;
 import mhahnFr.SecretPathway.core.protocols.ProtocolPlugin;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -220,29 +221,28 @@ public class TelnetPlugin implements ProtocolPlugin {
                             b.append((char) ((short) buffer.get(i)));
                         }
                     }
-                    // --- TODO: Will be replaced by proper searching
-                    var hasUTF8 = false;
+                    String firstMatch = null;
                     for (final var set : sets) {
-                        if (set.equalsIgnoreCase("utf-8")) {
-                            hasUTF8 = true;
+                        if (Charset.isSupported(set)) {
+                            firstMatch = set;
                             break;
                         }
                     }
-                    if (hasUTF8) {
-                        final var shorts = new short[7];
+                    if (firstMatch == null) {
+                        sendSB(sender, Code.CHARSET, (short) 3);
+                    } else {
+                        final var setChars = firstMatch.toCharArray();
+                        final var shorts = new short[setChars.length + 2];
                         shorts[0] = Code.CHARSET;
                         shorts[1] = 2;
-                        shorts[2] = 'u';
-                        shorts[3] = 't';
-                        shorts[4] = 'f';
-                        shorts[5] = '-';
-                        shorts[6] = '8';
+
+                        for (int i = 0; i < setChars.length; ++i) {
+                            shorts[i + 2] = (short) setChars[i];
+                        }
+
                         sendSB(sender, shorts);
-                        // TODO: Enable UTF-8
-                    } else {
-                        sendSB(sender, Code.CHARSET, (short) 3);
+                        sender.setCharset(Charset.forName(firstMatch));
                     }
-                    // ---
                 }
             }
 
