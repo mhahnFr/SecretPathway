@@ -23,6 +23,8 @@ import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.SecretPathway.core.net.ConnectionSender;
 import mhahnFr.SecretPathway.core.protocols.ProtocolPlugin;
 
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Vector;
 
 /**
@@ -205,7 +207,43 @@ public class TelnetPlugin implements ProtocolPlugin {
             }
 
             case Code.CHARSET -> {
-                // TODO: Implement
+                if (buffer.get(1) == 1) {
+                    final short separator = buffer.get(2);
+                    final var sets = new ArrayList<String>();
+
+                    var b = new StringBuilder();
+                    for (int i = 3; i < buffer.size(); ++i) {
+                        if (buffer.get(i) == separator) {
+                            sets.add(b.toString());
+                            b = new StringBuilder();
+                        } else {
+                            b.append((char) ((short) buffer.get(i)));
+                        }
+                    }
+                    // --- TODO: Will be replaced by proper searching
+                    var hasUTF8 = false;
+                    for (final var set : sets) {
+                        if (set.equalsIgnoreCase("utf-8")) {
+                            hasUTF8 = true;
+                            break;
+                        }
+                    }
+                    if (hasUTF8) {
+                        final var shorts = new short[7];
+                        shorts[0] = Code.CHARSET;
+                        shorts[1] = 2;
+                        shorts[2] = 'u';
+                        shorts[3] = 't';
+                        shorts[4] = 'f';
+                        shorts[5] = '-';
+                        shorts[6] = '8';
+                        sendSB(sender, shorts);
+                        // TODO: Enable UTF-8
+                    } else {
+                        sendSB(sender, Code.CHARSET, (short) 3);
+                    }
+                    // ---
+                }
             }
 
             default -> throw new IllegalStateException("Sub negotiation received that was not permitted!");
