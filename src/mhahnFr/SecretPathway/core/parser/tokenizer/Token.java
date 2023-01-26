@@ -19,13 +19,22 @@
 
 package mhahnFr.SecretPathway.core.parser.tokenizer;
 
+import mhahnFr.utils.StreamPosition;
+
 /**
  * This record holds all information related to a specific Token.
  *
- * @param begin the beginning of this token in the text
+ * @param beginPos the beginning of this token in the text
  * @param type the type of this token
  * @param payload the payload held by this token
- * @param end the end of this token in the text
+ * @param endPos the end of this token in the text
  */
-public record Token(int begin, TokenType type, Object payload, int end) {
+public record Token(StreamPosition beginPos, TokenType type, Object payload, StreamPosition endPos) {
+    public int begin() {
+        return beginPos.position();
+    }
+
+    public int end() {
+        return endPos.position();
+    }
 }

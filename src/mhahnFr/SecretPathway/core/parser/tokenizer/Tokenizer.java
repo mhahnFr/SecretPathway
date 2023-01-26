@@ -78,72 +78,72 @@ public class Tokenizer {
         skipWhitespaces();
 
         if (!stream.hasNext()) {
-            return new Token(stream.getIndex(), TokenType.EOF, null, stream.getIndex());
+            return new Token(stream.getStreamPosition(), TokenType.EOF, null, stream.getStreamPosition());
         } else if (stream.peek("/*!")) {
-            return new Token(stream.getIndex(), TokenType.STRING, readTill("!*/", 3), stream.getIndex());
+            return new Token(stream.getStreamPosition(), TokenType.STRING, readTill("!*/", 3), stream.getStreamPosition());
         } else if (stream.peek("/*")) {
-            final var begin = stream.getIndex();
+            final var begin = stream.getStreamPosition();
             final var comment = readTill("*/", 2);
             if (commentTokens) {
-                return new Token(begin, TokenType.COMMENT_BLOCK, comment, stream.getIndex());
+                return new Token(begin, TokenType.COMMENT_BLOCK, comment, stream.getStreamPosition());
             } else {
                 return nextToken();
             }
         } else if (stream.peek("//")) {
-            final var begin = stream.getIndex();
+            final var begin = stream.getStreamPosition();
             final var comment = readTill("\n", 2);
             if (commentTokens) {
-                return new Token(begin, TokenType.COMMENT_LINE, comment, stream.getIndex());
+                return new Token(begin, TokenType.COMMENT_LINE, comment, stream.getStreamPosition());
             } else {
                 return nextToken();
             }
         }
-        else if (stream.peek('('))   return new Token(stream.getIndex(), TokenType.LEFT_PAREN,         null, stream.skip());
-        else if (stream.peek(')'))   return new Token(stream.getIndex(), TokenType.RIGHT_PAREN,        null, stream.skip());
-        else if (stream.peek('['))   return new Token(stream.getIndex(), TokenType.LEFT_BRACKET,       null, stream.skip());
-        else if (stream.peek(']'))   return new Token(stream.getIndex(), TokenType.RIGHT_BRACKET,      null, stream.skip());
-        else if (stream.peek('{'))   return new Token(stream.getIndex(), TokenType.LEFT_CURLY,         null, stream.skip());
-        else if (stream.peek('}'))   return new Token(stream.getIndex(), TokenType.RIGHT_CURLY,        null, stream.skip());
-        else if (stream.peek("...")) return new Token(stream.getIndex(), TokenType.ELLIPSIS,           null, stream.skip(3));
-        else if (stream.peek('.'))   return new Token(stream.getIndex(), TokenType.DOT,                null, stream.skip());
-        else if (stream.peek(','))   return new Token(stream.getIndex(), TokenType.COMMA,              null, stream.skip());
-        else if (stream.peek("::"))  return new Token(stream.getIndex(), TokenType.SCOPE,              null, stream.skip(2));
-        else if (stream.peek(':'))   return new Token(stream.getIndex(), TokenType.COLON,              null, stream.skip());
-        else if (stream.peek(';'))   return new Token(stream.getIndex(), TokenType.SEMICOLON,          null, stream.skip());
-        else if (stream.peek("=="))  return new Token(stream.getIndex(), TokenType.EQUALS,             null, stream.skip(2));
-        else if (stream.peek("!="))  return new Token(stream.getIndex(), TokenType.NOT_EQUAL,          null, stream.skip(2));
-        else if (stream.peek("<<"))  return new Token(stream.getIndex(), TokenType.LEFT_SHIFT,         null, stream.skip(2));
-        else if (stream.peek(">>"))  return new Token(stream.getIndex(), TokenType.RIGHT_SHIFT,        null, stream.skip(2));
-        else if (stream.peek("<="))  return new Token(stream.getIndex(), TokenType.LESS_OR_EQUAL,      null, stream.skip(2));
-        else if (stream.peek('<'))   return new Token(stream.getIndex(), TokenType.LESS,               null, stream.skip());
-        else if (stream.peek(">="))  return new Token(stream.getIndex(), TokenType.GREATER_OR_EQUAL,   null, stream.skip(2));
-        else if (stream.peek('>'))   return new Token(stream.getIndex(), TokenType.GREATER,            null, stream.skip());
-        else if (stream.peek("&&"))  return new Token(stream.getIndex(), TokenType.AND,                null, stream.skip(2));
-        else if (stream.peek("||"))  return new Token(stream.getIndex(), TokenType.OR,                 null, stream.skip(2));
-        else if (stream.peek('!'))   return new Token(stream.getIndex(), TokenType.NOT,                null, stream.skip());
-        else if (stream.peek('='))   return new Token(stream.getIndex(), TokenType.ASSIGNMENT,         null, stream.skip());
-        else if (stream.peek("->"))  return new Token(stream.getIndex(), TokenType.ARROW,              null, stream.skip(2));
-        else if (stream.peek("|->")) return new Token(stream.getIndex(), TokenType.P_ARROW,            null, stream.skip(3));
-        else if (stream.peek('&'))   return new Token(stream.getIndex(), TokenType.AMPERSAND,          null, stream.skip());
-        else if (stream.peek('|'))   return new Token(stream.getIndex(), TokenType.PIPE,               null, stream.skip());
-        else if (stream.peek("??"))  return new Token(stream.getIndex(), TokenType.DOUBLE_QUESTION,    null, stream.skip(2));
-        else if (stream.peek('?'))   return new Token(stream.getIndex(), TokenType.QUESTION,           null, stream.skip());
-        else if (stream.peek("+="))  return new Token(stream.getIndex(), TokenType.ASSIGNMENT_PLUS,    null, stream.skip(2));
-        else if (stream.peek("-="))  return new Token(stream.getIndex(), TokenType.ASSIGNMENT_MINUS,   null, stream.skip(2));
-        else if (stream.peek("*="))  return new Token(stream.getIndex(), TokenType.ASSIGNMENT_STAR,    null, stream.skip(2));
-        else if (stream.peek("/="))  return new Token(stream.getIndex(), TokenType.ASSIGNMENT_SLASH,   null, stream.skip(2));
-        else if (stream.peek("%="))  return new Token(stream.getIndex(), TokenType.ASSIGNMENT_PERCENT, null, stream.skip(2));
-        else if (stream.peek("++"))  return new Token(stream.getIndex(), TokenType.INCREMENT,          null, stream.skip(2));
-        else if (stream.peek("--"))  return new Token(stream.getIndex(), TokenType.DECREMENT,          null, stream.skip(2));
-        else if (stream.peek('+'))   return new Token(stream.getIndex(), TokenType.PLUS,               null, stream.skip());
-        else if (stream.peek('-'))   return new Token(stream.getIndex(), TokenType.MINUS,              null, stream.skip());
-        else if (stream.peek('*'))   return new Token(stream.getIndex(), TokenType.STAR,               null, stream.skip());
-        else if (stream.peek('/'))   return new Token(stream.getIndex(), TokenType.SLASH,              null, stream.skip());
-        else if (stream.peek('%'))   return new Token(stream.getIndex(), TokenType.PERCENT,            null, stream.skip());
-        else if (stream.peek('"'))   return new Token(stream.getIndex(), TokenType.STRING,    readTill("\""),   stream.getIndex());
-        else if (stream.peek('\''))  return new Token(stream.getIndex(), TokenType.CHARACTER, readTill("'"),    stream.getIndex());
-        else if (stream.peek("#'"))  return new Token(stream.getIndex(), TokenType.SYMBOL,    readTill("'", 2), stream.getIndex());
-        else if (stream.peek("#:"))  return new Token(stream.getIndex(), TokenType.SYMBOL,    readSymbol(),     stream.getIndex());
+        else if (stream.peek('('))   return new Token(stream.getStreamPosition(), TokenType.LEFT_PAREN,         null, stream.skip());
+        else if (stream.peek(')'))   return new Token(stream.getStreamPosition(), TokenType.RIGHT_PAREN,        null, stream.skip());
+        else if (stream.peek('['))   return new Token(stream.getStreamPosition(), TokenType.LEFT_BRACKET,       null, stream.skip());
+        else if (stream.peek(']'))   return new Token(stream.getStreamPosition(), TokenType.RIGHT_BRACKET,      null, stream.skip());
+        else if (stream.peek('{'))   return new Token(stream.getStreamPosition(), TokenType.LEFT_CURLY,         null, stream.skip());
+        else if (stream.peek('}'))   return new Token(stream.getStreamPosition(), TokenType.RIGHT_CURLY,        null, stream.skip());
+        else if (stream.peek("...")) return new Token(stream.getStreamPosition(), TokenType.ELLIPSIS,           null, stream.skip(3));
+        else if (stream.peek('.'))   return new Token(stream.getStreamPosition(), TokenType.DOT,                null, stream.skip());
+        else if (stream.peek(','))   return new Token(stream.getStreamPosition(), TokenType.COMMA,              null, stream.skip());
+        else if (stream.peek("::"))  return new Token(stream.getStreamPosition(), TokenType.SCOPE,              null, stream.skip(2));
+        else if (stream.peek(':'))   return new Token(stream.getStreamPosition(), TokenType.COLON,              null, stream.skip());
+        else if (stream.peek(';'))   return new Token(stream.getStreamPosition(), TokenType.SEMICOLON,          null, stream.skip());
+        else if (stream.peek("=="))  return new Token(stream.getStreamPosition(), TokenType.EQUALS,             null, stream.skip(2));
+        else if (stream.peek("!="))  return new Token(stream.getStreamPosition(), TokenType.NOT_EQUAL,          null, stream.skip(2));
+        else if (stream.peek("<<"))  return new Token(stream.getStreamPosition(), TokenType.LEFT_SHIFT,         null, stream.skip(2));
+        else if (stream.peek(">>"))  return new Token(stream.getStreamPosition(), TokenType.RIGHT_SHIFT,        null, stream.skip(2));
+        else if (stream.peek("<="))  return new Token(stream.getStreamPosition(), TokenType.LESS_OR_EQUAL,      null, stream.skip(2));
+        else if (stream.peek('<'))   return new Token(stream.getStreamPosition(), TokenType.LESS,               null, stream.skip());
+        else if (stream.peek(">="))  return new Token(stream.getStreamPosition(), TokenType.GREATER_OR_EQUAL,   null, stream.skip(2));
+        else if (stream.peek('>'))   return new Token(stream.getStreamPosition(), TokenType.GREATER,            null, stream.skip());
+        else if (stream.peek("&&"))  return new Token(stream.getStreamPosition(), TokenType.AND,                null, stream.skip(2));
+        else if (stream.peek("||"))  return new Token(stream.getStreamPosition(), TokenType.OR,                 null, stream.skip(2));
+        else if (stream.peek('!'))   return new Token(stream.getStreamPosition(), TokenType.NOT,                null, stream.skip());
+        else if (stream.peek('='))   return new Token(stream.getStreamPosition(), TokenType.ASSIGNMENT,         null, stream.skip());
+        else if (stream.peek("->"))  return new Token(stream.getStreamPosition(), TokenType.ARROW,              null, stream.skip(2));
+        else if (stream.peek("|->")) return new Token(stream.getStreamPosition(), TokenType.P_ARROW,            null, stream.skip(3));
+        else if (stream.peek('&'))   return new Token(stream.getStreamPosition(), TokenType.AMPERSAND,          null, stream.skip());
+        else if (stream.peek('|'))   return new Token(stream.getStreamPosition(), TokenType.PIPE,               null, stream.skip());
+        else if (stream.peek("??"))  return new Token(stream.getStreamPosition(), TokenType.DOUBLE_QUESTION,    null, stream.skip(2));
+        else if (stream.peek('?'))   return new Token(stream.getStreamPosition(), TokenType.QUESTION,           null, stream.skip());
+        else if (stream.peek("+="))  return new Token(stream.getStreamPosition(), TokenType.ASSIGNMENT_PLUS,    null, stream.skip(2));
+        else if (stream.peek("-="))  return new Token(stream.getStreamPosition(), TokenType.ASSIGNMENT_MINUS,   null, stream.skip(2));
+        else if (stream.peek("*="))  return new Token(stream.getStreamPosition(), TokenType.ASSIGNMENT_STAR,    null, stream.skip(2));
+        else if (stream.peek("/="))  return new Token(stream.getStreamPosition(), TokenType.ASSIGNMENT_SLASH,   null, stream.skip(2));
+        else if (stream.peek("%="))  return new Token(stream.getStreamPosition(), TokenType.ASSIGNMENT_PERCENT, null, stream.skip(2));
+        else if (stream.peek("++"))  return new Token(stream.getStreamPosition(), TokenType.INCREMENT,          null, stream.skip(2));
+        else if (stream.peek("--"))  return new Token(stream.getStreamPosition(), TokenType.DECREMENT,          null, stream.skip(2));
+        else if (stream.peek('+'))   return new Token(stream.getStreamPosition(), TokenType.PLUS,               null, stream.skip());
+        else if (stream.peek('-'))   return new Token(stream.getStreamPosition(), TokenType.MINUS,              null, stream.skip());
+        else if (stream.peek('*'))   return new Token(stream.getStreamPosition(), TokenType.STAR,               null, stream.skip());
+        else if (stream.peek('/'))   return new Token(stream.getStreamPosition(), TokenType.SLASH,              null, stream.skip());
+        else if (stream.peek('%'))   return new Token(stream.getStreamPosition(), TokenType.PERCENT,            null, stream.skip());
+        else if (stream.peek('"'))   return new Token(stream.getStreamPosition(), TokenType.STRING,    readTill("\""),   stream.getStreamPosition());
+        else if (stream.peek('\''))  return new Token(stream.getStreamPosition(), TokenType.CHARACTER, readTill("'"),    stream.getStreamPosition());
+        else if (stream.peek("#'"))  return new Token(stream.getStreamPosition(), TokenType.SYMBOL,    readTill("'", 2), stream.getStreamPosition());
+        else if (stream.peek("#:"))  return new Token(stream.getStreamPosition(), TokenType.SYMBOL,    readSymbol(),     stream.getStreamPosition());
 
         return nextWord();
     }
@@ -154,9 +154,9 @@ public class Tokenizer {
      * @return a token constructed from the next read word
      */
     private Token nextWord() {
-        final var begin = stream.getIndex();
+        final var begin = stream.getStreamPosition();
         final var word  = readWord();
-        final var end   = stream.getIndex();
+        final var end   = stream.getStreamPosition();
 
         switch (word) {
             case "#include"   -> { return new Token(begin, TokenType.INCLUDE,        null, end); }
