@@ -30,10 +30,20 @@ import mhahnFr.utils.StreamPosition;
  * @param endPos the end of this token in the text
  */
 public record Token(StreamPosition beginPos, TokenType type, Object payload, StreamPosition endPos) {
+    /**
+     * Returns the beginning index inside the original text.
+     *
+     * @return the beginning index
+     */
     public int begin() {
         return beginPos.position();
     }
 
+    /**
+     * Returns the end index inside the original text.
+     *
+     * @return the end index
+     */
     public int end() {
         return endPos.position();
     }
