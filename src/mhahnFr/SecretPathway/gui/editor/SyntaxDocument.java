@@ -63,13 +63,13 @@ public class SyntaxDocument extends DefaultStyledDocument {
     @Override
     public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
         super.insertString(offs, str, a);
-        updateHighlight();
+        maybeUpdateHighlight();
     }
 
     @Override
     public void remove(int offs, int len) throws BadLocationException {
         super.remove(offs, len);
-        updateHighlight();
+        maybeUpdateHighlight();
     }
 
     /**
@@ -102,6 +102,19 @@ public class SyntaxDocument extends DefaultStyledDocument {
      */
     public void setTheme(SPTheme theme) {
         this.theme = theme;
+    }
+
+    /**
+     * Updates the syntax-highlighting if it is activated.
+     *
+     * @see #highlighting
+     * @see #setHighlighting(boolean)
+     * @see #isHighlighting()
+     */
+    private void maybeUpdateHighlight() {
+        if (highlighting) {
+            updateHighlight();
+        }
     }
 
     /**
