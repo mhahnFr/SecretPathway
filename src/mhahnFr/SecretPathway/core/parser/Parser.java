@@ -19,11 +19,11 @@
 
 package mhahnFr.SecretPathway.core.parser;
 
-import mhahnFr.SecretPathway.core.parser.ast.ASTExpression;
-import mhahnFr.SecretPathway.core.parser.ast.ASTInclude;
+import mhahnFr.SecretPathway.core.parser.ast.*;
 import mhahnFr.SecretPathway.core.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.core.parser.tokenizer.Tokenizer;
+import mhahnFr.utils.StreamPosition;
 import mhahnFr.utils.StringStream;
 
 import java.util.ArrayList;
@@ -57,20 +57,36 @@ public class Parser {
         return false;
     }
 
-    private ASTInclude parseInclude() {
-        return null;
+    private ASTExpression parseInclude(final Token previous) {
+        final var token = peekToken();
+
+        if (token.type() != TokenType.STRING) {
+            final ASTMissing missing;
+
+            if (previous.endPos().isOnSameLine(token.beginPos())) {
+                missing = new ASTWrong(token.beginPos(), token.endPos(), "Expected a string");
+            } else {
+                missing = new ASTMissing(previous.endPos(), token.beginPos(), "Declare file to be included");
+            }
+
+            return new ASTCombination(new ASTInclude(previous.beginPos(), token.endPos(), null),
+                                      missing);
+        }
+        return new ASTInclude(previous.beginPos(), token.endPos(), (String) token.payload());
     }
 
-    private ASTExpression parseClass() {
+    private ASTExpression parseClass(final Token previous) {
         return null;
     }
 
     private ASTExpression parseExpression() {
-        if (peekToken(TokenType.INCLUDE)) {
-            return parseInclude();
-        } else if (peekToken(TokenType.CLASS)) {
-            return parseClass();
+        final var token = tokenizer.nextToken();
+        if (token.type() == TokenType.INCLUDE) {
+            return parseInclude(token);
+        } else if (token.type() == TokenType.CLASS) {
+            return parseClass(token);
         }
+        tokenizer.pushback(token);
         return null; // ...
     }
 
