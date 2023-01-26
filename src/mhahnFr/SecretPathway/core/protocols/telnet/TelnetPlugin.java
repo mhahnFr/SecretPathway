@@ -72,7 +72,7 @@ public class TelnetPlugin implements ProtocolPlugin {
         final static short TERMINAL_SPEED                  = 32;
         final static short REMOTE_FLOW_CONTROL             = 33;
         final static short LINEMODE                        = 34;
-        final static short X_DOSPLAY_LOCATION              = 35;
+        final static short X_DISPLAY_LOCATION              = 35;
         final static short ENVIRONMENT_OPTION              = 36;
         final static short AUTHENTICATION_OPTION           = 37;
         final static short ENCRYPTION_OPTION               = 38;
