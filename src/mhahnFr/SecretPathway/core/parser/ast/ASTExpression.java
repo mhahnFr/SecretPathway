@@ -28,18 +28,36 @@ import mhahnFr.utils.StreamPosition;
  * @since 26.01.23
  */
 public abstract class ASTExpression {
+    /** The beginning position of this expression. */
     private final StreamPosition begin;
+    /** The end position of this expression.       */
     private final StreamPosition end;
 
+    /**
+     * Constructs this expression using the given positions.
+     *
+     * @param begin the beginning position
+     * @param end the end position
+     */
     protected ASTExpression(StreamPosition begin, StreamPosition end) {
         this.begin = begin;
         this.end = end;
     }
 
+    /**
+     * Returns the end position of this expression.
+     *
+     * @return the end position
+     */
     public StreamPosition getEnd() {
         return end;
     }
 
+    /**
+     * Returns the beginning position of this expression.
+     *
+     * @return the beginning position
+     */
     public StreamPosition getBegin() {
         return begin;
     }
