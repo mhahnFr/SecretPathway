@@ -28,14 +28,28 @@ import mhahnFr.utils.StreamPosition;
  * @since 27.01.23
  */
 public class ASTInheritance extends ASTExpression {
+    /** The inheritance string. */
     private final String inherited;
 
+    /**
+     * Constructs this AST node using the given positions
+     * and the inheritance string.
+     *
+     * @param begin the beginning position
+     * @param end the end position
+     * @param inherited the inheritance string
+     */
     public ASTInheritance(StreamPosition begin, StreamPosition end, final String inherited) {
         super(begin, end);
 
         this.inherited = inherited;
     }
 
+    /**
+     * Returns the inheritance string.
+     *
+     * @return the inheritance string
+     */
     public String getInherited() {
         return inherited;
     }
