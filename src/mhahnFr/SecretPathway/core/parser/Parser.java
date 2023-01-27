@@ -58,12 +58,13 @@ public class Parser {
     }
 
     private ASTExpression parseInclude(final Token previous) {
-        final var token = peekToken();
+        final var token = tokenizer.nextToken();
 
         if (token.type() != TokenType.STRING) {
             final ASTMissing missing;
 
             if (previous.endPos().isOnSameLine(token.beginPos())) {
+               tokenizer.pushback(token);
                 missing = new ASTWrong(token.beginPos(), token.endPos(), "Expected a string");
             } else {
                 missing = new ASTMissing(previous.endPos(), token.beginPos(), "Declare file to be included");
