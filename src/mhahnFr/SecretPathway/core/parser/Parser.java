@@ -80,9 +80,29 @@ public class Parser {
         return null;
     }
 
+    private ASTExpression parseInherit(final Token previous) {
+        var token = tokenizer.nextToken();
+
+        StreamPosition lastPos = previous.endPos();
+        String inherited = null;
+        if (token.type() == TokenType.STRING) {
+            inherited = (String) token.payload();
+            lastPos = token.endPos();
+            token = tokenizer.nextToken();
+        }
+        if (token.type() != TokenType.SEMICOLON) {
+            tokenizer.pushback(token);
+            return new ASTCombination(new ASTInheritance(previous.beginPos(), lastPos, inherited),
+                                      new ASTMissing(lastPos, token.beginPos(), "Expected semicolon"));
+        }
+        return new ASTInheritance(previous.beginPos(), token.beginPos(), inherited);
+    }
+
     private ASTExpression parseExpression() {
         final var token = tokenizer.nextToken();
-        if (token.type() == TokenType.INCLUDE) {
+        if (token.type() == TokenType.INHERIT) {
+            return parseInherit(token);
+        } else if (token.type() == TokenType.INCLUDE) {
             return parseInclude(token);
         } else if (token.type() == TokenType.CLASS) {
             return parseClass(token);
