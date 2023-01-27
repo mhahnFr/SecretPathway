@@ -21,6 +21,12 @@ package mhahnFr.SecretPathway.core.parser.ast;
 
 import mhahnFr.utils.StreamPosition;
 
+/**
+ * This class represents a wrong statement in the AST.
+ *
+ * @author mhahnFr
+ * @since 26.01.23
+ */
 public class ASTWrong extends ASTMissing {
     public ASTWrong(final StreamPosition begin, final StreamPosition end, final String message) {
         super(begin, end, message);

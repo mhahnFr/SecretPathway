@@ -19,6 +19,13 @@
 
 package mhahnFr.SecretPathway.core.parser.ast;
 
+/**
+ * This class represents a combination of {@link ASTExpression}s.
+ * Mostly used to fill holes in the AST (in other words, with syntax errors).
+ *
+ * @author mhahnFr
+ * @since 26.01.23
+ */
 public class ASTCombination extends ASTExpression {
     private final ASTExpression[] expressions;
 

@@ -21,6 +21,12 @@ package mhahnFr.SecretPathway.core.parser.ast;
 
 import mhahnFr.utils.StreamPosition;
 
+/**
+ * This class represents an include statement.
+ *
+ * @author mhahnFr
+ * @since 26.01.23
+ */
 public class ASTInclude extends ASTExpression {
     private final String included;
 

@@ -21,6 +21,12 @@ package mhahnFr.SecretPathway.core.parser.ast;
 
 import mhahnFr.utils.StreamPosition;
 
+/**
+ * This class represents an inheritance node.
+ *
+ * @author mhahnFr
+ * @since 27.01.23
+ */
 public class ASTInheritance extends ASTExpression {
     private final String inherited;
 
