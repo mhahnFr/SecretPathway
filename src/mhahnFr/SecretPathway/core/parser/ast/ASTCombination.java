@@ -27,14 +27,25 @@ package mhahnFr.SecretPathway.core.parser.ast;
  * @since 26.01.23
  */
 public class ASTCombination extends ASTExpression {
+    /** The {@link ASTExpression}s this combination is made of. */
     private final ASTExpression[] expressions;
 
+    /**
+     * Constructs this expression using the given sub-expressions.
+     *
+     * @param expressions the sub-expressions
+     */
     public ASTCombination(ASTExpression... expressions) {
         super(expressions[0].getBegin(), expressions[expressions.length - 1].getEnd());
 
         this.expressions = expressions;
     }
 
+    /**
+     * Returns the sub-expressions this combination is made of.
+     *
+     * @return the sub expressions
+     */
     public ASTExpression[] getExpressions() {
         return expressions;
     }
