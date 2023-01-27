@@ -28,14 +28,28 @@ import mhahnFr.utils.StreamPosition;
  * @since 26.01.23
  */
 public class ASTInclude extends ASTExpression {
+    /** The raw value of the inclusion. */
     private final String included;
 
+    /**
+     * Constructs this AST node using the given positions and
+     * the given inclusion string.
+     *
+     * @param begin the beginning position
+     * @param end the end position
+     * @param included the inclusion string
+     */
     public ASTInclude(final StreamPosition begin, final StreamPosition end, final String included) {
         super(begin, end);
 
         this.included = included;
     }
 
+    /**
+     * Returns the raw inclusion string.
+     *
+     * @return the inclusion string
+     */
     public String getIncluded() {
         return included;
     }
