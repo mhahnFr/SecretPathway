@@ -111,10 +111,30 @@ public class Parser {
                 type == TokenType.DEPRECATED ||
                 type == TokenType.OVERRIDE) {
                 toReturn.add(type);
-            } else break;
+            } else {
+                tokenizer.pushback(token);
+                break;
+            }
         }
 
         return toReturn;
+    }
+
+    private boolean isType(final Token token) {
+        final var type = token.type();
+
+        return type == TokenType.VOID           ||
+               type == TokenType.CHAR_KEYWORD   ||
+               type == TokenType.INT_KEYWORD    ||
+               type == TokenType.BOOL           ||
+               type == TokenType.OBJECT         ||
+               type == TokenType.STRING_KEYWORD ||
+               type == TokenType.SYMBOL_KEYWORD ||
+               type == TokenType.MAPPING        ||
+               type == TokenType.ANY            ||
+               type == TokenType.MIXED          ||
+               type == TokenType.AUTO           ||
+               type == TokenType.OPERATOR;
     }
 
     private ASTExpression parseExpression() {
