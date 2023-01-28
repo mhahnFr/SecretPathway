@@ -120,6 +120,22 @@ public class Parser {
         return toReturn;
     }
 
+    private ASTExpression parseFunctionDefinition(final Collection<ASTExpression> parts,
+                                                  final Collection<TokenType> modifiers,
+                                                  final TokenType returnType,
+                                                  final String name) {
+        // TODO: Implement
+        return null;
+    }
+
+    private ASTExpression parseVariableDefinition(final Collection<ASTExpression> parts,
+                                                  final Collection<TokenType> modifiers,
+                                                  final TokenType variableType,
+                                                  final String name) {
+        // TODO: Implement
+        return null;
+    }
+
     private boolean isType(final Token token) {
         final var type = token.type();
 
@@ -150,9 +166,13 @@ public class Parser {
         final var modifiers = parseModifiers();
         final var temps = new Vector<ASTExpression>();
         final var type = tokenizer.nextToken();
+        final TokenType realType;
         if (!isType(type)) {
             temps.add(new ASTMissing(type.beginPos(), type.beginPos(), "Expected a type"));
             tokenizer.pushback(type);
+            realType = null;
+        } else {
+            realType = type.type();
         }
         final String name;
         final var id = tokenizer.nextToken();
@@ -171,14 +191,12 @@ public class Parser {
         }
         var t = tokenizer.nextToken();
         if (t.type() == TokenType.LEFT_BRACKET) {
-            // func
+            return parseFunctionDefinition(temps, modifiers, realType, name);
         } else if (t.type() == TokenType.SEMICOLON || t.type() == TokenType.EQUALS) {
-            // var
-        } else {
-            // Wrong...
+            return parseVariableDefinition(temps, modifiers, realType, name);
         }
-
-        return null; // ...
+        // TODO: Continue until something known is reached
+        throw new RuntimeException("Expected expression!");
     }
 
     public Collection<ASTExpression> parse() {
