@@ -166,6 +166,7 @@ public class Tokenizer {
             case "public"     -> { return new Token(begin, TokenType.PUBLIC,         null, end); }
             case "override"   -> { return new Token(begin, TokenType.OVERRIDE,       null, end); }
             case "deprecated" -> { return new Token(begin, TokenType.DEPRECATED,     null, end); }
+            case "nosave"     -> { return new Token(begin, TokenType.NOSAVE,         null, end); }
             case "new"        -> { return new Token(begin, TokenType.NEW,            null, end); }
             case "this"       -> { return new Token(begin, TokenType.THIS,           null, end); }
             case "nil"        -> { return new Token(begin, TokenType.NIL,            null, end); }

@@ -76,6 +76,7 @@ public class DefaultTheme implements SPTheme {
         styles.put(TokenType.PUBLIC,     control);
         styles.put(TokenType.OVERRIDE,   control);
         styles.put(TokenType.DEPRECATED, control);
+        styles.put(TokenType.NOSAVE,     control);
         styles.put(TokenType.NEW,        control);
         styles.put(TokenType.THIS,       control);
         styles.put(TokenType.SIZEOF,     control);
