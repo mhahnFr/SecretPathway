@@ -28,6 +28,7 @@ import mhahnFr.utils.StringStream;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Vector;
 
 /**
  * This class parses LPC source code.
@@ -98,6 +99,24 @@ public class Parser {
         return new ASTInheritance(previous.beginPos(), token.beginPos(), inherited);
     }
 
+    private Collection<TokenType> parseModifiers() {
+        final var toReturn = new Vector<TokenType>();
+
+        while (true) {
+            final var token = tokenizer.nextToken();
+            final var type  = token.type();
+            if (type == TokenType.PRIVATE ||
+                type == TokenType.PROTECTED ||
+                type == TokenType.PUBLIC ||
+                type == TokenType.DEPRECATED ||
+                type == TokenType.OVERRIDE) {
+                toReturn.add(type);
+            } else break;
+        }
+
+        return toReturn;
+    }
+
     private ASTExpression parseExpression() {
         final var token = tokenizer.nextToken();
         if (token.type() == TokenType.INHERIT) {
@@ -108,6 +127,7 @@ public class Parser {
             return parseClass(token);
         }
         tokenizer.pushback(token);
+        final var modifiers = parseModifiers();
         return null; // ...
     }
 
