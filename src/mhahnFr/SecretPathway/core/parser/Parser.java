@@ -148,6 +148,36 @@ public class Parser {
         }
         tokenizer.pushback(token);
         final var modifiers = parseModifiers();
+        final var temps = new Vector<ASTExpression>();
+        final var type = tokenizer.nextToken();
+        if (!isType(type)) {
+            temps.add(new ASTMissing(type.beginPos(), type.beginPos(), "Expected a type"));
+            tokenizer.pushback(type);
+        }
+        final String name;
+        final var id = tokenizer.nextToken();
+        if (id.type() != TokenType.IDENTIFIER) {
+            name = null;
+            final ASTExpression fill;
+            if (id.type() == TokenType.LEFT_BRACKET || id.type() == TokenType.SEMICOLON || id.type() == TokenType.EQUALS) {
+                fill = new ASTMissing(type.endPos(), id.beginPos(), "Expected name of identifier");
+                tokenizer.pushback(id);
+            } else {
+                fill = new ASTWrong(id.beginPos(), id.endPos(), "Expected name of identifier");
+            }
+            temps.add(fill);
+        } else {
+            name = (String) id.payload();
+        }
+        var t = tokenizer.nextToken();
+        if (t.type() == TokenType.LEFT_BRACKET) {
+            // func
+        } else if (t.type() == TokenType.SEMICOLON || t.type() == TokenType.EQUALS) {
+            // var
+        } else {
+            // Wrong...
+        }
+
         return null; // ...
     }
 
