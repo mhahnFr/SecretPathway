@@ -30,10 +30,23 @@ import mhahnFr.utils.StreamPosition;
  * @since 28.01.23
  */
 public class ASTFunctionDefinition extends ASTExpression {
+    /** The name of this declared function.           */
     private final String name;
+    /** The return type of this function.             */
     private final TokenType type;
+    /** The expressions in the body of this function. */
     private final ASTExpression[] body;
 
+    /**
+     * Constructs this AST node using the given positions,
+     * the given return type, name and the given body expressions.
+     *
+     * @param begin the beginning position of this expression
+     * @param end the end position of this expression
+     * @param type the return type of the declared function
+     * @param name the name of the declared function
+     * @param body the instructions of the body of this function
+     */
     public ASTFunctionDefinition(final StreamPosition  begin,
                                  final StreamPosition  end,
                                  final TokenType       type,
@@ -46,14 +59,30 @@ public class ASTFunctionDefinition extends ASTExpression {
         this.body = body;
     }
 
+    /**
+     * Returns the name of this declared function.
+     *
+     * @return the name of this function
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns the return type of this declared function.
+     *
+     * @return the return type of this function
+     */
     public TokenType getType() {
         return type;
     }
 
+    /**
+     * Returns the {@link ASTExpression}s in the body of
+     * this function.
+     *
+     * @return the expressions in this function's body
+     */
     public ASTExpression[] getBody() {
         return body;
     }
