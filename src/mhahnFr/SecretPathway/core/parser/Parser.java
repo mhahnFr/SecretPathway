@@ -38,18 +38,37 @@ import java.util.Vector;
  * @since 26.01.23
  */
 public class Parser {
+    /** The tokenizer used by this parser. */
     private final Tokenizer tokenizer;
 
+    /**
+     * Constructs this parser using the given source.
+     *
+     * @param source the source code to be parsed
+     */
     public Parser(final String source) {
         tokenizer = new Tokenizer(new StringStream(source));
     }
 
+    /**
+     * Peeks the next token.
+     *
+     * @return the peeked token
+     */
     private Token peekToken() {
         final var token = tokenizer.nextToken();
         tokenizer.pushback(token);
         return token;
     }
 
+    /**
+     * Returns whether the next token's type is equal
+     * to the given one. In that case, the token is consumed,
+     * otherwise, it is pushed back.
+     *
+     * @param type the type to be checked
+     * @return whether the next token has the given type
+     */
     private boolean peekToken(final TokenType type) {
         final var token = tokenizer.nextToken();
         if (token.type() == type) {
@@ -59,6 +78,12 @@ public class Parser {
         return false;
     }
 
+    /**
+     * Parses an {@code #include "something"} statement.
+     *
+     * @param previous the previous token
+     * @return the parsed expression
+     */
     private ASTExpression parseInclude(final Token previous) {
         final var token = tokenizer.nextToken();
 
@@ -82,6 +107,12 @@ public class Parser {
         return null;
     }
 
+    /**
+     * Parses an {@code inherit "maybe";} statement.
+     *
+     * @param previous the previous token
+     * @return the parsed expression
+     */
     private ASTExpression parseInherit(final Token previous) {
         var token = tokenizer.nextToken();
 
