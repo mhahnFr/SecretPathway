@@ -27,6 +27,7 @@ import mhahnFr.utils.StreamPosition;
 import mhahnFr.utils.StringStream;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Vector;
 
@@ -120,12 +121,74 @@ public class Parser {
         return toReturn;
     }
 
-    private ASTExpression parseFunctionDefinition(final Collection<ASTExpression> parts,
-                                                  final Collection<TokenType> modifiers,
-                                                  final TokenType returnType,
-                                                  final String name) {
+    private ASTExpression expect(final TokenType type, final Token token, final Token previous, final TokenType... next) {
+        if (token.type() != type) {
+            if (Arrays.asList(next).contains(token.type())) {
+                tokenizer.pushback(token);
+                return new ASTMissing(previous.endPos(), token.beginPos(), "Expected " + type + ", missing");
+            } else {
+                return new ASTWrong(token.beginPos(), token.endPos(), "Expected " + type + ", got " + token.type());
+            }
+        }
+        return null;
+    }
+
+    private TokenType[] getBlockBeginTypes() {
+        return new TokenType[] {
+                TokenType.LET /* ... and much more ... */
+        };
+    }
+
+    private ASTExpression[] parseBlock(final Token previous) {
         // TODO: Implement
         return null;
+    }
+
+    private ASTExpression parseFunctionDefinition(final Collection<ASTExpression> parts,
+                                                  final Collection<TokenType>     modifiers,
+                                                  final TokenType                 returnType,
+                                                  final String                    name,
+                                                  Token                           previous) {
+        // TODO: varargs
+        final var params = new Vector<ASTExpression>();
+        Token token;
+        while ((token = tokenizer.nextToken()).type() != TokenType.RIGHT_PAREN && token.type() != TokenType.EOF) {
+            final var paramParts = new Vector<ASTExpression>(2);
+            token = tokenizer.nextToken();
+            final TokenType type;
+            if (!isType(token)) {
+                if (token.type() == TokenType.IDENTIFIER) {
+                    tokenizer.pushback(token);
+                    paramParts.add(new ASTMissing(previous.endPos(), token.beginPos(), "Expected a type"));
+                } else {
+                    paramParts.add(new ASTWrong(token.beginPos(), token.endPos(), "Expected a type"));
+                }
+                type = null;
+            } else {
+                type = token.type();
+            }
+            final var nextToken = tokenizer.nextToken();
+            final var part = expect(TokenType.IDENTIFIER, nextToken, token, TokenType.COMMA, TokenType.RIGHT_PAREN);
+            if (part != null) paramParts.add(part);
+            if (!paramParts.isEmpty()) {
+                final var paramPartsArray = new ASTExpression[paramParts.size() + 1];
+                paramPartsArray[0] = new ASTParameter(token.beginPos(), nextToken.endPos(), type, null);
+                System.arraycopy(paramParts.toArray(new ASTExpression[0]), 0, paramPartsArray, 1, paramParts.size());
+                params.add(new ASTCombination(paramPartsArray));
+            } else {
+                params.add(new ASTParameter(token.beginPos(), nextToken.endPos(), type, (String) nextToken.payload()));
+            }
+            previous = nextToken;
+        }
+        final var block = parseBlock(previous);
+        if (!parts.isEmpty()) {
+            final var combination = new ASTExpression[params.size() + 1];
+
+            combination[0] = new ASTFunctionDefinition(null, null, returnType, name, modifiers.toArray(new TokenType[0]), params.toArray(new ASTExpression[0]), block);
+            System.arraycopy(params.toArray(new ASTExpression[0]), 0, combination, 1, params.size());
+            return new ASTCombination(combination);
+        }
+        return new ASTFunctionDefinition(previous.beginPos(), block[block.length - 1].getEnd(), returnType, name, modifiers.toArray(new TokenType[0]), params.toArray(new ASTExpression[0]), block);
     }
 
     private ASTExpression parseVariableDefinition(final Collection<ASTExpression> parts,
@@ -191,7 +254,7 @@ public class Parser {
         }
         var t = tokenizer.nextToken();
         if (t.type() == TokenType.LEFT_BRACKET) {
-            return parseFunctionDefinition(temps, modifiers, realType, name);
+            return parseFunctionDefinition(temps, modifiers, realType, name, id);
         } else if (t.type() == TokenType.SEMICOLON || t.type() == TokenType.EQUALS) {
             return parseVariableDefinition(temps, modifiers, realType, name);
         }
