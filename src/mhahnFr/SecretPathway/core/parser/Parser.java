@@ -131,6 +131,11 @@ public class Parser {
         return new ASTInheritance(previous.beginPos(), token.beginPos(), inherited);
     }
 
+    /**
+     * Parses the following modifiers.
+     *
+     * @return a collection with the read modifiers
+     */
     private Collection<TokenType> parseModifiers() {
         final var toReturn = new Vector<TokenType>();
 
@@ -230,6 +235,13 @@ public class Parser {
         return null;
     }
 
+    /**
+     * Returns whether the given {@link Token} represents
+     * a type.
+     *
+     * @param token the token to be checked
+     * @return whether the token represents a type keyword
+     */
     private boolean isType(final Token token) {
         final var type = token.type();
 
@@ -293,6 +305,12 @@ public class Parser {
         throw new RuntimeException("Expected expression!");
     }
 
+    /**
+     * Parses the whole text. Returns a collection
+     * with the parsed expressions.
+     *
+     * @return the parsed expressions
+     */
     public Collection<ASTExpression> parse() {
         final var list = new ArrayList<ASTExpression>();
 
