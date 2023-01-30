@@ -22,24 +22,51 @@ package mhahnFr.SecretPathway.core.parser.ast;
 import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
 import mhahnFr.utils.StreamPosition;
 
+/**
+ * This class represents a parameter AST node.
+ *
+ * @author mhahnFr
+ * @since 30.01.23
+ */
 public class ASTParameter extends ASTExpression {
+    /** The type of this parameter. */
     private final TokenType type;
+    /** The name of this parameter. */
     private final String name;
 
+    /**
+     * Constructs this AST node using the given positions,
+     * the type and the name.
+     *
+     * @param begin the beginning position
+     * @param end the end position
+     * @param type the declared type
+     * @param name the declared name
+     */
     public ASTParameter(final StreamPosition begin,
                         final StreamPosition end,
-                        final TokenType type,
-                        final String name) {
+                        final TokenType      type,
+                        final String         name) {
         super(begin, end);
 
         this.type = type;
         this.name = name;
     }
 
+    /**
+     * Returns the declared name fo this parameter.
+     *
+     * @return the declared name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns the declared type of this parameter.
+     *
+     * @return the declared type
+     */
     public TokenType getType() {
         return type;
     }
