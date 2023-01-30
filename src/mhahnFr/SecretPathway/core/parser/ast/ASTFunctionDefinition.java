@@ -36,6 +36,8 @@ public class ASTFunctionDefinition extends ASTExpression {
     private final TokenType type;
     /** The expressions in the body of this function. */
     private final ASTExpression[] body;
+    /** The declared parameters of this function.     */
+    private final ASTExpression[] parameters;
 
     /**
      * Constructs this AST node using the given positions,
@@ -45,18 +47,21 @@ public class ASTFunctionDefinition extends ASTExpression {
      * @param end the end position of this expression
      * @param type the return type of the declared function
      * @param name the name of the declared function
+     * @param parameters the declared parameters
      * @param body the instructions of the body of this function
      */
     public ASTFunctionDefinition(final StreamPosition  begin,
                                  final StreamPosition  end,
                                  final TokenType       type,
                                  final String          name,
+                                 final ASTExpression[]  parameters,
                                  final ASTExpression[] body) {
         super(begin, end);
 
-        this.type = type;
-        this.name = name;
-        this.body = body;
+        this.type       = type;
+        this.name       = name;
+        this.body       = body;
+        this.parameters = parameters;
     }
 
     /**
@@ -85,5 +90,14 @@ public class ASTFunctionDefinition extends ASTExpression {
      */
     public ASTExpression[] getBody() {
         return body;
+    }
+
+    /**
+     * Returns the declare parameters of this declared function.
+     *
+     * @return the declared parameters
+     */
+    public ASTExpression[] getParameters() {
+        return parameters;
     }
 }
