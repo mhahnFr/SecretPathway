@@ -19,7 +19,7 @@
 
 package mhahnFr.SecretPathway.core.parser.ast;
 
-import mhahnFr.utils.StreamPosition;
+import mhahnFr.SecretPathway.core.parser.tokenizer.Token;
 
 /**
  * This class represents a wrong statement in the AST.
@@ -28,7 +28,7 @@ import mhahnFr.utils.StreamPosition;
  * @since 26.01.23
  */
 public class ASTWrong extends ASTMissing {
-    public ASTWrong(final StreamPosition begin, final StreamPosition end, final String message) {
-        super(begin, end, message);
+    public ASTWrong(final Token token, final String message) {
+        super(token.beginPos(), token.endPos(), message);
     }
 }

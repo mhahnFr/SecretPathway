@@ -92,7 +92,7 @@ public class Parser {
 
             if (previous.endPos().isOnSameLine(token.beginPos())) {
                tokenizer.pushback(token);
-                missing = new ASTWrong(token.beginPos(), token.endPos(), "Expected a string");
+                missing = new ASTWrong(token, "Expected a string");
             } else {
                 missing = new ASTMissing(previous.endPos(), token.beginPos(), "Declare file to be included");
             }
@@ -163,7 +163,7 @@ public class Parser {
                 tokenizer.pushback(token);
                 return new ASTMissing(previous.endPos(), token.beginPos(), "Expected " + type + ", missing");
             } else {
-                return new ASTWrong(token.beginPos(), token.endPos(), "Expected " + type + ", got " + token.type());
+                return new ASTWrong(token, "Expected " + type + ", got " + token.type());
             }
         }
         return null;
@@ -197,7 +197,7 @@ public class Parser {
                     tokenizer.pushback(token);
                     paramParts.add(new ASTMissing(previous.endPos(), token.beginPos(), "Expected a type"));
                 } else {
-                    paramParts.add(new ASTWrong(token.beginPos(), token.endPos(), "Expected a type"));
+                    paramParts.add(new ASTWrong(token, "Expected a type"));
                 }
                 type = null;
             } else {
@@ -214,7 +214,7 @@ public class Parser {
                     stop = true;
                     parts.add(new ASTMissing(nextToken.endPos(), token.beginPos(), "Expected ')'"));
                 } else {
-                    parts.add(new ASTWrong(token.beginPos(), token.endPos(), "Unexpected token"));
+                    parts.add(new ASTWrong(token, "Unexpected token"));
                 }
             } else if (token.type() == TokenType.RIGHT_PAREN) {
                 tokenizer.pushback(token);
@@ -303,7 +303,7 @@ public class Parser {
                 fill = new ASTMissing(type.endPos(), id.beginPos(), "Expected name of identifier");
                 tokenizer.pushback(id);
             } else {
-                fill = new ASTWrong(id.beginPos(), id.endPos(), "Expected name of identifier");
+                fill = new ASTWrong(id, "Expected name of identifier");
             }
             temps.add(fill);
         } else {
