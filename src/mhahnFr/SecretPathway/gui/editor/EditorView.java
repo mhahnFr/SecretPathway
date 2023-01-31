@@ -78,6 +78,8 @@ public class EditorView extends JPanel implements DarkModeListener, SettingsList
         setBorder(new EmptyBorder(5, 5, 5, 5));
 
 
+        textPane.addCaretListener(e -> status.setText(document.getMessageFor(e.getDot())));
+
         final var settings = Settings.getInstance();
         settings.addDarkModeListener(this);
         settings.addListener(this);

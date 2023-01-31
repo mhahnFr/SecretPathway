@@ -20,15 +20,21 @@
 package mhahnFr.SecretPathway.gui.editor;
 
 import mhahnFr.SecretPathway.core.Settings;
+import mhahnFr.SecretPathway.core.parser.ast.ASTMissing;
+import mhahnFr.SecretPathway.core.parser.ast.ASTType;
+import mhahnFr.SecretPathway.core.parser.ast.ASTWrong;
 import mhahnFr.SecretPathway.core.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.core.parser.tokenizer.Tokenizer;
 import mhahnFr.SecretPathway.gui.editor.theme.DefaultTheme;
 import mhahnFr.SecretPathway.gui.editor.theme.json.JSONTheme;
 import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
+import mhahnFr.utils.Pair;
 import mhahnFr.utils.StringStream;
 
 import javax.swing.text.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class serves as a syntax aware document for LPC
@@ -44,6 +50,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
     private boolean highlighting;
     /** The theme to be used for the syntax highlighting.     */
     private SPTheme theme = restoreTheme();
+    private Map<Pair<Integer, Integer>, String> errorRanges = new HashMap<>();
 
     /**
      * Tries to restore the previously used theme. If it is not possible,
@@ -139,13 +146,17 @@ public class SyntaxDocument extends DefaultStyledDocument {
                     theme.styleFor(token.type()).asStyle(def), true);
         }
 
+        errorRanges.clear();
         final var expressions = new mhahnFr.SecretPathway.core.parser.Parser(getAllText()).parse();
         try {
             var it = expressions.iterator();
             while (it.hasNext()) {
                 it.next().visit(expression -> {
                     switch (expression.getASTType()) {
-                        case MISSING, WRONG -> setCharacterAttributes(expression.getBegin().position(), expression.getEnd().position() - expression.getBegin().position(), theme.getErrorStyle().asStyle(def), true);
+                        case MISSING, WRONG -> {
+                            errorRanges.put(new Pair<>(expression.getBegin().position(), expression.getEnd().position()), expression.getASTType() == ASTType.MISSING ? ((ASTMissing) expression).getMessage() : ((ASTWrong) expression).getMessage());
+                            setCharacterAttributes(expression.getBegin().position(), expression.getEnd().position() - expression.getBegin().position(), theme.getErrorStyle().asStyle(def), true);
+                        }
                     }
                 });
             }
@@ -159,6 +170,15 @@ public class SyntaxDocument extends DefaultStyledDocument {
      */
     private void clearHighlight() {
         setCharacterAttributes(0, getLength(), def, true);
+    }
+
+    public String getMessageFor(int position) {
+        for (final var entry : errorRanges.entrySet()) {
+            if (position >= entry.getKey().getFirst() && position <= entry.getKey().getSecond()) {
+                return entry.getValue();
+            }
+        }
+        return "";
     }
 
     /**
