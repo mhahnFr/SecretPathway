@@ -114,4 +114,16 @@ public class ASTFunctionDefinition extends ASTExpression {
     public TokenType[] getModifiers() {
         return modifiers;
     }
+
+    @Override
+    public void visit(ASTVisitor visitor) {
+        if (visitor.maybeVisit(this)) {
+            for (int i = 0; i < parameters.length; ++i) {
+                visitor.visit(parameters[i]);
+            }
+            for (int i = 0; i < body.length; ++i) {
+                visitor.visit(parameters[i]);
+            }
+        }
+    }
 }

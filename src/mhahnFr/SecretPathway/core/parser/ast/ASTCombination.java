@@ -49,4 +49,13 @@ public class ASTCombination extends ASTExpression {
     public ASTExpression[] getExpressions() {
         return expressions;
     }
+
+    @Override
+    public void visit(ASTVisitor visitor) {
+        if (visitor.maybeVisit(this)) {
+            for (int i = 0; i < expressions.length; ++i) {
+                visitor.visit(expressions[i]);
+            }
+        }
+    }
 }

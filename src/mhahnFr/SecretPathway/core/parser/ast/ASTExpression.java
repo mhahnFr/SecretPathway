@@ -74,4 +74,8 @@ public abstract class ASTExpression {
     public ASTType getASTType() {
         return type;
     }
+
+    public void visit(final ASTVisitor visitor) {
+        visitor.visit(this);
+    }
 }
