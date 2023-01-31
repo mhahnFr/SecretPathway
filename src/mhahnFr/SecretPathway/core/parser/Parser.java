@@ -188,9 +188,9 @@ public class Parser {
         // TODO: varargs
         final var params = new Vector<ASTExpression>();
         Token token;
-        while ((token = tokenizer.nextToken()).type() != TokenType.RIGHT_PAREN && token.type() != TokenType.EOF) {
-            final var paramParts = new Vector<ASTExpression>(2);
-            token = tokenizer.nextToken();
+        var stop = false;
+        while ((token = tokenizer.nextToken()).type() != TokenType.RIGHT_PAREN && token.type() != TokenType.EOF && !stop) {
+            final var paramParts = new Vector<ASTExpression>(3);
             final TokenType type;
             if (!isType(token)) {
                 if (token.type() == TokenType.IDENTIFIER) {
@@ -206,6 +206,20 @@ public class Parser {
             final var nextToken = tokenizer.nextToken();
             final var part = expect(TokenType.IDENTIFIER, nextToken, token, TokenType.COMMA, TokenType.RIGHT_PAREN);
             if (part != null) paramParts.add(part);
+
+            token = tokenizer.nextToken();
+            if (token.type() != TokenType.COMMA && token.type() != TokenType.RIGHT_PAREN) {
+                if (token.type() == TokenType.LEFT_CURLY) {
+                    tokenizer.pushback(token);
+                    stop = true;
+                    parts.add(new ASTMissing(nextToken.endPos(), token.beginPos(), "Expected ')'"));
+                } else {
+                    parts.add(new ASTWrong(token.beginPos(), token.endPos(), "Unexpected token"));
+                }
+            } else if (token.type() == TokenType.RIGHT_PAREN) {
+                tokenizer.pushback(token);
+            }
+
             if (!paramParts.isEmpty()) {
                 final var paramPartsArray = new ASTExpression[paramParts.size() + 1];
                 paramPartsArray[0] = new ASTParameter(token.beginPos(), nextToken.endPos(), type, null);
@@ -214,7 +228,7 @@ public class Parser {
             } else {
                 params.add(new ASTParameter(token.beginPos(), nextToken.endPos(), type, (String) nextToken.payload()));
             }
-            previous = nextToken;
+            previous = token;
         }
         final var block = parseBlock(previous);
         if (!parts.isEmpty()) {
@@ -285,7 +299,7 @@ public class Parser {
         if (id.type() != TokenType.IDENTIFIER) {
             name = null;
             final ASTExpression fill;
-            if (id.type() == TokenType.LEFT_BRACKET || id.type() == TokenType.SEMICOLON || id.type() == TokenType.EQUALS) {
+            if (id.type() == TokenType.LEFT_PAREN || id.type() == TokenType.SEMICOLON || id.type() == TokenType.EQUALS) {
                 fill = new ASTMissing(type.endPos(), id.beginPos(), "Expected name of identifier");
                 tokenizer.pushback(id);
             } else {
@@ -296,7 +310,7 @@ public class Parser {
             name = (String) id.payload();
         }
         var t = tokenizer.nextToken();
-        if (t.type() == TokenType.LEFT_BRACKET) {
+        if (t.type() == TokenType.LEFT_PAREN) {
             return parseFunctionDefinition(temps, modifiers, realType, name, id);
         } else if (t.type() == TokenType.SEMICOLON || t.type() == TokenType.EQUALS) {
             return parseVariableDefinition(temps, modifiers, realType, name);
