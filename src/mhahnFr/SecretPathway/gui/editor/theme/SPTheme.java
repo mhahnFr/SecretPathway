@@ -37,4 +37,13 @@ public interface SPTheme {
      * @return the style used for the highlighting
      */
     FStyle styleFor(final TokenType tokenType);
+
+    default FStyle getErrorStyle() {
+        final var toReturn = new FStyle();
+
+        toReturn.setForeground(java.awt.Color.red);
+        toReturn.setUnderlined(true);
+
+        return toReturn;
+    }
 }
