@@ -22,7 +22,9 @@ package mhahnFr.SecretPathway.core.parser.ast;
 public interface ASTVisitor {
     void visit(final ASTExpression expression);
 
-    boolean visitType(final ASTType type);
+    default boolean visitType(final ASTType type) {
+        return true;
+    }
 
     default boolean maybeVisit(final ASTExpression expression) {
         visit(expression);

@@ -128,6 +128,8 @@ public class SyntaxDocument extends DefaultStyledDocument {
     private void updateHighlight() {
         if (theme == null) return;
 
+        clearHighlight();
+
         final var tokenizer = new Tokenizer(new StringStream(getAllText()));
         tokenizer.setCommentTokensEnabled(true);
 
@@ -135,6 +137,20 @@ public class SyntaxDocument extends DefaultStyledDocument {
         while ((token = tokenizer.nextToken()).type() != TokenType.EOF) {
             setCharacterAttributes(token.begin(), token.end() - token.begin(),
                     theme.styleFor(token.type()).asStyle(def), true);
+        }
+
+        final var expressions = new mhahnFr.SecretPathway.core.parser.Parser(getAllText()).parse();
+        try {
+            var it = expressions.iterator();
+            while (it.hasNext()) {
+                it.next().visit(expression -> {
+                    switch (expression.getASTType()) {
+                        case MISSING, WRONG -> setCharacterAttributes(expression.getBegin().position(), expression.getEnd().position() - expression.getBegin().position(), theme.getErrorStyle().asStyle(def), true);
+                    }
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
