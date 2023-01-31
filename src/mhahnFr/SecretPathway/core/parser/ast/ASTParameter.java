@@ -47,7 +47,7 @@ public class ASTParameter extends ASTExpression {
                         final StreamPosition end,
                         final TokenType      type,
                         final String         name) {
-        super(begin, end);
+        super(begin, end, ASTType.PARAMETER);
 
         this.type = type;
         this.name = name;

@@ -60,7 +60,7 @@ public class ASTFunctionDefinition extends ASTExpression {
                                  final TokenType[]     modifiers,
                                  final ASTExpression[] parameters,
                                  final ASTExpression[] body) {
-        super(begin, end);
+        super(begin, end, ASTType.FUNCTION_DEFINITION);
 
         this.type       = type;
         this.name       = name;

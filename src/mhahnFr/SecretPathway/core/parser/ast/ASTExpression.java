@@ -32,16 +32,20 @@ public abstract class ASTExpression {
     private final StreamPosition begin;
     /** The end position of this expression.       */
     private final StreamPosition end;
+    /** The type of this AST node.                 */
+    private final ASTType type;
 
     /**
      * Constructs this expression using the given positions.
      *
      * @param begin the beginning position
      * @param end the end position
+     * @param type the type of this AST node
      */
-    protected ASTExpression(StreamPosition begin, StreamPosition end) {
+    protected ASTExpression(StreamPosition begin, StreamPosition end, ASTType type) {
         this.begin = begin;
-        this.end = end;
+        this.end   = end;
+        this.type  = type;
     }
 
     /**
@@ -60,5 +64,14 @@ public abstract class ASTExpression {
      */
     public StreamPosition getBegin() {
         return begin;
+    }
+
+    /**
+     * Returns the type of this AST node.
+     *
+     * @return the type of this node
+     */
+    public ASTType getASTType() {
+        return type;
     }
 }

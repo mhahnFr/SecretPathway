@@ -19,24 +19,13 @@
 
 package mhahnFr.SecretPathway.core.parser.ast;
 
-import mhahnFr.utils.StreamPosition;
-
-/**
- * This class represents a missing statement in the AST.
- *
- * @author mhahnFr
- * @since 26.01.23
- */
-public class ASTMissing extends ASTExpression {
-    private final String message;
-
-    public ASTMissing(final StreamPosition begin, final StreamPosition end, final String message) {
-        super(begin, end, ASTType.MISSING);
-
-        this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
-    }
+public enum ASTType {
+    COMBINATION,
+    FUNCTION_DEFINITION,
+    INCLUDE,
+    INHERITANCE,
+    MISSING,
+    PARAMETER,
+    VARIABLE_DEFINITION,
+    WRONG
 }

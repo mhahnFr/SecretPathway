@@ -27,8 +27,16 @@ import mhahnFr.SecretPathway.core.parser.tokenizer.Token;
  * @author mhahnFr
  * @since 26.01.23
  */
-public class ASTWrong extends ASTMissing {
+public class ASTWrong extends ASTExpression {
+    private final String message;
+
     public ASTWrong(final Token token, final String message) {
-        super(token.beginPos(), token.endPos(), message);
+        super(token.beginPos(), token.endPos(), ASTType.WRONG);
+
+        this.message = message;
+    }
+
+    public String getMessage() {
+        return message;
     }
 }

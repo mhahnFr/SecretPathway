@@ -47,7 +47,7 @@ public class ASTVariableDefinition extends ASTExpression {
                                  final StreamPosition end,
                                  final TokenType      type,
                                  final String         name) {
-        super(begin, end);
+        super(begin, end, ASTType.VARIABLE_DEFINITION);
 
         this.type = type;
         this.name = name;

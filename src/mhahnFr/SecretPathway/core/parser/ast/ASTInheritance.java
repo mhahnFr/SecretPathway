@@ -40,7 +40,7 @@ public class ASTInheritance extends ASTExpression {
      * @param inherited the inheritance string
      */
     public ASTInheritance(StreamPosition begin, StreamPosition end, final String inherited) {
-        super(begin, end);
+        super(begin, end, ASTType.INHERITANCE);
 
         this.inherited = inherited;
     }

@@ -88,7 +88,7 @@ public class Parser {
         final var token = tokenizer.nextToken();
 
         if (token.type() != TokenType.STRING) {
-            final ASTMissing missing;
+            final ASTExpression missing;
 
             if (previous.endPos().isOnSameLine(token.beginPos())) {
                tokenizer.pushback(token);

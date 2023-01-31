@@ -36,7 +36,7 @@ public class ASTCombination extends ASTExpression {
      * @param expressions the sub-expressions
      */
     public ASTCombination(ASTExpression... expressions) {
-        super(expressions[0].getBegin(), expressions[expressions.length - 1].getEnd());
+        super(expressions[0].getBegin(), expressions[expressions.length - 1].getEnd(), ASTType.COMBINATION);
 
         this.expressions = expressions;
     }
