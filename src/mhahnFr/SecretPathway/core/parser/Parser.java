@@ -232,10 +232,10 @@ public class Parser {
         }
         final var block = parseBlock(previous);
         if (!parts.isEmpty()) {
-            final var combination = new ASTExpression[params.size() + 1];
+            final var combination = new ASTExpression[parts.size() + 1];
 
-            combination[0] = new ASTFunctionDefinition(null, null, returnType, name, modifiers.toArray(new TokenType[0]), params.toArray(new ASTExpression[0]), block);
-            System.arraycopy(params.toArray(new ASTExpression[0]), 0, combination, 1, params.size());
+            combination[0] = new ASTFunctionDefinition(null, null, returnType, name, modifiers.toArray(new TokenType[0]), parts.toArray(new ASTExpression[0]), block);
+            System.arraycopy(parts.toArray(new ASTExpression[0]), 0, combination, 1, parts.size());
             return new ASTCombination(combination);
         }
         return new ASTFunctionDefinition(previous.beginPos(), block[block.length - 1].getEnd(), returnType, name, modifiers.toArray(new TokenType[0]), params.toArray(new ASTExpression[0]), block);
@@ -288,8 +288,12 @@ public class Parser {
         final var type = tokenizer.nextToken();
         final TokenType realType;
         if (!isType(type)) {
-            temps.add(new ASTMissing(type.beginPos(), type.beginPos(), "Expected a type"));
-            tokenizer.pushback(type);
+            if (peekToken().type() == TokenType.IDENTIFIER) {
+                temps.add(new ASTWrong(type, "Expected a type"));
+            } else {
+                temps.add(new ASTMissing(type.beginPos(), type.beginPos(), "Expected a type"));
+                tokenizer.pushback(type);
+            }
             realType = null;
         } else {
             realType = type.type();
@@ -328,8 +332,12 @@ public class Parser {
     public Collection<ASTExpression> parse() {
         final var list = new ArrayList<ASTExpression>();
 
-        while (!peekToken(TokenType.EOF)) {
-            list.add(parseExpression());
+        try {
+            while (!peekToken(TokenType.EOF)) {
+                list.add(parseExpression());
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
         }
 
         return list;
