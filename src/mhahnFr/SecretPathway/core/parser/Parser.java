@@ -23,13 +23,11 @@ import mhahnFr.SecretPathway.core.parser.ast.*;
 import mhahnFr.SecretPathway.core.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.core.parser.tokenizer.Tokenizer;
+import mhahnFr.utils.Pair;
 import mhahnFr.utils.StreamPosition;
 import mhahnFr.utils.StringStream;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * This class parses LPC source code.
@@ -136,8 +134,9 @@ public class Parser {
      *
      * @return a collection with the read modifiers
      */
-    private Collection<TokenType> parseModifiers() {
+    private Pair<Collection<TokenType>, StreamPosition> parseModifiers(final StreamPosition previous) {
         final var toReturn = new Vector<TokenType>();
+        StreamPosition lastEndPos = previous;
 
         while (true) {
             final var token = tokenizer.nextToken();
@@ -148,13 +147,14 @@ public class Parser {
                 type == TokenType.DEPRECATED ||
                 type == TokenType.OVERRIDE) {
                 toReturn.add(type);
+                lastEndPos = token.endPos();
             } else {
                 tokenizer.pushback(token);
                 break;
             }
         }
 
-        return toReturn;
+        return new Pair<>(toReturn, lastEndPos);
     }
 
     private ASTExpression expect(final TokenType type, final Token token, final Token previous, final TokenType... next) {
@@ -294,7 +294,7 @@ public class Parser {
             return parseClass(token);
         }
         tokenizer.pushback(token);
-        final var modifiers = parseModifiers();
+        final var modifiers = parseModifiers(token.beginPos());
         final var temps = new Vector<ASTExpression>();
         final var type = tokenizer.nextToken();
         final TokenType realType;
@@ -302,7 +302,7 @@ public class Parser {
             if (peekToken().type() == TokenType.IDENTIFIER) {
                 temps.add(new ASTWrong(type, "Expected a type"));
             } else {
-                temps.add(new ASTMissing(type.beginPos(), type.beginPos(), "Expected a type"));
+                temps.add(new ASTMissing(modifiers.getSecond(), type.beginPos(), "Expected a type"));
                 tokenizer.pushback(type);
             }
             realType = null;
@@ -326,9 +326,9 @@ public class Parser {
         }
         var t = tokenizer.nextToken();
         if (t.type() == TokenType.LEFT_PAREN) {
-            return parseFunctionDefinition(temps, modifiers, realType, name, id);
+            return parseFunctionDefinition(temps, modifiers.getFirst(), realType, name, t);
         } else if (t.type() == TokenType.SEMICOLON || t.type() == TokenType.EQUALS) {
-            return parseVariableDefinition(temps, modifiers, realType, name);
+            return parseVariableDefinition(temps, modifiers.getFirst(), realType, name);
         }
         // TODO: Continue until something known is reached
         throw new RuntimeException("Expected expression!");
