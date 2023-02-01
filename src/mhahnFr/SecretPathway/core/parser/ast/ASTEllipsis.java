@@ -19,14 +19,21 @@
 
 package mhahnFr.SecretPathway.core.parser.ast;
 
-public enum ASTType {
-    COMBINATION,
-    FUNCTION_DEFINITION,
-    INCLUDE,
-    INHERITANCE,
-    MISSING,
-    PARAMETER,
-    VARIABLE_DEFINITION,
-    WRONG,
-    ELLIPSIS
+import mhahnFr.SecretPathway.core.parser.tokenizer.Token;
+
+/**
+ * This class represents an ellipsis AST node.
+ *
+ * @author mhahnFr
+ * @since 01.02.23
+ */
+public class ASTEllipsis extends ASTExpression {
+    /**
+     * Constructs this AST node.
+     *
+     * @param ellipsis the {@link Token} representing the actual ellipsis
+     */
+    public ASTEllipsis(final Token ellipsis) {
+        super(ellipsis.beginPos(), ellipsis.endPos(), ASTType.ELLIPSIS);
+    }
 }
