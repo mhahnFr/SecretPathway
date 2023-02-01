@@ -224,6 +224,11 @@ public class Parser {
                 }
             } else if (token.type() == TokenType.RIGHT_PAREN) {
                 tokenizer.pushback(token);
+            } else {
+                final var peeked = peekToken();
+                if (peeked.type() == TokenType.RIGHT_PAREN) {
+                    params.add(new ASTMissing(token.endPos(), peeked.beginPos(), "Expected parameter"));
+                }
             }
 
             if (!paramParts.isEmpty()) {
