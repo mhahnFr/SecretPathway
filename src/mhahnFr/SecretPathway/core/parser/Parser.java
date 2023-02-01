@@ -205,7 +205,13 @@ public class Parser {
             }
             final var nextToken = tokenizer.nextToken();
             final var part = expect(TokenType.IDENTIFIER, nextToken, token, TokenType.COMMA, TokenType.RIGHT_PAREN);
-            if (part != null) paramParts.add(part);
+            final String paramName;
+            if (part != null) {
+                paramParts.add(part);
+                paramName = null;
+            } else {
+                paramName = (String) nextToken.payload();
+            }
 
             token = tokenizer.nextToken();
             if (token.type() != TokenType.COMMA && token.type() != TokenType.RIGHT_PAREN) {
@@ -222,11 +228,11 @@ public class Parser {
 
             if (!paramParts.isEmpty()) {
                 final var paramPartsArray = new ASTExpression[paramParts.size() + 1];
-                paramPartsArray[0] = new ASTParameter(token.beginPos(), nextToken.endPos(), type, null);
+                paramPartsArray[0] = new ASTParameter(token.beginPos(), nextToken.endPos(), type, paramName);
                 System.arraycopy(paramParts.toArray(new ASTExpression[0]), 0, paramPartsArray, 1, paramParts.size());
                 params.add(new ASTCombination(paramPartsArray));
             } else {
-                params.add(new ASTParameter(token.beginPos(), nextToken.endPos(), type, (String) nextToken.payload()));
+                params.add(new ASTParameter(token.beginPos(), nextToken.endPos(), type, paramName));
             }
             previous = token;
         }
@@ -234,11 +240,11 @@ public class Parser {
         if (!parts.isEmpty()) {
             final var combination = new ASTExpression[parts.size() + 1];
 
-            combination[0] = new ASTFunctionDefinition(null, null, returnType, name, modifiers.toArray(new TokenType[0]), parts.toArray(new ASTExpression[0]), block);
+            combination[0] = new ASTFunctionDefinition(null, null, returnType, name, modifiers.toArray(new TokenType[0]), params.toArray(new ASTExpression[0]), block);
             System.arraycopy(parts.toArray(new ASTExpression[0]), 0, combination, 1, parts.size());
             return new ASTCombination(combination);
         }
-        return new ASTFunctionDefinition(previous.beginPos(), block[block.length - 1].getEnd(), returnType, name, modifiers.toArray(new TokenType[0]), params.toArray(new ASTExpression[0]), block);
+        return new ASTFunctionDefinition(previous.beginPos(), /*block[block.length - 1].getEnd()*/null, returnType, name, modifiers.toArray(new TokenType[0]), params.toArray(new ASTExpression[0]), block);
     }
 
     private ASTExpression parseVariableDefinition(final Collection<ASTExpression> parts,
