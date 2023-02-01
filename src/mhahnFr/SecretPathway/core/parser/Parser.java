@@ -280,11 +280,16 @@ public class Parser {
     }
 
     private ASTExpression parseVariableDefinition(final Collection<ASTExpression> parts,
-                                                  final Collection<TokenType> modifiers,
-                                                  final TokenType variableType,
-                                                  final String name) {
-        // TODO: Implement
-        return null;
+                                                  final Collection<TokenType>     modifiers,
+                                                  final TokenType                 variableType,
+                                                  final String                    name) {
+        if (!parts.isEmpty()) {
+            final var partsArray = new ASTExpression[parts.size() + 1];
+            partsArray[0] = new ASTVariableDefinition(null, null, variableType, name, modifiers.toArray(new TokenType[0]));
+            System.arraycopy(parts.toArray(new ASTExpression[0]), 0, partsArray, 1, parts.size());
+            return new ASTCombination(partsArray);
+        }
+        return new ASTVariableDefinition(null, null, variableType, name, modifiers.toArray(new TokenType[0]));
     }
 
     /**
