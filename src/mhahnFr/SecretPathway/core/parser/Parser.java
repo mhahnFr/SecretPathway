@@ -193,7 +193,7 @@ public class Parser {
             final var paramParts = new Vector<ASTExpression>(3);
             final TokenType type;
             if (!isType(token)) {
-                if (token.type() == TokenType.IDENTIFIER) {
+                if (token.type() == TokenType.IDENTIFIER && peekToken().type() != TokenType.IDENTIFIER) {
                     tokenizer.pushback(token);
                     paramParts.add(new ASTMissing(previous.endPos(), token.beginPos(), "Expected a type"));
                 } else {
@@ -219,6 +219,9 @@ public class Parser {
                     tokenizer.pushback(token);
                     stop = true;
                     parts.add(new ASTMissing(nextToken.endPos(), token.beginPos(), "Expected ')'"));
+                } else if (isType(token)) {
+                    tokenizer.pushback(token);
+                    parts.add(new ASTMissing(nextToken.endPos(), token.beginPos(), "Expected ','"));
                 } else {
                     parts.add(new ASTWrong(token, "Unexpected token"));
                 }
