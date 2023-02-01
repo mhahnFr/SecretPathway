@@ -119,10 +119,10 @@ public class ASTFunctionDefinition extends ASTExpression {
     public void visit(ASTVisitor visitor) {
         if (visitor.maybeVisit(this)) {
             for (int i = 0; i < parameters.length; ++i) {
-                visitor.visit(parameters[i]);
+                parameters[i].visit(visitor);
             }
             for (int i = 0; i < body.length; ++i) {
-                visitor.visit(parameters[i]);
+                body[i].visit(visitor);
             }
         }
     }
