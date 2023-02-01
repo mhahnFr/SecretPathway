@@ -207,7 +207,7 @@ public class Tokenizer {
         try {
             return new Token(begin, TokenType.INTEGER, Integer.decode(word), end);
         } catch (NumberFormatException e) {
-            return new Token(begin, TokenType.IDENTIFIER, null, end);
+            return new Token(begin, TokenType.IDENTIFIER, word, end);
         }
     }
 
