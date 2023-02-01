@@ -185,13 +185,33 @@ public class Parser {
                                                   final TokenType                 returnType,
                                                   final String                    name,
                                                   Token                           previous) {
-        // TODO: varargs
         final var params = new Vector<ASTExpression>();
         Token token;
         var stop = false;
         while ((token = tokenizer.nextToken()).type() != TokenType.RIGHT_PAREN && token.type() != TokenType.EOF && !stop) {
             final var paramParts = new Vector<ASTExpression>(3);
             final TokenType type;
+            if (token.type() == TokenType.ELLIPSIS) {
+                final var nextToken = tokenizer.nextToken();
+                if (nextToken.type() == TokenType.LEFT_CURLY) {
+                    parts.add(new ASTMissing(token.endPos(), nextToken.beginPos(), "Expected ')'"));
+                    params.add(new ASTEllipsis(token));
+                    tokenizer.pushback(nextToken);
+                    break;
+                } else if (nextToken.type() != TokenType.RIGHT_PAREN) {
+                    final var peeked = peekToken();
+                    if (peeked.type() == TokenType.LEFT_CURLY) {
+                        parts.add(new ASTWrong(nextToken, "Expected ')'"));
+                        params.add(new ASTEllipsis(token));
+                        break;
+                    } else {
+                        tokenizer.pushback(nextToken);
+                    }
+                } else {
+                    params.add(new ASTEllipsis(token));
+                    break;
+                }
+            }
             if (!isType(token)) {
                 if (token.type() == TokenType.IDENTIFIER && peekToken().type() != TokenType.IDENTIFIER) {
                     tokenizer.pushback(token);
@@ -203,6 +223,7 @@ public class Parser {
             } else {
                 type = token.type();
             }
+
             final var nextToken = tokenizer.nextToken();
             final var part = expect(TokenType.IDENTIFIER, nextToken, token, TokenType.COMMA, TokenType.RIGHT_PAREN);
             final String paramName;
