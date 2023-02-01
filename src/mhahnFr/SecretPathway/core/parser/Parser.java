@@ -250,8 +250,11 @@ public class Parser {
                 tokenizer.pushback(token);
             } else {
                 final var peeked = peekToken();
-                if (peeked.type() == TokenType.RIGHT_PAREN) {
+                if (peeked.type() == TokenType.RIGHT_PAREN || peeked.type() == TokenType.COMMA) {
                     params.add(new ASTMissing(token.endPos(), peeked.beginPos(), "Expected parameter"));
+                    if (peeked.type() == TokenType.COMMA) {
+                        tokenizer.nextToken();
+                    }
                 }
             }
 
