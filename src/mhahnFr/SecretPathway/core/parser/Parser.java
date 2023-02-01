@@ -38,6 +38,7 @@ import java.util.*;
 public class Parser {
     /** The tokenizer used by this parser. */
     private final Tokenizer tokenizer;
+    private Token previous;
 
     /**
      * Constructs this parser using the given source.
@@ -46,6 +47,7 @@ public class Parser {
      */
     public Parser(final String source) {
         tokenizer = new Tokenizer(new StringStream(source));
+        previous  = peekToken();
     }
 
     /**
@@ -79,10 +81,9 @@ public class Parser {
     /**
      * Parses an {@code #include "something"} statement.
      *
-     * @param previous the previous token
      * @return the parsed expression
      */
-    private ASTExpression parseInclude(final Token previous) {
+    private ASTExpression parseInclude() {
         final var token = tokenizer.nextToken();
 
         if (token.type() != TokenType.STRING) {
@@ -101,17 +102,16 @@ public class Parser {
         return new ASTInclude(previous.beginPos(), token.endPos(), (String) token.payload());
     }
 
-    private ASTExpression parseClass(final Token previous) {
+    private ASTExpression parseClass() {
         return null;
     }
 
     /**
      * Parses an {@code inherit "maybe";} statement.
      *
-     * @param previous the previous token
      * @return the parsed expression
      */
-    private ASTExpression parseInherit(final Token previous) {
+    private ASTExpression parseInherit() {
         var token = tokenizer.nextToken();
 
         StreamPosition lastPos = previous.endPos();
@@ -134,9 +134,9 @@ public class Parser {
      *
      * @return a collection with the read modifiers
      */
-    private Pair<Collection<TokenType>, StreamPosition> parseModifiers(final StreamPosition previous) {
+    private Pair<Collection<TokenType>, StreamPosition> parseModifiers() {
         final var toReturn = new Vector<TokenType>();
-        StreamPosition lastEndPos = previous;
+        StreamPosition lastEndPos = previous.endPos();
 
         while (true) {
             final var token = tokenizer.nextToken();
@@ -157,7 +157,7 @@ public class Parser {
         return new Pair<>(toReturn, lastEndPos);
     }
 
-    private ASTExpression expect(final TokenType type, final Token token, final Token previous, final TokenType... next) {
+    private ASTExpression expect(final TokenType type, final Token token, final TokenType... next) {
         if (token.type() != type) {
             if (Arrays.asList(next).contains(token.type())) {
                 tokenizer.pushback(token);
@@ -175,7 +175,7 @@ public class Parser {
         };
     }
 
-    private ASTExpression[] parseBlock(final Token previous) {
+    private ASTExpression[] parseBlock() {
         // TODO: Implement
         return null;
     }
@@ -183,8 +183,7 @@ public class Parser {
     private ASTExpression parseFunctionDefinition(final Collection<ASTExpression> parts,
                                                   final Collection<TokenType>     modifiers,
                                                   final TokenType                 returnType,
-                                                  final String                    name,
-                                                  Token                           previous) {
+                                                  final String                    name) {
         final var params = new Vector<ASTExpression>();
         Token token;
         var stop = false;
@@ -225,7 +224,8 @@ public class Parser {
             }
 
             final var nextToken = tokenizer.nextToken();
-            final var part = expect(TokenType.IDENTIFIER, nextToken, token, TokenType.COMMA, TokenType.RIGHT_PAREN);
+            previous = token;
+            final var part = expect(TokenType.IDENTIFIER, nextToken, TokenType.COMMA, TokenType.RIGHT_PAREN);
             final String paramName;
             if (part != null) {
                 paramParts.add(part);
@@ -265,7 +265,7 @@ public class Parser {
             }
             previous = token;
         }
-        final var block = parseBlock(previous);
+        final var block = parseBlock();
         if (!parts.isEmpty()) {
             final var combination = new ASTExpression[parts.size() + 1];
 
@@ -310,15 +310,16 @@ public class Parser {
 
     private ASTExpression parseExpression() {
         final var token = tokenizer.nextToken();
+        previous = token;
         if (token.type() == TokenType.INHERIT) {
-            return parseInherit(token);
+            return parseInherit();
         } else if (token.type() == TokenType.INCLUDE) {
-            return parseInclude(token);
+            return parseInclude();
         } else if (token.type() == TokenType.CLASS) {
-            return parseClass(token);
+            return parseClass();
         }
         tokenizer.pushback(token);
-        final var modifiers = parseModifiers(token.beginPos());
+        final var modifiers = parseModifiers();
         final var temps = new Vector<ASTExpression>();
         final var type = tokenizer.nextToken();
         final TokenType realType;
@@ -349,8 +350,9 @@ public class Parser {
             name = (String) id.payload();
         }
         var t = tokenizer.nextToken();
+        previous = t;
         if (t.type() == TokenType.LEFT_PAREN) {
-            return parseFunctionDefinition(temps, modifiers.getFirst(), realType, name, t);
+            return parseFunctionDefinition(temps, modifiers.getFirst(), realType, name);
         } else if (t.type() == TokenType.SEMICOLON || t.type() == TokenType.EQUALS) {
             return parseVariableDefinition(temps, modifiers.getFirst(), realType, name);
         }
