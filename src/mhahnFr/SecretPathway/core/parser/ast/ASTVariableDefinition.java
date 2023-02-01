@@ -29,10 +29,12 @@ import mhahnFr.utils.StreamPosition;
  * @since 28.01.23
  */
 public class ASTVariableDefinition extends ASTExpression {
-    /** The name of this declared variable. */
+    /** The name of this declared variable.      */
     private final String name;
-    /** The declared type of this variable. */
+    /** The declared type of this variable.      */
     private final TokenType type;
+    /** The declared modifiers of this variable. */
+    private final TokenType[] modifiers;
 
     /**
      * Constructs this AST node using the given positions,
@@ -42,15 +44,18 @@ public class ASTVariableDefinition extends ASTExpression {
      * @param end the end position of this expression
      * @param type the declared type of this variable
      * @param name the declared name of this variable
+     * @param modifiers the declared modifiers of this variable
      */
     public ASTVariableDefinition(final StreamPosition begin,
                                  final StreamPosition end,
                                  final TokenType      type,
-                                 final String         name) {
+                                 final String         name,
+                                 final TokenType[]    modifiers) {
         super(begin, end, ASTType.VARIABLE_DEFINITION);
 
-        this.type = type;
-        this.name = name;
+        this.type      = type;
+        this.name      = name;
+        this.modifiers = modifiers;
     }
 
     /**
@@ -69,5 +74,14 @@ public class ASTVariableDefinition extends ASTExpression {
      */
     public TokenType getType() {
         return type;
+    }
+
+    /**
+     * Returns the declared modifiers of this declared variable.
+     *
+     * @return the declared modifiers
+     */
+    public TokenType[] getModifiers() {
+        return modifiers;
     }
 }
