@@ -141,7 +141,18 @@ public class Parser {
         return parse(TokenType.EOF);
     }
 
+    /**
+     * This class represents a dummy starting token.
+     *
+     * @author mhahnFr
+     * @since 02.02.23
+     */
     private static class StartToken extends Token {
+        /**
+         * Constructs this dummy token using the given position.
+         *
+         * @param position the position of this dummy token
+         */
         public StartToken(final StreamPosition position) {
             super(position, null, null, position);
         }
