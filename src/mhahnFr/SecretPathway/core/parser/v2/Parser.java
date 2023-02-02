@@ -174,20 +174,20 @@ public class Parser {
         return toReturn;
     }
 
-    private String parseName() {
-        final String toReturn;
+    private ASTExpression parseName() {
+        final ASTExpression toReturn;
 
         if (current.type() == TokenType.LEFT_PAREN ||
             current.type() == TokenType.SEMICOLON  ||
             current.type() == TokenType.EQUALS) {
-            // missing name
-            toReturn = null;
+            toReturn = combine(new ASTName(null),
+                               new ASTMissing(previous.endPos(), current.beginPos(), "Missing name"));
         } else if (current.type() != TokenType.IDENTIFIER) {
-            // wrong, consume as name
-            toReturn = null;
+            toReturn = combine(new ASTName(null),
+                               new ASTWrong(current, "Expected a name"));
             advance();
         } else {
-            toReturn = (String) current.payload();
+            toReturn = new ASTName(current);
             advance();
         }
 
@@ -196,13 +196,13 @@ public class Parser {
 
     private ASTExpression parseVariableDefinition(final Collection<TokenType> modifiers,
                                                   final ASTExpression         type,
-                                                  final String                name) {
+                                                  final ASTExpression         name) {
         return null;
     }
 
     private ASTExpression parseFunctionDefinition(final Collection<TokenType> modifiers,
                                                   final ASTExpression         type,
-                                                  final String                name) {
+                                                  final ASTExpression         name) {
         return null;
     }
 
