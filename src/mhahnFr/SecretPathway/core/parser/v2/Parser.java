@@ -28,6 +28,7 @@ import mhahnFr.utils.StringStream;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Vector;
 
 /**
  * This class parses LPC source code.
@@ -114,6 +115,115 @@ public class Parser {
         return null;
     }
 
+    private boolean isModifier(final TokenType type) {
+        return type == TokenType.PRIVATE    ||
+               type == TokenType.PROTECTED  ||
+               type == TokenType.PUBLIC     ||
+               type == TokenType.DEPRECATED ||
+               type == TokenType.OVERRIDE   ||
+               type == TokenType.NOSAVE;
+    }
+
+    private Collection<TokenType> parseModifiers() {
+        final var toReturn = new Vector<TokenType>();
+
+        while (true) {
+            if (isModifier(current.type())) {
+                toReturn.add(current.type());
+            } else if (isModifier(next.type())) {
+                // wrong, consume as modifier
+            } else {
+                break;
+            }
+            advance();
+        }
+
+        return toReturn;
+    }
+
+    private boolean isType(final TokenType type) {
+        return type == TokenType.VOID           ||
+               type == TokenType.CHAR_KEYWORD   ||
+               type == TokenType.INT_KEYWORD    ||
+               type == TokenType.BOOL           ||
+               type == TokenType.OBJECT         ||
+               type == TokenType.STRING_KEYWORD ||
+               type == TokenType.SYMBOL_KEYWORD ||
+               type == TokenType.MAPPING        ||
+               type == TokenType.ANY            ||
+               type == TokenType.MIXED          ||
+               type == TokenType.AUTO           ||
+               type == TokenType.OPERATOR;
+    }
+
+    private TokenType parseType() {
+        final TokenType toReturn;
+
+        if (!isType(current.type()) && next.type() == TokenType.IDENTIFIER) {
+            // wrong, consume as type
+            toReturn = null;
+            advance();
+        } else if (current.type() == TokenType.IDENTIFIER) {
+            // missing type
+            toReturn = null;
+        } else {
+            toReturn = current.type();
+            advance();
+        }
+
+        return toReturn;
+    }
+
+    private String parseName() {
+        final String toReturn;
+
+        if (current.type() == TokenType.LEFT_PAREN ||
+            current.type() == TokenType.SEMICOLON  ||
+            current.type() == TokenType.EQUALS) {
+            // missing name
+            toReturn = null;
+        } else if (current.type() != TokenType.IDENTIFIER) {
+            // wrong, consume as name
+            toReturn = null;
+            advance();
+        } else {
+            toReturn = (String) current.payload();
+            advance();
+        }
+
+        return toReturn;
+    }
+
+    private ASTExpression parseVariableDefinition(final Collection<TokenType> modifiers,
+                                                  final TokenType             type,
+                                                  final String                name) {
+        return null;
+    }
+
+    private ASTExpression parseFunctionDefinition(final Collection<TokenType> modifiers,
+                                                  final TokenType             type,
+                                                  final String                name) {
+        return null;
+    }
+
+    private ASTExpression parseFileExpression() {
+        // modifiers type name
+        final var modifiers = parseModifiers();
+        final var type      = parseType();
+        final var name      = parseName();
+
+        if (current.type() == TokenType.LEFT_PAREN) {
+            // def. func
+            return parseFunctionDefinition(modifiers, type, name);
+        } else if (current.type() == TokenType.SEMICOLON) {
+            // def. var
+            return parseVariableDefinition(modifiers, type, name);
+        } else {
+            // TODO
+        }
+        return null;
+    }
+
     private ASTExpression parseExpression() {
         if (current.type() == TokenType.INCLUDE) {
             return parseInclude();
@@ -122,9 +232,7 @@ public class Parser {
         } else if (current.type() == TokenType.CLASS) {
             return parseClass();
         }
-        // TODO
-        advance();
-        return null;
+        return parseFileExpression();
     }
 
     private ASTExpression[] parse(final TokenType end) {
