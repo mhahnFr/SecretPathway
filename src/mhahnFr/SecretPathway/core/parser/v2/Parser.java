@@ -19,11 +19,15 @@
 
 package mhahnFr.SecretPathway.core.parser.v2;
 
-import mhahnFr.SecretPathway.core.parser.ast.ASTExpression;
+import mhahnFr.SecretPathway.core.parser.ast.*;
 import mhahnFr.SecretPathway.core.parser.tokenizer.Token;
+import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.core.parser.tokenizer.Tokenizer;
 import mhahnFr.utils.StreamPosition;
 import mhahnFr.utils.StringStream;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * This class parses LPC source code.
@@ -56,8 +60,74 @@ public class Parser {
         next     = tokenizer.nextToken();
     }
 
-    public ASTExpression[] parse() {
+    private ASTExpression combine(ASTExpression main, Collection<ASTExpression> parts) {
+        return combine(main, parts.toArray(new ASTExpression[0]));
+    }
+
+    private ASTExpression combine(ASTExpression main, ASTExpression... parts) {
+        final var array = new ASTExpression[parts.length + 1];
+        array[0] = main;
+        System.arraycopy(parts, 0, array, 1, parts.length);
+        return new ASTCombination(array);
+    }
+
+    private ASTExpression parseInclude() {
         return null;
+    }
+
+    private ASTExpression parseInherit() {
+        final ASTExpression toReturn;
+
+        advance();
+        if (current.type() == TokenType.SEMICOLON) {
+            toReturn = new ASTInheritance(previous.beginPos(), current.endPos(), null);
+        } else if (next.type() == TokenType.SEMICOLON && current.type() != TokenType.STRING) {
+            toReturn = combine(new ASTInheritance(previous.beginPos(), next.endPos(), null),
+                               new ASTWrong(current, "Expected a string literal"));
+            advance();
+        } else if (current.type() == TokenType.STRING && next.type() != TokenType.SEMICOLON) {
+            toReturn = combine(new ASTInheritance(previous.beginPos(), current.endPos(), (String) current.payload()),
+                               new ASTMissing(current.endPos(), next.beginPos(), "Expected ';'"));
+        } else if (current.type() != TokenType.SEMICOLON && next.type() != TokenType.SEMICOLON) {
+            return combine(new ASTInheritance(previous.beginPos(), current.beginPos(), null),
+                           new ASTMissing(previous.endPos(), current.beginPos(), "Expected ';'"));
+        } else {
+            toReturn = new ASTInheritance(previous.beginPos(), next.endPos(), (String) current.payload());
+            advance();
+        }
+        advance();
+        return toReturn;
+    }
+
+    private ASTExpression parseClass() {
+        return null;
+    }
+
+    private ASTExpression parseExpression() {
+        if (current.type() == TokenType.INCLUDE) {
+            return parseInclude();
+        } else if (current.type() == TokenType.INHERIT) {
+            return parseInherit();
+        } else if (current.type() == TokenType.CLASS) {
+            return parseClass();
+        }
+        // TODO
+        advance();
+        return null;
+    }
+
+    private ASTExpression[] parse(final TokenType end) {
+        final var expressions = new ArrayList<ASTExpression>();
+
+        while (current.type() != TokenType.EOF && current.type() != end) {
+            expressions.add(parseExpression());
+        }
+
+        return expressions.toArray(new ASTExpression[0]);
+    }
+
+    public ASTExpression[] parse() {
+        return parse(TokenType.EOF);
     }
 
     private static class StartToken extends Token {
