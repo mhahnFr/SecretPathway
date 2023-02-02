@@ -23,7 +23,6 @@ import mhahnFr.SecretPathway.core.parser.ast.*;
 import mhahnFr.SecretPathway.core.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.core.parser.tokenizer.Tokenizer;
-import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
 import mhahnFr.utils.StreamPosition;
 import mhahnFr.utils.StringStream;
 
@@ -228,20 +227,83 @@ public class Parser {
         return toReturn;
     }
 
-    private ASTExpression parseFunctionDefinition(final Collection<ASTExpression> modifiers,
-                                                  final ASTExpression             type,
-                                                  final ASTExpression             name) {
+    private List<ASTExpression> parseParameterDefinitions() {
+        final var toReturn = new ArrayList<ASTExpression>();
+
+        if (current.type() != TokenType.RIGHT_PAREN) {
+            boolean stop = false;
+            do {
+                if (current.type() == TokenType.ELLIPSIS && (next.type() == TokenType.RIGHT_PAREN ||
+                                                             next.type() == TokenType.LEFT_CURLY)) {
+                    toReturn.add(new ASTEllipsis(current));
+                    break;
+                }
+
+                // type name | type _ | whatever name | _ name
+                if (!isType(current.type())) {
+                    if (next.type() == TokenType.IDENTIFIER) {
+                        // Wrong, consume as type
+                        advance();
+                    } else {
+                        // missing type
+                    }
+                } else {
+                    // correct type
+                    advance();
+                }
+
+                if (current.type() != TokenType.IDENTIFIER) {
+                    if (current.type() == TokenType.COMMA || current.type() == TokenType.RIGHT_PAREN) {
+                        // missing name
+                    } else {
+                        // wrong, consume as name
+                        advance();
+                    }
+                } else {
+                    // Correct name
+                    advance();
+                }
+
+                if (current.type() == TokenType.RIGHT_PAREN || current.type() == TokenType.LEFT_CURLY) {
+                    stop = true;
+                    if (current.type() == TokenType.LEFT_CURLY) {
+                        // missing )
+                    } else {
+                        advance();
+                    }
+                } else if (current.type() != TokenType.COMMA) {
+                    // missing comma
+                } else {
+                    advance();
+                }
+            } while (!stop);
+        }
+
+        return toReturn;
+    }
+
+    private ASTExpression parseBlock() {
         return null;
     }
 
+    private ASTExpression parseFunctionDefinition(final List<ASTExpression> modifiers,
+                                                  final ASTExpression       type,
+                                                  final ASTExpression       name) {
+        // (name) ( object foo, ... ) { ... }
+        final var parameters = parseParameterDefinitions();
+        final var body       = parseBlock();
+
+        return new ASTFunctionDefinitionV2(modifiers, type, name, parameters, body);
+    }
+
     private ASTExpression parseFileExpression() {
-        // modifiers type name
         final var modifiers = parseModifiers();
         final var type      = parseType();
         final var name      = parseName();
 
         if (current.type() == TokenType.LEFT_PAREN) {
             // def. func
+            advance();
             return parseFunctionDefinition(modifiers, type, name);
         } else if (current.type() == TokenType.SEMICOLON) {
             // def. var
