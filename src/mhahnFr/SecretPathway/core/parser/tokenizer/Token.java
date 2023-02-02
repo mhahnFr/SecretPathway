@@ -23,13 +23,31 @@ import mhahnFr.utils.StreamPosition;
 
 /**
  * This record holds all information related to a specific Token.
- *
- * @param beginPos the beginning of this token in the text
- * @param type the type of this token
- * @param payload the payload held by this token
- * @param endPos the end of this token in the text
  */
-public record Token(StreamPosition beginPos, TokenType type, Object payload, StreamPosition endPos) {
+public class Token {
+    private final StreamPosition beginPos;
+    private final StreamPosition endPos;
+    private final TokenType type;
+    private final Object payload;
+
+    /**
+     * TODO
+     *
+     * @param beginPos the beginning of this token in the text
+     * @param type the type of this token
+     * @param payload the payload held by this token
+     * @param endPos the end of this token in the text
+     */
+    public Token(final StreamPosition beginPos,
+                 final TokenType      type,
+                 final Object         payload,
+                 final StreamPosition endPos) {
+        this.beginPos = beginPos;
+        this.type     = type;
+        this.payload  = payload;
+        this.endPos   = endPos;
+    }
+
     /**
      * Returns the beginning index inside the original text.
      *
@@ -39,6 +57,18 @@ public record Token(StreamPosition beginPos, TokenType type, Object payload, Str
         return beginPos.position();
     }
 
+    public StreamPosition beginPos() {
+        return beginPos;
+    }
+
+    public TokenType type() {
+        return type;
+    }
+
+    public Object payload() {
+        return payload;
+    }
+
     /**
      * Returns the end index inside the original text.
      *
@@ -46,5 +76,9 @@ public record Token(StreamPosition beginPos, TokenType type, Object payload, Str
      */
     public int end() {
         return endPos.position();
+    }
+
+    public StreamPosition endPos() {
+        return endPos;
     }
 }
