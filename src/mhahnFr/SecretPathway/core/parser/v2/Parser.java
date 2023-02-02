@@ -72,7 +72,18 @@ public class Parser {
     }
 
     private ASTExpression parseInclude() {
-        return null;
+        final ASTExpression toReturn;
+
+        advance();
+        if (current.type() != TokenType.STRING) {
+            return combine(new ASTInclude(previous.beginPos(), current.beginPos(), null),
+                           new ASTMissing(previous.endPos(), current.beginPos(), "Expected a string literal"));
+        } else {
+            toReturn = new ASTInclude(previous.beginPos(), current.endPos(), (String) current.payload());
+        }
+
+        advance();
+        return toReturn;
     }
 
     private ASTExpression parseInherit() {

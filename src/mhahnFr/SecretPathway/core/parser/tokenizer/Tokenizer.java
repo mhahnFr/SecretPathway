@@ -293,6 +293,6 @@ public class Tokenizer {
      * @return whether the given character is special
      */
     private boolean isSpecial(char c) {
-        return !(Character.isAlphabetic(c) || Character.isDigit(c) || c == '_');
+        return !(Character.isAlphabetic(c) || Character.isDigit(c) || c == '_' || c == '$' || c == '#');
     }
 }
