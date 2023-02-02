@@ -108,4 +108,24 @@ public class ASTFunctionDefinitionV2 extends ASTExpression {
     public ASTExpression getBody() {
         return body;
     }
+
+    @Override
+    public void visit(ASTVisitor visitor) {
+        if (visitor.maybeVisit(this)) {
+            var iterator = modifiers.listIterator();
+            while (iterator.hasNext()) {
+                iterator.next().visit(visitor);
+            }
+
+            type.visit(visitor);
+            name.visit(visitor);
+
+            iterator = parameters.listIterator();
+            while (iterator.hasNext()) {
+                iterator.next().visit(visitor);
+            }
+
+            body.visit(visitor);
+        }
+    }
 }

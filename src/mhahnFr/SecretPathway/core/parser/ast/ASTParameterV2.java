@@ -62,4 +62,12 @@ public class ASTParameterV2 extends ASTExpression {
     public ASTExpression getName() {
         return name;
     }
+
+    @Override
+    public void visit(ASTVisitor visitor) {
+        if (visitor.maybeVisit(this)) {
+            type.visit(visitor);
+            name.visit(visitor);
+        }
+    }
 }
