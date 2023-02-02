@@ -23,11 +23,13 @@ import mhahnFr.SecretPathway.core.parser.ast.*;
 import mhahnFr.SecretPathway.core.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.core.parser.tokenizer.Tokenizer;
+import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
 import mhahnFr.utils.StreamPosition;
 import mhahnFr.utils.StringStream;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -124,7 +126,7 @@ public class Parser {
                type == TokenType.NOSAVE;
     }
 
-    private Collection<ASTExpression> parseModifiers() {
+    private List<ASTExpression> parseModifiers() {
         final var toReturn = new Vector<ASTExpression>();
 
         while (true) {
@@ -195,10 +197,35 @@ public class Parser {
         return toReturn;
     }
 
-    private ASTExpression parseVariableDefinition(final Collection<ASTExpression> modifiers,
-                                                  final ASTExpression             type,
-                                                  final ASTExpression             name) {
+    private ASTExpression parseAssignation(final ASTExpression assignee) {
         return null;
+    }
+
+    private ASTExpression parseVariableDefinition(final List<ASTExpression> modifiers,
+                                                  final ASTExpression       type,
+                                                  final ASTExpression       name) {
+        final ASTExpression toReturn;
+
+        final StreamPosition begin;
+        if (!modifiers.isEmpty()) {
+            begin = modifiers.get(0).getBegin();
+        } else {
+            begin = type.getBegin();
+        }
+        final var variable = new ASTVariableDefinitionV2(begin, name.getEnd(), modifiers, type, name);
+
+        if (current.type() == TokenType.SEMICOLON) {
+            advance();
+            toReturn = variable;
+        } else if (current.type() == TokenType.EQUALS) {
+            advance();
+            toReturn = parseAssignation(variable);
+        } else {
+            // TODO: read till ; and mark as wrong
+            toReturn = null;
+        }
+
+        return toReturn;
     }
 
     private ASTExpression parseFunctionDefinition(final Collection<ASTExpression> modifiers,
