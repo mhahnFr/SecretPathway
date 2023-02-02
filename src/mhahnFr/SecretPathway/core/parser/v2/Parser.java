@@ -156,18 +156,18 @@ public class Parser {
                type == TokenType.OPERATOR;
     }
 
-    private TokenType parseType() {
-        final TokenType toReturn;
+    private ASTExpression parseType() {
+        final ASTExpression toReturn;
 
         if (!isType(current.type()) && next.type() == TokenType.IDENTIFIER) {
-            // wrong, consume as type
-            toReturn = null;
+            toReturn = combine(new ASTTypeDeclaration(null),
+                               new ASTWrong(current, "Expected a type"));
             advance();
         } else if (current.type() == TokenType.IDENTIFIER) {
-            // missing type
-            toReturn = null;
+            toReturn = combine(new ASTTypeDeclaration(null),
+                               new ASTMissing(previous.endPos(), current.beginPos(), "Missing type"));
         } else {
-            toReturn = current.type();
+            toReturn = new ASTTypeDeclaration(current);
             advance();
         }
 
@@ -195,13 +195,13 @@ public class Parser {
     }
 
     private ASTExpression parseVariableDefinition(final Collection<TokenType> modifiers,
-                                                  final TokenType             type,
+                                                  final ASTExpression         type,
                                                   final String                name) {
         return null;
     }
 
     private ASTExpression parseFunctionDefinition(final Collection<TokenType> modifiers,
-                                                  final TokenType             type,
+                                                  final ASTExpression         type,
                                                   final String                name) {
         return null;
     }

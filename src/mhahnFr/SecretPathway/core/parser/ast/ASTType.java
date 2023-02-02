@@ -28,5 +28,6 @@ public enum ASTType {
     PARAMETER,
     VARIABLE_DEFINITION,
     WRONG,
-    ELLIPSIS
+    ELLIPSIS,
+    TYPE
 }
