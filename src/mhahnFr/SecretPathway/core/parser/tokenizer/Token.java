@@ -23,15 +23,22 @@ import mhahnFr.utils.StreamPosition;
 
 /**
  * This record holds all information related to a specific Token.
+ *
+ * @author mhahnFr
+ * @since 05.01.23
  */
 public class Token {
+    /** The beginning position of this token. */
     private final StreamPosition beginPos;
+    /** The end position of this token.       */
     private final StreamPosition endPos;
+    /** The type of this token.               */
     private final TokenType type;
+    /** The optional payload of this token.   */
     private final Object payload;
 
     /**
-     * TODO
+     * Constructs this token using the given information.
      *
      * @param beginPos the beginning of this token in the text
      * @param type the type of this token
@@ -57,14 +64,29 @@ public class Token {
         return beginPos.position();
     }
 
+    /**
+     * Returns the beginning position of this token.
+     *
+     * @return the beginning position
+     */
     public StreamPosition beginPos() {
         return beginPos;
     }
 
+    /**
+     * Returns the type of this token.
+     *
+     * @return the type
+     */
     public TokenType type() {
         return type;
     }
 
+    /**
+     * Returns the optional payload of this token.
+     *
+     * @return the optional payload
+     */
     public Object payload() {
         return payload;
     }
@@ -78,6 +100,11 @@ public class Token {
         return endPos.position();
     }
 
+    /**
+     * Returns the end position of this token.
+     *
+     * @return the end position
+     */
     public StreamPosition endPos() {
         return endPos;
     }
