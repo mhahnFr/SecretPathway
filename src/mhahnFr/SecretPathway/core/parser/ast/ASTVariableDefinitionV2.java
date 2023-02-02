@@ -23,11 +23,30 @@ import mhahnFr.utils.StreamPosition;
 
 import java.util.List;
 
+/**
+ * This class represents a variable definition as an AST node.
+ *
+ * @author mhahnFr
+ * @since 02.02.23
+ */
 public class ASTVariableDefinitionV2 extends ASTExpression {
+    /** The modifiers of this variable. */
     private final List<ASTExpression> modifiers;
+    /** The type of this variable.      */
     private final ASTExpression type;
+    /** The name of this variable.      */
     private final ASTExpression name;
 
+    /**
+     * Constructs this AST node for variable definitions using the
+     * given information.
+     *
+     * @param begin the beginning position of this node
+     * @param end the end position of this node
+     * @param modifiers the declared modifiers of this variable definition
+     * @param type the declared type of this variable definition
+     * @param name the declared name of this variable definition
+     */
     public ASTVariableDefinitionV2(final StreamPosition      begin,
                                    final StreamPosition      end,
                                    final List<ASTExpression> modifiers,
@@ -40,14 +59,29 @@ public class ASTVariableDefinitionV2 extends ASTExpression {
         this.name      = name;
     }
 
+    /**
+     * Returns the declared modifiers of this declared variable.
+     *
+     * @return the declared modifiers
+     */
     public List<ASTExpression> getModifiers() {
         return modifiers;
     }
 
+    /**
+     * Returns the declared type of this declared variable.
+     *
+     * @return the declared type
+     */
     public ASTExpression getType() {
         return type;
     }
 
+    /**
+     * Returns the declared name of this declared variable.
+     *
+     * @return the declared name
+     */
     public ASTExpression getName() {
         return name;
     }
