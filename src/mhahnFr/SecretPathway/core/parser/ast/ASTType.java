@@ -30,5 +30,6 @@ public enum ASTType {
     WRONG,
     ELLIPSIS,
     TYPE,
-    NAME
+    NAME,
+    MODIFIER
 }

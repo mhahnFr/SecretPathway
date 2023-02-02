@@ -124,14 +124,15 @@ public class Parser {
                type == TokenType.NOSAVE;
     }
 
-    private Collection<TokenType> parseModifiers() {
-        final var toReturn = new Vector<TokenType>();
+    private Collection<ASTExpression> parseModifiers() {
+        final var toReturn = new Vector<ASTExpression>();
 
         while (true) {
             if (isModifier(current.type())) {
-                toReturn.add(current.type());
+                toReturn.add(new ASTModifier(current));
             } else if (isModifier(next.type())) {
-                // wrong, consume as modifier
+                toReturn.add(combine(new ASTModifier(null),
+                                     new ASTWrong(current, "Expected a modifier")));
             } else {
                 break;
             }
@@ -194,15 +195,15 @@ public class Parser {
         return toReturn;
     }
 
-    private ASTExpression parseVariableDefinition(final Collection<TokenType> modifiers,
-                                                  final ASTExpression         type,
-                                                  final ASTExpression         name) {
+    private ASTExpression parseVariableDefinition(final Collection<ASTExpression> modifiers,
+                                                  final ASTExpression             type,
+                                                  final ASTExpression             name) {
         return null;
     }
 
-    private ASTExpression parseFunctionDefinition(final Collection<TokenType> modifiers,
-                                                  final ASTExpression         type,
-                                                  final ASTExpression         name) {
+    private ASTExpression parseFunctionDefinition(final Collection<ASTExpression> modifiers,
+                                                  final ASTExpression             type,
+                                                  final ASTExpression             name) {
         return null;
     }
 
