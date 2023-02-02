@@ -236,47 +236,57 @@ public class Parser {
                 if (current.type() == TokenType.ELLIPSIS && (next.type() == TokenType.RIGHT_PAREN ||
                                                              next.type() == TokenType.LEFT_CURLY)) {
                     toReturn.add(new ASTEllipsis(current));
+                    if (next.type() == TokenType.LEFT_CURLY) {
+                        toReturn.add(new ASTMissing(current.endPos(), next.beginPos(), "Expected ')'"));
+                    }
                     break;
                 }
 
-                // type name | type _ | whatever name | _ name
+                final ASTExpression type;
                 if (!isType(current.type())) {
                     if (next.type() == TokenType.IDENTIFIER) {
-                        // Wrong, consume as type
+                        type = combine(new ASTTypeDeclaration(null),
+                                       new ASTWrong(current, "Expected a type"));
                         advance();
                     } else {
-                        // missing type
+                        type = combine(new ASTTypeDeclaration(null),
+                                       new ASTMissing(previous.endPos(), current.beginPos(), "Missing type"));
                     }
                 } else {
-                    // correct type
+                    type = new ASTTypeDeclaration(current);
                     advance();
                 }
 
+                final ASTExpression name;
                 if (current.type() != TokenType.IDENTIFIER) {
                     if (current.type() == TokenType.COMMA || current.type() == TokenType.RIGHT_PAREN) {
-                        // missing name
+                        name = combine(new ASTName(null),
+                                       new ASTMissing(previous.endPos(), current.beginPos(), "Parameter's name missing"));
                     } else {
-                        // wrong, consume as name
+                        name = combine(new ASTName(null),
+                                       new ASTWrong(current, "Expected parameter's name"));
                         advance();
                     }
                 } else {
-                    // Correct name
+                    name = new ASTName(current);
                     advance();
                 }
+
+                toReturn.add(new ASTParameterV2(type, name));
 
                 if (current.type() == TokenType.RIGHT_PAREN || current.type() == TokenType.LEFT_CURLY) {
                     stop = true;
                     if (current.type() == TokenType.LEFT_CURLY) {
-                        // missing )
+                        toReturn.add(new ASTMissing(previous.endPos(), current.beginPos(), "Expected ')'"));
                     } else {
                         advance();
                     }
                 } else if (current.type() != TokenType.COMMA) {
-                    // missing comma
+                    toReturn.add(new ASTMissing(previous.endPos(), current.beginPos(), "Expected ','"));
                 } else {
                     advance();
                 }
-            } while (!stop);
+            } while (!stop && current.type() != TokenType.EOF);
         }
 
         return toReturn;
@@ -289,7 +299,6 @@ public class Parser {
     private ASTExpression parseFunctionDefinition(final List<ASTExpression> modifiers,
                                                   final ASTExpression       type,
                                                   final ASTExpression       name) {
-        // (name) ( object foo, ... ) { ... }
         final var parameters = parseParameterDefinitions();
         final var body       = parseBlock();
 
