@@ -213,18 +213,38 @@ public final class Settings {
         return preferences.getInt(Keys.START_TLS, 0) == 1;
     }
 
+    /**
+     * Returns the width of the editor window.
+     *
+     * @return thw width
+     */
     public int getEditorWindowWidth() {
         return preferences.getInt(Keys.EDITOR_WINDOW_WIDTH, -1);
     }
 
+    /**
+     * Returns the height of the editor window.
+     *
+     * @return the height
+     */
     public int getEditorWindowHeight() {
         return preferences.getInt(Keys.EDITOR_WINDOW_HEIGHT, -1);
     }
 
+    /**
+     * Returns the X-coordinate of the editor window.
+     *
+     * @return the X-coordinate
+     */
     public int getEditorWindowX() {
         return preferences.getInt(Keys.EDITOR_WINDOW_X, -1);
     }
 
+    /**
+     * Returns the Y-coordinate of the editor window.
+     *
+     * @return the Y-coordinate
+     */
     public int getEditorWindowY() {
         return preferences.getInt(Keys.EDITOR_WINDOW_Y, -1);
     }
@@ -369,6 +389,13 @@ public final class Settings {
         return this;
     }
 
+    /**
+     * Stores the size of the editor window.
+     *
+     * @param width the width of the editor window
+     * @param height the height of the editor window
+     * @return this instance
+     */
     public Settings setEditorWindowSize(int width, int height) {
         callListeners(Keys.EDITOR_WINDOW_WIDTH, width);
         callListeners(Keys.EDITOR_WINDOW_HEIGHT, height);
@@ -377,6 +404,13 @@ public final class Settings {
         return this;
     }
 
+    /**
+     * Stores the location of the editor window.
+     *
+     * @param x the X-coordinate of the editor window
+     * @param y the Y-coordinate of the editor window
+     * @return this instance
+     */
     public Settings setEditorWindowLocation(int x, int y) {
         callListeners(Keys.EDITOR_WINDOW_X, x);
         callListeners(Keys.EDITOR_WINDOW_Y, y);
@@ -452,9 +486,13 @@ public final class Settings {
         public static final String EDITOR_INLINED             = BUNDLE_ID + ".editorInlined";
         /** The key used to store the path to the theme used by the editor. */
         public static final String EDITOR_THEME_PATH          = BUNDLE_ID + ".editorThemePath";
+        /** The key used to store the X-coordinate of the editor window.    */
         public static final String EDITOR_WINDOW_X            = BUNDLE_ID + ".editorWindowX";
+        /** The key used to store the Y-coordinate of the editor window.    */
         public static final String EDITOR_WINDOW_Y            = BUNDLE_ID + ".editorWindowY";
+        /** The key used to store the width of the editor window.           */
         public static final String EDITOR_WINDOW_WIDTH        = BUNDLE_ID + ".editorWindowWidth";
+        /** The key used to store the height of the editor window.          */
         public static final String EDITOR_WINDOW_HEIGHT       = BUNDLE_ID + ".editorWindowHeight";
     }
 }

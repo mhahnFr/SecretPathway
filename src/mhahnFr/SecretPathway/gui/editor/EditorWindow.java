@@ -22,12 +22,26 @@ package mhahnFr.SecretPathway.gui.editor;
 import mhahnFr.SecretPathway.core.Constants;
 import mhahnFr.SecretPathway.core.Settings;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import java.awt.Dimension;
 
+/**
+ * This class represents a window for the {@link EditorView}.
+ *
+ * @author mhahnFr
+ * @since 03.02.23
+ */
 public class EditorWindow extends JFrame {
+    /** The underlying {@link EditorView}. */
     private final EditorView editorView;
 
+    /**
+     * Constructs this editor window. Size and location are
+     * restored if possible, otherwise the location is set to
+     * be relative to the given parent.
+     *
+     * @param parent the parent to be used if the location cannot be restored
+     */
     public EditorWindow(final JFrame parent) {
         super(Constants.NAME + ": Editor");
 
@@ -41,6 +55,13 @@ public class EditorWindow extends JFrame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
+    /**
+     * Restores the location. If that is not possible,
+     * the location is set to be relative to the given
+     * parent window.
+     *
+     * @param parent the parent to be used if the location cannot be restored
+     */
     private void restoreLocation(final JFrame parent) {
         final var settings = Settings.getInstance();
 
@@ -54,6 +75,9 @@ public class EditorWindow extends JFrame {
         }
     }
 
+    /**
+     * Restores the size.
+     */
     private void restoreSize() {
         final var settings = Settings.getInstance();
 
