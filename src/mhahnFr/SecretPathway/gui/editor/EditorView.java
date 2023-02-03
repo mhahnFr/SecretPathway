@@ -45,6 +45,7 @@ public class EditorView extends JPanel implements DarkModeListener, SettingsList
     private final SyntaxDocument document;
     /** The text pane.                                              */
     private final JTextPane textPane;
+    /** The optional {@link DisposeListener}.                       */
     private DisposeListener disposeListener;
 
     /**
@@ -146,6 +147,11 @@ public class EditorView extends JPanel implements DarkModeListener, SettingsList
         document.setHighlighting(enabled);
     }
 
+    /**
+     * Registers the given {@link DisposeListener}.
+     *
+     * @param disposeListener the listener to be registered
+     */
     public void onDispose(final DisposeListener disposeListener) {
         this.disposeListener = disposeListener;
     }
@@ -164,7 +170,18 @@ public class EditorView extends JPanel implements DarkModeListener, SettingsList
         }
     }
 
+    /**
+     * This interface defines a dispose listener.
+     *
+     * @author mhahnFr
+     * @since 03.02.23
+     */
     public interface DisposeListener {
+        /**
+         * Called when the {@link EditorView} is disposed.
+         *
+         * @param view the actual {@link EditorView} that is disposed
+         */
         void onDispose(final EditorView view);
     }
 }
