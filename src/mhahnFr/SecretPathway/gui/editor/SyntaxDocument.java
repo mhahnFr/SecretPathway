@@ -147,11 +147,11 @@ public class SyntaxDocument extends DefaultStyledDocument {
         }
 
         errorRanges.clear();
-        final var expressions = new mhahnFr.SecretPathway.core.parser.Parser(getAllText()).parse();
+        final var expressions = new mhahnFr.SecretPathway.core.parser.v2.Parser(getAllText()).parse();
         try {
-            var it = expressions.iterator();
-            while (it.hasNext()) {
-                it.next().visit(expression -> {
+            for (int i = 0; i < expressions.length; ++i) {
+                expressions[i].visit(expression -> {
+                    System.out.println(expression.getASTType());
                     switch (expression.getASTType()) {
                         case MISSING, WRONG -> {
                             errorRanges.put(new Pair<>(expression.getBegin().position(), expression.getEnd().position()), expression.getASTType() == ASTType.MISSING ? ((ASTMissing) expression).getMessage() : ((ASTWrong) expression).getMessage());
@@ -161,8 +161,9 @@ public class SyntaxDocument extends DefaultStyledDocument {
                 });
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
+        System.out.println();
     }
 
     /**
