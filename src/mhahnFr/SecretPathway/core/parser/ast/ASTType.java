@@ -19,17 +19,35 @@
 
 package mhahnFr.SecretPathway.core.parser.ast;
 
+/**
+ * This enumeration contains the possible types of AST nodes.
+ *
+ * @author mhahnFr
+ * @since 31.01.23
+ */
 public enum ASTType {
+    /** Represents a combination of AST nodes. */
     COMBINATION,
+    /** Represents a function definition.      */
     FUNCTION_DEFINITION,
+    /** Represents an include statement.       */
     INCLUDE,
+    /** Represents an inherit statement.       */
     INHERITANCE,
+    /** Represents a missing AST node.         */
     MISSING,
+    /** Represents a parameter declaration.    */
     PARAMETER,
+    /** Represents a variable definition.      */
     VARIABLE_DEFINITION,
+    /** Represents a wrong AST node.           */
     WRONG,
+    /** Represents an ellipsis.                */
     ELLIPSIS,
+    /** Represents a type.                     */
     TYPE,
+    /** Represents a name.                     */
     NAME,
+    /** Represents a modifier.                 */
     MODIFIER
 }
