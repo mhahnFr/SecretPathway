@@ -20,6 +20,7 @@
 package mhahnFr.SecretPathway.gui.editor;
 
 import mhahnFr.SecretPathway.core.Settings;
+import mhahnFr.SecretPathway.core.parser.Parser;
 import mhahnFr.SecretPathway.core.parser.ast.ASTMissing;
 import mhahnFr.SecretPathway.core.parser.ast.ASTType;
 import mhahnFr.SecretPathway.core.parser.ast.ASTWrong;
@@ -147,7 +148,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
         }
 
         errorRanges.clear();
-        final var expressions = new mhahnFr.SecretPathway.core.parser.v2.Parser(getAllText()).parse();
+        final var expressions = new Parser(getAllText()).parse();
         try {
             for (int i = 0; i < expressions.length; ++i) {
                 expressions[i].visit(expression -> {

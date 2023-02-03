@@ -19,55 +19,55 @@
 
 package mhahnFr.SecretPathway.core.parser.ast;
 
-import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
-import mhahnFr.utils.StreamPosition;
-
 /**
- * This class represents a parameter AST node.
+ * This class represents a declared function parameter
+ * as an AST node.
  *
  * @author mhahnFr
- * @since 30.01.23
+ * @since 02.02.23
  */
 public class ASTParameter extends ASTExpression {
-    /** The type of this parameter. */
-    private final TokenType type;
-    /** The name of this parameter. */
-    private final String name;
+    /** The declared type of this parameter. */
+    private final ASTExpression type;
+    /** The declared name of this parameter. */
+    private final ASTExpression name;
 
     /**
-     * Constructs this AST node using the given positions,
-     * the type and the name.
+     * Constructs this AST node using the given information.
      *
-     * @param begin the beginning position
-     * @param end the end position
      * @param type the declared type
      * @param name the declared name
      */
-    public ASTParameter(final StreamPosition begin,
-                        final StreamPosition end,
-                        final TokenType      type,
-                        final String         name) {
-        super(begin, end, ASTType.PARAMETER);
+    public ASTParameter(final ASTExpression type, final ASTExpression name) {
+        super(type.getBegin(), name.getEnd(), ASTType.PARAMETER);
 
         this.type = type;
         this.name = name;
     }
 
     /**
-     * Returns the declared name fo this parameter.
-     *
-     * @return the declared name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Returns the declared type of this parameter.
+     * Returns the declared type of this declared parameter.
      *
      * @return the declared type
      */
-    public TokenType getType() {
+    public ASTExpression getType() {
         return type;
+    }
+
+    /**
+     * Returns the declared name of this parameter.
+     *
+     * @return the declared parameter
+     */
+    public ASTExpression getName() {
+        return name;
+    }
+
+    @Override
+    public void visit(ASTVisitor visitor) {
+        if (visitor.maybeVisit(this)) {
+            type.visit(visitor);
+            name.visit(visitor);
+        }
     }
 }

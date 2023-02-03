@@ -23,285 +23,127 @@ import mhahnFr.SecretPathway.core.parser.ast.*;
 import mhahnFr.SecretPathway.core.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.core.parser.tokenizer.Tokenizer;
-import mhahnFr.utils.Pair;
 import mhahnFr.utils.StreamPosition;
 import mhahnFr.utils.StringStream;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * This class parses LPC source code.
  *
  * @author mhahnFr
- * @since 26.01.23
+ * @since 02.02.23
  */
 public class Parser {
-    /** The tokenizer used by this parser. */
     private final Tokenizer tokenizer;
     private Token previous;
+    private Token current;
+    private Token next;
 
-    /**
-     * Constructs this parser using the given source.
-     *
-     * @param source the source code to be parsed
-     */
     public Parser(final String source) {
-        tokenizer = new Tokenizer(new StringStream(source));
-        previous  = peekToken();
+        final var stream = new StringStream(source);
+        tokenizer = new Tokenizer(stream);
+        advance(2);
+        previous = new StartToken(stream.createStreamPosition(0));
     }
 
-    /**
-     * Peeks the next token.
-     *
-     * @return the peeked token
-     */
-    private Token peekToken() {
-        final var token = tokenizer.nextToken();
-        tokenizer.pushback(token);
-        return token;
-    }
-
-    /**
-     * Returns whether the next token's type is equal
-     * to the given one. In that case, the token is consumed,
-     * otherwise, it is pushed back.
-     *
-     * @param type the type to be checked
-     * @return whether the next token has the given type
-     */
-    private boolean peekToken(final TokenType type) {
-        final var token = tokenizer.nextToken();
-        if (token.type() == type) {
-            return true;
+    private void advance(final int count) {
+        for (int i = 0; i < count; ++i) {
+            advance();
         }
-        tokenizer.pushback(token);
-        return false;
     }
 
-    /**
-     * Parses an {@code #include "something"} statement.
-     *
-     * @return the parsed expression
-     */
+    private void advance() {
+        previous = current;
+        current  = next;
+        next     = tokenizer.nextToken();
+    }
+
+    private ASTExpression combine(ASTExpression main, Collection<ASTExpression> parts) {
+        return combine(main, parts.toArray(new ASTExpression[0]));
+    }
+
+    private ASTExpression combine(ASTExpression main, ASTExpression... parts) {
+        final var array = new ASTExpression[parts.length + 1];
+        array[0] = main;
+        System.arraycopy(parts, 0, array, 1, parts.length);
+        return new ASTCombination(array);
+    }
+
     private ASTExpression parseInclude() {
-        final var token = tokenizer.nextToken();
+        final ASTExpression toReturn;
 
-        if (token.type() != TokenType.STRING) {
-            final ASTExpression missing;
-
-            if (previous.endPos().isOnSameLine(token.beginPos())) {
-               tokenizer.pushback(token);
-                missing = new ASTWrong(token, "Expected a string");
-            } else {
-                missing = new ASTMissing(previous.endPos(), token.beginPos(), "Declare file to be included");
-            }
-
-            return new ASTCombination(new ASTInclude(previous.beginPos(), token.endPos(), null),
-                                      missing);
+        advance();
+        if (current.type() != TokenType.STRING) {
+            return combine(new ASTInclude(previous.beginPos(), current.beginPos(), null),
+                           new ASTMissing(previous.endPos(), current.beginPos(), "Expected a string literal"));
+        } else {
+            toReturn = new ASTInclude(previous.beginPos(), current.endPos(), (String) current.payload());
         }
-        return new ASTInclude(previous.beginPos(), token.endPos(), (String) token.payload());
+
+        advance();
+        return toReturn;
+    }
+
+    private ASTExpression parseInherit() {
+        final ASTExpression toReturn;
+
+        advance();
+        if (current.type() == TokenType.SEMICOLON) {
+            toReturn = new ASTInheritance(previous.beginPos(), current.endPos(), null);
+        } else if (next.type() == TokenType.SEMICOLON && current.type() != TokenType.STRING) {
+            toReturn = combine(new ASTInheritance(previous.beginPos(), next.endPos(), null),
+                               new ASTWrong(current, "Expected a string literal"));
+            advance();
+        } else if (current.type() == TokenType.STRING && next.type() != TokenType.SEMICOLON) {
+            toReturn = combine(new ASTInheritance(previous.beginPos(), current.endPos(), (String) current.payload()),
+                               new ASTMissing(current.endPos(), next.beginPos(), "Expected ';'"));
+        } else if (current.type() != TokenType.SEMICOLON && next.type() != TokenType.SEMICOLON) {
+            return combine(new ASTInheritance(previous.beginPos(), current.beginPos(), null),
+                           new ASTMissing(previous.endPos(), current.beginPos(), "Expected ';'"));
+        } else {
+            toReturn = new ASTInheritance(previous.beginPos(), next.endPos(), (String) current.payload());
+            advance();
+        }
+        advance();
+        return toReturn;
     }
 
     private ASTExpression parseClass() {
         return null;
     }
 
-    /**
-     * Parses an {@code inherit "maybe";} statement.
-     *
-     * @return the parsed expression
-     */
-    private ASTExpression parseInherit() {
-        var token = tokenizer.nextToken();
-
-        StreamPosition lastPos = previous.endPos();
-        String inherited = null;
-        if (token.type() == TokenType.STRING) {
-            inherited = (String) token.payload();
-            lastPos = token.endPos();
-            token = tokenizer.nextToken();
-        }
-        if (token.type() != TokenType.SEMICOLON) {
-            tokenizer.pushback(token);
-            return new ASTCombination(new ASTInheritance(previous.beginPos(), lastPos, inherited),
-                                      new ASTMissing(lastPos, token.beginPos(), "Expected semicolon"));
-        }
-        return new ASTInheritance(previous.beginPos(), token.beginPos(), inherited);
+    private boolean isModifier(final TokenType type) {
+        return type == TokenType.PRIVATE    ||
+               type == TokenType.PROTECTED  ||
+               type == TokenType.PUBLIC     ||
+               type == TokenType.DEPRECATED ||
+               type == TokenType.OVERRIDE   ||
+               type == TokenType.NOSAVE;
     }
 
-    /**
-     * Parses the following modifiers.
-     *
-     * @return a collection with the read modifiers
-     */
-    private Pair<Collection<TokenType>, StreamPosition> parseModifiers() {
-        final var toReturn = new Vector<TokenType>();
-        StreamPosition lastEndPos = previous.endPos();
+    private List<ASTExpression> parseModifiers() {
+        final var toReturn = new Vector<ASTExpression>();
 
         while (true) {
-            final var token = tokenizer.nextToken();
-            final var type  = token.type();
-            if (type == TokenType.PRIVATE ||
-                type == TokenType.PROTECTED ||
-                type == TokenType.PUBLIC ||
-                type == TokenType.DEPRECATED ||
-                type == TokenType.OVERRIDE) {
-                toReturn.add(type);
-                lastEndPos = token.endPos();
+            if (isModifier(current.type())) {
+                toReturn.add(new ASTModifier(current));
+            } else if (isModifier(next.type())) {
+                toReturn.add(combine(new ASTModifier(null),
+                                     new ASTWrong(current, "Expected a modifier")));
             } else {
-                tokenizer.pushback(token);
                 break;
             }
+            advance();
         }
 
-        return new Pair<>(toReturn, lastEndPos);
+        return toReturn;
     }
 
-    private ASTExpression expect(final TokenType type, final Token token, final TokenType... next) {
-        if (token.type() != type) {
-            if (Arrays.asList(next).contains(token.type())) {
-                tokenizer.pushback(token);
-                return new ASTMissing(previous.endPos(), token.beginPos(), "Expected " + type + ", missing");
-            } else {
-                return new ASTWrong(token, "Expected " + type + ", got " + token.type());
-            }
-        }
-        return null;
-    }
-
-    private TokenType[] getBlockBeginTypes() {
-        return new TokenType[] {
-                TokenType.LET /* ... and much more ... */
-        };
-    }
-
-    private ASTExpression[] parseBlock() {
-        // TODO: Implement
-        return null;
-    }
-
-    private ASTExpression parseFunctionDefinition(final Collection<ASTExpression> parts,
-                                                  final Collection<TokenType>     modifiers,
-                                                  final TokenType                 returnType,
-                                                  final String                    name) {
-        final var params = new Vector<ASTExpression>();
-        Token token;
-        var stop = false;
-        while ((token = tokenizer.nextToken()).type() != TokenType.RIGHT_PAREN && token.type() != TokenType.EOF && !stop) {
-            final var paramParts = new Vector<ASTExpression>(3);
-            final TokenType type;
-            if (token.type() == TokenType.ELLIPSIS) {
-                final var nextToken = tokenizer.nextToken();
-                if (nextToken.type() == TokenType.LEFT_CURLY) {
-                    parts.add(new ASTMissing(token.endPos(), nextToken.beginPos(), "Expected ')'"));
-                    params.add(new ASTEllipsis(token));
-                    tokenizer.pushback(nextToken);
-                    break;
-                } else if (nextToken.type() != TokenType.RIGHT_PAREN) {
-                    final var peeked = peekToken();
-                    if (peeked.type() == TokenType.LEFT_CURLY) {
-                        parts.add(new ASTWrong(nextToken, "Expected ')'"));
-                        params.add(new ASTEllipsis(token));
-                        break;
-                    } else {
-                        tokenizer.pushback(nextToken);
-                    }
-                } else {
-                    params.add(new ASTEllipsis(token));
-                    break;
-                }
-            }
-            if (!isType(token)) {
-                if (token.type() == TokenType.IDENTIFIER && peekToken().type() != TokenType.IDENTIFIER) {
-                    tokenizer.pushback(token);
-                    paramParts.add(new ASTMissing(previous.endPos(), token.beginPos(), "Expected a type"));
-                } else {
-                    paramParts.add(new ASTWrong(token, "Expected a type"));
-                }
-                type = null;
-            } else {
-                type = token.type();
-            }
-
-            final var nextToken = tokenizer.nextToken();
-            previous = token;
-            final var part = expect(TokenType.IDENTIFIER, nextToken, TokenType.COMMA, TokenType.RIGHT_PAREN);
-            final String paramName;
-            if (part != null) {
-                paramParts.add(part);
-                paramName = null;
-            } else {
-                paramName = (String) nextToken.payload();
-            }
-
-            token = tokenizer.nextToken();
-            if (token.type() != TokenType.COMMA && token.type() != TokenType.RIGHT_PAREN) {
-                if (token.type() == TokenType.LEFT_CURLY) {
-                    tokenizer.pushback(token);
-                    stop = true;
-                    parts.add(new ASTMissing(nextToken.endPos(), token.beginPos(), "Expected ')'"));
-                } else if (isType(token)) {
-                    tokenizer.pushback(token);
-                    parts.add(new ASTMissing(nextToken.endPos(), token.beginPos(), "Expected ','"));
-                } else {
-                    parts.add(new ASTWrong(token, "Unexpected token"));
-                }
-            } else if (token.type() == TokenType.RIGHT_PAREN) {
-                tokenizer.pushback(token);
-            } else {
-                final var peeked = peekToken();
-                if (peeked.type() == TokenType.RIGHT_PAREN || peeked.type() == TokenType.COMMA) {
-                    params.add(new ASTMissing(token.endPos(), peeked.beginPos(), "Expected parameter"));
-                    if (peeked.type() == TokenType.COMMA) {
-                        tokenizer.nextToken();
-                    }
-                }
-            }
-
-            if (!paramParts.isEmpty()) {
-                final var paramPartsArray = new ASTExpression[paramParts.size() + 1];
-                paramPartsArray[0] = new ASTParameter(token.beginPos(), nextToken.endPos(), type, paramName);
-                System.arraycopy(paramParts.toArray(new ASTExpression[0]), 0, paramPartsArray, 1, paramParts.size());
-                params.add(new ASTCombination(paramPartsArray));
-            } else {
-                params.add(new ASTParameter(token.beginPos(), nextToken.endPos(), type, paramName));
-            }
-            previous = token;
-        }
-        final var block = parseBlock();
-        if (!parts.isEmpty()) {
-            final var combination = new ASTExpression[parts.size() + 1];
-
-            combination[0] = new ASTFunctionDefinition(null, null, returnType, name, modifiers.toArray(new TokenType[0]), params.toArray(new ASTExpression[0]), block);
-            System.arraycopy(parts.toArray(new ASTExpression[0]), 0, combination, 1, parts.size());
-            return new ASTCombination(combination);
-        }
-        return new ASTFunctionDefinition(previous.beginPos(), /*block[block.length - 1].getEnd()*/null, returnType, name, modifiers.toArray(new TokenType[0]), params.toArray(new ASTExpression[0]), block);
-    }
-
-    private ASTExpression parseVariableDefinition(final Collection<ASTExpression> parts,
-                                                  final Collection<TokenType>     modifiers,
-                                                  final TokenType                 variableType,
-                                                  final String                    name) {
-        if (!parts.isEmpty()) {
-            final var partsArray = new ASTExpression[parts.size() + 1];
-            partsArray[0] = new ASTVariableDefinition(null, null, variableType, name, modifiers.toArray(new TokenType[0]));
-            System.arraycopy(parts.toArray(new ASTExpression[0]), 0, partsArray, 1, parts.size());
-            return new ASTCombination(partsArray);
-        }
-        return new ASTVariableDefinition(null, null, variableType, name, modifiers.toArray(new TokenType[0]));
-    }
-
-    /**
-     * Returns whether the given {@link Token} represents
-     * a type.
-     *
-     * @param token the token to be checked
-     * @return whether the token represents a type keyword
-     */
-    private boolean isType(final Token token) {
-        final var type = token.type();
-
+    private boolean isType(final TokenType type) {
         return type == TokenType.VOID           ||
                type == TokenType.CHAR_KEYWORD   ||
                type == TokenType.INT_KEYWORD    ||
@@ -316,75 +158,211 @@ public class Parser {
                type == TokenType.OPERATOR;
     }
 
+    private ASTExpression parseType() {
+        final ASTExpression toReturn;
+
+        if (!isType(current.type()) && next.type() == TokenType.IDENTIFIER) {
+            toReturn = combine(new ASTTypeDeclaration(null),
+                               new ASTWrong(current, "Expected a type"));
+            advance();
+        } else if (current.type() == TokenType.IDENTIFIER) {
+            toReturn = combine(new ASTTypeDeclaration(null),
+                               new ASTMissing(previous.endPos(), current.beginPos(), "Missing type"));
+        } else {
+            toReturn = new ASTTypeDeclaration(current);
+            advance();
+        }
+
+        return toReturn;
+    }
+
+    private ASTExpression parseName() {
+        final ASTExpression toReturn;
+
+        if (current.type() == TokenType.LEFT_PAREN ||
+            current.type() == TokenType.SEMICOLON  ||
+            current.type() == TokenType.EQUALS) {
+            toReturn = combine(new ASTName(null),
+                               new ASTMissing(previous.endPos(), current.beginPos(), "Missing name"));
+        } else if (current.type() != TokenType.IDENTIFIER) {
+            toReturn = combine(new ASTName(null),
+                               new ASTWrong(current, "Expected a name"));
+            advance();
+        } else {
+            toReturn = new ASTName(current);
+            advance();
+        }
+
+        return toReturn;
+    }
+
+    private ASTExpression parseAssignation(final ASTExpression assignee) {
+        return null;
+    }
+
+    private ASTExpression parseVariableDefinition(final List<ASTExpression> modifiers,
+                                                  final ASTExpression       type,
+                                                  final ASTExpression       name) {
+        final ASTExpression toReturn;
+
+        final StreamPosition begin;
+        if (!modifiers.isEmpty()) {
+            begin = modifiers.get(0).getBegin();
+        } else {
+            begin = type.getBegin();
+        }
+        final var variable = new ASTVariableDefinition(begin, name.getEnd(), modifiers, type, name);
+
+        if (current.type() == TokenType.SEMICOLON) {
+            advance();
+            toReturn = variable;
+        } else if (current.type() == TokenType.EQUALS) {
+            advance();
+            toReturn = parseAssignation(variable);
+        } else {
+            // TODO: read till ; and mark as wrong
+            toReturn = null;
+        }
+
+        return toReturn;
+    }
+
+    private List<ASTExpression> parseParameterDefinitions() {
+        final var toReturn = new ArrayList<ASTExpression>();
+
+        if (current.type() != TokenType.RIGHT_PAREN) {
+            boolean stop = false;
+            do {
+                if (current.type() == TokenType.ELLIPSIS && (next.type() == TokenType.RIGHT_PAREN ||
+                                                             next.type() == TokenType.LEFT_CURLY)) {
+                    toReturn.add(new ASTEllipsis(current));
+                    if (next.type() == TokenType.LEFT_CURLY) {
+                        toReturn.add(new ASTMissing(current.endPos(), next.beginPos(), "Expected ')'"));
+                    }
+                    break;
+                }
+
+                final ASTExpression type;
+                if (!isType(current.type())) {
+                    if (next.type() == TokenType.IDENTIFIER) {
+                        type = combine(new ASTTypeDeclaration(null),
+                                       new ASTWrong(current, "Expected a type"));
+                        advance();
+                    } else {
+                        type = combine(new ASTTypeDeclaration(null),
+                                       new ASTMissing(previous.endPos(), current.beginPos(), "Missing type"));
+                    }
+                } else {
+                    type = new ASTTypeDeclaration(current);
+                    advance();
+                }
+
+                final ASTExpression name;
+                if (current.type() != TokenType.IDENTIFIER) {
+                    if (current.type() == TokenType.COMMA || current.type() == TokenType.RIGHT_PAREN) {
+                        name = combine(new ASTName(null),
+                                       new ASTMissing(previous.endPos(), current.beginPos(), "Parameter's name missing"));
+                    } else {
+                        name = combine(new ASTName(null),
+                                       new ASTWrong(current, "Expected parameter's name"));
+                        advance();
+                    }
+                } else {
+                    name = new ASTName(current);
+                    advance();
+                }
+
+                toReturn.add(new ASTParameter(type, name));
+
+                if (current.type() == TokenType.RIGHT_PAREN || current.type() == TokenType.LEFT_CURLY) {
+                    stop = true;
+                    if (current.type() == TokenType.LEFT_CURLY) {
+                        toReturn.add(new ASTMissing(previous.endPos(), current.beginPos(), "Expected ')'"));
+                    } else {
+                        advance();
+                    }
+                } else if (current.type() != TokenType.COMMA) {
+                    toReturn.add(new ASTMissing(previous.endPos(), current.beginPos(), "Expected ','"));
+                } else {
+                    advance();
+                }
+            } while (!stop && current.type() != TokenType.EOF);
+        }
+
+        return toReturn;
+    }
+
+    private ASTExpression parseBlock() {
+        return new ASTName(null);
+//        return null;
+    }
+
+    private ASTExpression parseFunctionDefinition(final List<ASTExpression> modifiers,
+                                                  final ASTExpression       type,
+                                                  final ASTExpression       name) {
+        final var parameters = parseParameterDefinitions();
+        final var body       = parseBlock();
+
+        return new ASTFunctionDefinition(modifiers, type, name, parameters, body);
+    }
+
+    private ASTExpression parseFileExpression() {
+        final var modifiers = parseModifiers();
+        final var type      = parseType();
+        final var name      = parseName();
+
+        if (current.type() == TokenType.LEFT_PAREN) {
+            // def. func
+            advance();
+            return parseFunctionDefinition(modifiers, type, name);
+        } else if (current.type() == TokenType.SEMICOLON) {
+            // def. var
+            return parseVariableDefinition(modifiers, type, name);
+        } else {
+            // TODO
+        }
+        return null;
+    }
+
     private ASTExpression parseExpression() {
-        final var token = tokenizer.nextToken();
-        previous = token;
-        if (token.type() == TokenType.INHERIT) {
-            return parseInherit();
-        } else if (token.type() == TokenType.INCLUDE) {
+        if (current.type() == TokenType.INCLUDE) {
             return parseInclude();
-        } else if (token.type() == TokenType.CLASS) {
+        } else if (current.type() == TokenType.INHERIT) {
+            return parseInherit();
+        } else if (current.type() == TokenType.CLASS) {
             return parseClass();
         }
-        tokenizer.pushback(token);
-        final var modifiers = parseModifiers();
-        final var temps = new Vector<ASTExpression>();
-        final var type = tokenizer.nextToken();
-        final TokenType realType;
-        if (!isType(type)) {
-            if (peekToken().type() == TokenType.IDENTIFIER) {
-                temps.add(new ASTWrong(type, "Expected a type"));
-            } else {
-                temps.add(new ASTMissing(modifiers.getSecond(), type.beginPos(), "Expected a type"));
-                tokenizer.pushback(type);
-            }
-            realType = null;
-        } else {
-            realType = type.type();
+        return parseFileExpression();
+    }
+
+    private ASTExpression[] parse(final TokenType end) {
+        final var expressions = new ArrayList<ASTExpression>();
+
+        while (current.type() != TokenType.EOF && current.type() != end) {
+            expressions.add(parseExpression());
         }
-        final String name;
-        final var id = tokenizer.nextToken();
-        if (id.type() != TokenType.IDENTIFIER) {
-            name = null;
-            final ASTExpression fill;
-            if (id.type() == TokenType.LEFT_PAREN || id.type() == TokenType.SEMICOLON || id.type() == TokenType.EQUALS) {
-                fill = new ASTMissing(type.endPos(), id.beginPos(), "Expected name of identifier");
-                tokenizer.pushback(id);
-            } else {
-                fill = new ASTWrong(id, "Expected name of identifier");
-            }
-            temps.add(fill);
-        } else {
-            name = (String) id.payload();
-        }
-        var t = tokenizer.nextToken();
-        previous = t;
-        if (t.type() == TokenType.LEFT_PAREN) {
-            return parseFunctionDefinition(temps, modifiers.getFirst(), realType, name);
-        } else if (t.type() == TokenType.SEMICOLON || t.type() == TokenType.EQUALS) {
-            return parseVariableDefinition(temps, modifiers.getFirst(), realType, name);
-        }
-        // TODO: Continue until something known is reached
-        throw new RuntimeException("Expected expression!");
+
+        return expressions.toArray(new ASTExpression[0]);
+    }
+
+    public ASTExpression[] parse() {
+        return parse(TokenType.EOF);
     }
 
     /**
-     * Parses the whole text. Returns a collection
-     * with the parsed expressions.
+     * This class represents a dummy starting token.
      *
-     * @return the parsed expressions
+     * @author mhahnFr
+     * @since 02.02.23
      */
-    public Collection<ASTExpression> parse() {
-        final var list = new ArrayList<ASTExpression>();
-
-        try {
-            while (!peekToken(TokenType.EOF)) {
-                list.add(parseExpression());
-            }
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
+    private static class StartToken extends Token {
+        /**
+         * Constructs this dummy token using the given position.
+         *
+         * @param position the position of this dummy token
+         */
+        public StartToken(final StreamPosition position) {
+            super(position, null, null, position);
         }
-
-        return list;
     }
 }

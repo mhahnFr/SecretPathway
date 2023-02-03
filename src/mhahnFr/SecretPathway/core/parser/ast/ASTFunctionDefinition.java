@@ -19,111 +19,113 @@
 
 package mhahnFr.SecretPathway.core.parser.ast;
 
-import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
-import mhahnFr.utils.StreamPosition;
+import java.util.List;
 
 /**
- * This class represents an AST node for a function
- * definition.
+ * This class represents a function definition as an AST node.
  *
  * @author mhahnFr
- * @since 28.01.23
+ * @since 02.02.23
  */
 public class ASTFunctionDefinition extends ASTExpression {
-    /** The name of this declared function.           */
-    private final String name;
-    /** The return type of this function.             */
-    private final TokenType type;
-    /** The expressions in the body of this function. */
-    private final ASTExpression[] body;
-    /** The declared parameters of this function.     */
-    private final ASTExpression[] parameters;
-    /** The declared modifiers of this function.      */
-    private final TokenType[] modifiers;
+    /** The declared modifiers of this function.   */
+    private final List<ASTExpression> modifiers;
+    /** The declared return type of this function. */
+    private final ASTExpression type;
+    /** The declared name of this function.        */
+    private final ASTExpression name;
+    /** The declared parameters.                   */
+    private final List<ASTExpression> parameters;
+    /** The body of this declared function.        */
+    private final ASTExpression body;
 
     /**
-     * Constructs this AST node using the given positions,
-     * the given return type, name and the given body expressions.
+     * Constructs this AST node using the given information.
      *
-     * @param begin the beginning position of this expression
-     * @param end the end position of this expression
-     * @param type the return type of the declared function
-     * @param name the name of the declared function
-     * @param modifiers the declared modifiers of this function
+     * @param modifiers the declared modifiers
+     * @param type the declared type
+     * @param name the declared name
      * @param parameters the declared parameters
-     * @param body the instructions of the body of this function
+     * @param body the body of the function
      */
-    public ASTFunctionDefinition(final StreamPosition  begin,
-                                 final StreamPosition  end,
-                                 final TokenType       type,
-                                 final String          name,
-                                 final TokenType[]     modifiers,
-                                 final ASTExpression[] parameters,
-                                 final ASTExpression[] body) {
-        super(begin, end, ASTType.FUNCTION_DEFINITION);
+    public ASTFunctionDefinition(final List<ASTExpression> modifiers,
+                                 final ASTExpression       type,
+                                 final ASTExpression       name,
+                                 final List<ASTExpression> parameters,
+                                 final ASTExpression       body) {
+        super(modifiers.isEmpty() ? type.getBegin() : modifiers.get(0).getBegin(),
+              body.getEnd(),
+              ASTType.FUNCTION_DEFINITION);
 
+        this.modifiers  = modifiers;
         this.type       = type;
         this.name       = name;
-        this.body       = body;
         this.parameters = parameters;
-        this.modifiers  = modifiers;
+        this.body       = body;
     }
 
     /**
-     * Returns the name of this declared function.
+     * Returns the declared modifiers of this declared function.
      *
-     * @return the name of this function
+     * @return the declared modifiers
      */
-    public String getName() {
-        return name;
+    public List<ASTExpression> getModifiers() {
+        return modifiers;
     }
 
     /**
-     * Returns the return type of this declared function.
+     * Returns the declared type of this declared function.
      *
-     * @return the return type of this function
+     * @return the declared type
      */
-    public TokenType getType() {
+    public ASTExpression getType() {
         return type;
     }
 
     /**
-     * Returns the {@link ASTExpression}s in the body of
-     * this function.
+     * Returns the declared name of this declared function.
      *
-     * @return the expressions in this function's body
+     * @return the declared name
      */
-    public ASTExpression[] getBody() {
-        return body;
+    public ASTExpression getName() {
+        return name;
     }
 
     /**
-     * Returns the declare parameters of this declared function.
+     * Returns the declared parameters of this declared function.
      *
      * @return the declared parameters
      */
-    public ASTExpression[] getParameters() {
+    public List<ASTExpression> getParameters() {
         return parameters;
     }
 
     /**
-     * Returns the declared modifiers of this function.
+     * Returns the body of this declared function.
      *
-     * @return the declared modifiers
+     * @return the body
      */
-    public TokenType[] getModifiers() {
-        return modifiers;
+    public ASTExpression getBody() {
+        return body;
     }
 
     @Override
     public void visit(ASTVisitor visitor) {
         if (visitor.maybeVisit(this)) {
-            for (int i = 0; i < parameters.length; ++i) {
-                parameters[i].visit(visitor);
+            var iterator = modifiers.listIterator();
+            while (iterator.hasNext()) {
+                iterator.next().visit(visitor);
             }
-            for (int i = 0; i < body.length; ++i) {
-                body[i].visit(visitor);
+
+            type.visit(visitor);
+            name.visit(visitor);
+
+            iterator = parameters.listIterator();
+            while (iterator.hasNext()) {
+                iterator.next().visit(visitor);
             }
+
+            body.visit(visitor);
         }
     }
 }

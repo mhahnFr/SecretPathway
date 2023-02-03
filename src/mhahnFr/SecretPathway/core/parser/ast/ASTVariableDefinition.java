@@ -19,61 +19,44 @@
 
 package mhahnFr.SecretPathway.core.parser.ast;
 
-import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
 import mhahnFr.utils.StreamPosition;
 
+import java.util.List;
+
 /**
- * This class represents an AST node for a variable definition.
+ * This class represents a variable definition as an AST node.
  *
  * @author mhahnFr
- * @since 28.01.23
+ * @since 02.02.23
  */
 public class ASTVariableDefinition extends ASTExpression {
-    /** The name of this declared variable.      */
-    private final String name;
-    /** The declared type of this variable.      */
-    private final TokenType type;
-    /** The declared modifiers of this variable. */
-    private final TokenType[] modifiers;
+    /** The modifiers of this variable. */
+    private final List<ASTExpression> modifiers;
+    /** The type of this variable.      */
+    private final ASTExpression type;
+    /** The name of this variable.      */
+    private final ASTExpression name;
 
     /**
-     * Constructs this AST node using the given positions,
-     * the given name and type.
+     * Constructs this AST node for variable definitions using the
+     * given information.
      *
-     * @param begin the beginning position of this expression
-     * @param end the end position of this expression
-     * @param type the declared type of this variable
-     * @param name the declared name of this variable
-     * @param modifiers the declared modifiers of this variable
+     * @param begin the beginning position of this node
+     * @param end the end position of this node
+     * @param modifiers the declared modifiers of this variable definition
+     * @param type the declared type of this variable definition
+     * @param name the declared name of this variable definition
      */
-    public ASTVariableDefinition(final StreamPosition begin,
-                                 final StreamPosition end,
-                                 final TokenType      type,
-                                 final String         name,
-                                 final TokenType[]    modifiers) {
+    public ASTVariableDefinition(final StreamPosition      begin,
+                                 final StreamPosition      end,
+                                 final List<ASTExpression> modifiers,
+                                 final ASTExpression       type,
+                                 final ASTExpression       name) {
         super(begin, end, ASTType.VARIABLE_DEFINITION);
 
+        this.modifiers = modifiers;
         this.type      = type;
         this.name      = name;
-        this.modifiers = modifiers;
-    }
-
-    /**
-     * Returns the name of this declared variable.
-     *
-     * @return the name of this variable
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Returns the type of this declared variable.
-     *
-     * @return the type of this variable
-     */
-    public TokenType getType() {
-        return type;
     }
 
     /**
@@ -81,7 +64,38 @@ public class ASTVariableDefinition extends ASTExpression {
      *
      * @return the declared modifiers
      */
-    public TokenType[] getModifiers() {
+    public List<ASTExpression> getModifiers() {
         return modifiers;
+    }
+
+    /**
+     * Returns the declared type of this declared variable.
+     *
+     * @return the declared type
+     */
+    public ASTExpression getType() {
+        return type;
+    }
+
+    /**
+     * Returns the declared name of this declared variable.
+     *
+     * @return the declared name
+     */
+    public ASTExpression getName() {
+        return name;
+    }
+
+    @Override
+    public void visit(ASTVisitor visitor) {
+        if (visitor.maybeVisit(this)) {
+            final var iterator = modifiers.listIterator();
+            while (iterator.hasNext()) {
+                iterator.next().visit(visitor);
+            }
+
+            type.visit(visitor);
+            name.visit(visitor);
+        }
     }
 }
