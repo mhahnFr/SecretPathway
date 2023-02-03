@@ -213,6 +213,22 @@ public final class Settings {
         return preferences.getInt(Keys.START_TLS, 0) == 1;
     }
 
+    public int getEditorWindowWidth() {
+        return preferences.getInt(Keys.EDITOR_WINDOW_WIDTH, -1);
+    }
+
+    public int getEditorWindowHeight() {
+        return preferences.getInt(Keys.EDITOR_WINDOW_HEIGHT, -1);
+    }
+
+    public int getEditorWindowX() {
+        return preferences.getInt(Keys.EDITOR_WINDOW_X, -1);
+    }
+
+    public int getEditorWindowY() {
+        return preferences.getInt(Keys.EDITOR_WINDOW_Y, -1);
+    }
+
     /**
      * Stores the given hostname.
      *
@@ -353,6 +369,22 @@ public final class Settings {
         return this;
     }
 
+    public Settings setEditorWindowSize(int width, int height) {
+        callListeners(Keys.EDITOR_WINDOW_WIDTH, width);
+        callListeners(Keys.EDITOR_WINDOW_HEIGHT, height);
+        preferences.putInt(Keys.EDITOR_WINDOW_WIDTH, width);
+        preferences.putInt(Keys.EDITOR_WINDOW_HEIGHT, height);
+        return this;
+    }
+
+    public Settings setEditorWindowLocation(int x, int y) {
+        callListeners(Keys.EDITOR_WINDOW_X, x);
+        callListeners(Keys.EDITOR_WINDOW_Y, y);
+        preferences.putInt(Keys.EDITOR_WINDOW_X, x);
+        preferences.putInt(Keys.EDITOR_WINDOW_Y, y);
+        return this;
+    }
+
     /**
      * Attempts to flush the underlying {@link Preferences}. Returns whether the
      * operation was successful.
@@ -420,5 +452,9 @@ public final class Settings {
         public static final String EDITOR_INLINED             = BUNDLE_ID + ".editorInlined";
         /** The key used to store the path to the theme used by the editor. */
         public static final String EDITOR_THEME_PATH          = BUNDLE_ID + ".editorThemePath";
+        public static final String EDITOR_WINDOW_X            = BUNDLE_ID + ".editorWindowX";
+        public static final String EDITOR_WINDOW_Y            = BUNDLE_ID + ".editorWindowY";
+        public static final String EDITOR_WINDOW_WIDTH        = BUNDLE_ID + ".editorWindowWidth";
+        public static final String EDITOR_WINDOW_HEIGHT       = BUNDLE_ID + ".editorWindowHeight";
     }
 }

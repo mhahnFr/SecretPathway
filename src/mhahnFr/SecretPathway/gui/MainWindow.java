@@ -25,6 +25,7 @@ import mhahnFr.SecretPathway.core.net.Connection;
 
 import mhahnFr.SecretPathway.core.net.ConnectionFactory;
 import mhahnFr.SecretPathway.gui.editor.EditorView;
+import mhahnFr.SecretPathway.gui.editor.EditorWindow;
 import mhahnFr.SecretPathway.gui.helper.MessageReceiver;
 import mhahnFr.utils.gui.DarkComponent;
 import mhahnFr.utils.gui.DarkTextComponent;
@@ -430,7 +431,7 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
         if (Settings.getInstance().getEditorInlined()) {
             // TODO inline editor
         } else {
-            // TODO open window
+            new EditorWindow(this).setVisible(true);
         }
     }
 
