@@ -47,6 +47,8 @@ public final class Constants {
         public static final String NEW            = "new";
         /** Action command for showing additional buttons.              */
         public static final String EXPAND_BUTTONS = "expand_buttons";
+        /** Action command used for opening the editor.                 */
+        public static final String OPEN_EDITOR    = "open_editor";
     }
 
     /**

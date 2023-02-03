@@ -24,6 +24,7 @@ import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.SecretPathway.core.net.Connection;
 
 import mhahnFr.SecretPathway.core.net.ConnectionFactory;
+import mhahnFr.SecretPathway.gui.editor.EditorView;
 import mhahnFr.SecretPathway.gui.helper.MessageReceiver;
 import mhahnFr.utils.gui.DarkComponent;
 import mhahnFr.utils.gui.DarkTextComponent;
@@ -276,7 +277,21 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
                 connectionButton.getComponentPopupMenu().show(connectionButton, location.x, location.y + connectionButton.getHeight());
             });
 
+            final var windowButton = new JButton("Window");
+                final var windowMenu = new JPopupMenu();
+                    final var openEditorItem = new JMenuItem("LPC Editor");
+                    openEditorItem.setActionCommand(Constants.Actions.OPEN_EDITOR);
+                    openEditorItem.addActionListener(this);
+                windowMenu.add(openEditorItem);
+            windowButton.setComponentPopupMenu(windowMenu);
+            windowButton.addActionListener(__ -> {
+                final var location = windowButton.getLocation();
+
+                windowButton.getComponentPopupMenu().show(windowButton, location.x, location.y + windowButton.getHeight());
+            });
+
             otherButtons.add(connectionButton);
+            otherButtons.add(windowButton);
         }
     }
 
@@ -289,7 +304,6 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
         var toReturn = new JMenuBar();
 
         var connectionMenu = new JMenu("Connection");
-
             var newItem = new JMenuItem("New...");
             newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.META_DOWN_MASK));
             newItem.setActionCommand(Constants.Actions.NEW);
@@ -304,13 +318,20 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
             reconnectItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.META_DOWN_MASK));
             reconnectItem.setActionCommand(Constants.Actions.RECONNECT);
             reconnectItem.addActionListener(this);
-
         connectionMenu.add(newItem);
         connectionMenu.add(closeItem);
         connectionMenu.addSeparator();
         connectionMenu.add(reconnectItem);
 
+        final var windowMenu = new JMenu("Window");
+            final var openEditItem = new JMenuItem("LPC Editor");
+            openEditItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0, KeyEvent.META_DOWN_MASK));
+            openEditItem.setActionCommand(Constants.Actions.OPEN_EDITOR);
+            openEditItem.addActionListener(this);
+        windowMenu.add(openEditItem);
+
         toReturn.add(connectionMenu);
+        toReturn.add(windowMenu);
 
         return toReturn;
     }
@@ -401,6 +422,18 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
         expandButton.setText(otherButtonsVisible ? ">" : "<");
     }
 
+    /**
+     * Opens the editor, according to {@link Settings#getEditorInlined()}
+     * either inlined or as a separate window.
+     */
+    private void openEditor() {
+        if (Settings.getInstance().getEditorInlined()) {
+            // TODO inline editor
+        } else {
+            // TODO open window
+        }
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
@@ -409,6 +442,7 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
             case Constants.Actions.RECONNECT      -> maybeReconnect();
             case Constants.Actions.NEW            -> maybeNewConnection();
             case Constants.Actions.EXPAND_BUTTONS -> expandButtons();
+            case Constants.Actions.OPEN_EDITOR    -> openEditor();
 
             default -> throw new IllegalStateException("Unexpected action command: " + e.getActionCommand());
         }
