@@ -59,6 +59,8 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
     private JTextField promptField;
     /** The label for the message overlay.                                */
     private JLabel messageLabel;
+    /** The panel displaying the normal view.                             */
+    private JPanel mainPanel;
     /** The panel with the buttons.                                       */
     private JPanel buttonPanel;
     /** The panel with buttons to be hidden by default.                   */
@@ -71,6 +73,7 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
     private boolean dark;
     /** Indicates whether the additional buttons are currently visible.   */
     private boolean otherButtonsVisible;
+    private boolean editorShowing;
 
     /**
      * Constructs a MainWindow. The given connection is used to connect to a MUD if given,
@@ -361,7 +364,7 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
      * Creates the content for this window.
      */
     private void createContent() {
-        final var panel = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
+        mainPanel = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
             messageLabel = new DarkComponent<>(new JLabel(Constants.NAME + " " + Constants.VERSION, SwingConstants.CENTER), components).getComponent();
             messageLabel.setVisible(false);
 
@@ -394,13 +397,13 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
             promptPanel.add(promptField);
             promptPanel.add(buttonPanel);
 
-        panel.add(messageLabel, BorderLayout.NORTH);
-        panel.add(scrollPane, BorderLayout.CENTER);
-        panel.add(promptPanel, BorderLayout.SOUTH);
+        mainPanel.add(messageLabel, BorderLayout.NORTH);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.add(promptPanel, BorderLayout.SOUTH);
 
-        panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        mainPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
-        getContentPane().add(panel);
+        getContentPane().add(mainPanel);
 
         setMinimumSize  (new Dimension(300, 200));
         setPreferredSize(new Dimension(750, 500));
@@ -428,8 +431,20 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
      * either inlined or as a separate window.
      */
     private void openEditor() {
-        if (Settings.getInstance().getEditorInlined()) {
-            // TODO inline editor
+        if (Settings.getInstance().getEditorInlined() && !editorShowing) {
+            mainPanel.setVisible(false);
+
+            final var editorView = new EditorView();
+            editorView.onDispose(view -> {
+                getContentPane().remove(view);
+
+                mainPanel.setVisible(true);
+
+                editorShowing = false;
+            });
+
+            getContentPane().add(editorView);
+            editorShowing = true;
         } else {
             new EditorWindow(this).setVisible(true);
         }

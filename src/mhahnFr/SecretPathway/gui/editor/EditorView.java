@@ -45,6 +45,7 @@ public class EditorView extends JPanel implements DarkModeListener, SettingsList
     private final SyntaxDocument document;
     /** The text pane.                                              */
     private final JTextPane textPane;
+    private DisposeListener disposeListener;
 
     /**
      * Initializes this EditorView.
@@ -62,13 +63,16 @@ public class EditorView extends JPanel implements DarkModeListener, SettingsList
                     highlight.addItemListener(__ -> toggleSyntaxHighlighting(highlight.isSelected()));
                     highlight.setSelected(Settings.getInstance().getSyntaxHighlighting());
 
-                    final var closeButton = new JButton("Close");
-                    closeButton.addActionListener(__ -> dispose());
+                    final var pushButtons = new DarkComponent<>(new JPanel(new GridLayout(1, 2)), components).getComponent();
+                        final var closeButton = new JButton("Close");
+                        closeButton.addActionListener(__ -> dispose());
 
-                    final var saveButton = new JButton("Save");
-                    saveButton.addActionListener(__ -> saveText());
-                buttons.add(highlight, BorderLayout.CENTER);
-                buttons.add(saveButton, BorderLayout.EAST);
+                        final var saveButton = new JButton("Save");
+                        saveButton.addActionListener(__ -> saveText());
+                    pushButtons.add(closeButton);
+                    pushButtons.add(saveButton);
+                buttons.add(highlight,   BorderLayout.CENTER);
+                buttons.add(pushButtons, BorderLayout.EAST);
 
                 final var status = new DarkComponent<>(new JLabel("Status"), components).getComponent();
             south.add(buttons);
@@ -83,6 +87,7 @@ public class EditorView extends JPanel implements DarkModeListener, SettingsList
         final var settings = Settings.getInstance();
         settings.addDarkModeListener(this);
         settings.addListener(this);
+        setDark(settings.getDarkMode());
         setFontSize(settings.getFontSize());
     }
 
@@ -141,6 +146,10 @@ public class EditorView extends JPanel implements DarkModeListener, SettingsList
         document.setHighlighting(enabled);
     }
 
+    public void onDispose(final DisposeListener disposeListener) {
+        this.disposeListener = disposeListener;
+    }
+
     /**
      * Destroys this EditorView.
      */
@@ -149,5 +158,13 @@ public class EditorView extends JPanel implements DarkModeListener, SettingsList
 
         settings.removeDarkModeListener(this);
         settings.removeListener(this);
+
+        if (disposeListener != null) {
+            disposeListener.onDispose(this);
+        }
+    }
+
+    public interface DisposeListener {
+        void onDispose(final EditorView view);
     }
 }
