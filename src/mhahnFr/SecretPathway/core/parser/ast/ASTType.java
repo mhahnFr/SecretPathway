@@ -55,5 +55,7 @@ public enum ASTType {
     /** Represents a break.                    */
     BREAK,
     /** Represents a continue.                 */
-    CONTINUE
+    CONTINUE,
+    /** Represents a return statement.         */
+    RETURN
 }
