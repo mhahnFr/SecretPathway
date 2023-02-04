@@ -275,11 +275,7 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
                 contextMenu.add(reconnectConnection);
 
             connectionButton.setComponentPopupMenu(contextMenu);
-            connectionButton.addActionListener(__ -> {
-                final var location = connectionButton.getLocation();
-
-                connectionButton.getComponentPopupMenu().show(connectionButton, location.x, location.y + connectionButton.getHeight());
-            });
+            connectionButton.addActionListener(__ -> connectionButton.getComponentPopupMenu().show(connectionButton, 0, connectionButton.getHeight()));
 
             final var windowButton = new JButton("Window");
                 final var windowMenu = new JPopupMenu();
@@ -288,11 +284,7 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
                     openEditorItem.addActionListener(this);
                 windowMenu.add(openEditorItem);
             windowButton.setComponentPopupMenu(windowMenu);
-            windowButton.addActionListener(__ -> {
-                final var location = windowButton.getLocation();
-
-                windowButton.getComponentPopupMenu().show(windowButton, location.x, location.y + windowButton.getHeight());
-            });
+            windowButton.addActionListener(__ -> windowButton.getComponentPopupMenu().show(windowButton, 0, windowButton.getHeight()));
 
             otherButtons.add(connectionButton);
             otherButtons.add(windowButton);
