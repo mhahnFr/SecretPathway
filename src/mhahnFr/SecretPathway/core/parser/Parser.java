@@ -292,9 +292,71 @@ public class Parser {
         return toReturn;
     }
 
+    private ASTExpression parseLet() { return null; }
+
+    private ASTExpression parseIf() { return null; }
+
+    private ASTExpression parseWhile() { return null; }
+
+    private ASTExpression parseDo() { return null; }
+
+    private ASTExpression parseFor() { return null; }
+
+    private ASTExpression parseForEach() { return null; }
+
+    private ASTExpression parseSwitch() { return null; }
+
+    private ASTExpression parseReturn() { return null; }
+
+    private ASTExpression parseTryCatch() { return null; }
+
+    private ASTExpression parseBlockExpression() { return null; }
+
+    private ASTExpression parseInstruction() {
+        final ASTExpression toReturn;
+
+        switch (current.type()) {
+            case LET        -> toReturn = parseLet();
+            case LEFT_CURLY -> toReturn = parseBlock();
+            case IF         -> toReturn = parseIf();
+            case WHILE      -> toReturn = parseWhile();
+            case DO         -> toReturn = parseDo();
+            case FOR        -> toReturn = parseFor();
+            case FOREACH    -> toReturn = parseForEach();
+            case SWITCH     -> toReturn = parseSwitch();
+            case BREAK      -> toReturn = null;
+            case CONTINUE   -> toReturn = null;
+            case RETURN     -> toReturn = parseReturn();
+            case TRY        -> toReturn = parseTryCatch();
+            case SEMICOLON  -> {
+                advance();
+                toReturn = parseInstruction();
+            }
+
+            default -> {
+                toReturn = parseBlockExpression();
+                // TODO Semicolon
+            }
+        }
+
+        return toReturn;
+    }
+
     private ASTExpression parseBlock() {
-        return new ASTName(null);
-//        return null;
+        final var block = new ArrayList<ASTExpression>();
+        final var begin = current.beginPos();
+
+        if (current.type() != TokenType.LEFT_CURLY) {
+            block.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '{'"));
+        } else {
+            advance();
+        }
+        while (current.type() != TokenType.RIGHT_CURLY
+            && current.type() != TokenType.EOF) {
+            block.add(parseInstruction());
+        }
+
+        return new ASTBlock(begin, current.endPos(), block);
     }
 
     private ASTExpression parseFunctionDefinition(final List<ASTExpression> modifiers,
