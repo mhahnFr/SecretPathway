@@ -216,7 +216,7 @@ public final class Settings {
     /**
      * Returns the width of the editor window.
      *
-     * @return thw width
+     * @return the width
      */
     public int getEditorWindowWidth() {
         return preferences.getInt(Keys.EDITOR_WINDOW_WIDTH, -1);
