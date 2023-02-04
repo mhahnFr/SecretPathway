@@ -312,11 +312,24 @@ public class Parser {
 
     private ASTExpression parseBlockExpression() { return null; }
 
+    private ASTExpression assertSemicolon(final ASTExpression expression) {
+        final ASTExpression toReturn;
+
+        if (current.type() != TokenType.SEMICOLON) {
+            toReturn = combine(expression, new ASTMissing(previous.endPos(), current.beginPos(), "Missing ';'"));
+        } else {
+            advance();
+            toReturn = expression;
+        }
+
+        return toReturn;
+    }
+
     private ASTExpression parseInstruction() {
         final ASTExpression toReturn;
 
         switch (current.type()) {
-            case LET        -> toReturn = parseLet();
+            case LET        -> toReturn = assertSemicolon(parseLet());
             case LEFT_CURLY -> toReturn = parseBlock();
             case IF         -> toReturn = parseIf();
             case WHILE      -> toReturn = parseWhile();
@@ -324,19 +337,16 @@ public class Parser {
             case FOR        -> toReturn = parseFor();
             case FOREACH    -> toReturn = parseForEach();
             case SWITCH     -> toReturn = parseSwitch();
-            case BREAK      -> toReturn = null;
-            case CONTINUE   -> toReturn = null;
-            case RETURN     -> toReturn = parseReturn();
+            case BREAK      -> toReturn = assertSemicolon(null);
+            case CONTINUE   -> toReturn = assertSemicolon(null);
+            case RETURN     -> toReturn = assertSemicolon(parseReturn());
             case TRY        -> toReturn = parseTryCatch();
             case SEMICOLON  -> {
                 advance();
                 toReturn = parseInstruction();
             }
 
-            default -> {
-                toReturn = parseBlockExpression();
-                // TODO Semicolon
-            }
+            default -> toReturn = assertSemicolon(parseBlockExpression());
         }
 
         return toReturn;
