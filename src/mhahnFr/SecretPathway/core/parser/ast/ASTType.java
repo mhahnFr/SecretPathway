@@ -50,7 +50,10 @@ public enum ASTType {
     NAME,
     /** Represents a modifier.                 */
     MODIFIER,
+    /** Represents a block of code.            */
     BLOCK,
+    /** Represents a break.                    */
     BREAK,
+    /** Represents a continue.                 */
     CONTINUE
 }

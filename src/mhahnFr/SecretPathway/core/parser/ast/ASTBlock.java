@@ -23,9 +23,23 @@ import mhahnFr.utils.StreamPosition;
 
 import java.util.List;
 
+/**
+ * This class represents a block of code as an AST node.
+ *
+ * @author mhahnFr
+ * @since 04.02.23
+ */
 public class ASTBlock extends ASTExpression {
+    /** The list of expressions in this block. */
     private final List<ASTExpression> body;
 
+    /**
+     * Constructs this AST node using the given information.
+     *
+     * @param begin the beginning position
+     * @param end   the end position
+     * @param body  the expressions of this block
+     */
     public ASTBlock(final StreamPosition begin,
                     final StreamPosition end,
                     final List<ASTExpression> body) {
@@ -34,6 +48,11 @@ public class ASTBlock extends ASTExpression {
         this.body = body;
     }
 
+    /**
+     * Returns the list with the expressions of this block.
+     *
+     * @return the list of expressions
+     */
     public List<ASTExpression> getBody() {
         return body;
     }

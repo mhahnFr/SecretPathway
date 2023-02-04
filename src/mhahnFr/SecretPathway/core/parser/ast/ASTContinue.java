@@ -21,7 +21,18 @@ package mhahnFr.SecretPathway.core.parser.ast;
 
 import mhahnFr.SecretPathway.core.parser.tokenizer.Token;
 
+/**
+ * This class represents a {@code continue} as an AST node.
+ *
+ * @author mhahnFr
+ * @since 04.02.23
+ */
 public class ASTContinue extends ASTExpression {
+    /**
+     * Constructs this AST node using the given {@link Token}.
+     *
+     * @param token the token to be represented
+     */
     public ASTContinue(final Token token) {
         super(token.beginPos(), token.endPos(), ASTType.CONTINUE);
     }

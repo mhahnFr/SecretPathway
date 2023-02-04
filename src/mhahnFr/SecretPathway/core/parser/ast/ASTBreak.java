@@ -21,7 +21,18 @@ package mhahnFr.SecretPathway.core.parser.ast;
 
 import mhahnFr.SecretPathway.core.parser.tokenizer.Token;
 
+/**
+ * This class represents a {@code break} as an AST node.
+ *
+ * @author mhahnFr
+ * @since 04.02.23
+ */
 public class ASTBreak extends ASTExpression {
+    /**
+     * Constructs this AST node using the given {@link Token}.
+     *
+     * @param token the token to be represented
+     */
     public ASTBreak(final Token token) {
         super(token.beginPos(), token.endPos(), ASTType.BREAK);
     }
