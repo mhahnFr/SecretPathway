@@ -50,5 +50,7 @@ public enum ASTType {
     NAME,
     /** Represents a modifier.                 */
     MODIFIER,
-    BLOCK
+    BLOCK,
+    BREAK,
+    CONTINUE
 }

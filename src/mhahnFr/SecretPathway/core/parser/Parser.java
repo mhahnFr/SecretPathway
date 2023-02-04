@@ -337,8 +337,8 @@ public class Parser {
             case FOR        -> toReturn = parseFor();
             case FOREACH    -> toReturn = parseForEach();
             case SWITCH     -> toReturn = parseSwitch();
-            case BREAK      -> toReturn = assertSemicolon(null);
-            case CONTINUE   -> toReturn = assertSemicolon(null);
+            case BREAK      -> toReturn = assertSemicolon(new ASTBreak(current));
+            case CONTINUE   -> toReturn = assertSemicolon(new ASTContinue(current));
             case RETURN     -> toReturn = assertSemicolon(parseReturn());
             case TRY        -> toReturn = parseTryCatch();
             case SEMICOLON  -> {
