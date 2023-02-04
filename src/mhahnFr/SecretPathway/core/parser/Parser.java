@@ -287,6 +287,8 @@ public class Parser {
                     advance();
                 }
             } while (!stop && current.type() != TokenType.EOF);
+        } else {
+            advance();
         }
 
         return toReturn;
@@ -311,10 +313,9 @@ public class Parser {
 
         advance();
         if (current.type() != TokenType.SEMICOLON) {
-            toReturn = assertSemicolon(new ASTReturn(previous.beginPos(), parseBlockExpression(), previous.endPos()));
+            toReturn = new ASTReturn(previous.beginPos(), parseBlockExpression(), previous.endPos());
         } else {
             toReturn = new ASTReturn(previous.beginPos(), null, current.endPos());
-            advance();
         }
 
         return toReturn;

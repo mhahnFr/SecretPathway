@@ -57,7 +57,7 @@ public class ASTReturn extends ASTExpression {
 
     @Override
     public void visit(ASTVisitor visitor) {
-        if (visitor.maybeVisit(this)) {
+        if (visitor.maybeVisit(this) && returned != null) {
             returned.visit(visitor);
         }
     }
