@@ -437,6 +437,7 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
 
             getContentPane().add(editorView);
             editorShowing = true;
+            editorView.requestFocusInWindow();
         } else {
             new EditorWindow(this).setVisible(true);
         }

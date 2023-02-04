@@ -97,6 +97,11 @@ public class EditorView extends JPanel implements DarkModeListener, SettingsList
         setDark(dark);
     }
 
+    @Override
+    public boolean requestFocusInWindow() {
+        return textPane.requestFocusInWindow();
+    }
+
     /**
      * Sets whether this component should appear in the dark mode.
      *
