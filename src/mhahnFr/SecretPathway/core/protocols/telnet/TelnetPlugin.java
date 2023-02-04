@@ -298,7 +298,13 @@ public class TelnetPlugin implements ProtocolPlugin {
             default -> refuse = true;
         }
         if (refuse) {
-            sendSingle(TelnetFunction.opposite(previous), option, sender);
+            if (previous == TelnetFunction.WILL) {
+                sendSingle(TelnetFunction.DONT, option, sender);
+            } else if (previous == TelnetFunction.DO) {
+                sendSingle(TelnetFunction.WONT, option, sender);
+            } else if (previous == TelnetFunction.DONT) {
+                sendSingle(TelnetFunction.WONT, option, sender);
+            }
         }
     }
 
