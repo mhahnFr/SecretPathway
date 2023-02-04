@@ -306,7 +306,19 @@ public class Parser {
 
     private ASTExpression parseSwitch() { return null; }
 
-    private ASTExpression parseReturn() { return null; }
+    private ASTExpression parseReturn() {
+        final ASTExpression toReturn;
+
+        advance();
+        if (current.type() != TokenType.SEMICOLON) {
+            toReturn = assertSemicolon(new ASTReturn(previous.beginPos(), parseBlockExpression(), previous.endPos()));
+        } else {
+            toReturn = new ASTReturn(previous.beginPos(), null, current.endPos());
+            advance();
+        }
+
+        return toReturn;
+    }
 
     private ASTExpression parseTryCatch() { return null; }
 

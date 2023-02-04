@@ -35,12 +35,12 @@ public class ASTReturn extends ASTExpression {
      * Constructs this AST node using the given information.
      *
      * @param begin    the beginning of this expression
-     * @param end      the end of this expression
      * @param returned the returned expression
+     * @param end      the end of this expression
      */
     public ASTReturn(final StreamPosition begin,
-                     final StreamPosition end,
-                     final ASTExpression  returned) {
+                     final ASTExpression  returned,
+                     final StreamPosition end) {
         super(begin, end, ASTType.RETURN);
 
         this.returned = returned;
