@@ -19,6 +19,7 @@
 
 package mhahnFr.SecretPathway.gui;
 
+import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.SecretPathway.core.net.Connection;
 import mhahnFr.SecretPathway.core.net.ConnectionListener;
 import mhahnFr.SecretPathway.core.net.ConnectionSender;
@@ -78,7 +79,7 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
     /** The style currently used for incoming data.                                */
     private FStyle current;
     /** The charset used for the encoding of strings.                              */
-    private Charset currentCharset = StandardCharsets.US_ASCII;
+    private Charset currentCharset = Settings.getInstance().useUTF8() ? StandardCharsets.UTF_8 : StandardCharsets.US_ASCII;
     /** A buffer used for broken unicode characters.                               */
     private final Vector<Byte> unicodeBuffer = new Vector<>();
 

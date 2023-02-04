@@ -90,7 +90,7 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
             spinnerPanel.add(stepperLabel);
             spinnerPanel.add(stepper);
 
-            final var checkBoxes = new DarkComponent<>(new JPanel(new GridLayout(4, 1)), components).getComponent();
+            final var checkBoxes = new DarkComponent<>(new JPanel(new GridLayout(5, 1)), components).getComponent();
                 final var darkMode = new DarkComponent<>(new JCheckBox("Enable dark mode"), components).getComponent();
 
                 final var editorInlined = new DarkComponent<>(new JCheckBox("Use inlined editor"), components).getComponent();
@@ -98,10 +98,13 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
                 final var editorHighlighting = new DarkComponent<>(new JCheckBox("Automatically enable syntax highlighting in the editor"), components).getComponent();
 
                 final var enableStartTlS = new DarkComponent<>(new JCheckBox("Enable StartTLS"), components).getComponent();
+
+                final var enableUTF8 = new DarkComponent<>(new JCheckBox("Enable UTF-8 by default"), components).getComponent();
             checkBoxes.add(darkMode);
             checkBoxes.add(editorInlined);
             checkBoxes.add(editorHighlighting);
             checkBoxes.add(enableStartTlS);
+            checkBoxes.add(enableUTF8);
 
             final var themePanel = new DarkComponent<>(new JPanel(new GridLayout(2, 1)), components).getComponent();
             themePanel.setBorder(new EtchedBorder());
@@ -131,11 +134,13 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
         editorInlined.setSelected(settings.getEditorInlined());
         editorHighlighting.setSelected(settings.getSyntaxHighlighting());
         enableStartTlS.setSelected(settings.getStartTLS());
+        enableUTF8.setSelected(settings.useUTF8());
 
         darkMode.addItemListener(__ -> settings.setDarkMode(darkMode.isSelected()));
         editorInlined.addItemListener(__ -> settings.setEditorInlined(editorInlined.isSelected()));
         editorHighlighting.addItemListener(__ -> settings.setSyntaxHighlighting(editorHighlighting.isSelected()));
         enableStartTlS.addItemListener(__ -> settings.setStartTLS(enableStartTlS.isSelected()));
+        enableUTF8.addItemListener(__ -> settings.setUseUTF8(enableUTF8.isSelected()));
 
         themeButton.addActionListener(__ -> themeButtonClick());
 

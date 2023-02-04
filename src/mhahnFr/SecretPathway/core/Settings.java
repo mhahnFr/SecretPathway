@@ -250,6 +250,15 @@ public final class Settings {
     }
 
     /**
+     * Returns whether to use UTF-8 by default.
+     *
+     * @return whether to use UTF-8 by default
+     */
+    public boolean useUTF8() {
+        return preferences.getInt(Keys.USE_UTF8, 1) == 1;
+    }
+
+    /**
      * Stores the given hostname.
      *
      * @param hostname the hostname to store
@@ -420,6 +429,21 @@ public final class Settings {
     }
 
     /**
+     * Sets whether to use UTF-8 by default.
+     *
+     * @param useIt whether to use it
+     * @return this instance
+     */
+    public Settings setUseUTF8(final boolean useIt) {
+        final var value = useIt ? 1 : 0;
+
+        callListeners(Keys.USE_UTF8, value);
+        preferences.putInt(Keys.USE_UTF8, value);
+
+        return this;
+    }
+
+    /**
      * Attempts to flush the underlying {@link Preferences}. Returns whether the
      * operation was successful.
      *
@@ -480,6 +504,8 @@ public final class Settings {
         public static final String DARK_MODE                  = BUNDLE_ID + ".darkMode";
         /** The key used to store the StartTLS state.                       */
         public static final String START_TLS                  = BUNDLE_ID + ".startTLS";
+        /** The key used to store the UTF-8 state.                          */
+        public static final String USE_UTF8                   = BUNDLE_ID + ".useUTF8";
         /** The key used to store the syntax highlighting state.            */
         public static final String EDITOR_SYNTAX_HIGHLIGHTING = BUNDLE_ID + ".editorSyntaxHighlighting";
         /** The key used to store the editor inlining state.                */
