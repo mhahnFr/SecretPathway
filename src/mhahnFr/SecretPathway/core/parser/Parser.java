@@ -378,6 +378,11 @@ public class Parser {
             && current.type() != TokenType.EOF) {
             block.add(parseInstruction());
         }
+        if (current.type() == TokenType.EOF) {
+            block.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '}'"));
+        } else {
+            advance();
+        }
 
         return new ASTBlock(begin, current.endPos(), block);
     }
