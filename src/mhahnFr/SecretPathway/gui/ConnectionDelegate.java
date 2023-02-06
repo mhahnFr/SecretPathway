@@ -76,6 +76,8 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
     private boolean telnetEscape = false;
     /** Indicates whether the last received byte was telnet's IAC command.         */
     private boolean lastWasIAC = false;
+    /** Indicates whether the next style begin needs to be shifted by one.         */
+    private boolean shiftByOne = false;
     /** The style currently used for incoming data.                                */
     private FStyle current;
     /** The charset used for the encoding of strings.                              */
@@ -318,9 +320,26 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
                 for (int i = 0; i < closedStyles.size(); ++i) {
                     final var element = closedStyles.get(i);
 
-                    final int len = i + 1 < closedStyles.size() ? closedStyles.get(i + 1).getFirst() : appendix.length();
+                    final var wasShift = shiftByOne;
+                    shiftByOne = false;
 
-                    document.insertString(document.getLength(), appendix.substring(element.getFirst(), len), element.getSecond().asStyle(defaultStyle));
+                    int len;
+                    if (i + 1 < closedStyles.size()) {
+                        len = closedStyles.get(i + 1).getFirst();
+                        if (Character.isHighSurrogate(appendix.charAt(len > 0 ? len - 1 : 0)) && appendix.length() > len) {
+                            ++len;
+                            shiftByOne = true;
+                        }
+                    } else {
+                        len = appendix.length();
+                    }
+
+                    int begin = element.getFirst();
+                    if (wasShift && begin < len) {
+                        ++begin;
+                    }
+
+                    document.insertString(document.getLength(), appendix.substring(begin, len), element.getSecond().asStyle(defaultStyle));
                 }
             }
         } catch (BadLocationException e) {
