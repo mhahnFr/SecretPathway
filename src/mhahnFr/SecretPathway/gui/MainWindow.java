@@ -73,6 +73,7 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
     private boolean dark;
     /** Indicates whether the additional buttons are currently visible.   */
     private boolean otherButtonsVisible;
+    /** Indicates whether the editor is currently inlined.                */
     private boolean editorShowing;
 
     /**
