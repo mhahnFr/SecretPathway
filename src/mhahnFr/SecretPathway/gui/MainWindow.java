@@ -462,6 +462,7 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
         if (!maybeCloseConnection()) { return; }
         saveSettings();
         super.dispose();
+        System.exit(0);
     }
 
     /**
