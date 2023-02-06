@@ -234,7 +234,7 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
                         : (shifted == 0b1110) ? 3 : 4;
 
                 if (text.size() - index < oneCount) {
-                    for (int i = 0; i < oneCount - 1; ++i) {
+                    while (text.size() > index) {
                         unicodeBuffer.add(text.remove(index));
                     }
                 }
