@@ -333,8 +333,6 @@ public class Parser {
 
     private ASTExpression parseTernary() { return null; }
 
-    private ASTExpression parseIs() { return null; }
-
     private ASTExpression parseOperation(final int priority) {
         final var type = current.type();
 
@@ -385,7 +383,7 @@ public class Parser {
             return parseBlockExpression(2);
         } else if (priority >= 2 && type == TokenType.IS) {
             advance();
-            return parseIs();
+            return parseType();
         }
 
         return new ASTMissing(previous.endPos(), current.beginPos(), "Missing operator type");
