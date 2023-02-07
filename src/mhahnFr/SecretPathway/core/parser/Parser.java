@@ -333,12 +333,6 @@ public class Parser {
 
     private ASTExpression parseTernary() { return null; }
 
-    private ASTExpression parseNullAware() { return null; }
-
-    private ASTExpression parseOr() { return null; }
-
-    private ASTExpression parseAnd() { return null; }
-
     private ASTExpression parseIs() { return null; }
 
     private ASTExpression parseOperation(final int priority) {
@@ -352,11 +346,14 @@ public class Parser {
         } else if (priority >= 13 && type == TokenType.QUESTION) {
             return parseTernary();
         } else if (priority >= 13 && type == TokenType.DOUBLE_QUESTION) {
-            return parseNullAware();
+            advance();
+            return parseBlockExpression(12);
         } else if (priority >= 12 && type == TokenType.OR) {
-            return parseOr();
+            advance();
+            return parseBlockExpression(11);
         } else if (priority >= 11 && type == TokenType.AND) {
-            return parseAnd();
+            advance();
+            return parseBlockExpression(10);
         } else if (priority >= 10 && type == TokenType.PIPE) {
             advance();
             return parseBlockExpression(9);
@@ -391,7 +388,7 @@ public class Parser {
             return parseIs();
         }
 
-        return null;
+        return new ASTMissing(previous.endPos(), current.beginPos(), "Missing operator type");
     }
 
     /**
@@ -449,8 +446,7 @@ public class Parser {
         }
 
         ASTExpression previousExpression = lhs;
-        TokenType     operatorType       = current.type();
-        for (; isOperator(operatorType); operatorType = current.type()) {
+        for (TokenType operatorType = current.type(); isOperator(operatorType); operatorType = current.type()) {
             final var rhs = parseOperation(priority);
             previousExpression = new ASTOperation(previousExpression, rhs, operatorType);
         }
