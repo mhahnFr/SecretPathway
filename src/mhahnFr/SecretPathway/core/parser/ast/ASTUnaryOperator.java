@@ -38,15 +38,13 @@ public class ASTUnaryOperator extends ASTExpression {
      * Constructs this AST node using the given information.
      *
      * @param begin        the beginning position
-     * @param end          the end position
      * @param operatorType the type of this operator
      * @param identifier   the identifier to which to apply this operator
      */
     public ASTUnaryOperator(final StreamPosition begin,
-                            final StreamPosition end,
                             final TokenType      operatorType,
                             final ASTExpression  identifier) {
-        super(begin, end, ASTType.UNARY_OPERATOR);
+        super(begin, identifier.getEnd(), ASTType.UNARY_OPERATOR);
 
         this.operatorType = operatorType;
         this.identifier   = identifier;

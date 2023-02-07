@@ -313,7 +313,7 @@ public class Parser {
 
         advance();
         if (current.type() != TokenType.SEMICOLON) {
-            toReturn = new ASTReturn(previous.beginPos(), parseBlockExpression(), previous.endPos());
+            toReturn = new ASTReturn(previous.beginPos(), parseBlockExpression(1), previous.endPos());
         } else {
             toReturn = new ASTReturn(previous.beginPos(), null, current.endPos());
         }
@@ -323,7 +323,42 @@ public class Parser {
 
     private ASTExpression parseTryCatch() { return null; }
 
-    private ASTExpression parseBlockExpression() { return null; }
+    private ASTExpression parseSimpleExpression(final int priority) {
+        return null;
+    }
+
+    private ASTExpression parseBlockExpression(final int priority) {
+        final ASTExpression toReturn;
+
+        final var type = current.type();
+        if (type == TokenType.AMPERSAND) {
+            if (next.type() != TokenType.IDENTIFIER) {
+                toReturn = new ASTUnaryOperator(current.beginPos(), TokenType.AMPERSAND, combine(new ASTName(null),
+                               new ASTMissing(current.endPos(), next.beginPos(), "Missing identifier!")));
+            } else {
+                advance();
+                toReturn = new ASTUnaryOperator(previous.beginPos(), TokenType.AMPERSAND, new ASTName(current));
+            }
+        } else if (type == TokenType.STAR) {
+            advance();
+            toReturn = new ASTUnaryOperator(previous.beginPos(), TokenType.STAR, parseBlockExpression(1));
+        } else if (priority >= 2 && (type == TokenType.PLUS   ||
+                                     type == TokenType.MINUS  ||
+                                     type == TokenType.SIZEOF ||
+                                     type == TokenType.NOT)) {
+            advance();
+            toReturn = new ASTUnaryOperator(previous.beginPos(), type, parseBlockExpression(1));
+
+            if (type == TokenType.PLUS) { return toReturn; }
+        } else {
+            toReturn = parseSimpleExpression(priority);
+        }
+
+        // Problem!
+//        while (parse_operation(priority));
+
+        return toReturn;
+    }
 
     private ASTExpression assertSemicolon(final ASTExpression expression) {
         final ASTExpression toReturn;
@@ -359,7 +394,7 @@ public class Parser {
                 toReturn = parseInstruction();
             }
 
-            default -> toReturn = assertSemicolon(parseBlockExpression());
+            default -> toReturn = assertSemicolon(parseBlockExpression(1));
         }
 
         return toReturn;
