@@ -331,7 +331,26 @@ public class Parser {
 
     private ASTExpression parseSubscript() { return null; }
 
-    private ASTExpression parseTernary() { return null; }
+    private ASTExpression parseTernary() {
+        final var truePart = parseBlockExpression(12);
+
+        final ASTExpression part;
+        if (current.type() != TokenType.COLON) {
+            part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing ':'");
+        } else {
+            part = null;
+            advance();
+        }
+
+        final var falsePart = parseBlockExpression(12);
+
+        final var toReturn = new ASTOperation(truePart, falsePart, null);
+
+        if (part != null) {
+            return combine(toReturn, part);
+        }
+        return toReturn;
+    }
 
     private ASTExpression parseOperation(final int priority) {
         final var type = current.type();
