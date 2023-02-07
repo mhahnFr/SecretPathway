@@ -331,6 +331,12 @@ public class Parser {
         return null;
     }
 
+    /**
+     * Returns whether the given type represents an operator.
+     *
+     * @param type the type to be checked
+     * @return whether the given type is an operator
+     */
     private boolean isOperator(final TokenType type) {
         return type == TokenType.DOT             ||
                type == TokenType.COMMA           ||

@@ -19,10 +19,24 @@
 
 package mhahnFr.SecretPathway.core.parser.ast;
 
+/**
+ * This class represents an operation as an AST node.
+ *
+ * @author mhahnFr
+ * @since 07.02.23
+ */
 public class ASTOperation extends ASTExpression {
+    /** The left hand side expression.  */
     private final ASTExpression lhs;
+    /** The right hand side expression. */
     private final ASTExpression rhs;
 
+    /**
+     * Constructs this AST node using the two given sub-expressions.
+     *
+     * @param lhs the left hand side expression
+     * @param rhs the right hand side expression
+     */
     public ASTOperation(final ASTExpression lhs,
                         final ASTExpression rhs) {
         super(lhs.getBegin(), rhs.getEnd(), ASTType.OPERATION);
@@ -31,10 +45,20 @@ public class ASTOperation extends ASTExpression {
         this.rhs = rhs;
     }
 
+    /**
+     * Returns the left hand side expression of this operation.
+     *
+     * @return the left hand side expression
+     */
     public ASTExpression getLhs() {
         return lhs;
     }
 
+    /**
+     * Returns the right hand side expression of this operation.
+     *
+     * @return the right hand side expression
+     */
     public ASTExpression getRhs() {
         return rhs;
     }
