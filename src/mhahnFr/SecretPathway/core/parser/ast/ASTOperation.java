@@ -19,6 +19,8 @@
 
 package mhahnFr.SecretPathway.core.parser.ast;
 
+import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
+
 /**
  * This class represents an operation as an AST node.
  *
@@ -26,23 +28,28 @@ package mhahnFr.SecretPathway.core.parser.ast;
  * @since 07.02.23
  */
 public class ASTOperation extends ASTExpression {
-    /** The left hand side expression.  */
+    /** The left hand side expression.         */
     private final ASTExpression lhs;
-    /** The right hand side expression. */
+    /** The right hand side expression.        */
     private final ASTExpression rhs;
+    /** The type of the represented operation. */
+    private final TokenType operatorType;
 
     /**
      * Constructs this AST node using the two given sub-expressions.
      *
-     * @param lhs the left hand side expression
-     * @param rhs the right hand side expression
+     * @param lhs          the left hand side expression
+     * @param rhs          the right hand side expression
+     * @param operatorType the type of the represented operation
      */
     public ASTOperation(final ASTExpression lhs,
-                        final ASTExpression rhs) {
+                        final ASTExpression rhs,
+                        final TokenType     operatorType) {
         super(lhs.getBegin(), rhs.getEnd(), ASTType.OPERATION);
 
-        this.lhs = lhs;
-        this.rhs = rhs;
+        this.lhs          = lhs;
+        this.rhs          = rhs;
+        this.operatorType = operatorType;
     }
 
     /**
@@ -61,5 +68,14 @@ public class ASTOperation extends ASTExpression {
      */
     public ASTExpression getRhs() {
         return rhs;
+    }
+
+    /**
+     * Returns the operation type represented by this expression.
+     *
+     * @return the represented operation type
+     */
+    public TokenType getOperatorType() {
+        return operatorType;
     }
 }

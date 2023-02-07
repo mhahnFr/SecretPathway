@@ -386,9 +386,10 @@ public class Parser {
         }
 
         ASTExpression previousExpression = lhs;
-        while (isOperator(current.type())) {
+        TokenType     operatorType       = current.type();
+        for (; isOperator(operatorType); operatorType = current.type()) {
             final var rhs = parseOperation(priority);
-            previousExpression = new ASTOperation(previousExpression, rhs);
+            previousExpression = new ASTOperation(previousExpression, rhs, operatorType);
         }
 
         return previousExpression;
