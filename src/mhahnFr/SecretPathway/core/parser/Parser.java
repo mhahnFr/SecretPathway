@@ -327,7 +327,70 @@ public class Parser {
         return null;
     }
 
+    private ASTExpression parseFunctionCall() { return null; }
+
+    private ASTExpression parseSubscript() { return null; }
+
+    private ASTExpression parseTernary() { return null; }
+
+    private ASTExpression parseNullAware() { return null; }
+
+    private ASTExpression parseOr() { return null; }
+
+    private ASTExpression parseAnd() { return null; }
+
+    private ASTExpression parseIs() { return null; }
+
     private ASTExpression parseOperation(final int priority) {
+        final var type = current.type();
+
+        if (priority >= 1 && (type == TokenType.ARROW ||
+                              type == TokenType.DOT)) {
+            return parseFunctionCall();
+        } else if (type == TokenType.LEFT_BRACKET) {
+            return parseSubscript();
+        } else if (priority >= 13 && type == TokenType.QUESTION) {
+            return parseTernary();
+        } else if (priority >= 13 && type == TokenType.DOUBLE_QUESTION) {
+            return parseNullAware();
+        } else if (priority >= 12 && type == TokenType.OR) {
+            return parseOr();
+        } else if (priority >= 11 && type == TokenType.AND) {
+            return parseAnd();
+        } else if (priority >= 10 && type == TokenType.PIPE) {
+            advance();
+            return parseBlockExpression(9);
+        } else if (priority >= 8 && type == TokenType.AMPERSAND) {
+            advance();
+            return parseBlockExpression(7);
+        } else if (priority >= 5 && (type == TokenType.RIGHT_SHIFT ||
+                                     type == TokenType.LEFT_SHIFT)) {
+            advance();
+            return parseBlockExpression(4);
+        } else if (priority >= 7 && (type == TokenType.NOT_EQUAL ||
+                                     type == TokenType.EQUALS)) {
+            advance();
+            return parseBlockExpression(6);
+        } else if (priority >= 6 && (type == TokenType.LESS             ||
+                                     type == TokenType.LESS_OR_EQUAL    ||
+                                     type == TokenType.GREATER          ||
+                                     type == TokenType.GREATER_OR_EQUAL)) {
+            advance();
+            return parseBlockExpression(6);
+        } else if (priority >= 4 && (type == TokenType.MINUS ||
+                                     type == TokenType.PLUS)) {
+            advance();
+            return parseBlockExpression(3);
+        } else if (priority >= 3 && (type == TokenType.SLASH   ||
+                                     type == TokenType.PERCENT ||
+                                     type == TokenType.STAR)) {
+            advance();
+            return parseBlockExpression(2);
+        } else if (priority >= 2 && type == TokenType.IS) {
+            advance();
+            return parseIs();
+        }
+
         return null;
     }
 
