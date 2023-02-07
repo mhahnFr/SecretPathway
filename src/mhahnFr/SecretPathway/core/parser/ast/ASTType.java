@@ -57,5 +57,7 @@ public enum ASTType {
     /** Represents a continue.                 */
     CONTINUE,
     /** Represents a return statement.         */
-    RETURN
+    RETURN,
+    /** Represents a unary operator.           */
+    UNARY_OPERATOR
 }
