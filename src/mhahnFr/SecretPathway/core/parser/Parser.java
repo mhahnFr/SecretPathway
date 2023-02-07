@@ -327,37 +327,65 @@ public class Parser {
         return null;
     }
 
+    private ASTExpression parseOperation(final int priority) {
+        return null;
+    }
+
+    private boolean isOperator(final TokenType type) {
+        return type == TokenType.DOT             ||
+               type == TokenType.COMMA           ||
+               type == TokenType.SCOPE           ||
+               type == TokenType.ARROW           ||
+               type == TokenType.P_ARROW         ||
+               type == TokenType.PIPE            ||
+               type == TokenType.LEFT_SHIFT      ||
+               type == TokenType.RIGHT_SHIFT     ||
+               type == TokenType.DOUBLE_QUESTION ||
+               type == TokenType.QUESTION        ||
+               type == TokenType.INCREMENT       ||
+               type == TokenType.DECREMENT       ||
+               type == TokenType.PLUS            ||
+               type == TokenType.MINUS           ||
+               type == TokenType.STAR            ||
+               type == TokenType.SLASH           ||
+               type == TokenType.PERCENT         ||
+               type == TokenType.IS;
+    }
+
     private ASTExpression parseBlockExpression(final int priority) {
-        final ASTExpression toReturn;
+        final ASTExpression lhs;
 
         final var type = current.type();
         if (type == TokenType.AMPERSAND) {
             if (next.type() != TokenType.IDENTIFIER) {
-                toReturn = new ASTUnaryOperator(current.beginPos(), TokenType.AMPERSAND, combine(new ASTName(null),
+                lhs = new ASTUnaryOperator(current.beginPos(), TokenType.AMPERSAND, combine(new ASTName(null),
                                new ASTMissing(current.endPos(), next.beginPos(), "Missing identifier!")));
             } else {
                 advance();
-                toReturn = new ASTUnaryOperator(previous.beginPos(), TokenType.AMPERSAND, new ASTName(current));
+                lhs = new ASTUnaryOperator(previous.beginPos(), TokenType.AMPERSAND, new ASTName(current));
             }
         } else if (type == TokenType.STAR) {
             advance();
-            toReturn = new ASTUnaryOperator(previous.beginPos(), TokenType.STAR, parseBlockExpression(1));
+            lhs = new ASTUnaryOperator(previous.beginPos(), TokenType.STAR, parseBlockExpression(1));
         } else if (priority >= 2 && (type == TokenType.PLUS   ||
                                      type == TokenType.MINUS  ||
                                      type == TokenType.SIZEOF ||
                                      type == TokenType.NOT)) {
             advance();
-            toReturn = new ASTUnaryOperator(previous.beginPos(), type, parseBlockExpression(1));
+            lhs = new ASTUnaryOperator(previous.beginPos(), type, parseBlockExpression(1));
 
-            if (type == TokenType.PLUS) { return toReturn; }
+            if (type == TokenType.PLUS) { return lhs; }
         } else {
-            toReturn = parseSimpleExpression(priority);
+            lhs = parseSimpleExpression(priority);
         }
 
-        // Problem!
-//        while (parse_operation(priority));
+        ASTExpression previousExpression = lhs;
+        while (isOperator(current.type())) {
+            final var rhs = parseOperation(priority);
+            previousExpression = new ASTOperation(previousExpression, rhs);
+        }
 
-        return toReturn;
+        return previousExpression;
     }
 
     private ASTExpression assertSemicolon(final ASTExpression expression) {

@@ -59,5 +59,6 @@ public enum ASTType {
     /** Represents a return statement.         */
     RETURN,
     /** Represents a unary operator.           */
-    UNARY_OPERATOR
+    UNARY_OPERATOR,
+    OPERATION
 }
