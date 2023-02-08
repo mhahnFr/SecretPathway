@@ -323,6 +323,43 @@ public class Parser {
 
     private ASTExpression parseTryCatch() { return null; }
 
+    private ASTExpression parseNew() {
+        advance();
+
+        final var parts = new Vector<ASTExpression>(3);
+        final var begin = previous.beginPos();
+
+        if (current.type() != TokenType.LEFT_PAREN) {
+            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '('"));
+        } else {
+            advance();
+        }
+        final var instancingExpression = parseBlockExpression(99);
+        advance();
+
+        final ASTExpression[] arguments;
+        if (current.type() != TokenType.RIGHT_PAREN) {
+            if (current.type() != TokenType.COMMA) {
+                parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ','"));
+            } else {
+                advance();
+            }
+            arguments = parseCallArguments();
+            if (current.type() != TokenType.RIGHT_PAREN) {
+                parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'"));
+            } else {
+                advance();
+            }
+        } else {
+            arguments = null;
+        }
+        final var result = new ASTNew(begin, previous.endPos(), instancingExpression, arguments);
+        if (!parts.isEmpty()) {
+            return combine(result, parts);
+        }
+        return result;
+    }
+
     private ASTExpression parseSimpleExpression(final int priority) {
         final ASTExpression toReturn;
 
@@ -371,6 +408,8 @@ public class Parser {
                     default -> toReturn = new ASTName(current);
                 }
             }
+
+            case NEW -> toReturn = parseNew();
 
             default -> toReturn = new ASTMissing(previous.endPos(), current.beginPos(), "Missing expression");
         }
