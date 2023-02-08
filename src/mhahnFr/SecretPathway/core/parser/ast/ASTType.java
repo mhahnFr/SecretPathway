@@ -63,5 +63,7 @@ public enum ASTType {
     /** Represents a binary operation.         */
     OPERATION,
     /** Represents a function call.            */
-    FUNCTION_CALL
+    FUNCTION_CALL,
+    /** Represents a new expression.           */
+    NEW
 }
