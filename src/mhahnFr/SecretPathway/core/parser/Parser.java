@@ -360,6 +360,35 @@ public class Parser {
         return result;
     }
 
+    private ASTExpression parseCast(final int priority) {
+        advance();
+
+        final var begin = previous.beginPos();
+        final var type = parseType();
+
+        final ASTExpression part;
+        if (current.type() != TokenType.RIGHT_PAREN) {
+            part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'");
+        } else {
+            part = null;
+            advance();
+        }
+        final var expression = parseBlockExpression(priority);
+        final var cast = new ASTCast(begin, type, expression);
+        if (part != null) {
+            return combine(cast, part);
+        }
+        return cast;
+    }
+
+    private ASTExpression parseArray() {
+        return null;
+    }
+
+    private ASTExpression parseMapping() {
+        return null;
+    }
+
     private ASTExpression parseSimpleExpression(final int priority) {
         final ASTExpression toReturn;
 
@@ -409,7 +438,30 @@ public class Parser {
                 }
             }
 
-            case NEW -> toReturn = parseNew();
+
+            case SCOPE -> {
+                advance();
+                toReturn = parseFunctionCall();
+            }
+
+            case STAR -> {
+                advance();
+                toReturn = new ASTUnaryOperator(previous.beginPos(), previous.type(), parseBlockExpression(1));
+            }
+
+            case NEW          -> toReturn = parseNew();
+            case LEFT_PAREN   -> toReturn = parseCast(priority);
+            case NIL          -> toReturn = new ASTNil(current);
+            case THIS         -> toReturn = new ASTThis(current);
+            case INTEGER      -> toReturn = new ASTInteger(current);
+            case STRING       -> toReturn = new ASTString(current);
+            case SYMBOL       -> toReturn = new ASTSymbol(current);
+            case ELLIPSIS     -> toReturn = new ASTEllipsis(current);
+            case LEFT_CURLY   -> toReturn = parseArray();
+            case LEFT_BRACKET -> toReturn = parseMapping();
+
+            case TRUE,
+                 FALSE -> toReturn = new ASTBool(current);
 
             default -> toReturn = new ASTMissing(previous.endPos(), current.beginPos(), "Missing expression");
         }
