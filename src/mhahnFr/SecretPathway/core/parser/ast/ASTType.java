@@ -60,5 +60,8 @@ public enum ASTType {
     RETURN,
     /** Represents a unary operator.           */
     UNARY_OPERATOR,
-    OPERATION
+    /** Represents a binary operation.         */
+    OPERATION,
+    /** Represents a function call.            */
+    FUNCTION_CALL
 }
