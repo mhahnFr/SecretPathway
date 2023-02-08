@@ -73,5 +73,7 @@ public enum ASTType {
     /** Represents a nil expression.           */
     NIL,
     /** Represents an integer expression.      */
-    INTEGER
+    INTEGER,
+    /** Represents a string expression.        */
+    STRING
 }
