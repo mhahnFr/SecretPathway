@@ -324,7 +324,57 @@ public class Parser {
     private ASTExpression parseTryCatch() { return null; }
 
     private ASTExpression parseSimpleExpression(final int priority) {
-        return null;
+        final ASTExpression toReturn;
+
+        switch (current.type()) {
+            case IDENTIFIER -> {
+                switch (next.type()) {
+                    case LEFT_PAREN -> {
+                        advance(2);
+
+                        final var arguments = parseCallArguments();
+
+                        final ASTExpression part;
+                        if (current.type() != TokenType.RIGHT_PAREN) {
+                            part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'");
+                        } else {
+                            part = null;
+                            advance();
+                        }
+                        final var func = new ASTFunctionCall(new ASTName(previous), arguments, previous.endPos());
+                        if (part == null) {
+                            toReturn = func;
+                        } else {
+                            toReturn = combine(func, part);
+                        }
+                    }
+
+                    case ASSIGNMENT,
+                         ASSIGNMENT_PLUS,
+                         ASSIGNMENT_MINUS,
+                         ASSIGNMENT_PERCENT,
+                         ASSIGNMENT_SLASH,
+                         ASSIGNMENT_STAR -> {
+
+                        final var name = new ASTName(current);
+                        final var type = next.type();
+                        advance(2);
+                        toReturn = new ASTOperation(name, parseBlockExpression(99), type);
+                    }
+
+                    case INCREMENT,
+                         DECREMENT -> {
+                        advance();
+                        toReturn = new ASTUnaryOperator(previous.beginPos(), current.type(), new ASTName(previous));
+                    }
+
+                    default -> toReturn = new ASTName(current);
+                }
+            }
+
+            default -> toReturn = new ASTMissing(previous.endPos(), current.beginPos(), "Missing expression");
+        }
+        return toReturn;
     }
 
     private ASTExpression[] parseCallArguments() {
