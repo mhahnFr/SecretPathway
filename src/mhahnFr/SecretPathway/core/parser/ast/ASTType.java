@@ -69,5 +69,7 @@ public enum ASTType {
     /** Represents a cast expression.          */
     CAST,
     /** Represents a "this" expression.        */
-    THIS
+    THIS,
+    /** Represents a nil expression.           */
+    NIL
 }
