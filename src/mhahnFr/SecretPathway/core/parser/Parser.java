@@ -327,7 +327,51 @@ public class Parser {
         return null;
     }
 
-    private ASTExpression parseFunctionCall() { return null; }
+    private ASTExpression[] parseCallArguments() {
+        final var list = new ArrayList<ASTExpression>();
+
+        while (current.type() != TokenType.RIGHT_PAREN) {
+            list.add(parseBlockExpression(99));
+            if (current.type() != TokenType.COMMA && current.type() != TokenType.RIGHT_PAREN) { // TODO: Implement other stopping characters
+                list.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ','"));
+            } else {
+                advance();
+            }
+        }
+
+        return list.toArray(new ASTExpression[0]);
+    }
+
+    private ASTExpression parseFunctionCall() {
+        final ASTExpression toReturn;
+
+        final var parts = new Vector<ASTExpression>();
+
+        advance();
+
+        final var name = parseName();
+
+        if (current.type() != TokenType.LEFT_PAREN) {
+            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '('"));
+        } else {
+            advance();
+        }
+
+        final var arguments = parseCallArguments();
+
+        if (current.type() != TokenType.RIGHT_PAREN) {
+            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'"));
+        } else {
+            advance();
+        }
+
+        toReturn = new ASTFunctionCall(name, arguments, previous.endPos());
+
+        if (!parts.isEmpty()) {
+            return combine(toReturn, parts);
+        }
+        return toReturn;
+    }
 
     private ASTExpression parseSubscript() { return null; }
 
