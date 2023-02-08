@@ -65,5 +65,7 @@ public enum ASTType {
     /** Represents a function call.            */
     FUNCTION_CALL,
     /** Represents a new expression.           */
-    NEW
+    NEW,
+    /** Represents a cast expression.          */
+    CAST
 }
