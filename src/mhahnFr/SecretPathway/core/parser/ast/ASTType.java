@@ -67,5 +67,7 @@ public enum ASTType {
     /** Represents a new expression.           */
     NEW,
     /** Represents a cast expression.          */
-    CAST
+    CAST,
+    /** Represents a "this" expression.        */
+    THIS
 }
