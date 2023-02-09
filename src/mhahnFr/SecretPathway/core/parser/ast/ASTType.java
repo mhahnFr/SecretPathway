@@ -81,5 +81,7 @@ public enum ASTType {
     /** Represents a boolean expression.       */
     BOOL,
     /** Represents an array expression.        */
-    ARRAY
+    ARRAY,
+    /** Represents a mapping expression.       */
+    MAPPING
 }
