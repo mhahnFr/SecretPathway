@@ -333,7 +333,7 @@ public class Parser {
             } else {
                 advance();
             }
-            arguments = parseCallArguments();
+            arguments = parseCallArguments(TokenType.RIGHT_PAREN);
             if (current.type() != TokenType.RIGHT_PAREN) {
                 parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'"));
             } else {
@@ -370,14 +370,6 @@ public class Parser {
         return cast;
     }
 
-    private ASTExpression parseArray() {
-        return null;
-    }
-
-    private ASTExpression parseMapping() {
-        return null;
-    }
-
     private ASTExpression parseSimpleExpression(final int priority) {
         final ASTExpression toReturn;
 
@@ -387,7 +379,7 @@ public class Parser {
                     case LEFT_PAREN -> {
                         advance(2);
 
-                        final var arguments = parseCallArguments();
+                        final var arguments = parseCallArguments(TokenType.RIGHT_PAREN);
 
                         final ASTExpression part;
                         if (current.type() != TokenType.RIGHT_PAREN) {
@@ -427,7 +419,6 @@ public class Parser {
                 }
             }
 
-
             case SCOPE -> {
                 advance();
                 toReturn = parseFunctionCall();
@@ -457,12 +448,54 @@ public class Parser {
         return toReturn;
     }
 
-    private ASTExpression[] parseCallArguments() {
+    private ASTExpression parseMapping() {
+        final var begin = current.beginPos();
+        advance();
+
+        final var args = parseCallArguments(TokenType.RIGHT_CURLY);
+
+        final ASTExpression part;
+        if (current.type() != TokenType.RIGHT_CURLY) {
+            part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing '}'");
+        } else {
+            part = null;
+            advance();
+        }
+
+        final var array = new ASTArray(begin, previous.endPos(), args);
+        if (part != null) {
+            return combine(array, part);
+        }
+        return array;
+    }
+
+    private ASTExpression parseArray() {
+        final var begin = current.beginPos();
+        advance();
+
+        final var args = parseCallArguments(TokenType.RIGHT_BRACKET);
+
+        final ASTExpression part;
+        if (current.type() != TokenType.RIGHT_BRACKET) {
+            part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing ']'");
+        } else {
+            part = null;
+            advance();
+        }
+
+        final var mapping = new ASTMapping(begin, previous.endPos(), args);
+        if (part != null) {
+            return combine(mapping, part);
+        }
+        return mapping;
+    }
+
+    private ASTExpression[] parseCallArguments(final TokenType end) {
         final var list = new ArrayList<ASTExpression>();
 
-        while (current.type() != TokenType.RIGHT_PAREN) {
+        while (current.type() != end) {
             list.add(parseBlockExpression(99));
-            if (current.type() != TokenType.COMMA && current.type() != TokenType.RIGHT_PAREN) { // TODO: Implement other stopping characters
+            if (current.type() != TokenType.COMMA && current.type() != end) { // TODO: Implement other stopping characters
                 list.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ','"));
             } else {
                 advance();
@@ -487,7 +520,7 @@ public class Parser {
             advance();
         }
 
-        final var arguments = parseCallArguments();
+        final var arguments = parseCallArguments(TokenType.RIGHT_PAREN);
 
         if (current.type() != TokenType.RIGHT_PAREN) {
             parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'"));
