@@ -229,6 +229,9 @@ public class Parser {
                     toReturn.add(new ASTEllipsis(current));
                     if (next.type() == TokenType.LEFT_CURLY) {
                         toReturn.add(new ASTMissing(current.endPos(), next.beginPos(), "Expected ')'"));
+                        advance();
+                    } else {
+                        advance(2);
                     }
                     break;
                 }
@@ -415,7 +418,10 @@ public class Parser {
                         toReturn = new ASTUnaryOperator(previous.beginPos(), current.type(), new ASTName(previous));
                     }
 
-                    default -> toReturn = new ASTName(current);
+                    default -> {
+                        toReturn = new ASTName(current);
+                        advance();
+                    }
                 }
             }
 
@@ -429,19 +435,19 @@ public class Parser {
                 toReturn = new ASTUnaryOperator(previous.beginPos(), previous.type(), parseBlockExpression(1));
             }
 
-            case NEW          -> toReturn = parseNew();
-            case LEFT_PAREN   -> toReturn = parseCast(priority);
-            case NIL          -> toReturn = new ASTNil(current);
-            case THIS         -> toReturn = new ASTThis(current);
-            case INTEGER      -> toReturn = new ASTInteger(current);
-            case STRING       -> toReturn = new ASTString(current);
-            case SYMBOL       -> toReturn = new ASTSymbol(current);
-            case ELLIPSIS     -> toReturn = new ASTEllipsis(current);
-            case LEFT_CURLY   -> toReturn = parseArray();
-            case LEFT_BRACKET -> toReturn = parseMapping();
+            case NEW          ->   toReturn = parseNew();
+            case LEFT_PAREN   ->   toReturn = parseCast(priority);
+            case NIL          -> { toReturn = new ASTNil(current); advance();      }
+            case THIS         -> { toReturn = new ASTThis(current); advance();     }
+            case INTEGER      -> { toReturn = new ASTInteger(current); advance();  }
+            case STRING       -> { toReturn = new ASTString(current); advance();   }
+            case SYMBOL       -> { toReturn = new ASTSymbol(current); advance();   }
+            case ELLIPSIS     -> { toReturn = new ASTEllipsis(current); advance(); }
+            case LEFT_CURLY   ->   toReturn = parseArray();
+            case LEFT_BRACKET ->   toReturn = parseMapping();
 
             case TRUE,
-                 FALSE -> toReturn = new ASTBool(current);
+                 FALSE -> { toReturn = new ASTBool(current); advance(); }
 
             default -> toReturn = new ASTMissing(previous.endPos(), current.beginPos(), "Missing expression");
         }
