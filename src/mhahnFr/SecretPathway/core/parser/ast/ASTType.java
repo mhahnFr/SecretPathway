@@ -79,5 +79,7 @@ public enum ASTType {
     /** Represents a symbol expression.        */
     SYMBOL,
     /** Represents a boolean expression.       */
-    BOOL
+    BOOL,
+    /** Represents an array expression.        */
+    ARRAY
 }
