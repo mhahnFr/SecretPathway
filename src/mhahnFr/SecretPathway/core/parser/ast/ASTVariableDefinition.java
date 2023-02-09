@@ -89,12 +89,18 @@ public class ASTVariableDefinition extends ASTExpression {
     @Override
     public void visit(ASTVisitor visitor) {
         if (visitor.maybeVisit(this)) {
-            final var iterator = modifiers.listIterator();
-            while (iterator.hasNext()) {
-                iterator.next().visit(visitor);
+
+            if (modifiers != null) {
+                final var iterator = modifiers.listIterator();
+                while (iterator.hasNext()) {
+                    iterator.next().visit(visitor);
+                }
             }
 
-            type.visit(visitor);
+            if (type != null) {
+                type.visit(visitor);
+            }
+
             name.visit(visitor);
         }
     }
