@@ -196,21 +196,12 @@ public class Parser {
         return toReturn;
     }
 
-    private ASTExpression parseAssignation(final ASTExpression assignee) {
-        return null;
-    }
-
     private ASTExpression parseVariableDefinition(final List<ASTExpression> modifiers,
                                                   final ASTExpression       type,
                                                   final ASTExpression       name) {
         final ASTExpression toReturn;
 
-        final StreamPosition begin;
-        if (!modifiers.isEmpty()) {
-            begin = modifiers.get(0).getBegin();
-        } else {
-            begin = type.getBegin();
-        }
+        final StreamPosition begin = modifiers.isEmpty() ? type.getBegin() : modifiers.get(0).getBegin();
         final var variable = new ASTVariableDefinition(begin, name.getEnd(), modifiers, type, name);
 
         if (current.type() == TokenType.SEMICOLON) {
@@ -218,7 +209,7 @@ public class Parser {
             toReturn = variable;
         } else if (current.type() == TokenType.EQUALS) {
             advance();
-            toReturn = parseAssignation(variable);
+            toReturn = assertSemicolon(new ASTOperation(variable, parseBlockExpression(99), TokenType.EQUALS));
         } else {
             // TODO: read till ; and mark as wrong
             toReturn = null;
@@ -293,8 +284,6 @@ public class Parser {
 
         return toReturn;
     }
-
-    private ASTExpression parseLet() { return null; }
 
     private ASTExpression parseIf() { return null; }
 
@@ -669,11 +658,55 @@ public class Parser {
         return toReturn;
     }
 
+    private ASTExpression parseMaybeVariableDeclaration() {
+        if (current.type() == TokenType.LET || (next.type() == TokenType.IDENTIFIER &&
+                                                (current.type() == TokenType.IDENTIFIER || isType(current.type())))) {
+            return parseFancyVariableDeclaration();
+        }
+        return null;
+    }
+
+    private ASTExpression parseFancyVariableDeclaration() {
+        final ASTExpression variable;
+
+        if (current.type() == TokenType.LET) {
+            final var begin = current.beginPos();
+            advance();
+
+            final var name = parseName();
+            final ASTExpression type;
+            if (current.type() == TokenType.COLON) {
+                advance();
+                type = parseType();
+            } else {
+                type = null;
+            }
+            variable = new ASTVariableDefinition(begin, type == null ? name.getEnd() : type.getEnd(), null, type, name);
+        } else {
+            final var type = parseType();
+            final var name = parseName();
+
+            variable = new ASTVariableDefinition(type.getBegin(), name.getEnd(), null, type, name);
+        }
+
+        final ASTExpression toReturn;
+        if (current.type() == TokenType.EQUALS) {
+            advance();
+            toReturn = new ASTOperation(variable, parseBlockExpression(99), TokenType.EQUALS);
+        } else {
+            toReturn = variable;
+        }
+        return assertSemicolon(toReturn);
+    }
+
     private ASTExpression parseInstruction() {
         final ASTExpression toReturn;
 
+        final var maybeVariable = parseMaybeVariableDeclaration();
+        if (maybeVariable != null) {
+            return maybeVariable;
+        }
         switch (current.type()) {
-            case LET        -> toReturn = assertSemicolon(parseLet());
             case LEFT_CURLY -> toReturn = parseBlock();
             case IF         -> toReturn = parseIf();
             case WHILE      -> toReturn = parseWhile();
@@ -736,7 +769,7 @@ public class Parser {
             // def. func
             advance();
             return parseFunctionDefinition(modifiers, type, name);
-        } else if (current.type() == TokenType.SEMICOLON) {
+        } else if (current.type() == TokenType.SEMICOLON || current.type() == TokenType.EQUALS) {
             // def. var
             return parseVariableDefinition(modifiers, type, name);
         } else {
