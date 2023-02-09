@@ -717,6 +717,9 @@ public class Parser {
             if (current.type() == TokenType.COLON) {
                 advance();
                 type = parseType();
+            } else if (next.type() == TokenType.ASSIGNMENT && (current.type() == TokenType.IDENTIFIER || isType(current.type()))) {
+                final var missing = new ASTMissing(previous.endPos(), current.beginPos(), "Missing ':'");
+                type = combine(parseType(), missing);
             } else {
                 type = null;
             }
@@ -777,8 +780,18 @@ public class Parser {
         } else {
             advance();
         }
+        TokenType p = current.type();
+        int i = 0;
         while (current.type() != TokenType.RIGHT_CURLY
             && current.type() != TokenType.EOF) {
+            if (current.type() == p) {
+                if (i >= 10) {
+                    throw new RuntimeException("Endless loop");
+                }
+                ++i;
+            } else {
+                p = current.type();
+            }
             block.add(parseInstruction());
         }
         if (current.type() == TokenType.EOF) {
