@@ -207,9 +207,9 @@ public class Parser {
         if (current.type() == TokenType.SEMICOLON) {
             advance();
             toReturn = variable;
-        } else if (current.type() == TokenType.EQUALS) {
+        } else if (current.type() == TokenType.ASSIGNMENT) {
             advance();
-            toReturn = assertSemicolon(new ASTOperation(variable, parseBlockExpression(99), TokenType.EQUALS));
+            toReturn = assertSemicolon(new ASTOperation(variable, parseBlockExpression(99), TokenType.ASSIGNMENT));
         } else {
             // TODO: read till ; and mark as wrong
             toReturn = null;
@@ -729,9 +729,9 @@ public class Parser {
         }
 
         final ASTExpression toReturn;
-        if (current.type() == TokenType.EQUALS) {
+        if (current.type() == TokenType.ASSIGNMENT) {
             advance();
-            toReturn = new ASTOperation(variable, parseBlockExpression(99), TokenType.EQUALS);
+            toReturn = new ASTOperation(variable, parseBlockExpression(99), TokenType.ASSIGNMENT);
         } else {
             toReturn = variable;
         }
@@ -808,7 +808,7 @@ public class Parser {
             // def. func
             advance();
             return parseFunctionDefinition(modifiers, type, name);
-        } else if (current.type() == TokenType.SEMICOLON || current.type() == TokenType.EQUALS) {
+        } else if (current.type() == TokenType.SEMICOLON || current.type() == TokenType.ASSIGNMENT) {
             // def. var
             return parseVariableDefinition(modifiers, type, name);
         } else {
