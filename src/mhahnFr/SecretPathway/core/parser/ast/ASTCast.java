@@ -67,4 +67,12 @@ public class ASTCast extends ASTExpression {
     public ASTExpression getCast() {
         return cast;
     }
+
+    @Override
+    public void visit(ASTVisitor visitor) {
+        if (visitor.maybeVisit(this)) {
+            type.visit(visitor);
+            cast.visit(visitor);
+        }
+    }
 }

@@ -54,4 +54,15 @@ public class ASTMapping extends ASTExpression {
     public ASTExpression[] getContent() {
         return content;
     }
+
+    @Override
+    public void visit(ASTVisitor visitor) {
+        if (visitor.maybeVisit(this)) {
+            if (content != null) {
+                for (int i = 0; i < content.length; ++i) {
+                    content[i].visit(visitor);
+                }
+            }
+        }
+    }
 }

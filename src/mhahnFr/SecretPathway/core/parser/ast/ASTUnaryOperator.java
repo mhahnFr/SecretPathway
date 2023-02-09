@@ -67,4 +67,11 @@ public class ASTUnaryOperator extends ASTExpression {
     public ASTExpression getIdentifier() {
         return identifier;
     }
+
+    @Override
+    public void visit(ASTVisitor visitor) {
+        if (visitor.maybeVisit(this)) {
+            identifier.visit(visitor);
+        }
+    }
 }

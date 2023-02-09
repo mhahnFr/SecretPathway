@@ -78,4 +78,12 @@ public class ASTOperation extends ASTExpression {
     public TokenType getOperatorType() {
         return operatorType;
     }
+
+    @Override
+    public void visit(ASTVisitor visitor) {
+        if (visitor.maybeVisit(this)) {
+            lhs.visit(visitor);
+            rhs.visit(visitor);
+        }
+    }
 }

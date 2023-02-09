@@ -68,4 +68,17 @@ public class ASTNew extends ASTExpression {
     public ASTExpression[] getArguments() {
         return arguments;
     }
+
+    @Override
+    public void visit(ASTVisitor visitor) {
+        if (visitor.maybeVisit(this)) {
+            instancingExpression.visit(visitor);
+
+            if (arguments != null) {
+                for (int i = 0; i < arguments.length; ++i) {
+                    arguments[i].visit(visitor);
+                }
+            }
+        }
+    }
 }
