@@ -152,10 +152,19 @@ public class SyntaxDocument extends DefaultStyledDocument {
         try {
             for (int i = 0; i < expressions.length; ++i) {
                 expressions[i].visit(expression -> {
-                    System.out.println(expression.getASTType());
+                    final String errorText;
+                    if (expression instanceof ASTMissing) {
+                        errorText = ((ASTMissing) expression).getMessage();
+                    } else if (expression instanceof ASTWrong) {
+                        errorText = ((ASTWrong) expression).getMessage();
+                    } else {
+                        errorText = null;
+                    }
+
+                    System.out.println(expression.getASTType() + (errorText == null ? "" : (": " + errorText)));
                     switch (expression.getASTType()) {
                         case MISSING, WRONG -> {
-                            errorRanges.put(new Pair<>(expression.getBegin().position(), expression.getEnd().position()), expression.getASTType() == ASTType.MISSING ? ((ASTMissing) expression).getMessage() : ((ASTWrong) expression).getMessage());
+                            errorRanges.put(new Pair<>(expression.getBegin().position(), expression.getEnd().position()), errorText);
                             setCharacterAttributes(expression.getBegin().position(), expression.getEnd().position() - expression.getBegin().position(), theme.getErrorStyle().asStyle(def), true);
                         }
                     }
