@@ -305,7 +305,7 @@ public class Parser {
 
         advance();
         if (current.type() != TokenType.SEMICOLON) {
-            toReturn = new ASTReturn(previous.beginPos(), parseBlockExpression(1), previous.endPos());
+            toReturn = new ASTReturn(previous.beginPos(), parseBlockExpression(99), previous.endPos());
         } else {
             toReturn = new ASTReturn(previous.beginPos(), null, current.endPos());
         }
@@ -352,9 +352,14 @@ public class Parser {
         return result;
     }
 
-    private ASTExpression parseCast(final int priority) {
-        advance();
+    private ASTExpression parseMaybeCast(final int priority) {
+        if (next.type() == TokenType.RIGHT_PAREN && (isType(current.type()) || current.type() == TokenType.IDENTIFIER)) {
+            return parseCast(priority);
+        }
+        return null;
+    }
 
+    private ASTExpression parseCast(final int priority) {
         final var begin = previous.beginPos();
         final var type = parseType();
 
@@ -436,7 +441,6 @@ public class Parser {
             }
 
             case NEW          ->   toReturn = parseNew();
-            case LEFT_PAREN   ->   toReturn = parseCast(priority);
             case NIL          -> { toReturn = new ASTNil(current); advance();      }
             case THIS         -> { toReturn = new ASTThis(current); advance();     }
             case INTEGER      -> { toReturn = new ASTInteger(current); advance();  }
@@ -445,6 +449,23 @@ public class Parser {
             case ELLIPSIS     -> { toReturn = new ASTEllipsis(current); advance(); }
             case LEFT_CURLY   ->   toReturn = parseArray();
             case LEFT_BRACKET ->   toReturn = parseMapping();
+
+            case LEFT_PAREN -> {
+                advance();
+
+                final var cast = parseMaybeCast(priority);
+                if (cast == null) {
+                    final var expression = parseBlockExpression(99);
+                    if (current.type() != TokenType.RIGHT_PAREN) {
+                        toReturn = combine(expression, new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'"));
+                    } else {
+                        advance();
+                        toReturn = expression;
+                    }
+                } else {
+                    toReturn = cast;
+                }
+            }
 
             case TRUE,
                  FALSE -> { toReturn = new ASTBool(current); advance(); }
@@ -618,7 +639,8 @@ public class Parser {
             return parseType();
         }
 
-        return new ASTMissing(previous.endPos(), current.beginPos(), "Missing operator type");
+        advance();
+        return new ASTWrong(previous, "Wrong operator type");
     }
 
     /**
@@ -675,6 +697,7 @@ public class Parser {
             lhs = parseSimpleExpression(priority);
         }
 
+        // FIXME: Continuing wrongly!
         ASTExpression previousExpression = lhs;
         for (TokenType operatorType = current.type(); isOperator(operatorType); operatorType = current.type()) {
             final var rhs = parseOperation(priority);
@@ -716,7 +739,7 @@ public class Parser {
             final ASTExpression type;
             if (current.type() == TokenType.COLON) {
                 advance();
-                type = parseType();
+                type = parseType(); // FIXME: Looses the assignment if type is missing!
             } else if (next.type() == TokenType.ASSIGNMENT && (current.type() == TokenType.IDENTIFIER || isType(current.type()))) {
                 final var missing = new ASTMissing(previous.endPos(), current.beginPos(), "Missing ':'");
                 type = combine(parseType(), missing);
@@ -765,7 +788,7 @@ public class Parser {
                 toReturn = parseInstruction();
             }
 
-            default -> toReturn = assertSemicolon(parseBlockExpression(1));
+            default -> toReturn = assertSemicolon(parseBlockExpression(99));
         }
 
         return toReturn;
@@ -786,7 +809,8 @@ public class Parser {
             && current.type() != TokenType.EOF) {
             if (current.type() == p) {
                 if (i >= 10) {
-                    throw new RuntimeException("Endless loop");
+                    advance();
+                    continue;
                 }
                 ++i;
             } else {
