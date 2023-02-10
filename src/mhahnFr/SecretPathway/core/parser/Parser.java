@@ -563,7 +563,49 @@ public class Parser {
         return toReturn;
     }
 
-    private ASTExpression parseSubscript() { return null; }
+    private ASTExpression parseSubscript(final int priority) {
+        final ASTExpression toReturn;
+
+        advance();
+
+        final var expression = parseBlockExpression(99);
+        if (current.type() == TokenType.RANGE) {
+            advance();
+            final var rhs = parseBlockExpression(99);
+
+            final var result = new ASTOperation(expression, rhs, TokenType.RANGE);
+            if (current.type() != TokenType.RIGHT_BRACKET) {
+                toReturn = new ASTSubscript(combine(result, new ASTMissing(previous.endPos(), current.beginPos(), "Missing ']'")));
+            } else {
+                advance();
+                toReturn = new ASTSubscript(result);
+            }
+        } else {
+            final ASTExpression part;
+            if (current.type() != TokenType.RIGHT_BRACKET) {
+                part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing ']'");
+            } else {
+                part = null;
+                advance();
+            }
+
+            final ASTExpression subscript;
+            if (part == null) {
+                subscript = new ASTSubscript(expression);
+            } else {
+                subscript = combine(new ASTSubscript(expression), part);
+            }
+
+            if (current.type() == TokenType.ASSIGNMENT) {
+                advance();
+                final var rhs = parseBlockExpression(priority);
+                toReturn = new ASTOperation(subscript, rhs, TokenType.ASSIGNMENT);
+            } else {
+                toReturn = subscript;
+            }
+        }
+        return toReturn;
+    }
 
     private ASTExpression parseTernary() {
         final var truePart = parseBlockExpression(12);
@@ -593,7 +635,7 @@ public class Parser {
                               type == TokenType.DOT)) {
             return parseFunctionCall();
         } else if (type == TokenType.LEFT_BRACKET) {
-            return parseSubscript();
+            return parseSubscript(priority);
         } else if (priority >= 13 && type == TokenType.QUESTION) {
             return parseTernary();
         } else if (priority >= 13 && type == TokenType.DOUBLE_QUESTION) {
