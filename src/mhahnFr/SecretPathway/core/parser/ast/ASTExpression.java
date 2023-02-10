@@ -75,6 +75,13 @@ public abstract class ASTExpression {
         return type;
     }
 
+    /**
+     * Visits this AST node using the given {@link ASTVisitor}.
+     * Subclasses might want to override this method to make
+     * the given visitor visit contained subexpressions.
+     *
+     * @param visitor the visitor
+     */
     public void visit(final ASTVisitor visitor) {
         visitor.visit(this);
     }
