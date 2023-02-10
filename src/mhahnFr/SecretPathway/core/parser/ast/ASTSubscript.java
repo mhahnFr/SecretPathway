@@ -48,4 +48,11 @@ public class ASTSubscript extends ASTExpression {
     public ASTExpression getExpression() {
         return expression;
     }
+
+    @Override
+    public void visit(ASTVisitor visitor) {
+        if (visitor.maybeVisit(this)) {
+            expression.visit(visitor);
+        }
+    }
 }
