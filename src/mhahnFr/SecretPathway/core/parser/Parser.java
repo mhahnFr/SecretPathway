@@ -520,7 +520,7 @@ public class Parser {
     private ASTExpression[] parseCallArguments(final TokenType end) {
         final var list = new ArrayList<ASTExpression>();
 
-        while (current.type() != end) {
+        while (current.type() != end && current.type() != TokenType.EOF) {
             list.add(parseBlockExpression(99));
             if (current.type() != TokenType.COMMA && current.type() != end) { // TODO: Implement other stopping characters
                 list.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ','"));
@@ -692,23 +692,28 @@ public class Parser {
      * @return whether the given type is an operator
      */
     private boolean isOperator(final TokenType type) {
-        return type == TokenType.DOT             ||
-               type == TokenType.COMMA           ||
-               type == TokenType.SCOPE           ||
-               type == TokenType.ARROW           ||
-               type == TokenType.P_ARROW         ||
-               type == TokenType.PIPE            ||
-               type == TokenType.LEFT_SHIFT      ||
-               type == TokenType.RIGHT_SHIFT     ||
-               type == TokenType.DOUBLE_QUESTION ||
-               type == TokenType.QUESTION        ||
-               type == TokenType.INCREMENT       ||
-               type == TokenType.DECREMENT       ||
-               type == TokenType.PLUS            ||
-               type == TokenType.MINUS           ||
-               type == TokenType.STAR            ||
-               type == TokenType.SLASH           ||
-               type == TokenType.PERCENT         ||
+        return type == TokenType.DOT              ||
+               type == TokenType.ARROW            ||
+               type == TokenType.PIPE             ||
+               type == TokenType.LEFT_SHIFT       ||
+               type == TokenType.RIGHT_SHIFT      ||
+               type == TokenType.DOUBLE_QUESTION  ||
+               type == TokenType.QUESTION         ||
+               type == TokenType.PLUS             ||
+               type == TokenType.MINUS            ||
+               type == TokenType.STAR             ||
+               type == TokenType.SLASH            ||
+               type == TokenType.PERCENT          ||
+               type == TokenType.LESS             ||
+               type == TokenType.LESS_OR_EQUAL    ||
+               type == TokenType.GREATER          ||
+               type == TokenType.GREATER_OR_EQUAL ||
+               type == TokenType.EQUALS           ||
+               type == TokenType.NOT_EQUAL        ||
+               type == TokenType.AMPERSAND        ||
+               type == TokenType.AND              ||
+               type == TokenType.OR               ||
+               type == TokenType.LEFT_BRACKET     ||
                type == TokenType.IS;
     }
 
