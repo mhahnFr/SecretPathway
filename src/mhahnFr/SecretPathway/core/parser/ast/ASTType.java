@@ -83,5 +83,7 @@ public enum ASTType {
     /** Represents an array expression.        */
     ARRAY,
     /** Represents a mapping expression.       */
-    MAPPING
+    MAPPING,
+    /** Represents a subscript expression.     */
+    SUBSCRIPT
 }
