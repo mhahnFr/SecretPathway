@@ -179,8 +179,9 @@ public class Parser {
     private ASTExpression parseName() {
         final ASTExpression toReturn;
 
-        if (current.type() == TokenType.LEFT_PAREN ||
-            current.type() == TokenType.SEMICOLON  ||
+        if (current.type() == TokenType.LEFT_PAREN    ||
+            current.type() == TokenType.SEMICOLON     ||
+            current.type() == TokenType.RIGHT_BRACKET ||
             current.type() == TokenType.EQUALS) {
             toReturn = combine(new ASTName(null),
                                new ASTMissing(previous.endPos(), current.beginPos(), "Missing name"));
@@ -520,7 +521,7 @@ public class Parser {
     private ASTExpression[] parseCallArguments(final TokenType end) {
         final var list = new ArrayList<ASTExpression>();
 
-        while (current.type() != end && current.type() != TokenType.EOF) {
+        while (current.type() != end && current.type() != TokenType.EOF && current.type() != TokenType.RIGHT_BRACKET) {
             list.add(parseBlockExpression(99));
             if (current.type() != TokenType.COMMA && current.type() != end) { // TODO: Implement other stopping characters
                 list.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ','"));
