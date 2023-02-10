@@ -105,6 +105,7 @@ public class Tokenizer {
         else if (stream.peek('{'))   return new Token(stream.getStreamPosition(), TokenType.LEFT_CURLY,         null, stream.skip());
         else if (stream.peek('}'))   return new Token(stream.getStreamPosition(), TokenType.RIGHT_CURLY,        null, stream.skip());
         else if (stream.peek("...")) return new Token(stream.getStreamPosition(), TokenType.ELLIPSIS,           null, stream.skip(3));
+        else if (stream.peek(".."))  return new Token(stream.getStreamPosition(), TokenType.RANGE,              null, stream.skip(2));
         else if (stream.peek('.'))   return new Token(stream.getStreamPosition(), TokenType.DOT,                null, stream.skip());
         else if (stream.peek(','))   return new Token(stream.getStreamPosition(), TokenType.COMMA,              null, stream.skip());
         else if (stream.peek("::"))  return new Token(stream.getStreamPosition(), TokenType.SCOPE,              null, stream.skip(2));
