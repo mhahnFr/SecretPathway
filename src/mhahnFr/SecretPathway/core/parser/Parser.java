@@ -521,11 +521,11 @@ public class Parser {
     private ASTExpression[] parseCallArguments(final TokenType end) {
         final var list = new ArrayList<ASTExpression>();
 
-        while (current.type() != end && current.type() != TokenType.EOF && current.type() != TokenType.RIGHT_BRACKET) {
+        while (current.type() != end && current.type() != TokenType.EOF && current.type() != TokenType.RIGHT_BRACKET && current.type() != TokenType.RIGHT_CURLY && current.type() != TokenType.SEMICOLON) {
             list.add(parseBlockExpression(99));
             if (current.type() != TokenType.COMMA && current.type() != end) { // TODO: Implement other stopping characters
                 list.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ','"));
-            } else {
+            } else if (current.type() == TokenType.COMMA) {
                 advance();
             }
         }
