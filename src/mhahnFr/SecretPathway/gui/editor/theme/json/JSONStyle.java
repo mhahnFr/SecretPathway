@@ -21,6 +21,8 @@ package mhahnFr.SecretPathway.gui.editor.theme.json;
 
 import mhahnFr.utils.gui.abstraction.FStyle;
 
+import java.awt.Color;
+
 /**
  * This class is the data transfer model for styles.
  *
@@ -70,6 +72,26 @@ public class JSONStyle {
     }
 
     /**
+     * Returns a {@link Color}. If the given {@link JSONColor} is {@code null},
+     * the color represented by the given string is returned, if it is not null.
+     * If that fails as well, {@code null} is returned.
+     *
+     * @param description the description of the color
+     * @param color the {@link JSONColor}
+     * @return a {@link Color} created from one of the arguments or {@code null}
+     */
+    private Color getColor(final String description, final JSONColor color) {
+        if (color != null) {
+            return foreground.getNative();
+        } else if (description != null) {
+            try {
+                return Color.decode(description);
+            } catch (NumberFormatException ignored) {}
+        }
+        return null;
+    }
+
+    /**
      * Returns a {@link FStyle} representation of this style.
      *
      * @return a "native" representation
@@ -77,9 +99,8 @@ public class JSONStyle {
     public FStyle getNative() {
         final var toReturn = new FStyle();
 
-        // TODO: Decode optional string colors
-        toReturn.setForeground(foreground == null ? null : foreground.getNative());
-        toReturn.setBackground(background == null ? null : background.getNative());
+        toReturn.setForeground(getColor(fg_rgb, foreground));
+        toReturn.setBackground(getColor(bg_rgb, background));
         toReturn.setBold(bold);
         toReturn.setItalic(italic);
         toReturn.setStrikeThrough(strike);
