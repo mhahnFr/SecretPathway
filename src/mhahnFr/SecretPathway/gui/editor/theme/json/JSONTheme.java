@@ -43,7 +43,7 @@ public class JSONTheme implements SPTheme {
     /** The list of the used styles. */
     private List<JSONStyle> styles = new ArrayList<>();
     /**
-     * Maps the {@link TokenType}s to either the index of the
+     * Maps the {@link TokenType}s to either the name of the
      * {@link FStyle} to be used or another {@link TokenType}
      * whose style is then inherited.
      */
