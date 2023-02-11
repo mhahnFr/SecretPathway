@@ -132,7 +132,7 @@ public class Parser {
             if (isModifier(current.type())) {
                 toReturn.add(new ASTModifier(current));
             } else if (isModifier(next.type())) {
-                toReturn.add(combine(new ASTModifier(null),
+                toReturn.add(combine(new ASTModifier(current.beginPos(), current.endPos()),
                                      new ASTWrong(current, "Expected a modifier")));
             } else {
                 break;
@@ -162,11 +162,11 @@ public class Parser {
         final ASTExpression toReturn;
 
         if (!isType(current.type()) && next.type() == TokenType.IDENTIFIER) {
-            toReturn = combine(new ASTTypeDeclaration(null),
+            toReturn = combine(new ASTTypeDeclaration(current.beginPos(), current.endPos()),
                                new ASTWrong(current, "Expected a type"));
             advance();
         } else if (current.type() == TokenType.IDENTIFIER) {
-            toReturn = combine(new ASTTypeDeclaration(null),
+            toReturn = combine(new ASTTypeDeclaration(previous.endPos(), current.beginPos()),
                                new ASTMissing(previous.endPos(), current.beginPos(), "Missing type"));
         } else {
             toReturn = new ASTTypeDeclaration(current);
@@ -183,10 +183,10 @@ public class Parser {
             current.type() == TokenType.SEMICOLON     ||
             current.type() == TokenType.RIGHT_BRACKET ||
             current.type() == TokenType.EQUALS) {
-            toReturn = combine(new ASTName(null),
+            toReturn = combine(new ASTName(previous.endPos(), current.beginPos()),
                                new ASTMissing(previous.endPos(), current.beginPos(), "Missing name"));
         } else if (current.type() != TokenType.IDENTIFIER) {
-            toReturn = combine(new ASTName(null),
+            toReturn = combine(new ASTName(current.beginPos(), current.endPos()),
                                new ASTWrong(current, "Expected a name"));
             advance();
         } else {
@@ -240,11 +240,11 @@ public class Parser {
                 final ASTExpression type;
                 if (!isType(current.type())) {
                     if (next.type() == TokenType.IDENTIFIER) {
-                        type = combine(new ASTTypeDeclaration(null),
+                        type = combine(new ASTTypeDeclaration(current.beginPos(), current.endPos()),
                                        new ASTWrong(current, "Expected a type"));
                         advance();
                     } else {
-                        type = combine(new ASTTypeDeclaration(null),
+                        type = combine(new ASTTypeDeclaration(previous.endPos(), current.beginPos()),
                                        new ASTMissing(previous.endPos(), current.beginPos(), "Missing type"));
                     }
                 } else {
@@ -255,10 +255,10 @@ public class Parser {
                 final ASTExpression name;
                 if (current.type() != TokenType.IDENTIFIER) {
                     if (current.type() == TokenType.COMMA || current.type() == TokenType.RIGHT_PAREN) {
-                        name = combine(new ASTName(null),
+                        name = combine(new ASTName(previous.endPos(), current.beginPos()),
                                        new ASTMissing(previous.endPos(), current.beginPos(), "Parameter's name missing"));
                     } else {
-                        name = combine(new ASTName(null),
+                        name = combine(new ASTName(current.beginPos(), current.endPos()),
                                        new ASTWrong(current, "Expected parameter's name"));
                         advance();
                     }
@@ -724,8 +724,9 @@ public class Parser {
         final var type = current.type();
         if (type == TokenType.AMPERSAND) {
             if (next.type() != TokenType.IDENTIFIER) {
-                lhs = new ASTUnaryOperator(current.beginPos(), TokenType.AMPERSAND, combine(new ASTName(null),
-                               new ASTMissing(current.endPos(), next.beginPos(), "Missing identifier!")));
+                lhs = new ASTUnaryOperator(current.beginPos(), TokenType.AMPERSAND,
+                        combine(new ASTName(current.endPos(), next.beginPos()),
+                                new ASTMissing(current.endPos(), next.beginPos(), "Missing identifier!")));
             } else {
                 advance();
                 lhs = new ASTUnaryOperator(previous.beginPos(), TokenType.AMPERSAND, new ASTName(current));
