@@ -686,8 +686,7 @@ public class Parser {
             return parseType();
         }
 
-        advance();
-        return new ASTWrong(previous, "Wrong operator type");
+        return null;
     }
 
     /**
@@ -754,6 +753,7 @@ public class Parser {
         ASTExpression previousExpression = lhs;
         for (TokenType operatorType = current.type(); isOperator(operatorType); operatorType = current.type()) {
             final var rhs = parseOperation(priority);
+            if (rhs == null) break;
             previousExpression = new ASTOperation(previousExpression, rhs, operatorType);
         }
 
