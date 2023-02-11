@@ -28,21 +28,25 @@ import mhahnFr.utils.gui.abstraction.FStyle;
  * @since 14.01.23
  */
 public class JSONStyle {
-    /** Whether to use a bold font.           */
+    /** Whether to use a bold font.                        */
     private Boolean bold;
-    /** Whether to use an italic font.        */
+    /** Whether to use an italic font.                     */
     private Boolean italic;
-    /** Whether to use a strike-through font. */
+    /** Whether to use a strike-through font.              */
     private Boolean strike;
-    /** Whether to use an underlined font.    */
+    /** Whether to use an underlined font.                 */
     private Boolean underlined;
-    /** The size of the font.                 */
+    /** The size of the font.                              */
     private Integer size;
-    /** The background color.                 */
+    /** The background color.                              */
     private JSONColor background;
-    /** The foreground color.                 */
+    /** The foreground color.                              */
     private JSONColor foreground;
-    /** The name of this style.               */
+    /** The string representation of the background color. */
+    private String bg_rgb;
+    /** The string representation of the foreground color. */
+    private String fg_rgb;
+    /** The name of this style.                            */
     private String name;
 
     /**
@@ -73,6 +77,7 @@ public class JSONStyle {
     public FStyle getNative() {
         final var toReturn = new FStyle();
 
+        // TODO: Decode optional string colors
         toReturn.setForeground(foreground == null ? null : foreground.getNative());
         toReturn.setBackground(background == null ? null : background.getNative());
         toReturn.setBold(bold);
@@ -226,5 +231,41 @@ public class JSONStyle {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * Returns the string representation of the background color.
+     *
+     * @return the background color as string
+     */
+    public String getBg_rgb() {
+        return bg_rgb;
+    }
+
+    /**
+     * Sets the background color using a string representation of it.
+     *
+     * @param bg_rgb the string representation
+     */
+    public void setBg_rgb(String bg_rgb) {
+        this.bg_rgb = bg_rgb;
+    }
+
+    /**
+     * Returns the string representation of the foreground color.
+     *
+     * @return the string representation
+     */
+    public String getFg_rgb() {
+        return fg_rgb;
+    }
+
+    /**
+     * Sets the foreground color using a string representation of it.
+     *
+     * @param fg_rgb the string representation
+     */
+    public void setFg_rgb(String fg_rgb) {
+        this.fg_rgb = fg_rgb;
     }
 }
