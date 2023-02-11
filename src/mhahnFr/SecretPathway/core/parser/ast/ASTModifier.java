@@ -21,6 +21,7 @@ package mhahnFr.SecretPathway.core.parser.ast;
 
 import mhahnFr.SecretPathway.core.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
+import mhahnFr.utils.StreamPosition;
 
 /**
  * This class represents a modifier as an AST node.
@@ -39,11 +40,16 @@ public class ASTModifier extends ASTExpression {
      * @param modifier the modifier token to be represented
      */
     public ASTModifier(final Token modifier) {
-        super(modifier == null ? null : modifier.beginPos(),
-              modifier == null ? null : modifier.endPos(),
-              ASTType.MODIFIER);
+        super(modifier.beginPos(), modifier.endPos(), ASTType.MODIFIER);
 
-        this.modifier = modifier == null ? null : modifier.type();
+        this.modifier = modifier.type();
+    }
+
+    public ASTModifier(final StreamPosition begin,
+                       final StreamPosition end) {
+        super(begin, end, ASTType.MODIFIER);
+
+        this.modifier = null;
     }
 
     /**

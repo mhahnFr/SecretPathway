@@ -20,6 +20,7 @@
 package mhahnFr.SecretPathway.core.parser.ast;
 
 import mhahnFr.SecretPathway.core.parser.tokenizer.Token;
+import mhahnFr.utils.StreamPosition;
 
 /**
  * This class represents a name as an AST node.
@@ -38,11 +39,16 @@ public class ASTName extends ASTExpression {
      * @param name the name token to be represented
      */
     public ASTName(final Token name) {
-        super(name == null ? null : name.beginPos(),
-              name == null ? null : name.endPos(),
-              ASTType.NAME);
+        super(name.beginPos(), name.endPos(), ASTType.NAME);
 
-        this.name = name == null ? null : (String) name.payload();
+        this.name = (String) name.payload();
+    }
+
+    public ASTName(final StreamPosition begin,
+                   final StreamPosition end) {
+        super(begin, end, ASTType.NAME);
+
+        this.name = null;
     }
 
     /**

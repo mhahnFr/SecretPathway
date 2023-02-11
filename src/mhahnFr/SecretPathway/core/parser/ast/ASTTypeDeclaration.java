@@ -21,6 +21,7 @@ package mhahnFr.SecretPathway.core.parser.ast;
 
 import mhahnFr.SecretPathway.core.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
+import mhahnFr.utils.StreamPosition;
 
 /**
  * This class represents a type as an AST node.
@@ -39,11 +40,16 @@ public class ASTTypeDeclaration extends ASTExpression {
      * @param type the represented type
      */
     public ASTTypeDeclaration(final Token type) {
-        super(type == null ? null : type.beginPos(),
-              type == null ? null : type.endPos(),
-              ASTType.TYPE);
+        super(type.beginPos(), type.endPos(), ASTType.TYPE);
 
-        this.type = type == null ? null : type.type();
+        this.type = type.type();
+    }
+
+    public ASTTypeDeclaration(final StreamPosition begin,
+                              final StreamPosition end) {
+        super(begin, end, ASTType.TYPE);
+
+        this.type = null;
     }
 
     /**
