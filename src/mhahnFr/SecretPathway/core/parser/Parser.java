@@ -481,27 +481,6 @@ public class Parser {
         final var begin = current.beginPos();
         advance();
 
-        final var args = parseCallArguments(TokenType.RIGHT_CURLY);
-
-        final ASTExpression part;
-        if (current.type() != TokenType.RIGHT_CURLY) {
-            part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing '}'");
-        } else {
-            part = null;
-            advance();
-        }
-
-        final var array = new ASTArray(begin, previous.endPos(), args);
-        if (part != null) {
-            return combine(array, part);
-        }
-        return array;
-    }
-
-    private ASTExpression parseArray() {
-        final var begin = current.beginPos();
-        advance();
-
         final var args = parseCallArguments(TokenType.RIGHT_BRACKET);
 
         final ASTExpression part;
@@ -517,6 +496,27 @@ public class Parser {
             return combine(mapping, part);
         }
         return mapping;
+    }
+
+    private ASTExpression parseArray() {
+        final var begin = current.beginPos();
+        advance();
+
+        final var args = parseCallArguments(TokenType.RIGHT_CURLY);
+
+        final ASTExpression part;
+        if (current.type() != TokenType.RIGHT_CURLY) {
+            part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing '}'");
+        } else {
+            part = null;
+            advance();
+        }
+
+        final var array = new ASTArray(begin, previous.endPos(), args);
+        if (part != null) {
+            return combine(array, part);
+        }
+        return array;
     }
 
     private ASTExpression[] parseCallArguments(final TokenType end) {
