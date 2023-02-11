@@ -328,7 +328,6 @@ public class Parser {
             advance();
         }
         final var instancingExpression = parseBlockExpression(99);
-        advance();
 
         final ASTExpression[] arguments;
         if (current.type() != TokenType.RIGHT_PAREN) {
@@ -345,6 +344,7 @@ public class Parser {
             }
         } else {
             arguments = null;
+            advance();
         }
         final var result = new ASTNew(begin, previous.endPos(), instancingExpression, arguments);
         if (!parts.isEmpty()) {
@@ -386,6 +386,7 @@ public class Parser {
             case IDENTIFIER -> {
                 switch (next.type()) {
                     case LEFT_PAREN -> {
+                        final var name = new ASTName(current);
                         advance(2);
 
                         final var arguments = parseCallArguments(TokenType.RIGHT_PAREN);
@@ -397,7 +398,7 @@ public class Parser {
                             part = null;
                             advance();
                         }
-                        final var func = new ASTFunctionCall(new ASTName(previous), arguments, previous.endPos());
+                        final var func = new ASTFunctionCall(name, arguments, previous.endPos());
                         if (part == null) {
                             toReturn = func;
                         } else {
@@ -528,6 +529,9 @@ public class Parser {
             } else if (current.type() == TokenType.COMMA) {
                 advance();
             }
+        }
+        if (previous.type() == TokenType.COMMA) {
+            list.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing expression"));
         }
 
         return list.toArray(new ASTExpression[0]);
