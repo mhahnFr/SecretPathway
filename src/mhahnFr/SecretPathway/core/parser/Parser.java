@@ -749,7 +749,6 @@ public class Parser {
             lhs = parseSimpleExpression(priority);
         }
 
-        // FIXME: Continuing wrongly!
         ASTExpression previousExpression = lhs;
         for (TokenType operatorType = current.type(); isOperator(operatorType); operatorType = current.type()) {
             final var rhs = parseOperation(priority);

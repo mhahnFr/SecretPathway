@@ -151,6 +151,8 @@ public class SyntaxDocument extends DefaultStyledDocument {
         final var expressions = new Parser(getAllText()).parse();
         try {
             for (int i = 0; i < expressions.length; ++i) {
+                System.out.println(expressions[i].describe(0));
+
                 expressions[i].visit(expression -> {
                     final String errorText;
                     if (expression instanceof ASTMissing) {
@@ -161,7 +163,6 @@ public class SyntaxDocument extends DefaultStyledDocument {
                         errorText = null;
                     }
 
-                    System.out.println(expression.getASTType() + (errorText == null ? "" : (": " + errorText)));
                     switch (expression.getASTType()) {
                         case MISSING, WRONG -> {
                             errorRanges.put(new Pair<>(expression.getBegin().position(), expression.getEnd().position()), errorText);
