@@ -51,4 +51,9 @@ public class ASTBool extends ASTExpression {
     public boolean getValue() {
         return value;
     }
+
+    @Override
+    public String describe(int indentation) {
+        return super.describe(indentation) + " (" + value + ")";
+    }
 }

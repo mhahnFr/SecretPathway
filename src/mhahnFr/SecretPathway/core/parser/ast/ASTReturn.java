@@ -61,4 +61,9 @@ public class ASTReturn extends ASTExpression {
             returned.visit(visitor);
         }
     }
+
+    @Override
+    public String describe(int indentation) {
+        return super.describe(indentation) + "\n" + (returned == null ? " ".repeat(Math.max(0, indentation + 4)) : returned.describe(indentation + 4));
+    }
 }

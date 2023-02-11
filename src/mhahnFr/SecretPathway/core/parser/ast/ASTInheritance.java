@@ -53,4 +53,9 @@ public class ASTInheritance extends ASTExpression {
     public String getInherited() {
         return inherited;
     }
+
+    @Override
+    public String describe(int indentation) {
+        return super.describe(indentation) + " inheriting from \"" + inherited + "\"";
+    }
 }

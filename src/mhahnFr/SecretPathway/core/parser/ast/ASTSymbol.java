@@ -50,4 +50,9 @@ public class ASTSymbol extends ASTExpression {
     public String getSymbolName() {
         return symbolName;
     }
+
+    @Override
+    public String describe(int indentation) {
+        return super.describe(indentation) + " \"" + symbolName + "\"";
+    }
 }

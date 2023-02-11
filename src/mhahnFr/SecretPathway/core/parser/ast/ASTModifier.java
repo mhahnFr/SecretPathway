@@ -54,4 +54,9 @@ public class ASTModifier extends ASTExpression {
     public TokenType getModifier() {
         return modifier;
     }
+
+    @Override
+    public String describe(int indentation) {
+        return super.describe(indentation) + " " + modifier;
+    }
 }

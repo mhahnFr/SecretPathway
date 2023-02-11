@@ -86,4 +86,12 @@ public class ASTOperation extends ASTExpression {
             rhs.visit(visitor);
         }
     }
+
+    @Override
+    public String describe(int indentation) {
+        return super.describe(indentation) + '\n' +
+               lhs.describe(indentation + 4) + '\n' +
+               " ".repeat(Math.max(0, indentation)) + operatorType + "\n" +
+               rhs.describe(indentation + 4);
+    }
 }

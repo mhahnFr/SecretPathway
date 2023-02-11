@@ -85,4 +85,8 @@ public abstract class ASTExpression {
     public void visit(final ASTVisitor visitor) {
         visitor.visit(this);
     }
+
+    public String describe(final int indentation) {
+        return " ".repeat(Math.max(0, indentation)) + type + " [" + begin.position() + " - " + end.position() + "]";
+    }
 }

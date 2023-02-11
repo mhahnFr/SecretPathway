@@ -53,4 +53,9 @@ public class ASTName extends ASTExpression {
     public String getName() {
         return name;
     }
+
+    @Override
+    public String describe(int indentation) {
+        return super.describe(indentation) + " " + name;
+    }
 }

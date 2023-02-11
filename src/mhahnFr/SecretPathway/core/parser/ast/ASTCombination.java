@@ -58,4 +58,19 @@ public class ASTCombination extends ASTExpression {
             }
         }
     }
+
+    @Override
+    public String describe(int indentation) {
+        final var builder = new StringBuilder();
+
+        builder.append(super.describe(indentation)).append('\n');
+        for (int i = 0; i < expressions.length; ++i) {
+            builder.append(expressions[i].describe(indentation + 4));
+            if (i + 1 < expressions.length) {
+                builder.append('\n');
+            }
+        }
+
+        return builder.toString();
+    }
 }

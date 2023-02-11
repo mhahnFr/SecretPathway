@@ -50,4 +50,9 @@ public class ASTInteger extends ASTExpression {
     public int getValue() {
         return value;
     }
+
+    @Override
+    public String describe(int indentation) {
+        return super.describe(indentation) + " " + value;
+    }
 }

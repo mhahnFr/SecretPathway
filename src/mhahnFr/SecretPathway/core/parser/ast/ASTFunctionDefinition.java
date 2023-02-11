@@ -128,4 +128,27 @@ public class ASTFunctionDefinition extends ASTExpression {
             body.visit(visitor);
         }
     }
+
+    @Override
+    public String describe(int indentation) {
+        final var builder = new StringBuilder();
+
+        builder.append(super.describe(indentation)).append(" modifiers:\n");
+        var iterator = modifiers.listIterator();
+        while (iterator.hasNext()) {
+            builder.append(iterator.next().describe(indentation + 4)).append('\n');
+        }
+        final var indent = " ".repeat(Math.max(0, indentation));
+        builder.append(indent).append("return type:\n").append(type.describe(indentation + 4)).append('\n')
+               .append(indent).append("name:\n").append(name.describe(indentation + 4)).append('\n');
+        iterator = parameters.listIterator();
+        while (iterator.hasNext()) {
+            builder.append(iterator.next().describe(indentation + 4));
+            if (iterator.hasNext()) {
+                builder.append('\n');
+            }
+        }
+        builder.append(indent).append("body:\n").append(body.describe(indentation + 4));
+        return builder.toString();
+    }
 }

@@ -54,4 +54,9 @@ public class ASTTypeDeclaration extends ASTExpression {
     public TokenType getType() {
         return type;
     }
+
+    @Override
+    public String describe(int indentation) {
+        return super.describe(indentation) + " " + type;
+    }
 }

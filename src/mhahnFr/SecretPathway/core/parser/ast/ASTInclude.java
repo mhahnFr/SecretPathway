@@ -53,4 +53,9 @@ public class ASTInclude extends ASTExpression {
     public String getIncluded() {
         return included;
     }
+
+    @Override
+    public String describe(int indentation) {
+        return super.describe(indentation) + "included: \"" + included + "\"";
+    }
 }

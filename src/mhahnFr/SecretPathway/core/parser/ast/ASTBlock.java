@@ -66,4 +66,18 @@ public class ASTBlock extends ASTExpression {
             }
         }
     }
+
+    @Override
+    public String describe(int indentation) {
+        final var builder = new StringBuilder();
+
+        builder.append(super.describe(indentation)).append(" {\n");
+        final var iterator = body.listIterator();
+        while (iterator.hasNext()) {
+            builder.append(iterator.next().describe(indentation + 4)).append('\n');
+        }
+        builder.append(" ".repeat(Math.max(0, indentation))).append('}');
+
+        return builder.toString();
+    }
 }

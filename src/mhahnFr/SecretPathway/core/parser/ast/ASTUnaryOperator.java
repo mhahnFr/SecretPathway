@@ -74,4 +74,10 @@ public class ASTUnaryOperator extends ASTExpression {
             identifier.visit(visitor);
         }
     }
+
+    @Override
+    public String describe(int indentation) {
+        return super.describe(indentation) + " " + operatorType + "\n" +
+               identifier.describe(indentation + 4);
+    }
 }

@@ -70,4 +70,12 @@ public class ASTParameter extends ASTExpression {
             name.visit(visitor);
         }
     }
+
+    @Override
+    public String describe(int indentation) {
+        return super.describe(indentation) + " type:\n" +
+               type.describe(indentation + 4) + "\n" +
+               " ".repeat(Math.max(0, indentation)) + "name:\n" +
+               name.describe(indentation + 4);
+    }
 }

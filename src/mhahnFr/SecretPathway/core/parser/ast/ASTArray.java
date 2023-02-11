@@ -65,4 +65,19 @@ public class ASTArray extends ASTExpression {
             }
         }
     }
+
+    @Override
+    public String describe(final int indentation) {
+        final var builder = new StringBuilder();
+
+        builder.append(super.describe(indentation)).append(" [\n");
+        if (content != null) {
+            for (int i = 0; i < content.length; ++i) {
+                builder.append(content[i].describe(indentation + 4)).append('\n');
+            }
+        }
+        builder.append(" ".repeat(Math.max(0, indentation))).append(']');
+
+        return builder.toString();
+    }
 }

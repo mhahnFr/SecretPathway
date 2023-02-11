@@ -50,4 +50,9 @@ public class ASTString extends ASTExpression {
     public String getValue() {
         return value;
     }
+
+    @Override
+    public String describe(int indentation) {
+        return super.describe(indentation) + " \"" + value + "\"";
+    }
 }

@@ -55,4 +55,9 @@ public class ASTSubscript extends ASTExpression {
             expression.visit(visitor);
         }
     }
+
+    @Override
+    public String describe(int indentation) {
+        return super.describe(indentation) + "\n" + expression.describe(indentation + 4);
+    }
 }

@@ -80,4 +80,24 @@ public class ASTFunctionCall extends ASTExpression {
             }
         }
     }
+
+    @Override
+    public String describe(int indentation) {
+        final var builder = new StringBuilder();
+
+        builder.append(super.describe(indentation)).append(" function name:\n");
+        builder.append(name.describe(indentation + 4)).append('\n');
+
+        if (arguments != null) {
+            builder.append(" ".repeat(Math.max(0, indentation))).append("arguments:\n");
+            for (int i = 0; i < arguments.length; ++i) {
+                builder.append(arguments[i].describe(indentation + 4));
+                if (i + 1 < arguments.length) {
+                    builder.append('\n');
+                }
+            }
+        }
+
+        return builder.toString();
+    }
 }

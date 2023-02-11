@@ -39,4 +39,9 @@ public class ASTWrong extends ASTExpression {
     public String getMessage() {
         return message;
     }
+
+    @Override
+    public String describe(int indentation) {
+        return super.describe(indentation) + " " + message;
+    }
 }

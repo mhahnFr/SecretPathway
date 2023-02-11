@@ -75,4 +75,11 @@ public class ASTCast extends ASTExpression {
             cast.visit(visitor);
         }
     }
+
+    @Override
+    public String describe(int indentation) {
+        return super.describe(indentation) + "\n" +
+                type.describe(indentation + 4) + "\n" +
+                cast.describe(indentation + 4);
+    }
 }

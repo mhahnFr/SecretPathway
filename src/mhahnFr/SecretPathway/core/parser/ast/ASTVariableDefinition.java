@@ -104,4 +104,26 @@ public class ASTVariableDefinition extends ASTExpression {
             name.visit(visitor);
         }
     }
+
+    @Override
+    public String describe(int indentation) {
+        final var builder = new StringBuilder();
+
+        builder.append(super.describe(indentation));
+        if (modifiers != null) {
+            builder.append(" modifiers:\n");
+            final var iterator = modifiers.listIterator();
+            while (iterator.hasNext()) {
+                builder.append(iterator.next().describe(indentation + 4)).append('\n');
+            }
+        }
+        if (type != null) {
+            builder.append(" ".repeat(Math.max(0, indentation))).append("type:\n")
+                   .append(type.describe(indentation + 4)).append('\n');
+        }
+        builder.append(" ".repeat(Math.max(0, indentation))).append("name:\n")
+               .append(name.describe(indentation + 4));
+
+        return builder.toString();
+    }
 }
