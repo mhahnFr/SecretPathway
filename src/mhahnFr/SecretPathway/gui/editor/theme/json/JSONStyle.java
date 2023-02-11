@@ -42,6 +42,8 @@ public class JSONStyle {
     private JSONColor background;
     /** The foreground color.                 */
     private JSONColor foreground;
+    /** The name of this style.               */
+    private String name;
 
     /**
      * Default constructor. All values are zeroed.
@@ -206,5 +208,23 @@ public class JSONStyle {
      */
     public void setForeground(JSONColor foreground) {
         this.foreground = foreground;
+    }
+
+    /**
+     * Returns the name of this style.
+     *
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the name for this style.
+     *
+     * @param name the new name
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 }
