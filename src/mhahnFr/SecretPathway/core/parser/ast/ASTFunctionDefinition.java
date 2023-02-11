@@ -140,13 +140,11 @@ public class ASTFunctionDefinition extends ASTExpression {
         }
         final var indent = " ".repeat(Math.max(0, indentation));
         builder.append(indent).append("return type:\n").append(type.describe(indentation + 4)).append('\n')
-               .append(indent).append("name:\n").append(name.describe(indentation + 4)).append('\n');
+               .append(indent).append("name:\n").append(name.describe(indentation + 4)).append('\n')
+               .append(" ".repeat(Math.max(0, indentation))).append("parameters:\n");
         iterator = parameters.listIterator();
         while (iterator.hasNext()) {
-            builder.append(iterator.next().describe(indentation + 4));
-            if (iterator.hasNext()) {
-                builder.append('\n');
-            }
+            builder.append(iterator.next().describe(indentation + 4)).append('\n');
         }
         builder.append(indent).append("body:\n").append(body.describe(indentation + 4));
         return builder.toString();
