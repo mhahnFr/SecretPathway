@@ -22,7 +22,6 @@ package mhahnFr.SecretPathway.gui.editor;
 import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.SecretPathway.core.parser.Parser;
 import mhahnFr.SecretPathway.core.parser.ast.ASTMissing;
-import mhahnFr.SecretPathway.core.parser.ast.ASTType;
 import mhahnFr.SecretPathway.core.parser.ast.ASTWrong;
 import mhahnFr.SecretPathway.core.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;

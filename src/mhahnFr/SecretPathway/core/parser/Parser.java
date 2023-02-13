@@ -613,6 +613,8 @@ public class Parser {
     }
 
     private ASTExpression parseTernary() {
+        advance();
+
         final var truePart = parseBlockExpression(12);
 
         final ASTExpression part;
