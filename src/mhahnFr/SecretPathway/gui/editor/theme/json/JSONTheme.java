@@ -23,6 +23,7 @@ import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
 import mhahnFr.utils.StringStream;
 import mhahnFr.utils.gui.abstraction.FStyle;
+import mhahnFr.utils.json.JSONNoSerialization;
 import mhahnFr.utils.json.JSONParser;
 
 import java.io.*;
@@ -48,19 +49,46 @@ public class JSONTheme implements SPTheme {
      * whose style is then inherited.
      */
     private Map<TokenType, String> tokenStyles = new EnumMap<>(TokenType.class);
+    @JSONNoSerialization
+    private Map<TokenType, FStyle> cached;
+    @JSONNoSerialization
+    private final FStyle defaultStyle = new FStyle();
 
     @Override
     public FStyle styleFor(TokenType tokenType) {
-        final var style = tokenStyles.get(tokenType);
-        if (style != null) {
-            // TODO: Cache
-            for (final var element : styles) {
-                if (element.getName().equals(style)) {
-                    return element.getNative();
-                }
+        if (cached == null) {
+            validate();
+        }
+
+        final var style = cached.get(tokenType);
+
+        return style == null ? defaultStyle : style;
+    }
+
+    private JSONStyle findStyleBy(final String name) {
+        for (final var style : styles) {
+            if (style.getName().equals(name)) {
+                return style;
             }
         }
-        return new FStyle();
+
+        return null;
+    }
+
+    private void validate() {
+        if (cached == null) {
+            cached = new EnumMap<>(TokenType.class);
+        } else {
+            cached.clear();
+        }
+
+        for (final var entry : tokenStyles.entrySet()) {
+            final var style = findStyleBy(entry.getValue());
+
+            if (style != null) {
+                cached.put(entry.getKey(), style.getNative());
+            }
+        }
     }
 
     /**
@@ -75,6 +103,7 @@ public class JSONTheme implements SPTheme {
         try (final var reader = new BufferedInputStream(new FileInputStream(path))) {
             final var theme = new JSONTheme();
             new JSONParser(new StringStream(new String(reader.readAllBytes(), StandardCharsets.UTF_8))).readInto(theme);
+            theme.validate();
             return theme;
         } catch (Exception __) {
             return null;
