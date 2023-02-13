@@ -59,6 +59,8 @@ public class EditorView extends JPanel implements DarkModeListener, SettingsList
             final var scrollPane = new DarkComponent<>(new JScrollPane(textPane), components).getComponent();
 
             final var south = new DarkComponent<>(new JPanel(new GridLayout(2, 1)), components).getComponent();
+                final var status = new DarkComponent<>(new JLabel("Status"), components).getComponent();
+
                 final var buttons = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
                     final var highlight = new DarkComponent<>(new JCheckBox("Syntax highlighting"), components).getComponent();
                     highlight.addItemListener(__ -> toggleSyntaxHighlighting(highlight.isSelected()));
@@ -74,10 +76,8 @@ public class EditorView extends JPanel implements DarkModeListener, SettingsList
                     pushButtons.add(saveButton);
                 buttons.add(highlight,   BorderLayout.CENTER);
                 buttons.add(pushButtons, BorderLayout.EAST);
-
-                final var status = new DarkComponent<>(new JLabel("Status"), components).getComponent();
-            south.add(buttons);
             south.add(status);
+            south.add(buttons);
         add(scrollPane, BorderLayout.CENTER);
         add(south,      BorderLayout.SOUTH);
         setBorder(new EmptyBorder(5, 5, 5, 5));
