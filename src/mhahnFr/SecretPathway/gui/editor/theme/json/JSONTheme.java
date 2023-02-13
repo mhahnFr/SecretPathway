@@ -41,7 +41,7 @@ import java.util.Map;
  * @since 14.01.23
  */
 public class JSONTheme implements SPTheme {
-    /** The list of the used styles. */
+    /** The list of the used styles.                                       */
     private List<JSONStyle> styles = new ArrayList<>();
     /**
      * Maps the {@link TokenType}s to either the name of the
@@ -49,8 +49,10 @@ public class JSONTheme implements SPTheme {
      * whose style is then inherited.
      */
     private Map<TokenType, String> tokenStyles = new EnumMap<>(TokenType.class);
+    /** A mapping of the possible types to the appropriate {@link FStyle}. */
     @JSONNoSerialization
     private Map<TokenType, FStyle> cached;
+    /** The default style used if a style is not defined.                  */
     @JSONNoSerialization
     private final FStyle defaultStyle = new FStyle();
 
@@ -65,6 +67,12 @@ public class JSONTheme implements SPTheme {
         return style == null ? defaultStyle : style;
     }
 
+    /**
+     * Finds and returns the style identified by the given name.
+     *
+     * @param name the name of the searched style
+     * @return the found style or {@code null}
+     */
     private JSONStyle findStyleBy(final String name) {
         for (final var style : styles) {
             if (style.getName().equals(name)) {
@@ -75,6 +83,9 @@ public class JSONTheme implements SPTheme {
         return null;
     }
 
+    /**
+     * Validates and caches the stored information.
+     */
     private void validate() {
         if (cached == null) {
             cached = new EnumMap<>(TokenType.class);
