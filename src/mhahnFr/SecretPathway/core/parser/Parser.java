@@ -363,9 +363,50 @@ public class Parser {
         return loop;
     }
 
-    private ASTExpression parseFor() { return null; }
+    private ASTExpression parseFor() {
+        final var parts = new Vector<ASTExpression>();
+        final var begin = current.beginPos();
 
-    private ASTExpression parseForEach() { return null; }
+        advance();
+
+        if (current.type() != TokenType.LEFT_PAREN) {
+            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '('"));
+        } else {
+            advance();
+        }
+        var variable = parseMaybeVariableDeclaration();
+        if (variable != null) {
+            if (current.type() == TokenType.COLON) {
+                advance();
+                final var expression = parseBlockExpression(99);
+                if (current.type() != TokenType.RIGHT_PAREN) {
+                    parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'"));
+                } else {
+                    advance();
+                }
+                final var loop = new ASTForEach(begin, variable, expression, parseInstruction());
+                if (!parts.isEmpty()) {
+                    return combine(loop, parts);
+                }
+                return loop;
+            } else {
+                variable = assertSemicolon(variable);
+            }
+        }
+        final var initExpression = variable == null ? assertSemicolon(parseBlockExpression(99)) : variable;
+        final var condition = assertSemicolon(parseBlockExpression(99));
+        final var after = parseBlockExpression(99);
+        if (current.type() != TokenType.RIGHT_PAREN) {
+            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'"));
+        } else {
+            advance();
+        }
+        final var loop = new ASTFor(begin, initExpression, condition, after, parseInstruction());
+        if (!parts.isEmpty()) {
+            return combine(loop, parts);
+        }
+        return loop;
+    }
 
     private ASTExpression parseSwitch() { return null; }
 
@@ -883,7 +924,7 @@ public class Parser {
         } else {
             toReturn = variable;
         }
-        return assertSemicolon(toReturn);
+        return toReturn;
     }
 
     private ASTExpression parseInstruction() {
@@ -891,21 +932,20 @@ public class Parser {
 
         final var maybeVariable = parseMaybeVariableDeclaration();
         if (maybeVariable != null) {
-            return maybeVariable;
+            return assertSemicolon(maybeVariable);
         }
         switch (current.type()) {
-            case LEFT_CURLY -> toReturn = parseBlock();
-            case IF         -> toReturn = parseIf();
-            case WHILE      -> toReturn = parseWhile();
-            case FOR        -> toReturn = parseFor();
-            case FOREACH    -> toReturn = parseForEach();
-            case SWITCH     -> toReturn = parseSwitch();
-            case DO         -> toReturn = assertSemicolon(parseDo());
-            case BREAK      -> toReturn = assertSemicolon(new ASTBreak(current));
-            case CONTINUE   -> toReturn = assertSemicolon(new ASTContinue(current));
-            case RETURN     -> toReturn = assertSemicolon(parseReturn());
-            case TRY        -> toReturn = parseTryCatch();
-            case SEMICOLON  -> {
+            case LEFT_CURLY   -> toReturn = parseBlock();
+            case IF           -> toReturn = parseIf();
+            case WHILE        -> toReturn = parseWhile();
+            case FOR, FOREACH -> toReturn = parseFor();
+            case SWITCH       -> toReturn = parseSwitch();
+            case DO           -> toReturn = assertSemicolon(parseDo());
+            case BREAK        -> toReturn = assertSemicolon(new ASTBreak(current));
+            case CONTINUE     -> toReturn = assertSemicolon(new ASTContinue(current));
+            case RETURN       -> toReturn = assertSemicolon(parseReturn());
+            case TRY          -> toReturn = parseTryCatch();
+            case SEMICOLON    -> {
                 advance();
                 toReturn = parseInstruction();
             }
