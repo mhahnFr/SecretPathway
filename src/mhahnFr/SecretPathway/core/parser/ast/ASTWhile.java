@@ -21,10 +21,25 @@ package mhahnFr.SecretPathway.core.parser.ast;
 
 import mhahnFr.utils.StreamPosition;
 
+/**
+ * This class represents a {@code while} statement as an AST node.
+ *
+ * @author mhahnFr
+ * @since 14.02.23
+ */
 public class ASTWhile extends ASTExpression {
+    /** The condition expression. */
     private final ASTExpression condition;
+    /** The loop's body.          */
     private final ASTExpression body;
 
+    /**
+     * Constructs this AST node using the given information.
+     *
+     * @param begin     the beginning position
+     * @param condition the condition
+     * @param body      the body
+     */
     public ASTWhile(final StreamPosition begin,
                     final ASTExpression  condition,
                     final ASTExpression  body) {
@@ -34,10 +49,20 @@ public class ASTWhile extends ASTExpression {
         this.body      = body;
     }
 
+    /**
+     * Returns the condition expression of this {@code while} statement.
+     *
+     * @return the condition
+     */
     public ASTExpression getCondition() {
         return condition;
     }
 
+    /**
+     * Returns the body of this {@code while} statement.
+     *
+     * @return the body
+     */
     public ASTExpression getBody() {
         return body;
     }

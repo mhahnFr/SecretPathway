@@ -88,5 +88,6 @@ public enum ASTType {
     SUBSCRIPT,
     /** Represents a {@code if} statement.     */
     IF,
+    /** Represents a {@code while} statement.  */
     WHILE
 }
