@@ -94,4 +94,28 @@ public class ASTFor extends ASTExpression {
     public ASTExpression getBody() {
         return body;
     }
+
+    @Override
+    public void visit(ASTVisitor visitor) {
+        if (visitor.maybeVisit(this)) {
+            initExpression.visit(visitor);
+            condition.visit(visitor);
+            afterExpression.visit(visitor);
+            body.visit(visitor);
+        }
+    }
+
+    @Override
+    public String describe(int indentation) {
+        final var indent = " ".repeat(Math.max(0, indentation));
+
+        return super.describe(indentation) + " Initial:\n" +
+                initExpression.describe(indentation + 4) + "\n" +
+                indent + "Condition:\n" +
+                condition.describe(indentation + 4) + "\n" +
+                indent + "After each loop:\n" +
+                afterExpression.describe(indentation + 4) + "\n" +
+                indent + "Body:\n" +
+                body.describe(indentation + 4);
+    }
 }
