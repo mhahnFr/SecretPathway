@@ -423,7 +423,43 @@ public class Parser {
         return toReturn;
     }
 
-    private ASTExpression parseTryCatch() { return null; }
+    private ASTExpression parseTryCatch() {
+        final var parts = new Vector<ASTExpression>(3);
+        final var begin = current.beginPos();
+
+        advance();
+
+        final var toTry = parseInstruction();
+        if (current.type() != TokenType.CATCH) {
+            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing 'catch'"));
+        } else {
+            advance();
+        }
+        if (current.type() != TokenType.LEFT_PAREN) {
+            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '('"));
+        } else {
+            advance();
+        }
+        final ASTExpression exception;
+        if (current.type() != TokenType.RIGHT_PAREN) {
+            exception = parseFancyVariableDeclaration();
+            if (current.type() != TokenType.RIGHT_PAREN) {
+                parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'"));
+            } else {
+                advance();
+            }
+        } else {
+            exception = null;
+            advance();
+        }
+        final var caught = parseInstruction();
+
+        final var tryCatch = new ASTTryCatch(begin, toTry, caught, exception);
+        if (!parts.isEmpty()) {
+            return combine(tryCatch, parts);
+        }
+        return tryCatch;
+    }
 
     private ASTExpression parseNew() {
         advance();
