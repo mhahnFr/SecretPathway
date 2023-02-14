@@ -87,5 +87,6 @@ public enum ASTType {
     /** Represents a subscript expression.     */
     SUBSCRIPT,
     /** Represents a {@code if} statement.     */
-    IF
+    IF,
+    WHILE
 }

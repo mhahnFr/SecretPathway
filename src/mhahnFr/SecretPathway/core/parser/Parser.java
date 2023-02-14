@@ -329,7 +329,16 @@ public class Parser {
         return new ASTIf(begin, condition, instruction, elseInstruction);
     }
 
-    private ASTExpression parseWhile() { return null; }
+    private ASTExpression parseWhile() {
+        final var begin = current.beginPos();
+
+        advance();
+
+        final var condition = parseParenthesizedExpression();
+        final var body      = parseInstruction();
+
+        return new ASTWhile(begin, condition, body);
+    }
 
     private ASTExpression parseDo() { return null; }
 
