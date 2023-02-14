@@ -93,5 +93,7 @@ public enum ASTType {
     /** Represents a {@code do while} statement. */
     DO_WHILE,
     /** Represents a regular {@code for} loop.   */
-    FOR
+    FOR,
+    /** Represents a {@code foreach} statement.  */
+    FOR_EACH
 }
