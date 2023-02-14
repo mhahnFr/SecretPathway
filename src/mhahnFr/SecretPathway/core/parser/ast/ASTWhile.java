@@ -39,11 +39,13 @@ public class ASTWhile extends ASTExpression {
      * @param begin     the beginning position
      * @param condition the condition
      * @param body      the body
+     * @param doWhile   whether this loop is a {@code do while} loop
      */
     public ASTWhile(final StreamPosition begin,
                     final ASTExpression  condition,
-                    final ASTExpression  body) {
-        super(begin, body.getEnd(), ASTType.WHILE);
+                    final ASTExpression  body,
+                    final boolean        doWhile) {
+        super(begin, body.getEnd(), doWhile ? ASTType.DO_WHILE : ASTType.WHILE);
 
         this.condition = condition;
         this.body      = body;

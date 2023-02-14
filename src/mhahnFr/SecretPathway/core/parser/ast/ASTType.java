@@ -26,68 +26,70 @@ package mhahnFr.SecretPathway.core.parser.ast;
  * @since 31.01.23
  */
 public enum ASTType {
-    /** Represents a combination of AST nodes. */
+    /** Represents a combination of AST nodes.   */
     COMBINATION,
-    /** Represents a function definition.      */
+    /** Represents a function definition.        */
     FUNCTION_DEFINITION,
-    /** Represents an include statement.       */
+    /** Represents an include statement.         */
     INCLUDE,
-    /** Represents an inherit statement.       */
+    /** Represents an inherit statement.         */
     INHERITANCE,
-    /** Represents a missing AST node.         */
+    /** Represents a missing AST node.           */
     MISSING,
-    /** Represents a parameter declaration.    */
+    /** Represents a parameter declaration.      */
     PARAMETER,
-    /** Represents a variable definition.      */
+    /** Represents a variable definition.        */
     VARIABLE_DEFINITION,
-    /** Represents a wrong AST node.           */
+    /** Represents a wrong AST node.             */
     WRONG,
-    /** Represents an ellipsis.                */
+    /** Represents an ellipsis.                  */
     ELLIPSIS,
-    /** Represents a type.                     */
+    /** Represents a type.                       */
     TYPE,
-    /** Represents a name.                     */
+    /** Represents a name.                       */
     NAME,
-    /** Represents a modifier.                 */
+    /** Represents a modifier.                   */
     MODIFIER,
-    /** Represents a block of code.            */
+    /** Represents a block of code.              */
     BLOCK,
-    /** Represents a break.                    */
+    /** Represents a break.                      */
     BREAK,
-    /** Represents a continue.                 */
+    /** Represents a continue.                   */
     CONTINUE,
-    /** Represents a return statement.         */
+    /** Represents a return statement.           */
     RETURN,
-    /** Represents a unary operator.           */
+    /** Represents a unary operator.             */
     UNARY_OPERATOR,
-    /** Represents a binary operation.         */
+    /** Represents a binary operation.           */
     OPERATION,
-    /** Represents a function call.            */
+    /** Represents a function call.              */
     FUNCTION_CALL,
-    /** Represents a new expression.           */
+    /** Represents a new expression.             */
     NEW,
-    /** Represents a cast expression.          */
+    /** Represents a cast expression.            */
     CAST,
-    /** Represents a "this" expression.        */
+    /** Represents a "this" expression.          */
     THIS,
-    /** Represents a nil expression.           */
+    /** Represents a nil expression.             */
     NIL,
-    /** Represents an integer expression.      */
+    /** Represents an integer expression.        */
     INTEGER,
-    /** Represents a string expression.        */
+    /** Represents a string expression.          */
     STRING,
-    /** Represents a symbol expression.        */
+    /** Represents a symbol expression.          */
     SYMBOL,
-    /** Represents a boolean expression.       */
+    /** Represents a boolean expression.         */
     BOOL,
-    /** Represents an array expression.        */
+    /** Represents an array expression.          */
     ARRAY,
-    /** Represents a mapping expression.       */
+    /** Represents a mapping expression.         */
     MAPPING,
-    /** Represents a subscript expression.     */
+    /** Represents a subscript expression.       */
     SUBSCRIPT,
-    /** Represents a {@code if} statement.     */
+    /** Represents a {@code if} statement.       */
     IF,
-    /** Represents a {@code while} statement.  */
-    WHILE
+    /** Represents a {@code while} statement.    */
+    WHILE,
+    /** Represents a {@code do while} statement. */
+    DO_WHILE
 }

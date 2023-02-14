@@ -337,10 +337,31 @@ public class Parser {
         final var condition = parseParenthesizedExpression();
         final var body      = parseInstruction();
 
-        return new ASTWhile(begin, condition, body);
+        return new ASTWhile(begin, condition, body, false);
     }
 
-    private ASTExpression parseDo() { return null; }
+    private ASTExpression parseDo() {
+        final var begin = current.beginPos();
+
+        advance();
+
+        final var instruction = parseInstruction();
+
+        final ASTExpression part;
+        if (current.type() != TokenType.WHILE) {
+            part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing 'while'");
+        } else {
+            part = null;
+            advance();
+        }
+        final var condition = parseParenthesizedExpression();
+
+        final var loop = new ASTWhile(begin, condition, instruction, true);
+        if (part != null) {
+            return combine(loop, part);
+        }
+        return loop;
+    }
 
     private ASTExpression parseFor() { return null; }
 
@@ -876,10 +897,10 @@ public class Parser {
             case LEFT_CURLY -> toReturn = parseBlock();
             case IF         -> toReturn = parseIf();
             case WHILE      -> toReturn = parseWhile();
-            case DO         -> toReturn = parseDo();
             case FOR        -> toReturn = parseFor();
             case FOREACH    -> toReturn = parseForEach();
             case SWITCH     -> toReturn = parseSwitch();
+            case DO         -> toReturn = assertSemicolon(parseDo());
             case BREAK      -> toReturn = assertSemicolon(new ASTBreak(current));
             case CONTINUE   -> toReturn = assertSemicolon(new ASTContinue(current));
             case RETURN     -> toReturn = assertSemicolon(parseReturn());
