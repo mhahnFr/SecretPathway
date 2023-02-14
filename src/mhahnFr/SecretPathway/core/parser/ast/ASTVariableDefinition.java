@@ -118,10 +118,10 @@ public class ASTVariableDefinition extends ASTExpression {
             }
         }
         if (type != null) {
-            builder.append(" ".repeat(Math.max(0, indentation))).append("type:\n")
+            builder.append((modifiers == null ? "" : " ".repeat(Math.max(0, indentation)))).append(" type:\n")
                    .append(type.describe(indentation + 4)).append('\n');
         }
-        builder.append(" ".repeat(Math.max(0, indentation))).append("name:\n")
+        builder.append((type == null && modifiers == null ? "" : " ".repeat(Math.max(0, indentation)))).append(" name:\n")
                .append(name.describe(indentation + 4));
 
         return builder.toString();
