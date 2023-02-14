@@ -85,5 +85,7 @@ public enum ASTType {
     /** Represents a mapping expression.       */
     MAPPING,
     /** Represents a subscript expression.     */
-    SUBSCRIPT
+    SUBSCRIPT,
+    /** Represents a {@code if} statement.     */
+    IF
 }
