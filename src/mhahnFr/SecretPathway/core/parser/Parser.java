@@ -289,7 +289,45 @@ public class Parser {
         return toReturn;
     }
 
-    private ASTExpression parseIf() { return null; }
+    private ASTExpression parseParenthesizedExpression() {
+        final var parts = new Vector<ASTExpression>(2);
+
+        if (current.type() != TokenType.LEFT_PAREN) {
+            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '('"));
+        } else {
+            advance();
+        }
+        final var expression = parseBlockExpression(99);
+        if (current.type() != TokenType.RIGHT_PAREN) {
+            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'"));
+        } else {
+            advance();
+        }
+
+        if (!parts.isEmpty()) {
+            return combine(expression, parts);
+        }
+        return expression;
+    }
+
+    private ASTExpression parseIf() {
+        final var begin = current.beginPos();
+
+        advance();
+
+        final var condition   = parseParenthesizedExpression();
+        final var instruction = parseInstruction();
+
+        final ASTExpression elseInstruction;
+        if (current.type() == TokenType.ELSE) {
+            advance();
+            elseInstruction = parseInstruction();
+        } else {
+            elseInstruction = null;
+        }
+
+        return new ASTIf(begin, condition, instruction, elseInstruction);
+    }
 
     private ASTExpression parseWhile() { return null; }
 
