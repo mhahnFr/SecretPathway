@@ -946,8 +946,7 @@ public class Parser {
             case RETURN       -> toReturn = assertSemicolon(parseReturn());
             case TRY          -> toReturn = parseTryCatch();
             case SEMICOLON    -> {
-                advance();
-                toReturn = parseInstruction();
+                return assertSemicolon(new ASTEmpty(current.beginPos(), current.endPos()));
             }
 
             default -> toReturn = assertSemicolon(parseBlockExpression(99));

@@ -95,5 +95,7 @@ public enum ASTType {
     /** Represents a regular {@code for} loop.   */
     FOR,
     /** Represents a {@code foreach} statement.  */
-    FOR_EACH
+    FOR_EACH,
+    /** Represents an empty statement.           */
+    EMPTY
 }
