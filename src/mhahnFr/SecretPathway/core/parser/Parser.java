@@ -544,22 +544,27 @@ public class Parser {
         } else {
             advance();
         }
-        if (current.type() != TokenType.LEFT_PAREN) {
-            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '('"));
-        } else {
-            advance();
-        }
+
         final ASTExpression exception;
-        if (current.type() != TokenType.RIGHT_PAREN) {
-            exception = parseFancyVariableDeclaration();
-            if (current.type() != TokenType.RIGHT_PAREN) {
-                parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'"));
+        if (current.type() == TokenType.LEFT_PAREN || current.type() == TokenType.RIGHT_PAREN) {
+            if (current.type() != TokenType.LEFT_PAREN) {
+                parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '('"));
             } else {
+                advance();
+            }
+            if (current.type() != TokenType.RIGHT_PAREN) {
+                exception = parseFancyVariableDeclaration();
+                if (current.type() != TokenType.RIGHT_PAREN) {
+                    parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'"));
+                } else {
+                    advance();
+                }
+            } else {
+                exception = null;
                 advance();
             }
         } else {
             exception = null;
-            advance();
         }
         final var caught = parseInstruction();
 
