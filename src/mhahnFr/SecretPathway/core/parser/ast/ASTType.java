@@ -105,5 +105,7 @@ public enum ASTType {
     /** Represents a switch case statement.       */
     CASE,
     /** Represents a switch statement.            */
-    SWITCH
+    SWITCH,
+    /** Represents a class statement.             */
+    CLASS
 }
