@@ -678,10 +678,7 @@ public class Parser {
                 }
             }
 
-            case SCOPE -> {
-                advance();
-                toReturn = parseFunctionCall();
-            }
+            case SCOPE -> toReturn = new ASTUnaryOperator(current.beginPos(), TokenType.SCOPE, parseFunctionCall());
 
             case STAR -> {
                 advance();
