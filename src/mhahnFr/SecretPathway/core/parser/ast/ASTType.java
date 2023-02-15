@@ -99,5 +99,7 @@ public enum ASTType {
     /** Represents an empty statement.            */
     EMPTY,
     /** Represents a {@code try catch} statement. */
-    TRY_CATCH
+    TRY_CATCH,
+    /** Represents a {@code default} case.        */
+    DEFAULT
 }
