@@ -31,6 +31,8 @@ import mhahnFr.utils.gui.DarkComponent;
 import mhahnFr.utils.gui.DarkTextComponent;
 import mhahnFr.utils.gui.DocumentAdapter;
 import mhahnFr.utils.gui.HintTextField;
+import mhahnFr.utils.gui.menu.MenuFactory;
+import mhahnFr.utils.gui.menu.MenuProvider;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -91,7 +93,7 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         createContent();
-        createMenuBar();
+        createMenuBar2();
 
         restoreBounds();
 
@@ -213,6 +215,16 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
 
             otherButtons.setVisible(otherButtonsVisible);
         }
+    }
+
+    private void createMenuBar2() {
+        final var menuFactory = MenuFactory.getInstance();
+
+        menuFactory.setMenuProvider(new SharedMenuProvider());
+        menuFactory.setAboutAction(this::showAboutWindow);
+        menuFactory.setSettingsAction(this::showSettings);
+
+        setJMenuBar(MenuFactory.getInstance().createMenuBar(this));
     }
 
     /**
