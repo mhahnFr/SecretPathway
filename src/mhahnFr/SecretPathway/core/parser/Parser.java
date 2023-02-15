@@ -408,7 +408,66 @@ public class Parser {
         return loop;
     }
 
-    private ASTExpression parseSwitch() { return null; }
+    private ASTExpression parseSwitch() {
+        final var begin = current.beginPos();
+
+        advance();
+
+        final var var = parseParenthesizedExpression();
+
+        final ASTExpression part;
+        if (current.type() != TokenType.LEFT_CURLY) {
+            part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing '{'");
+        } else {
+            part = null;
+            advance();
+        }
+
+        final var defCase = new ASTEmpty(previous.endPos(), current.beginPos());
+        ASTExpression lastCase = defCase;
+        final var lastCaseExpressions = new Vector<ASTExpression>();
+        final var cases = new ArrayList<ASTExpression>();
+        while (current.type() != TokenType.RIGHT_CURLY) { // TODO: Stop characters
+            if (current.type() == TokenType.CASE) {
+                if (lastCase != defCase || !lastCaseExpressions.isEmpty()) {
+                    cases.add(new ASTCase(lastCase, lastCaseExpressions.toArray(new ASTExpression[0])));
+                }
+
+                advance();
+
+                lastCase = parseBlockExpression(99);
+                if (current.type() != TokenType.COLON) {
+                    lastCase = combine(lastCase, new ASTMissing(previous.endPos(), current.beginPos(), "Missing ':'"));
+                } else {
+                    advance();
+                }
+                lastCaseExpressions.clear();
+            } else if (current.type() == TokenType.DEFAULT) {
+                cases.add(new ASTCase(lastCase, lastCaseExpressions.toArray(new ASTExpression[0])));
+
+                lastCase = new ASTDefault(current);
+                advance();
+                if (current.type() != TokenType.COLON) {
+                    lastCase = combine(lastCase, new ASTMissing(previous.endPos(), current.beginPos(), "Missing ':'"));
+                } else {
+                    advance();
+                }
+                lastCaseExpressions.clear();
+            } else {
+                lastCaseExpressions.add(parseInstruction());
+            }
+        }
+        if (lastCase != defCase || !lastCaseExpressions.isEmpty()) {
+            cases.add(new ASTCase(lastCase, lastCaseExpressions.toArray(new ASTExpression[0])));
+        }
+
+        advance();
+        final var toReturn = new ASTSwitch(begin, previous.endPos(), var, cases);
+        if (part != null) {
+            return combine(toReturn, part);
+        }
+        return toReturn;
+    }
 
     private ASTExpression parseReturn() {
         final ASTExpression toReturn;

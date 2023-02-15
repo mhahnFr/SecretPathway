@@ -19,8 +19,6 @@
 
 package mhahnFr.SecretPathway.core.parser.ast;
 
-import java.util.List;
-
 /**
  * This class represents a switch case statement as an AST node.
  *
@@ -31,7 +29,7 @@ public class ASTCase extends ASTExpression {
     /** The actual case expression.                */
     private final ASTExpression caseStatement;
     /** The expressions associated with this case. */
-    private final List<ASTExpression> expressions;
+    private final ASTExpression[] expressions;
 
     /**
      * Constructs this AST node using the given information.
@@ -39,10 +37,10 @@ public class ASTCase extends ASTExpression {
      * @param caseStatement the actual case statement
      * @param expressions   the associated expressions
      */
-    public ASTCase(final ASTExpression       caseStatement,
-                   final List<ASTExpression> expressions) {
+    public ASTCase(final ASTExpression   caseStatement,
+                   final ASTExpression[] expressions) {
         super(caseStatement.getBegin(),
-                (expressions.isEmpty() ? caseStatement : expressions.get(expressions.size() - 1)).getEnd(),
+                (expressions.length == 0 ? caseStatement : expressions[expressions.length - 1]).getEnd(),
                 ASTType.CASE);
 
         this.caseStatement = caseStatement;
@@ -63,7 +61,7 @@ public class ASTCase extends ASTExpression {
      *
      * @return the associated expressions
      */
-    public List<ASTExpression> getExpressions() {
+    public ASTExpression[] getExpressions() {
         return expressions;
     }
 
@@ -72,9 +70,8 @@ public class ASTCase extends ASTExpression {
         if (visitor.maybeVisit(this)) {
             caseStatement.visit(visitor);
 
-            final var iterator = expressions.listIterator();
-            while (iterator.hasNext()) {
-                iterator.next().visit(visitor);
+            for (int i = 0; i < expressions.length; ++i) {
+                expressions[i].visit(visitor);
             }
         }
     }
@@ -87,10 +84,9 @@ public class ASTCase extends ASTExpression {
                 .append(caseStatement.describe(indentation + 4)).append('\n')
                 .append(" ".repeat(Math.max(0, indentation))).append("Statements:\n");
 
-        final var iterator = expressions.listIterator();
-        while (iterator.hasNext()) {
-            builder.append(iterator.next().describe(indentation + 4));
-            if (iterator.hasNext()) {
+        for (int i = 0; i < expressions.length; ++i) {
+            builder.append(expressions[i].describe(indentation + 4));
+            if (i + 1 < expressions.length) {
                 builder.append('\n');
             }
         }
