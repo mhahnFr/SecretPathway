@@ -124,7 +124,6 @@ public class Tokenizer {
         else if (stream.peek('!'))   return new Token(stream.getStreamPosition(), TokenType.NOT,                null, stream.skip());
         else if (stream.peek('='))   return new Token(stream.getStreamPosition(), TokenType.ASSIGNMENT,         null, stream.skip());
         else if (stream.peek("->"))  return new Token(stream.getStreamPosition(), TokenType.ARROW,              null, stream.skip(2));
-        else if (stream.peek("|->")) return new Token(stream.getStreamPosition(), TokenType.P_ARROW,            null, stream.skip(3));
         else if (stream.peek('&'))   return new Token(stream.getStreamPosition(), TokenType.AMPERSAND,          null, stream.skip());
         else if (stream.peek('|'))   return new Token(stream.getStreamPosition(), TokenType.PIPE,               null, stream.skip());
         else if (stream.peek("??"))  return new Token(stream.getStreamPosition(), TokenType.DOUBLE_QUESTION,    null, stream.skip(2));
