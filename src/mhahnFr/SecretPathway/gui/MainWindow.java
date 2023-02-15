@@ -217,6 +217,9 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
         }
     }
 
+    /**
+     * Creates the menu bar.
+     */
     private void createMenuBar2() {
         final var menuFactory = MenuFactory.getInstance();
 

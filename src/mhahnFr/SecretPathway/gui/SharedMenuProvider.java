@@ -28,10 +28,20 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
+/**
+ * This class is the main menu provider of the SecretPathway.
+ *
+ * @author mhahnFr
+ * @since 15.02.23
+ */
 public class SharedMenuProvider extends MenuProvider {
+    /** The key mask to be used. */
     private static final int mask = System.getProperty("os.name").toLowerCase().contains("mac") ? KeyEvent.META_DOWN_MASK
                                                                                                 : KeyEvent.CTRL_DOWN_MASK;
 
+    /**
+     * Closes all {@link MenuFrame}s and quits the JVM.
+     */
     private void quitAction() {
         if (MenuFrame.vetoableCloseAll()) {
             System.exit(0);
