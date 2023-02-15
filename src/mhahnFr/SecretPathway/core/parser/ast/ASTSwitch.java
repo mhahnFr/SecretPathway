@@ -90,6 +90,7 @@ public class ASTSwitch extends ASTExpression {
         builder.append(super.describe(indentation)).append(" Variable:\n")
                 .append(variableExpression.describe(indentation + 4)).append('\n');
 
+        builder.append(" ".repeat(Math.max(0, indentation))).append("Cases:\n");
         final var iterator = cases.listIterator();
         while (iterator.hasNext()) {
             builder.append(iterator.next().describe(indentation + 4));

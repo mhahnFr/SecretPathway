@@ -435,8 +435,9 @@ public class Parser {
             }
         }
         final var initExpression = variable == null ? assertSemicolon(parseBlockExpression(99)) : variable;
-        final var condition = assertSemicolon(parseBlockExpression(99));
-        final var after = parseBlockExpression(99);
+        final var condition      = assertSemicolon(parseBlockExpression(99));
+        final var after          = parseBlockExpression(99);
+
         if (current.type() != TokenType.RIGHT_PAREN) {
             parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'"));
         } else {
@@ -607,7 +608,7 @@ public class Parser {
 
     private ASTExpression parseCast(final int priority) {
         final var begin = previous.beginPos();
-        final var type = parseType();
+        final var type  = parseType();
 
         final ASTExpression part;
         if (current.type() != TokenType.RIGHT_PAREN) {
@@ -617,7 +618,7 @@ public class Parser {
             advance();
         }
         final var expression = parseBlockExpression(priority);
-        final var cast = new ASTCast(begin, type, expression);
+        final var cast       = new ASTCast(begin, type, expression);
         if (part != null) {
             return combine(cast, part);
         }
@@ -687,13 +688,13 @@ public class Parser {
                 toReturn = new ASTUnaryOperator(previous.beginPos(), previous.type(), parseBlockExpression(1));
             }
 
-            case NEW          ->   toReturn = parseNew();
-            case NIL          -> { toReturn = new ASTNil(current); advance();      }
-            case THIS         -> { toReturn = new ASTThis(current); advance();     }
-            case INTEGER      -> { toReturn = new ASTInteger(current); advance();  }
-            case STRING       -> { toReturn = new ASTString(current); advance();   }
-            case SYMBOL       -> { toReturn = new ASTSymbol(current); advance();   }
+            case NIL          -> { toReturn = new ASTNil(current);      advance(); }
+            case THIS         -> { toReturn = new ASTThis(current);     advance(); }
+            case STRING       -> { toReturn = new ASTString(current);   advance(); }
+            case SYMBOL       -> { toReturn = new ASTSymbol(current);   advance(); }
+            case INTEGER      -> { toReturn = new ASTInteger(current);  advance(); }
             case ELLIPSIS     -> { toReturn = new ASTEllipsis(current); advance(); }
+            case NEW          ->   toReturn = parseNew();
             case LEFT_CURLY   ->   toReturn = parseArray();
             case LEFT_BRACKET ->   toReturn = parseMapping();
 
@@ -1063,6 +1064,18 @@ public class Parser {
         return toReturn;
     }
 
+    private ASTExpression parseBreak() {
+        final var b = new ASTBreak(current);
+        advance();
+        return assertSemicolon(b);
+    }
+
+    private ASTExpression parseContinue() {
+        final var c = new ASTContinue(current);
+        advance();
+        return assertSemicolon(c);
+    }
+
     private ASTExpression parseInstruction() {
         final ASTExpression toReturn;
 
@@ -1077,8 +1090,8 @@ public class Parser {
             case FOR, FOREACH -> toReturn = parseFor();
             case SWITCH       -> toReturn = parseSwitch();
             case DO           -> toReturn = assertSemicolon(parseDo());
-            case BREAK        -> toReturn = assertSemicolon(new ASTBreak(current));
-            case CONTINUE     -> toReturn = assertSemicolon(new ASTContinue(current));
+            case BREAK        -> toReturn = parseBreak();
+            case CONTINUE     -> toReturn = parseContinue();
             case RETURN       -> toReturn = assertSemicolon(parseReturn());
             case TRY          -> toReturn = parseTryCatch();
             case SEMICOLON    -> {
