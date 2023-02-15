@@ -682,6 +682,7 @@ public class Parser {
                          DECREMENT -> {
                         advance();
                         toReturn = new ASTUnaryOperator(previous.beginPos(), current.type(), new ASTName(previous));
+                        advance();
                     }
 
                     default -> {
