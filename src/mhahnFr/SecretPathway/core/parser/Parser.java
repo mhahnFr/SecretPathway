@@ -1001,7 +1001,14 @@ public class Parser {
                                      type == TokenType.SIZEOF ||
                                      type == TokenType.NOT)) {
             advance();
-            lhs = new ASTUnaryOperator(previous.beginPos(), type, parseBlockExpression(1));
+            if (type == TokenType.SIZEOF && current.type() == TokenType.LEFT_PAREN) {
+                advance();
+            }
+            final var expression = parseBlockExpression(1);
+            if (type == TokenType.SIZEOF && current.type() == TokenType.RIGHT_PAREN) {
+                advance();
+            }
+            lhs = new ASTUnaryOperator(previous.beginPos(), type, expression);
 
             if (type == TokenType.PLUS) { return lhs; }
         } else {
