@@ -103,5 +103,7 @@ public enum ASTType {
     /** Represents a {@code default} case.        */
     DEFAULT,
     /** Represents a switch case statement.       */
-    CASE
+    CASE,
+    /** Represents a switch statement.            */
+    SWITCH
 }
