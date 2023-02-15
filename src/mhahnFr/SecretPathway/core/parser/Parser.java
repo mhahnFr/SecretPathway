@@ -113,7 +113,48 @@ public class Parser {
     }
 
     private ASTExpression parseClass() {
-        return null;
+        final var parts = new Vector<ASTExpression>(3);
+        final var begin = current.beginPos();
+
+        advance();
+
+        final var name = parseName();
+
+        if (current.type() == TokenType.SEMICOLON ||
+                current.type() == TokenType.STRING ||
+                (current.type() != TokenType.LEFT_CURLY && next.type() == TokenType.SEMICOLON)) {
+            final ASTExpression inheritance;
+            if (current.type() == TokenType.STRING) {
+                inheritance = new ASTInheritance(current.beginPos(), current.endPos(), (String) current.payload());
+                advance();
+            } else if (current.type() == TokenType.SEMICOLON) {
+                inheritance = null;
+            } else {
+                inheritance = combine(new ASTInheritance(current.beginPos(), current.endPos(), null),
+                                      new ASTWrong(current, "Expected a string literal"));
+            }
+            return assertSemicolon(new ASTClass(begin, name, inheritance));
+        } else if (current.type() != TokenType.LEFT_CURLY) {
+            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '{'"));
+        } else {
+            advance();
+        }
+        final var statements = parse(TokenType.RIGHT_CURLY);
+        if (current.type() != TokenType.RIGHT_CURLY) {
+            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '}'"));
+        } else {
+            advance();
+        }
+        if (current.type() != TokenType.SEMICOLON) {
+            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ';'"));
+        } else {
+            advance();
+        }
+        final var c = new ASTClass(begin, name, statements);
+        if (!parts.isEmpty()) {
+            return combine(c, parts);
+        }
+        return c;
     }
 
     private boolean isModifier(final TokenType type) {
