@@ -21,6 +21,8 @@ package mhahnFr.SecretPathway.core.parser.ast;
 
 import mhahnFr.utils.StreamPosition;
 
+import java.util.List;
+
 /**
  * This class represents a new expression as an AST node.
  *
@@ -31,7 +33,7 @@ public class ASTNew extends ASTExpression {
     /** The instancing expression. */
     private final ASTExpression instancingExpression;
     /** The argument expressions.  */
-    private final ASTExpression[] arguments;
+    private final List<ASTExpression> arguments;
 
     /**
      * Constructs this AST node using the given information.
@@ -44,7 +46,7 @@ public class ASTNew extends ASTExpression {
     public ASTNew(final StreamPosition  begin,
                   final StreamPosition  end,
                   final ASTExpression   instancingExpression,
-                  final ASTExpression[] arguments) {
+                  final List<ASTExpression> arguments) {
         super(begin, end, ASTType.NEW);
 
         this.instancingExpression = instancingExpression;
@@ -65,7 +67,7 @@ public class ASTNew extends ASTExpression {
      *
      * @return the argument expressions
      */
-    public ASTExpression[] getArguments() {
+    public List<ASTExpression> getArguments() {
         return arguments;
     }
 
@@ -75,8 +77,9 @@ public class ASTNew extends ASTExpression {
             instancingExpression.visit(visitor);
 
             if (arguments != null) {
-                for (int i = 0; i < arguments.length; ++i) {
-                    arguments[i].visit(visitor);
+                final var iterator = arguments.listIterator();
+                while (iterator.hasNext()) {
+                    iterator.next().visit(visitor);
                 }
             }
         }
@@ -91,9 +94,10 @@ public class ASTNew extends ASTExpression {
 
         if (arguments != null) {
             builder.append(" ".repeat(Math.max(0, indentation))).append("arguments:\n");
-            for (int i = 0; i < arguments.length; ++i) {
-                builder.append(arguments[i].describe(indentation + 4));
-                if (i + 1 < arguments.length) {
+            final var iterator = arguments.listIterator();
+            while (iterator.hasNext()) {
+                builder.append(iterator.next().describe(indentation + 4));
+                if (iterator.hasNext()) {
                     builder.append('\n');
                 }
             }

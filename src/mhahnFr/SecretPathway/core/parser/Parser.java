@@ -26,10 +26,7 @@ import mhahnFr.SecretPathway.core.parser.tokenizer.Tokenizer;
 import mhahnFr.utils.StreamPosition;
 import mhahnFr.utils.StringStream;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * This class parses LPC source code.
@@ -62,15 +59,18 @@ public class Parser {
         next     = tokenizer.nextToken();
     }
 
-    private ASTExpression combine(ASTExpression main, Collection<ASTExpression> parts) {
-        return combine(main, parts.toArray(new ASTExpression[0]));
+    private ASTExpression combine(ASTExpression main, List<ASTExpression> parts) {
+        final var list = new Vector<ASTExpression>(parts.size() + 1);
+        list.add(main);
+        list.addAll(parts);
+        return new ASTCombination(list);
     }
 
     private ASTExpression combine(ASTExpression main, ASTExpression... parts) {
-        final var array = new ASTExpression[parts.length + 1];
-        array[0] = main;
-        System.arraycopy(parts, 0, array, 1, parts.length);
-        return new ASTCombination(array);
+        final var list = new Vector<ASTExpression>(parts.length + 1);
+        list.add(main);
+        list.addAll(Arrays.asList(parts));
+        return new ASTCombination(list);
     }
 
     private ASTExpression parseInclude() {
@@ -574,7 +574,7 @@ public class Parser {
         }
         final var instancingExpression = parseBlockExpression(99);
 
-        final ASTExpression[] arguments;
+        final List<ASTExpression> arguments;
         if (current.type() != TokenType.RIGHT_PAREN) {
             if (current.type() != TokenType.COMMA) {
                 parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ','"));
@@ -764,7 +764,7 @@ public class Parser {
         return array;
     }
 
-    private ASTExpression[] parseCallArguments(final TokenType end) {
+    private List<ASTExpression> parseCallArguments(final TokenType end) {
         final var list = new ArrayList<ASTExpression>();
 
         while (current.type() != end && current.type() != TokenType.EOF && current.type() != TokenType.RIGHT_BRACKET && current.type() != TokenType.RIGHT_CURLY && current.type() != TokenType.SEMICOLON) {
@@ -779,7 +779,7 @@ public class Parser {
             list.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing expression"));
         }
 
-        return list.toArray(new ASTExpression[0]);
+        return list;
     }
 
     private ASTExpression parseFunctionCall() {
@@ -1162,18 +1162,18 @@ public class Parser {
         return parseFileExpression();
     }
 
-    private ASTExpression[] parse(final TokenType end) {
+    private List<ASTExpression> parse(final TokenType end) {
         final var expressions = new ArrayList<ASTExpression>();
 
         while (current.type() != TokenType.EOF && current.type() != end) {
             expressions.add(parseExpression());
         }
 
-        return expressions.toArray(new ASTExpression[0]);
+        return expressions;
     }
 
     public ASTExpression[] parse() {
-        return parse(TokenType.EOF);
+        return parse(TokenType.EOF).toArray(new ASTExpression[0]);
     }
 
     /**

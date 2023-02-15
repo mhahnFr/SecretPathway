@@ -21,6 +21,8 @@ package mhahnFr.SecretPathway.core.parser.ast;
 
 import mhahnFr.utils.StreamPosition;
 
+import java.util.List;
+
 /**
  * This class represents a class definition as an AST node.
  *
@@ -33,7 +35,7 @@ public class ASTClass extends ASTExpression {
     /** The inheritance expression of the shorthand form. */
     private final ASTExpression inheritance;
     /** The statements of the class.                      */
-    private final ASTExpression[] statements;
+    private final List<ASTExpression> statements;
 
     /**
      * Constructs this class using the inheritance expression
@@ -63,8 +65,8 @@ public class ASTClass extends ASTExpression {
      */
     public ASTClass(final StreamPosition  begin,
                     final ASTExpression   name,
-                    final ASTExpression[] statements) {
-        super(begin, (statements.length == 0 ? name : statements[statements.length - 1]).getEnd(), ASTType.CLASS);
+                    final List<ASTExpression> statements) {
+        super(begin, (statements.isEmpty() ? name : statements.get(statements.size() - 1)).getEnd(), ASTType.CLASS);
 
         this.name        = name;
         this.inheritance = null;
@@ -95,7 +97,7 @@ public class ASTClass extends ASTExpression {
      *
      * @return the body statements
      */
-    public ASTExpression[] getStatements() {
+    public List<ASTExpression> getStatements() {
         return statements;
     }
 
@@ -107,8 +109,9 @@ public class ASTClass extends ASTExpression {
                 inheritance.visit(visitor);
             }
             if (statements != null) {
-                for (int i = 0; i < statements.length; ++i) {
-                    statements[i].visit(visitor);
+                final var iterator = statements.listIterator();
+                while (iterator.hasNext()) {
+                    iterator.next().visit(visitor);
                 }
             }
         }
@@ -131,9 +134,10 @@ public class ASTClass extends ASTExpression {
         }
         if (statements != null) {
             builder.append(indent).append("Statements:\n");
-            for (int i = 0; i < statements.length; ++i) {
-                builder.append(statements[i].describe(indentation + 4));
-                if (i + 1 < statements.length) {
+            final var iterator = statements.listIterator();
+            while (iterator.hasNext()) {
+                builder.append(iterator.next().describe(indentation + 4));
+                if (iterator.hasNext()) {
                     builder.append('\n');
                 }
             }

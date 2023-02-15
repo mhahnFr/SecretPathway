@@ -19,6 +19,8 @@
 
 package mhahnFr.SecretPathway.core.parser.ast;
 
+import java.util.List;
+
 /**
  * This class represents a combination of {@link ASTExpression}s.
  * Mostly used to fill holes in the AST (in other words, with syntax errors).
@@ -28,15 +30,15 @@ package mhahnFr.SecretPathway.core.parser.ast;
  */
 public class ASTCombination extends ASTExpression {
     /** The {@link ASTExpression}s this combination is made of. */
-    private final ASTExpression[] expressions;
+    private final List<ASTExpression> expressions;
 
     /**
      * Constructs this expression using the given sub-expressions.
      *
      * @param expressions the sub-expressions
      */
-    public ASTCombination(ASTExpression... expressions) {
-        super(expressions[0].getBegin(), expressions[expressions.length - 1].getEnd(), ASTType.COMBINATION);
+    public ASTCombination(List<ASTExpression> expressions) {
+        super(expressions.get(0).getBegin(), expressions.get(expressions.size() - 1).getEnd(), ASTType.COMBINATION);
 
         this.expressions = expressions;
     }
@@ -46,15 +48,16 @@ public class ASTCombination extends ASTExpression {
      *
      * @return the sub expressions
      */
-    public ASTExpression[] getExpressions() {
+    public List<ASTExpression> getExpressions() {
         return expressions;
     }
 
     @Override
     public void visit(ASTVisitor visitor) {
         if (visitor.maybeVisit(this)) {
-            for (int i = 0; i < expressions.length; ++i) {
-                expressions[i].visit(visitor);
+            final var iterator = expressions.listIterator();
+            while (iterator.hasNext()) {
+                iterator.next().visit(visitor);
             }
         }
     }
@@ -64,9 +67,10 @@ public class ASTCombination extends ASTExpression {
         final var builder = new StringBuilder();
 
         builder.append(super.describe(indentation)).append('\n');
-        for (int i = 0; i < expressions.length; ++i) {
-            builder.append(expressions[i].describe(indentation + 4));
-            if (i + 1 < expressions.length) {
+        final var iterator = expressions.listIterator();
+        while (iterator.hasNext()) {
+            builder.append(iterator.next().describe(indentation + 4));
+            if (iterator.hasNext()) {
                 builder.append('\n');
             }
         }

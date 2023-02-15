@@ -21,6 +21,8 @@ package mhahnFr.SecretPathway.core.parser.ast;
 
 import mhahnFr.utils.StreamPosition;
 
+import java.util.List;
+
 /**
  * This class represents an array expression as an AST node.
  *
@@ -29,7 +31,7 @@ import mhahnFr.utils.StreamPosition;
  */
 public class ASTArray extends ASTExpression {
     /** The content expressions. */
-    private final ASTExpression[] content;
+    private final List<ASTExpression> content;
 
     /**
      * Constructs this AST node using the given information.
@@ -40,7 +42,7 @@ public class ASTArray extends ASTExpression {
      */
     public ASTArray(final StreamPosition  begin,
                     final StreamPosition  end,
-                    final ASTExpression[] content) {
+                    final List<ASTExpression> content) {
         super(begin, end, ASTType.ARRAY);
 
         this.content = content;
@@ -51,7 +53,7 @@ public class ASTArray extends ASTExpression {
      *
      * @return the content expressions
      */
-    public ASTExpression[] getContent() {
+    public List<ASTExpression> getContent() {
         return content;
     }
 
@@ -59,8 +61,9 @@ public class ASTArray extends ASTExpression {
     public void visit(ASTVisitor visitor) {
         if (visitor.maybeVisit(this)) {
             if (content != null) {
-                for (int i = 0; i < content.length; ++i) {
-                    content[i].visit(visitor);
+                final var iterator = content.listIterator();
+                while (iterator.hasNext()) {
+                    iterator.next().visit(visitor);
                 }
             }
         }
@@ -72,8 +75,9 @@ public class ASTArray extends ASTExpression {
 
         builder.append(super.describe(indentation)).append(" [\n");
         if (content != null) {
-            for (int i = 0; i < content.length; ++i) {
-                builder.append(content[i].describe(indentation + 4)).append('\n');
+            final var iterator = content.listIterator();
+            while (iterator.hasNext()) {
+                builder.append(iterator.next().describe(indentation + 4)).append('\n');
             }
         }
         builder.append(" ".repeat(Math.max(0, indentation))).append(']');
