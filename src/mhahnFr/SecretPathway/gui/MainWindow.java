@@ -32,7 +32,6 @@ import mhahnFr.utils.gui.DarkTextComponent;
 import mhahnFr.utils.gui.DocumentAdapter;
 import mhahnFr.utils.gui.HintTextField;
 import mhahnFr.utils.gui.menu.MenuFactory;
-import mhahnFr.utils.gui.menu.MenuProvider;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -63,18 +62,10 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
     private JLabel messageLabel;
     /** The panel displaying the normal view.                             */
     private JPanel mainPanel;
-    /** The panel with the buttons.                                       */
-    private JPanel buttonPanel;
-    /** The panel with buttons to be hidden by default.                   */
-    private JPanel otherButtons;
-    /** The button responsible for expanding invisible buttons.           */
-    private JButton expandButton;
     /** The timer for the message overlay.                                */
     private Timer messageTimer;
     /** Indicates whether the dark mode is active.                        */
     private boolean dark;
-    /** Indicates whether the additional buttons are currently visible.   */
-    private boolean otherButtonsVisible;
     /** Indicates whether the editor is currently inlined.                */
     private boolean editorShowing;
 
@@ -93,7 +84,7 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         createContent();
-        createMenuBar2();
+        createMenuBar();
 
         restoreBounds();
 
@@ -199,28 +190,9 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
     }
 
     /**
-     * Creates the button field for optional, additional buttons.
-     */
-    private void maybeCreateButtonField() {
-        if (expandButton == null) {
-            expandButton = new JButton("<");
-            expandButton.addActionListener(this);
-            expandButton.setActionCommand(Constants.Actions.EXPAND_BUTTONS);
-
-            otherButtons = new DarkComponent<>(new JPanel(), components).getComponent();
-            otherButtons.setLayout(new BoxLayout(otherButtons, BoxLayout.X_AXIS));
-
-            buttonPanel.add(expandButton);
-            buttonPanel.add(otherButtons);
-
-            otherButtons.setVisible(otherButtonsVisible);
-        }
-    }
-
-    /**
      * Creates the menu bar.
      */
-    private void createMenuBar2() {
+    private void createMenuBar() {
         final var menuFactory = MenuFactory.getInstance();
 
         menuFactory.setMenuProvider(new SharedMenuProvider());
@@ -228,124 +200,6 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
         menuFactory.setSettingsAction(this::showSettings);
 
         setJMenuBar(MenuFactory.getInstance().createMenuBar(this));
-    }
-
-    /**
-     * Creates a menu bar for this window. Adds to default menu items as well.
-     */
-    private void createMenuBar() {
-        if (Desktop.getDesktop().isSupported(Desktop.Action.APP_QUIT_HANDLER)) {
-            Desktop.getDesktop().setQuitHandler((e, response) -> {
-                if (!connection.isClosed()) {
-                    if (!promptConnectionClosing()) {
-                        response.cancelQuit();
-                    }
-                }
-                saveSettings();
-                response.performQuit();
-            });
-        }
-        if (Desktop.getDesktop().isSupported(Desktop.Action.APP_ABOUT)) {
-            Desktop.getDesktop().setAboutHandler(e -> showAboutWindow());
-        } else {
-            maybeCreateButtonField();
-
-            final var aboutButton = new JButton("About");
-            aboutButton.addActionListener(__ -> showAboutWindow());
-
-            otherButtons.add(aboutButton);
-        }
-        if (Desktop.getDesktop().isSupported(Desktop.Action.APP_PREFERENCES)) {
-            Desktop.getDesktop().setPreferencesHandler(__ -> showSettings());
-        } else {
-            maybeCreateButtonField();
-
-            final var settingsButton = new JButton("Settings");
-            settingsButton.addActionListener(__ -> showSettings());
-
-            otherButtons.add(settingsButton);
-        }
-        if (Desktop.getDesktop().isSupported(Desktop.Action.APP_MENU_BAR)) {
-            Desktop.getDesktop().setDefaultMenuBar(generateJMenuBar());
-        } else {
-            maybeCreateButtonField();
-
-            final var connectionButton = new JButton("Connection");
-
-                final var contextMenu = new JPopupMenu();
-                    final var newConnection = new JMenuItem("New...");
-                    newConnection.setActionCommand(Constants.Actions.NEW);
-                    newConnection.addActionListener(this);
-
-                    final var closeConnection = new JMenuItem("Close");
-                    closeConnection.setActionCommand(Constants.Actions.CLOSE);
-                    closeConnection.addActionListener(this);
-
-                    final var reconnectConnection = new JMenuItem("Reconnect");
-                    reconnectConnection.setActionCommand(Constants.Actions.RECONNECT);
-                    reconnectConnection.addActionListener(this);
-
-                contextMenu.add(newConnection);
-                contextMenu.add(closeConnection);
-                contextMenu.addSeparator();
-                contextMenu.add(reconnectConnection);
-
-            connectionButton.setComponentPopupMenu(contextMenu);
-            connectionButton.addActionListener(__ -> connectionButton.getComponentPopupMenu().show(connectionButton, 0, connectionButton.getHeight()));
-
-            final var windowButton = new JButton("Window");
-                final var windowMenu = new JPopupMenu();
-                    final var openEditorItem = new JMenuItem("LPC Editor");
-                    openEditorItem.setActionCommand(Constants.Actions.OPEN_EDITOR);
-                    openEditorItem.addActionListener(this);
-                windowMenu.add(openEditorItem);
-            windowButton.setComponentPopupMenu(windowMenu);
-            windowButton.addActionListener(__ -> windowButton.getComponentPopupMenu().show(windowButton, 0, windowButton.getHeight()));
-
-            otherButtons.add(connectionButton);
-            otherButtons.add(windowButton);
-        }
-    }
-
-    /**
-     * Creates and returns a menu bar.
-     *
-     * @return the main menu bar
-     */
-    private JMenuBar generateJMenuBar() {
-        var toReturn = new JMenuBar();
-
-        var connectionMenu = new JMenu("Connection");
-            var newItem = new JMenuItem("New...");
-            newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.META_DOWN_MASK));
-            newItem.setActionCommand(Constants.Actions.NEW);
-            newItem.addActionListener(this);
-
-            var closeItem = new JMenuItem("Close");
-            closeItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PERIOD, KeyEvent.META_DOWN_MASK));
-            closeItem.setActionCommand(Constants.Actions.CLOSE);
-            closeItem.addActionListener(this);
-
-            var reconnectItem = new JMenuItem("Reconnect");
-            reconnectItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.META_DOWN_MASK));
-            reconnectItem.setActionCommand(Constants.Actions.RECONNECT);
-            reconnectItem.addActionListener(this);
-        connectionMenu.add(newItem);
-        connectionMenu.add(closeItem);
-        connectionMenu.addSeparator();
-        connectionMenu.add(reconnectItem);
-
-        final var windowMenu = new JMenu("Window");
-            final var openEditItem = new JMenuItem("LPC Editor");
-            openEditItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0, KeyEvent.META_DOWN_MASK));
-            openEditItem.setActionCommand(Constants.Actions.OPEN_EDITOR);
-            openEditItem.addActionListener(this);
-        windowMenu.add(openEditItem);
-
-        toReturn.add(connectionMenu);
-        toReturn.add(windowMenu);
-
-        return toReturn;
     }
 
     /**
@@ -394,16 +248,11 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
                 promptField.setActionCommand(Constants.Actions.SEND);
                 promptField.addActionListener(this);
 
-                buttonPanel = new DarkComponent<>(new JPanel(), components).getComponent();
-                buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-                    final var sendButton = new JButton("Send");
-                    sendButton.setActionCommand(Constants.Actions.SEND);
-                    sendButton.addActionListener(this);
-
-                buttonPanel.add(sendButton);
-
+                final var sendButton = new JButton("Send");
+                sendButton.setActionCommand(Constants.Actions.SEND);
+                sendButton.addActionListener(this);
             promptPanel.add(promptField);
-            promptPanel.add(buttonPanel);
+            promptPanel.add(sendButton);
 
         mainPanel.add(messageLabel, BorderLayout.NORTH);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
@@ -423,15 +272,6 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
     private void sendText() {
         delegate.send(promptField.getText());
         promptField.setText("");
-    }
-
-    /**
-     * Expands normally invisible buttons.
-     */
-    private void expandButtons() {
-        otherButtonsVisible = !otherButtonsVisible;
-        otherButtons.setVisible(otherButtonsVisible);
-        expandButton.setText(otherButtonsVisible ? ">" : "<");
     }
 
     /**
@@ -466,7 +306,6 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
             case Constants.Actions.CLOSE          -> maybeCloseConnection();
             case Constants.Actions.RECONNECT      -> maybeReconnect();
             case Constants.Actions.NEW            -> maybeNewConnection();
-            case Constants.Actions.EXPAND_BUTTONS -> expandButtons();
             case Constants.Actions.OPEN_EDITOR    -> openEditor();
 
             default -> throw new IllegalStateException("Unexpected action command: " + e.getActionCommand());
