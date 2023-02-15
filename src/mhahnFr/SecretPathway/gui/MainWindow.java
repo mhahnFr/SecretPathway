@@ -32,6 +32,7 @@ import mhahnFr.utils.gui.DarkTextComponent;
 import mhahnFr.utils.gui.DocumentAdapter;
 import mhahnFr.utils.gui.HintTextField;
 import mhahnFr.utils.gui.menu.MenuFactory;
+import mhahnFr.utils.gui.menu.MenuFrame;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -47,7 +48,7 @@ import java.util.List;
  * @since 31.10.2022
  * @author mhahnFr
  */
-public class MainWindow extends JFrame implements ActionListener, MessageReceiver {
+public class MainWindow extends MenuFrame implements ActionListener, MessageReceiver {
     /** A list with the components that should be capable to become dark. */
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
     /** The connection associated with this window.                       */
@@ -318,6 +319,11 @@ public class MainWindow extends JFrame implements ActionListener, MessageReceive
         saveSettings();
         super.dispose();
         System.exit(0);
+    }
+
+    @Override
+    protected boolean vetoableDispose() {
+        return maybeCloseConnection();
     }
 
     /**
