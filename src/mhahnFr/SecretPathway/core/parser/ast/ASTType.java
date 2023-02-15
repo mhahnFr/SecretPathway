@@ -101,5 +101,7 @@ public enum ASTType {
     /** Represents a {@code try catch} statement. */
     TRY_CATCH,
     /** Represents a {@code default} case.        */
-    DEFAULT
+    DEFAULT,
+    /** Represents a switch case statement.       */
+    CASE
 }
