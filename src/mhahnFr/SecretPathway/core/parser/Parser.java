@@ -200,42 +200,37 @@ public class Parser {
     }
 
     private ASTExpression parseType() {
-        final ASTExpression toReturn;
+        final var type = current;
 
-        if (!isType(current.type()) && next.type() == TokenType.IDENTIFIER) {
-            toReturn = combine(new ASTTypeDeclaration(current.beginPos(), current.endPos()),
-                               new ASTWrong(current, "Expected a type"));
-            advance();
-        } else if (current.type() == TokenType.IDENTIFIER) {
-            toReturn = combine(new ASTTypeDeclaration(previous.endPos(), current.beginPos()),
-                               new ASTMissing(previous.endPos(), current.beginPos(), "Missing type"));
-        } else {
-            final var type = current;
-            advance();
-            if (current.type() == TokenType.LEFT_BRACKET || current.type() == TokenType.RIGHT_BRACKET) {
-                final var parts = new Vector<ASTExpression>(2);
-                if (current.type() != TokenType.LEFT_BRACKET) {
-                    parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '['"));
-                } else {
-                    advance();
-                }
-                if (current.type() != TokenType.RIGHT_BRACKET) {
-                    parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ']'"));
-                } else {
-                    advance();
-                }
-                final var typeDeclaration = new ASTTypeDeclaration(type, true);
-                if (!parts.isEmpty()) {
-                    toReturn = combine(typeDeclaration, parts);
-                } else {
-                    toReturn = typeDeclaration;
-                }
-            } else {
-                toReturn = new ASTTypeDeclaration(type, false);
+        if (isType(type.type()) || type.type() == TokenType.IDENTIFIER) {
+            final var parts = new Vector<ASTExpression>(2);
+            if (type.type() == TokenType.IDENTIFIER) {
+                parts.add(new ASTWrong(type, "Wrong type"));
             }
+            advance();
+            boolean array = true;
+            if (current.type() == TokenType.STAR || current.type() == TokenType.RIGHT_BRACKET) {
+                if (current.type() == TokenType.RIGHT_BRACKET) {
+                    parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '['"));
+                }
+                advance();
+            } else if (current.type() == TokenType.LEFT_BRACKET && next.type() == TokenType.RIGHT_BRACKET) {
+                advance(2);
+            } else if (current.type() == TokenType.LEFT_BRACKET && next.type() != TokenType.RIGHT_BRACKET) {
+                parts.add(new ASTMissing(current.endPos(), next.beginPos(), "Missing ']'"));
+                advance();
+            } else {
+                array = false;
+            }
+            final var toReturn = new ASTTypeDeclaration(type, array);
+            if (!parts.isEmpty()) {
+                return combine(toReturn, parts);
+            }
+            return toReturn;
+        } else {
+            return combine(new ASTTypeDeclaration(previous.endPos(), current.beginPos()),
+                           new ASTMissing(previous.endPos(), current.beginPos(), "Missing type"));
         }
-
-        return toReturn;
     }
 
     private ASTExpression parseName() {
