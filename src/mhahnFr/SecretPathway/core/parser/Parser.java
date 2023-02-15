@@ -233,6 +233,26 @@ public class Parser {
         }
     }
 
+    private boolean isStopToken(final Token token) {
+        final var type = token.type();
+
+        return type == TokenType.EOF ||
+                type == TokenType.RIGHT_PAREN ||
+                type == TokenType.RIGHT_BRACKET ||
+                type == TokenType.RIGHT_CURLY ||
+                type == TokenType.COLON ||
+                type == TokenType.SEMICOLON ||
+                type == TokenType.ASSIGNMENT ||
+                type == TokenType.ASSIGNMENT_PLUS ||
+                type == TokenType.ASSIGNMENT_MINUS ||
+                type == TokenType.ASSIGNMENT_STAR ||
+                type == TokenType.ASSIGNMENT_SLASH ||
+                type == TokenType.ASSIGNMENT_PERCENT ||
+                type == TokenType.ELSE ||
+                type == TokenType.WHILE ||
+                type == TokenType.CATCH;
+    }
+
     private ASTExpression parseName() {
         final ASTExpression toReturn;
 
@@ -472,7 +492,7 @@ public class Parser {
         ASTExpression lastCase = defCase;
         final var lastCaseExpressions = new Vector<ASTExpression>();
         final var cases = new ArrayList<ASTExpression>();
-        while (current.type() != TokenType.RIGHT_CURLY) { // TODO: Stop characters
+        while (current.type() != TokenType.RIGHT_CURLY && !isStopToken(current)) {
             if (current.type() == TokenType.CASE) {
                 if (lastCase != defCase || !lastCaseExpressions.isEmpty()) {
                     cases.add(new ASTCase(lastCase, lastCaseExpressions.toArray(new ASTExpression[0])));
@@ -774,9 +794,9 @@ public class Parser {
     private List<ASTExpression> parseCallArguments(final TokenType end) {
         final var list = new ArrayList<ASTExpression>();
 
-        while (current.type() != end && current.type() != TokenType.EOF && current.type() != TokenType.RIGHT_BRACKET && current.type() != TokenType.RIGHT_CURLY && current.type() != TokenType.SEMICOLON) {
+        while (current.type() != end && !isStopToken(current)) {
             list.add(parseBlockExpression(99));
-            if (current.type() != TokenType.COMMA && current.type() != end) { // TODO: Implement other stopping characters
+            if (current.type() != TokenType.COMMA && current.type() != end) {
                 list.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ','"));
             } else if (current.type() == TokenType.COMMA) {
                 advance();
@@ -1011,7 +1031,7 @@ public class Parser {
         }
 
         ASTExpression previousExpression = lhs;
-        for (TokenType operatorType = current.type(); isOperator(operatorType); operatorType = current.type()) {
+        for (TokenType operatorType = current.type(); isOperator(operatorType) && !isStopToken(current); operatorType = current.type()) {
             final var rhs = parseOperation(priority);
             if (rhs == null) break;
             previousExpression = new ASTOperation(previousExpression, rhs, operatorType);
@@ -1034,8 +1054,9 @@ public class Parser {
     }
 
     private ASTExpression parseMaybeVariableDeclaration() {
-        if (current.type() == TokenType.LET || (next.type() == TokenType.IDENTIFIER &&
-                                                (current.type() == TokenType.IDENTIFIER || isType(current.type())))) {
+        if (current.type() == TokenType.LET ||
+                ((current.type() == TokenType.IDENTIFIER || isType(current.type())) && next.type() == TokenType.IDENTIFIER) ||
+                (isType(current.type()) && (next.type() == TokenType.LEFT_BRACKET || next.type() == TokenType.STAR || next.type() == TokenType.RIGHT_BRACKET))) {
             return parseFancyVariableDeclaration();
         }
         return null;
@@ -1052,7 +1073,7 @@ public class Parser {
             final ASTExpression type;
             if (current.type() == TokenType.COLON) {
                 advance();
-                type = parseType(); // FIXME: Looses the assignment if type is missing!
+                type = parseType();
             } else if (next.type() == TokenType.ASSIGNMENT && (current.type() == TokenType.IDENTIFIER || isType(current.type()))) {
                 final var missing = new ASTMissing(previous.endPos(), current.beginPos(), "Missing ':'");
                 type = combine(parseType(), missing);
@@ -1173,6 +1194,7 @@ public class Parser {
             return parseVariableDefinition(modifiers, type, name);
         } else {
             // TODO
+            advance();
         }
         return null;
     }
