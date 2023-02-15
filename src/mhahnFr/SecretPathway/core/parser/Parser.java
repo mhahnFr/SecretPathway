@@ -210,8 +210,29 @@ public class Parser {
             toReturn = combine(new ASTTypeDeclaration(previous.endPos(), current.beginPos()),
                                new ASTMissing(previous.endPos(), current.beginPos(), "Missing type"));
         } else {
-            toReturn = new ASTTypeDeclaration(current);
+            final var type = current;
             advance();
+            if (current.type() == TokenType.LEFT_BRACKET || current.type() == TokenType.RIGHT_BRACKET) {
+                final var parts = new Vector<ASTExpression>(2);
+                if (current.type() != TokenType.LEFT_BRACKET) {
+                    parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '['"));
+                } else {
+                    advance();
+                }
+                if (current.type() != TokenType.RIGHT_BRACKET) {
+                    parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ']'"));
+                } else {
+                    advance();
+                }
+                final var typeDeclaration = new ASTTypeDeclaration(type, true);
+                if (!parts.isEmpty()) {
+                    toReturn = combine(typeDeclaration, parts);
+                } else {
+                    toReturn = typeDeclaration;
+                }
+            } else {
+                toReturn = new ASTTypeDeclaration(type, false);
+            }
         }
 
         return toReturn;
@@ -278,20 +299,7 @@ public class Parser {
                     break;
                 }
 
-                final ASTExpression type;
-                if (!isType(current.type())) {
-                    if (next.type() == TokenType.IDENTIFIER) {
-                        type = combine(new ASTTypeDeclaration(current.beginPos(), current.endPos()),
-                                       new ASTWrong(current, "Expected a type"));
-                        advance();
-                    } else {
-                        type = combine(new ASTTypeDeclaration(previous.endPos(), current.beginPos()),
-                                       new ASTMissing(previous.endPos(), current.beginPos(), "Missing type"));
-                    }
-                } else {
-                    type = new ASTTypeDeclaration(current);
-                    advance();
-                }
+                final ASTExpression type = parseType();
 
                 final ASTExpression name;
                 if (current.type() != TokenType.IDENTIFIER) {

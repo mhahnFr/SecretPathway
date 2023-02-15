@@ -30,26 +30,32 @@ import mhahnFr.utils.StreamPosition;
  * @since 02.02.23
  */
 public class ASTTypeDeclaration extends ASTExpression {
-    /** The represented type. */
+    /** The represented type.                               */
     private final TokenType type;
+    /** Indicates whether the represented type is an array. */
+    private final boolean isArray;
 
     /**
      * Constructs this AST node. If no type is given, no
      * exception is thrown.
      *
-     * @param type the represented type
+     * @param type    the represented type
+     * @param isArray whether the type is an array type
      */
-    public ASTTypeDeclaration(final Token type) {
+    public ASTTypeDeclaration(final Token   type,
+                              final boolean isArray) {
         super(type.beginPos(), type.endPos(), ASTType.TYPE);
 
-        this.type = type.type();
+        this.type    = type.type();
+        this.isArray = isArray;
     }
 
     public ASTTypeDeclaration(final StreamPosition begin,
                               final StreamPosition end) {
         super(begin, end, ASTType.TYPE);
 
-        this.type = null;
+        this.type    = null;
+        this.isArray = false;
     }
 
     /**
@@ -63,6 +69,15 @@ public class ASTTypeDeclaration extends ASTExpression {
 
     @Override
     public String describe(int indentation) {
-        return super.describe(indentation) + " " + type;
+        return super.describe(indentation) + " " + type + (isArray ? "[]" : "");
+    }
+
+    /**
+     * Returns whether the represented type is an array.
+     *
+     * @return whether an array type is represented
+     */
+    public boolean isArray() {
+        return isArray;
     }
 }
