@@ -47,6 +47,8 @@ public class EditorWindow extends JFrame {
 
         editorView = new EditorView();
 
+        editorView.onDispose(__ -> internalDispose());
+
         getContentPane().add(editorView);
 
         restoreLocation(parent);
@@ -91,14 +93,21 @@ public class EditorWindow extends JFrame {
         }
     }
 
+    /**
+     * Disposes this window without calling {@link EditorView#dispose()}.
+     */
+    private void internalDispose() {
+        Settings.getInstance().setEditorWindowLocation(getX(), getY())
+                .setEditorWindowSize(getWidth(), getHeight())
+                .flush();
+
+        super.dispose();
+    }
+
     @Override
     public void dispose() {
         editorView.dispose();
 
-        Settings.getInstance().setEditorWindowLocation(getX(), getY())
-                              .setEditorWindowSize(getWidth(), getHeight())
-                              .flush();
-
-        super.dispose();
+        internalDispose();
     }
 }
