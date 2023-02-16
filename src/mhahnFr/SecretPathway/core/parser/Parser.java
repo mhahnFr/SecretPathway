@@ -714,12 +714,13 @@ public class Parser {
                 toReturn = new ASTUnaryOperator(previous.beginPos(), previous.type(), parseBlockExpression(1));
             }
 
-            case NIL          -> { toReturn = new ASTNil(current);      advance(); }
-            case THIS         -> { toReturn = new ASTThis(current);     advance(); }
-            case STRING       -> { toReturn = new ASTString(current);   advance(); }
-            case SYMBOL       -> { toReturn = new ASTSymbol(current);   advance(); }
-            case INTEGER      -> { toReturn = new ASTInteger(current);  advance(); }
-            case ELLIPSIS     -> { toReturn = new ASTEllipsis(current); advance(); }
+            case NIL          -> { toReturn = new ASTNil(current);       advance(); }
+            case THIS         -> { toReturn = new ASTThis(current);      advance(); }
+            case STRING       -> { toReturn = new ASTString(current);    advance(); }
+            case SYMBOL       -> { toReturn = new ASTSymbol(current);    advance(); }
+            case INTEGER      -> { toReturn = new ASTInteger(current);   advance(); }
+            case ELLIPSIS     -> { toReturn = new ASTEllipsis(current);  advance(); }
+            case CHARACTER    -> { toReturn = new ASTCharacter(current); advance(); }
             case NEW          ->   toReturn = parseNew();
             case LEFT_CURLY   ->   toReturn = parseArray();
             case LEFT_BRACKET ->   toReturn = parseMapping();
@@ -1154,6 +1155,8 @@ public class Parser {
             if (current.type() == p) {
                 if (i >= 10) {
                     advance();
+                    i = 0;
+                    System.out.println(">>>>>>> " + p + " <<<<<<<");
                     continue;
                 }
                 ++i;

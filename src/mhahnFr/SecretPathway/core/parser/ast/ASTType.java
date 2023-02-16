@@ -107,5 +107,7 @@ public enum ASTType {
     /** Represents a switch statement.            */
     SWITCH,
     /** Represents a class statement.             */
-    CLASS
+    CLASS,
+    /** Represents a character.                   */
+    CHARACTER
 }
