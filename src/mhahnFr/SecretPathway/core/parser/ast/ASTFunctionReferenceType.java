@@ -25,10 +25,25 @@ import mhahnFr.utils.StreamPosition;
 
 import java.util.List;
 
+/**
+ * This class represents a function reference type as an AST node.
+ *
+ * @author mhahnFr
+ * @since 16.02.23
+ */
 public class ASTFunctionReferenceType extends ASTExpression {
+    /** The return type of the referred function. */
     private final TokenType returnType;
+    /** The potential argument types.             */
     private final List<ASTExpression> callTypes;
 
+    /**
+     * Constructs this AST node using the given information.
+     *
+     * @param returnType the return type of the referred function
+     * @param callTypes  the potential argument types
+     * @param end        the end position
+     */
     public ASTFunctionReferenceType(final Token               returnType,
                                     final List<ASTExpression> callTypes,
                                     final StreamPosition      end) {
@@ -38,10 +53,20 @@ public class ASTFunctionReferenceType extends ASTExpression {
         this.callTypes  = callTypes;
     }
 
+    /**
+     * Returns the return type of the referred function.
+     *
+     * @return the return type
+     */
     public TokenType getReturnType() {
         return returnType;
     }
 
+    /**
+     * Returns the list with the potential argument types.
+     *
+     * @return the argument types
+     */
     public List<ASTExpression> getCallTypes() {
         return callTypes;
     }
