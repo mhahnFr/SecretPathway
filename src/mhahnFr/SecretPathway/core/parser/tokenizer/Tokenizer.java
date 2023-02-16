@@ -279,8 +279,13 @@ public class Tokenizer {
         stream.skip(skipping);
 
         final var buffer = new StringBuilder();
-        while (stream.hasNext() && !stream.peek(string)) {
-            buffer.append(stream.next());
+        char previous     = '\0',
+             overPrevious = '\0';
+        while (stream.hasNext() && !(stream.peek(string) && (previous != '\\' || overPrevious == '\\'))) {
+            overPrevious = previous;
+            previous     = stream.next();
+
+            buffer.append(previous);
         }
         stream.skip(string.length());
         return buffer.toString();
