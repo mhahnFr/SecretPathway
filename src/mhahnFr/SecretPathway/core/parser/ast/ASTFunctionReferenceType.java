@@ -32,10 +32,11 @@ import java.util.List;
  * @since 16.02.23
  */
 public class ASTFunctionReferenceType extends ASTExpression {
-    /** The return type of the referred function. */
+    /** The return type of the referred function.           */
     private final TokenType returnType;
-    /** The potential argument types.             */
+    /** The potential argument types.                       */
     private final List<ASTExpression> callTypes;
+    /** Indicates whether the return type is an array type. */
     private final boolean returnArray;
 
     /**
@@ -74,6 +75,11 @@ public class ASTFunctionReferenceType extends ASTExpression {
         return callTypes;
     }
 
+    /**
+     * Returns whether the return type is an array.
+     *
+     * @return whether the return type is an array
+     */
     public boolean isReturnArray() {
         return returnArray;
     }
