@@ -1008,6 +1008,7 @@ public class Parser {
             } else {
                 advance();
                 lhs = new ASTUnaryOperator(previous.beginPos(), TokenType.AMPERSAND, new ASTName(current));
+                advance();
             }
         } else if (type == TokenType.STAR) {
             advance();
