@@ -109,5 +109,7 @@ public enum ASTType {
     /** Represents a class statement.             */
     CLASS,
     /** Represents a character.                   */
-    CHARACTER
+    CHARACTER,
+    /** Represents a function reference type.     */
+    FUNCTION_REFERENCE
 }
