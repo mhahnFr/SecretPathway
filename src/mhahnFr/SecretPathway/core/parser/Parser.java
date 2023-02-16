@@ -200,7 +200,8 @@ public class Parser {
     }
 
     private ASTExpression parseType() {
-        final var type = current;
+        ASTExpression toReturn = null;
+        final var type         = current;
 
         if (isType(type.type()) || type.type() == TokenType.IDENTIFIER) {
             final var parts = new Vector<ASTExpression>(2);
@@ -221,8 +222,44 @@ public class Parser {
                 advance();
             } else {
                 array = false;
+
+                if (current.type() == TokenType.LEFT_PAREN) {
+                    advance();
+                    final var callTypes = new ArrayList<ASTExpression>();
+                    while (current.type() != TokenType.RIGHT_PAREN && !isStopToken(current)
+                                                                   && current.type() != TokenType.LEFT_CURLY) {
+                        if (current.type() == TokenType.DOT      ||
+                            current.type() == TokenType.ELLIPSIS ||
+                            current.type() == TokenType.RANGE) {
+                            final var ellipsis = new ASTEllipsis(current);
+                            if (current.type() != TokenType.ELLIPSIS) {
+                                callTypes.add(combine(ellipsis, new ASTWrong(current, "Expected '...'")));
+                            } else {
+                                callTypes.add(ellipsis);
+                            }
+                            advance();
+                            continue;
+                        }
+                        callTypes.add(parseType());
+
+                        if (current.type() != TokenType.RIGHT_PAREN && current.type() != TokenType.COMMA) {
+                            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ','"));
+                        } else if (current.type() == TokenType.COMMA) {
+                            advance();
+                        }
+                    }
+                    if (previous.type() == TokenType.COMMA) {
+                        parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing type"));
+                    }
+                    if (current.type() != TokenType.RIGHT_PAREN) {
+                        parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'"));
+                    } else {
+                        advance();
+                    }
+                    toReturn = new ASTFunctionReferenceType(type, callTypes, previous.endPos());
+                }
             }
-            final var toReturn = new ASTTypeDeclaration(type, array);
+            toReturn = toReturn == null ? new ASTTypeDeclaration(type, array) : toReturn;
             if (!parts.isEmpty()) {
                 return combine(toReturn, parts);
             }
