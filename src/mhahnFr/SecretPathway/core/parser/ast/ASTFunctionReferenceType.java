@@ -36,6 +36,7 @@ public class ASTFunctionReferenceType extends ASTExpression {
     private final TokenType returnType;
     /** The potential argument types.             */
     private final List<ASTExpression> callTypes;
+    private final boolean returnArray;
 
     /**
      * Constructs this AST node using the given information.
@@ -45,12 +46,14 @@ public class ASTFunctionReferenceType extends ASTExpression {
      * @param end        the end position
      */
     public ASTFunctionReferenceType(final Token               returnType,
+                                    final boolean             array,
                                     final List<ASTExpression> callTypes,
                                     final StreamPosition      end) {
         super(returnType.beginPos(), end, ASTType.FUNCTION_REFERENCE);
 
-        this.returnType = returnType.type();
-        this.callTypes  = callTypes;
+        this.returnType  = returnType.type();
+        this.callTypes   = callTypes;
+        this.returnArray = array;
     }
 
     /**
@@ -71,6 +74,10 @@ public class ASTFunctionReferenceType extends ASTExpression {
         return callTypes;
     }
 
+    public boolean isReturnArray() {
+        return returnArray;
+    }
+
     @Override
     public void visit(ASTVisitor visitor) {
         if (visitor.maybeVisit(this)) {
@@ -87,7 +94,11 @@ public class ASTFunctionReferenceType extends ASTExpression {
     public String describe(int indentation) {
         final var builder = new StringBuilder();
 
-        builder.append(super.describe(indentation)).append(" Return type: ").append(returnType).append('\n');
+        builder.append(super.describe(indentation)).append(" Return type: ").append(returnType);
+        if (returnArray) {
+            builder.append("[]");
+        }
+        builder.append('\n');
 
         if (callTypes != null) {
             builder.append(" ".repeat(Math.max(0, indentation))).append("Parameter types:\n");
