@@ -891,6 +891,21 @@ public class Parser {
     }
 
     /**
+     * Parses an ellipsis ({@code ...}).
+     *
+     * @return the AST representation of the read ellipsis
+     */
+    private ASTExpression parseEllipsis() {
+        final var ellipsis = new ASTEllipsis(current);
+
+        advance();
+        if (previous.type() != TokenType.ELLIPSIS) {
+            return combine(ellipsis, new ASTWrong(previous, "Expected '...'"));
+        }
+        return ellipsis;
+    }
+
+    /**
      * Parses a simple expression.
      *
      * @param priority the priority of the statement
@@ -961,8 +976,10 @@ public class Parser {
             case THIS         -> { toReturn = new ASTThis(current);      advance(); }
             case SYMBOL       -> { toReturn = new ASTSymbol(current);    advance(); }
             case INTEGER      -> { toReturn = new ASTInteger(current);   advance(); }
-            case ELLIPSIS     -> { toReturn = new ASTEllipsis(current);  advance(); }
             case CHARACTER    -> { toReturn = new ASTCharacter(current); advance(); }
+            case ELLIPSIS,
+                 RANGE,
+                 DOT          ->   toReturn = parseEllipsis();
             case NEW          ->   toReturn = parseNew();
             case STRING       ->   toReturn = parseStrings();
             case LEFT_CURLY   ->   toReturn = parseArray();
