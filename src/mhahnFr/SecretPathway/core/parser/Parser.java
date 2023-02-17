@@ -1379,7 +1379,8 @@ public class Parser {
     private ASTExpression parseMaybeVariableDeclaration() {
         if (current.type() == TokenType.LET ||
                 ((current.type() == TokenType.IDENTIFIER || isType(current.type())) && next.type() == TokenType.IDENTIFIER) ||
-                (isType(current.type()) && (next.type() == TokenType.LEFT_BRACKET || next.type() == TokenType.STAR || next.type() == TokenType.RIGHT_BRACKET))) {
+                (isType(current.type()) && (next.type() == TokenType.LEFT_BRACKET || next.type() == TokenType.STAR || next.type() == TokenType.RIGHT_BRACKET)) ||
+                (isType(current.type()) && isStopToken(next)) || (isType(current.type()) && (next.type() == TokenType.LEFT_PAREN || next.type() == TokenType.RIGHT_PAREN))) {
             return parseFancyVariableDeclaration();
         }
         return null;
