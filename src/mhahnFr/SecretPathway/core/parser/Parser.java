@@ -293,12 +293,26 @@ public class Parser {
     private ASTExpression parseName() {
         final ASTExpression toReturn;
 
-        if (current.type() == TokenType.LEFT_PAREN    ||
-            current.type() == TokenType.SEMICOLON     ||
-            current.type() == TokenType.RIGHT_BRACKET ||
-            current.type() == TokenType.EQUALS) {
+        if (isStopToken(current)) {
             toReturn = combine(new ASTName(previous.endPos(), current.beginPos()),
                                new ASTMissing(previous.endPos(), current.beginPos(), "Missing name"));
+        } else if (current.type() == TokenType.OPERATOR) {
+            final var begin = current.beginPos();
+            advance();
+
+            final ASTExpression part;
+            if (!isOperator(current.type())) {
+                part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing operator");
+            } else {
+                part = null;
+                advance();
+            }
+            final var identifier = new ASTOperatorName(begin, previous);
+            if (part != null) {
+                toReturn = combine(identifier, part);
+            } else {
+                toReturn = identifier;
+            }
         } else if (current.type() != TokenType.IDENTIFIER) {
             toReturn = combine(new ASTName(current.beginPos(), current.endPos()),
                                new ASTWrong(current, "Expected a name"));
