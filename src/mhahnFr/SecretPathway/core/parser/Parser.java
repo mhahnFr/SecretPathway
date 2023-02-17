@@ -340,8 +340,7 @@ public class Parser {
             advance();
             toReturn = assertSemicolon(new ASTOperation(variable, parseBlockExpression(99), TokenType.ASSIGNMENT));
         } else {
-            // TODO: read till ; and mark as wrong
-            toReturn = null;
+            toReturn = combine(variable, new ASTMissing(previous.endPos(), current.beginPos(), "Missing ';'"));
         }
 
         return toReturn;
@@ -1241,17 +1240,11 @@ public class Parser {
         final var name      = parseName();
 
         if (current.type() == TokenType.LEFT_PAREN) {
-            // def. func
             advance();
             return parseFunctionDefinition(modifiers, type, name);
-        } else if (current.type() == TokenType.SEMICOLON || current.type() == TokenType.ASSIGNMENT) {
-            // def. var
-            return parseVariableDefinition(modifiers, type, name);
         } else {
-            // TODO
-            advance();
+            return parseVariableDefinition(modifiers, type, name);
         }
-        return null;
     }
 
     private ASTExpression parseExpression() {
