@@ -1072,7 +1072,21 @@ public class Parser {
     private List<ASTExpression> parseCallArguments(final TokenType end) {
         final var list = new ArrayList<ASTExpression>();
 
+        var previousType = current.type();
+        var count        = 0;
         while (current.type() != end && !isStopToken(current)) {
+            if (current.type() == previousType) {
+                if (count >= 10) {
+                    System.err.println("4 >>>>>>> " + previousType + " <<<<<<<");
+                    advance();
+                    count = 0;
+                    continue;
+                } else {
+                    ++count;
+                }
+            } else {
+                previousType = current.type();
+            }
             list.add(parseBlockExpression(99));
             if (current.type() != TokenType.COMMA && current.type() != end) {
                 list.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ','"));
@@ -1342,7 +1356,22 @@ public class Parser {
         }
 
         ASTExpression previousExpression = lhs;
+
+        var previousType = current.type();
+        var count        = 0;
         for (TokenType operatorType = current.type(); isOperator(operatorType) && !isStopToken(current); operatorType = current.type()) {
+            if (current.type() == previousType) {
+                if (count >= 10) {
+                    System.err.println("3 >>>>>>> " + previousType + " <<<<<<<");
+                    advance();
+                    count = 0;
+                    continue;
+                } else {
+                    ++count;
+                }
+            } else {
+                previousType = current.type();
+            }
             final var rhs = parseOperation(priority);
             if (rhs == null) break;
             previousExpression = new ASTOperation(previousExpression, rhs, operatorType);
@@ -1498,20 +1527,21 @@ public class Parser {
         } else {
             advance();
         }
-        TokenType p = current.type();
-        int i = 0;
+
+        var previousType = current.type();
+        var count        = 0;
         while (current.type() != TokenType.RIGHT_CURLY
             && current.type() != TokenType.EOF) {
-            if (current.type() == p) {
-                if (i >= 10) {
+            if (current.type() == previousType) {
+                if (count >= 10) {
                     advance();
-                    i = 0;
-                    System.out.println(">>>>>>> " + p + " <<<<<<<");
+                    count = 0;
+                    System.err.println("2 >>>>>>> " + previousType + " <<<<<<<");
                     continue;
                 }
-                ++i;
+                ++count;
             } else {
-                p = current.type();
+                previousType = current.type();
             }
             block.add(parseInstruction());
         }
@@ -1587,7 +1617,20 @@ public class Parser {
     private List<ASTExpression> parse(final TokenType end) {
         final var expressions = new ArrayList<ASTExpression>();
 
+        var previousType = current.type();
+        var count        = 0;
         while (current.type() != TokenType.EOF && current.type() != end) {
+            if (current.type() == previousType) {
+                if (count >= 10) {
+                    advance();
+                    count = 0;
+                    System.err.println("1 >>>>>>> " + previousType + " <<<<<<<");
+                    continue;
+                }
+                ++count;
+            } else {
+                previousType = current.type();
+            }
             expressions.add(parseExpression());
         }
 
