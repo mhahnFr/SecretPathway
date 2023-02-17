@@ -35,11 +35,20 @@ import java.util.*;
  * @since 02.02.23
  */
 public class Parser {
+    /** The {@link Tokenizer} used by this parser. */
     private final Tokenizer tokenizer;
+    /** The previous {@link Token} in the stream.  */
     private Token previous;
+    /** The {@link Token} currently in the stream. */
     private Token current;
+    /** The next {@link Token} in the stream.      */
     private Token next;
 
+    /**
+     * Initializes this parser using the given source code.
+     *
+     * @param source the source code to be parsed
+     */
     public Parser(final String source) {
         final var stream = new StringStream(source);
         tokenizer = new Tokenizer(stream);
@@ -47,18 +56,34 @@ public class Parser {
         previous = new StartToken(stream.createStreamPosition(0));
     }
 
+    /**
+     * Advances the given amount of times.
+     *
+     * @param count how often to advance
+     * @see #advance()
+     */
     private void advance(final int count) {
         for (int i = 0; i < count; ++i) {
             advance();
         }
     }
 
+    /**
+     * Advances the stream by one token.
+     */
     private void advance() {
         previous = current;
         current  = next;
         next     = tokenizer.nextToken();
     }
 
+    /**
+     * Combines the given {@link ASTExpression}s.
+     *
+     * @param main  the main expression
+     * @param parts the parts to complete the main expression
+     * @return an {@link ASTCombination} of the given expressions
+     */
     private ASTExpression combine(ASTExpression main, List<ASTExpression> parts) {
         final var list = new Vector<ASTExpression>(parts.size() + 1);
         list.add(main);
@@ -66,6 +91,13 @@ public class Parser {
         return new ASTCombination(list);
     }
 
+    /**
+     * Combines the given {@link ASTExpression}s.
+     *
+     * @param main  the main expression
+     * @param parts the parts to complete the main expression
+     * @return an {@link ASTCombination} of the given expressions
+     */
     private ASTExpression combine(ASTExpression main, ASTExpression... parts) {
         final var list = new Vector<ASTExpression>(parts.length + 1);
         list.add(main);
@@ -73,6 +105,12 @@ public class Parser {
         return new ASTCombination(list);
     }
 
+    /**
+     * Parses an include statement ({@code #include "foo"}). The 'include'
+     * keyword is expected to be already consumed.
+     *
+     * @return the AST representation of the parsed include statement
+     */
     private ASTExpression parseInclude() {
         final ASTExpression toReturn;
 
@@ -88,6 +126,12 @@ public class Parser {
         return toReturn;
     }
 
+    /**
+     * Parses an inherit statement ({@code inherit "secure/base";}). The
+     * 'inherit' keyword is expected to be already consumed.
+     *
+     * @return the AST representation of the inherit statement
+     */
     private ASTExpression parseInherit() {
         final ASTExpression toReturn;
 
@@ -112,6 +156,14 @@ public class Parser {
         return toReturn;
     }
 
+    /**
+     * Parses a class. The 'class' keyword is expected to be
+     * already consumed. The class can be defined in either
+     * shorthand form ({@code class foo "secure/base";}) or the
+     * traditional form ({@code class foo { [...] };}).
+     *
+     * @return the AST representation of the class
+     */
     private ASTExpression parseClass() {
         final var parts = new Vector<ASTExpression>(3);
         final var begin = current.beginPos();
@@ -157,6 +209,13 @@ public class Parser {
         return c;
     }
 
+    /**
+     * Returns whether the given {@link TokenType} represents
+     * a modifier keyword.
+     *
+     * @param type the type to be checked
+     * @return whether the given type represents a modifier
+     */
     private boolean isModifier(final TokenType type) {
         return type == TokenType.PRIVATE    ||
                type == TokenType.PROTECTED  ||
@@ -166,6 +225,11 @@ public class Parser {
                type == TokenType.NOSAVE;
     }
 
+    /**
+     * Parses the modifiers currently in the stream.
+     *
+     * @return a list with AST representations of the read modifiers
+     */
     private List<ASTExpression> parseModifiers() {
         final var toReturn = new Vector<ASTExpression>();
 
@@ -184,6 +248,12 @@ public class Parser {
         return toReturn;
     }
 
+    /**
+     * Returns whether the given {@link TokenType} is a type.
+     *
+     * @param type the type to be checked
+     * @return whether the given type represents a type
+     */
     private boolean isType(final TokenType type) {
         return type == TokenType.VOID           ||
                type == TokenType.CHAR_KEYWORD   ||
@@ -199,6 +269,13 @@ public class Parser {
                type == TokenType.OPERATOR;
     }
 
+    /**
+     * Parses a type. Types can come single ({@code int}),
+     * they can be array types ({@code int *} and {@code int []})
+     * or they can be function reference types ({@code int (int, int[], ...)}).
+     *
+     * @return the AST representation of the type currently in the stream
+     */
     private ASTExpression parseType() {
         ASTExpression toReturn = null;
         final var type         = current;
@@ -270,26 +347,39 @@ public class Parser {
         }
     }
 
+    /**
+     * Returns whether the given {@link Token} is a stop
+     * token.
+     *
+     * @param token the token to be checked
+     * @return whether the token should stop a parsing loop
+     */
     private boolean isStopToken(final Token token) {
         final var type = token.type();
 
-        return type == TokenType.EOF ||
-                type == TokenType.RIGHT_PAREN ||
-                type == TokenType.RIGHT_BRACKET ||
-                type == TokenType.RIGHT_CURLY ||
-                type == TokenType.COLON ||
-                type == TokenType.SEMICOLON ||
-                type == TokenType.ASSIGNMENT ||
-                type == TokenType.ASSIGNMENT_PLUS ||
-                type == TokenType.ASSIGNMENT_MINUS ||
-                type == TokenType.ASSIGNMENT_STAR ||
-                type == TokenType.ASSIGNMENT_SLASH ||
-                type == TokenType.ASSIGNMENT_PERCENT ||
-                type == TokenType.ELSE ||
-                type == TokenType.WHILE ||
-                type == TokenType.CATCH;
+        return type == TokenType.EOF                ||
+               type == TokenType.RIGHT_PAREN        ||
+               type == TokenType.RIGHT_BRACKET      ||
+               type == TokenType.RIGHT_CURLY        ||
+               type == TokenType.COLON              ||
+               type == TokenType.SEMICOLON          ||
+               type == TokenType.ASSIGNMENT         ||
+               type == TokenType.ASSIGNMENT_PLUS    ||
+               type == TokenType.ASSIGNMENT_MINUS   ||
+               type == TokenType.ASSIGNMENT_STAR    ||
+               type == TokenType.ASSIGNMENT_SLASH   ||
+               type == TokenType.ASSIGNMENT_PERCENT ||
+               type == TokenType.ELSE               ||
+               type == TokenType.WHILE              ||
+               type == TokenType.CATCH;
     }
 
+    /**
+     * Parses a name. A name can be almost anything ({@code test_no_1},
+     * however, it can also be an operator identifier ({@code operator <<}).
+     *
+     * @return the AST representation of the next name in the stream
+     */
     private ASTExpression parseName() {
         final ASTExpression toReturn;
 
@@ -325,6 +415,15 @@ public class Parser {
         return toReturn;
     }
 
+    /**
+     * Parses a top level variable definition. Variables can be assigned a
+     * value immediately ({@code private int i = 42;}) or not ({@code deprecated int i;}).
+     *
+     * @param modifiers the modifiers of the variable
+     * @param type      the type of the variable
+     * @param name      the name of the variable
+     * @return the AST representation of the read variable
+     */
     private ASTExpression parseVariableDefinition(final List<ASTExpression> modifiers,
                                                   final ASTExpression       type,
                                                   final ASTExpression       name) {
@@ -346,6 +445,12 @@ public class Parser {
         return toReturn;
     }
 
+    /**
+     * Parses the parameter definitions of a defined function. The opening
+     * parenthesis is expected to be already consumed. Example: {@code int i, bool[] a, ...)}.
+     *
+     * @return a list with the AST representations of the read parameter definitions
+     */
     private List<ASTExpression> parseParameterDefinitions() {
         final var toReturn = new ArrayList<ASTExpression>();
 
@@ -403,6 +508,11 @@ public class Parser {
         return toReturn;
     }
 
+    /**
+     * Parses an expression surrounded by parentheses ({@code ( <expression> )}).
+     *
+     * @return the AST representation of the parenthesized expression
+     */
     private ASTExpression parseParenthesizedExpression() {
         final var parts = new Vector<ASTExpression>(2);
 
@@ -424,6 +534,12 @@ public class Parser {
         return expression;
     }
 
+    /**
+     * Parses an if statement. Example: {@code if ( <condition> ) <instruction>}.
+     * It can optionally be followed by an else statement: {@code ... else <instruction>}.
+     *
+     * @return the AST representation of the full if statement
+     */
     private ASTExpression parseIf() {
         final var begin = current.beginPos();
 
@@ -443,6 +559,11 @@ public class Parser {
         return new ASTIf(begin, condition, instruction, elseInstruction);
     }
 
+    /**
+     * Parses a while statement ({@code while ( <condition> ) <instruction>}).
+     *
+     * @return the AST representation of the full while statement
+     */
     private ASTExpression parseWhile() {
         final var begin = current.beginPos();
 
@@ -454,6 +575,11 @@ public class Parser {
         return new ASTWhile(begin, condition, body, false);
     }
 
+    /**
+     * Parses a do-while statement ({@code do <instruction> while ( <condition> );}).
+     *
+     * @return the AST representation of the full do-while statement
+     */
     private ASTExpression parseDo() {
         final var begin = current.beginPos();
 
@@ -477,6 +603,12 @@ public class Parser {
         return loop;
     }
 
+    /**
+     * Parses a for statement ({@code for ( <begin expression> ; <condition> ; <after expression>) <instruction>}).
+     * Foreach loops are parsed by this method as well ({@code foreach ( <variable> : <expression> ) <instruction>}).
+     *
+     * @return the AST representation of the full for statement
+     */
     private ASTExpression parseFor() {
         final var parts = new Vector<ASTExpression>();
         final var begin = current.beginPos();
@@ -523,6 +655,12 @@ public class Parser {
         return loop;
     }
 
+    /**
+     * Parses a switch statement
+     * ({@code switch ( <expression> ) { case <expression> : <instruction> ... default : <instruction> } }).
+     *
+     * @return the AST representation of the full switch statement
+     */
     private ASTExpression parseSwitch() {
         final var begin = current.beginPos();
 
@@ -584,6 +722,11 @@ public class Parser {
         return toReturn;
     }
 
+    /**
+     * Parses a return statement ({@code return <expression> ;}).
+     *
+     * @return the AST representation of the return statement
+     */
     private ASTExpression parseReturn() {
         final ASTExpression toReturn;
 
@@ -597,6 +740,13 @@ public class Parser {
         return toReturn;
     }
 
+    /**
+     * Parses a try-catch statement ({@code try <instruction> catch <instruction>}).
+     * The catch block can have a reference to the caught object:
+     * {@code ... catch ( <variable> ) ...}.
+     *
+     * @return the AST representation of the full try-catch statement
+     */
     private ASTExpression parseTryCatch() {
         final var parts = new Vector<ASTExpression>(3);
         final var begin = current.beginPos();
@@ -640,6 +790,11 @@ public class Parser {
         return tryCatch;
     }
 
+    /**
+     * Parses a new statement ({@code new("foo", <arguments>)}).
+     *
+     * @return the AST representation of the full new statement
+     */
     private ASTExpression parseNew() {
         advance();
 
@@ -677,6 +832,15 @@ public class Parser {
         return result;
     }
 
+    /**
+     * Parses a cast statement if the streamed tokens represent one.
+     * Returns {@code null} if the next tokens do not represent a
+     * cast statement.
+     *
+     * @param priority the priority to be used to parse the statement
+     * @return either the AST representation of the cast expression or {@code null}
+     * @see #parseCast(int)
+     */
     private ASTExpression parseMaybeCast(final int priority) {
         if (next.type() == TokenType.RIGHT_PAREN && (isType(current.type()) || current.type() == TokenType.IDENTIFIER)) {
             return parseCast(priority);
@@ -684,6 +848,12 @@ public class Parser {
         return null;
     }
 
+    /**
+     * Parses a cast statement ({@code ( <type> )}).
+     *
+     * @param priority the priority to be used to parse the statement
+     * @return the AST representation of the cast statement
+     */
     private ASTExpression parseCast(final int priority) {
         final var begin = previous.beginPos();
         final var type  = parseType();
@@ -703,6 +873,12 @@ public class Parser {
         return cast;
     }
 
+    /**
+     * Parses a simple expression.
+     *
+     * @param priority the priority of the statement
+     * @return the AST representation of the simple expression
+     */
     private ASTExpression parseSimpleExpression(final int priority) {
         final ASTExpression toReturn;
 
@@ -800,6 +976,11 @@ public class Parser {
         return toReturn;
     }
 
+    /**
+     * Parses a mapping expression ({@code [ <expression>, <expression> ]}).
+     *
+     * @return the AST representation of the mapping statement
+     */
     private ASTExpression parseMapping() {
         final var begin = current.beginPos();
         advance();
@@ -821,6 +1002,11 @@ public class Parser {
         return mapping;
     }
 
+    /**
+     * Parses an array expression ({@code { <expression>, <expression> }}).
+     *
+     * @return the AST representation of the array expression.
+     */
     private ASTExpression parseArray() {
         final var begin = current.beginPos();
         advance();
@@ -842,6 +1028,13 @@ public class Parser {
         return array;
     }
 
+    /**
+     * Parses the comma separated call arguments until the given end
+     * {@link TokenType} is reached ({@code <expression>, <expression> <end>}).
+     *
+     * @param end the end {@link TokenType}
+     * @return a list with the AST representations of the parsed arguments
+     */
     private List<ASTExpression> parseCallArguments(final TokenType end) {
         final var list = new ArrayList<ASTExpression>();
 
@@ -860,6 +1053,11 @@ public class Parser {
         return list;
     }
 
+    /**
+     * Parses a function call ({@code foo( <arguments> )}).
+     *
+     * @return the AST representation of the function call
+     */
     private ASTExpression parseFunctionCall() {
         final ASTExpression toReturn;
 
@@ -891,6 +1089,15 @@ public class Parser {
         return toReturn;
     }
 
+    /**
+     * Parses a subscript expression. The subscript can either be traditional
+     * ({@code ... [ <expression> ]}) and might be assigned: {@code ... = <expression>}.
+     * It can also be a range expression: {@code ...[ <expression> .. <expression> ]}.
+     * However, range subscripts cannot be assigned.
+     *
+     * @param priority the priority used to parse the statement
+     * @return the AST representation of the subscript statement
+     */
     private ASTExpression parseSubscript(final int priority) {
         final ASTExpression toReturn;
 
@@ -935,6 +1142,11 @@ public class Parser {
         return toReturn;
     }
 
+    /**
+     * Parses a ternary ({@code ... ? <expression> : <expression>}).
+     *
+     * @return the AST representation of the ternary
+     */
     private ASTExpression parseTernary() {
         advance();
 
@@ -958,6 +1170,13 @@ public class Parser {
         return toReturn;
     }
 
+    /**
+     * Parses an operation.
+     *
+     * @param priority the priority used to parse the operation
+     * @return the AST representation of the operation
+     * @see #isOperator(TokenType)
+     */
     private ASTExpression parseOperation(final int priority) {
         final var type = current.type();
 
@@ -1046,6 +1265,12 @@ public class Parser {
                type == TokenType.IS;
     }
 
+    /**
+     * Parses an expression that can be found inside of functions.
+     *
+     * @param priority the priority to be used to parse the statement.
+     * @return the AST representation of the parsed expression
+     */
     private ASTExpression parseBlockExpression(final int priority) {
         final ASTExpression lhs;
 
@@ -1092,6 +1317,12 @@ public class Parser {
         return previousExpression;
     }
 
+    /**
+     * Asserts a semicolon follows after the given expression.
+     *
+     * @param expression the expression to be followed by a semicolon
+     * @return the AST representation of the semicolon-ed expression
+     */
     private ASTExpression assertSemicolon(final ASTExpression expression) {
         final ASTExpression toReturn;
 
@@ -1105,6 +1336,12 @@ public class Parser {
         return toReturn;
     }
 
+    /**
+     * Checks and parses a variable declaration. If no variable
+     * declaration follows, {@code null} is returned.
+     *
+     * @return the AST representation of the variable declaration or {@code null}
+     */
     private ASTExpression parseMaybeVariableDeclaration() {
         if (current.type() == TokenType.LET ||
                 ((current.type() == TokenType.IDENTIFIER || isType(current.type())) && next.type() == TokenType.IDENTIFIER) ||
@@ -1114,6 +1351,12 @@ public class Parser {
         return null;
     }
 
+    /**
+     * Parses a variable declaration ({@code <type> <name>} or {@code let <name> : <type>}).
+     * Let declarations fo not need a type definition: {@code let <name>}.
+     *
+     * @return the AST representation of the variable declaration
+     */
     private ASTExpression parseFancyVariableDeclaration() {
         final ASTExpression variable;
 
@@ -1150,18 +1393,34 @@ public class Parser {
         return toReturn;
     }
 
+    /**
+     * Parses a break statement ({@code break ;}).
+     *
+     * @return the AST representation of the statement.
+     */
     private ASTExpression parseBreak() {
         final var b = new ASTBreak(current);
         advance();
         return assertSemicolon(b);
     }
 
+    /**
+     * Parses a continue statement ({@code continue ;}).
+     *
+     * @return the AST representation of the statement
+     */
     private ASTExpression parseContinue() {
         final var c = new ASTContinue(current);
         advance();
         return assertSemicolon(c);
     }
 
+    /**
+     * Parses an instruction. An instruction can be an expression
+     * or an instruction (such as if-statements).
+     *
+     * @return the AST representation of the parsed instruction
+     */
     private ASTExpression parseInstruction() {
         final ASTExpression toReturn;
 
@@ -1190,6 +1449,11 @@ public class Parser {
         return toReturn;
     }
 
+    /**
+     * Parses a block ({@code { <statements> }}).
+     *
+     * @return the AST representation of the parsed block
+     */
     private ASTExpression parseBlock() {
         final var block = new ArrayList<ASTExpression>();
         final var begin = current.beginPos();
@@ -1225,6 +1489,14 @@ public class Parser {
         return new ASTBlock(begin, current.endPos(), block);
     }
 
+    /**
+     * Parses a function definition ({@code <modifiers> <return type> <name> ( <parameters> ) <block>}).
+     *
+     * @param modifiers the modifiers of the function
+     * @param type      the return type of the function
+     * @param name      tha name of the function
+     * @return the AST representation of the function definition
+     */
     private ASTExpression parseFunctionDefinition(final List<ASTExpression> modifiers,
                                                   final ASTExpression       type,
                                                   final ASTExpression       name) {
@@ -1234,6 +1506,12 @@ public class Parser {
         return new ASTFunctionDefinition(modifiers, type, name, parameters, body);
     }
 
+    /**
+     * Parses a top level expression as function definition or as variable
+     * definition.
+     *
+     * @return the AST representation of the parsed expression
+     */
     private ASTExpression parseFileExpression() {
         final var modifiers = parseModifiers();
         final var type      = parseType();
@@ -1247,6 +1525,12 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses a first level expression. First level statements include: {@code #include},
+     * {@code inherit}, {@code class} statements and variable and function definitions.
+     *
+     * @return the AST representation of the parsed top level expression
+     */
     private ASTExpression parseExpression() {
         if (current.type() == TokenType.INCLUDE) {
             return parseInclude();
@@ -1258,6 +1542,13 @@ public class Parser {
         return parseFileExpression();
     }
 
+    /**
+     * Parses the source code until the given end {@link TokenType}
+     * is reached.
+     *
+     * @param end the end {@link TokenType}
+     * @return a list with the AST representations of the parsed statements
+     */
     private List<ASTExpression> parse(final TokenType end) {
         final var expressions = new ArrayList<ASTExpression>();
 
@@ -1268,6 +1559,11 @@ public class Parser {
         return expressions;
     }
 
+    /**
+     * Parses the whole source code.
+     *
+     * @return an array with all expressions that have been read
+     */
     public ASTExpression[] parse() {
         return parse(TokenType.EOF).toArray(new ASTExpression[0]);
     }
