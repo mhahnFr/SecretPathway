@@ -308,7 +308,7 @@ public class Parser {
                 Token lastToken = null;
                 while (current.type() != TokenType.RIGHT_PAREN && !isStopToken(current)
                                                                && current.type() != TokenType.LEFT_CURLY) {
-                    if (Objects.equals(current, lastToken)) {
+                    if (current == lastToken) {
                         parts.add(new ASTWrong(current, "Unexpected token 5"));
                         advance();
                         continue;
@@ -1083,7 +1083,7 @@ public class Parser {
 
         Token lastToken = null;
         while (current.type() != end && !isStopToken(current)) {
-            if (Objects.equals(current, lastToken)) {
+            if (current == lastToken) {
                 list.add(new ASTWrong(current, "Unexpected token 4"));
                 advance();
                 continue;
@@ -1362,7 +1362,7 @@ public class Parser {
 
         Token lastToken = null;
         for (TokenType operatorType = current.type(); isOperator(operatorType) && !isStopToken(current); operatorType = current.type()) {
-            if (Objects.equals(current, lastToken)) {
+            if (current == lastToken) {
                 previousExpression = combine(previousExpression, new ASTWrong(current, "Unexpected token 3"));
                 advance();
                 continue;
@@ -1528,7 +1528,7 @@ public class Parser {
         Token lastToken = null;
         while (current.type() != TokenType.RIGHT_CURLY
             && current.type() != TokenType.EOF) {
-            if (Objects.equals(current, lastToken)) {
+            if (current == lastToken) {
                 block.add(new ASTWrong(current, "Unexpected token 2"));
                 advance();
                 continue;
@@ -1611,7 +1611,7 @@ public class Parser {
 
         Token lastToken = null;
         while (current.type() != TokenType.EOF && current.type() != end) {
-            if (Objects.equals(current, lastToken)) {
+            if (current == lastToken) {
                 expressions.add(new ASTWrong(current, "Unexpected token 1"));
                 advance();
                 continue;
