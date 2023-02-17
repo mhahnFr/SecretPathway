@@ -874,6 +874,23 @@ public class Parser {
     }
 
     /**
+     * Parses a string expression ({@code "foo"}). Multiple following
+     * strings are concatenated ({@code "foo" "bar"}).
+     *
+     * @return the AST representation of the read strings
+     */
+    private ASTExpression parseStrings() {
+        final var toReturn = new ArrayList<ASTExpression>();
+
+        while (current.type() == TokenType.STRING) {
+            toReturn.add(new ASTString(current));
+            advance();
+        }
+
+        return new ASTStrings(toReturn);
+    }
+
+    /**
      * Parses a simple expression.
      *
      * @param priority the priority of the statement
@@ -942,12 +959,12 @@ public class Parser {
 
             case NIL          -> { toReturn = new ASTNil(current);       advance(); }
             case THIS         -> { toReturn = new ASTThis(current);      advance(); }
-            case STRING       -> { toReturn = new ASTString(current);    advance(); }
             case SYMBOL       -> { toReturn = new ASTSymbol(current);    advance(); }
             case INTEGER      -> { toReturn = new ASTInteger(current);   advance(); }
             case ELLIPSIS     -> { toReturn = new ASTEllipsis(current);  advance(); }
             case CHARACTER    -> { toReturn = new ASTCharacter(current); advance(); }
             case NEW          ->   toReturn = parseNew();
+            case STRING       ->   toReturn = parseStrings();
             case LEFT_CURLY   ->   toReturn = parseArray();
             case LEFT_BRACKET ->   toReturn = parseMapping();
 
