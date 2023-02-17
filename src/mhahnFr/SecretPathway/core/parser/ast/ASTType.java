@@ -113,5 +113,7 @@ public enum ASTType {
     /** Represents a function reference type.     */
     FUNCTION_REFERENCE,
     /** Represents an operator identifier.        */
-    OPERATOR_NAME
+    OPERATOR_NAME,
+    /** Represents a string concatenation.        */
+    STRINGS
 }
