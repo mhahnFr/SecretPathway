@@ -304,8 +304,17 @@ public class Parser {
             if (current.type() == TokenType.LEFT_PAREN) {
                 advance();
                 final var callTypes = new ArrayList<ASTExpression>();
+
+                Token lastToken = null;
                 while (current.type() != TokenType.RIGHT_PAREN && !isStopToken(current)
                                                                && current.type() != TokenType.LEFT_CURLY) {
+                    if (Objects.equals(current, lastToken)) {
+                        parts.add(new ASTWrong(current, "Unexpected token 5"));
+                        advance();
+                        continue;
+                    } else {
+                        lastToken = current;
+                    }
                     if (current.type() == TokenType.DOT      ||
                         current.type() == TokenType.ELLIPSIS ||
                         current.type() == TokenType.RANGE) {
@@ -1072,20 +1081,14 @@ public class Parser {
     private List<ASTExpression> parseCallArguments(final TokenType end) {
         final var list = new ArrayList<ASTExpression>();
 
-        var previousType = current.type();
-        var count        = 0;
+        Token lastToken = null;
         while (current.type() != end && !isStopToken(current)) {
-            if (current.type() == previousType) {
-                if (count >= 10) {
-                    System.err.println("4 >>>>>>> " + previousType + " <<<<<<<");
-                    advance();
-                    count = 0;
-                    continue;
-                } else {
-                    ++count;
-                }
+            if (Objects.equals(current, lastToken)) {
+                list.add(new ASTWrong(current, "Unexpected token 4"));
+                advance();
+                continue;
             } else {
-                previousType = current.type();
+                lastToken = current;
             }
             list.add(parseBlockExpression(99));
             if (current.type() != TokenType.COMMA && current.type() != end) {
@@ -1357,20 +1360,14 @@ public class Parser {
 
         ASTExpression previousExpression = lhs;
 
-        var previousType = current.type();
-        var count        = 0;
+        Token lastToken = null;
         for (TokenType operatorType = current.type(); isOperator(operatorType) && !isStopToken(current); operatorType = current.type()) {
-            if (current.type() == previousType) {
-                if (count >= 10) {
-                    System.err.println("3 >>>>>>> " + previousType + " <<<<<<<");
-                    advance();
-                    count = 0;
-                    continue;
-                } else {
-                    ++count;
-                }
+            if (Objects.equals(current, lastToken)) {
+                previousExpression = combine(previousExpression, new ASTWrong(current, "Unexpected token 3"));
+                advance();
+                continue;
             } else {
-                previousType = current.type();
+                lastToken = current;
             }
             final var rhs = parseOperation(priority);
             if (rhs == null) break;
@@ -1528,20 +1525,15 @@ public class Parser {
             advance();
         }
 
-        var previousType = current.type();
-        var count        = 0;
+        Token lastToken = null;
         while (current.type() != TokenType.RIGHT_CURLY
             && current.type() != TokenType.EOF) {
-            if (current.type() == previousType) {
-                if (count >= 10) {
-                    advance();
-                    count = 0;
-                    System.err.println("2 >>>>>>> " + previousType + " <<<<<<<");
-                    continue;
-                }
-                ++count;
+            if (Objects.equals(current, lastToken)) {
+                block.add(new ASTWrong(current, "Unexpected token 2"));
+                advance();
+                continue;
             } else {
-                previousType = current.type();
+                lastToken = current;
             }
             block.add(parseInstruction());
         }
@@ -1617,19 +1609,14 @@ public class Parser {
     private List<ASTExpression> parse(final TokenType end) {
         final var expressions = new ArrayList<ASTExpression>();
 
-        var previousType = current.type();
-        var count        = 0;
+        Token lastToken = null;
         while (current.type() != TokenType.EOF && current.type() != end) {
-            if (current.type() == previousType) {
-                if (count >= 10) {
-                    advance();
-                    count = 0;
-                    System.err.println("1 >>>>>>> " + previousType + " <<<<<<<");
-                    continue;
-                }
-                ++count;
+            if (Objects.equals(current, lastToken)) {
+                expressions.add(new ASTWrong(current, "Unexpected token 1"));
+                advance();
+                continue;
             } else {
-                previousType = current.type();
+                lastToken = current;
             }
             expressions.add(parseExpression());
         }
