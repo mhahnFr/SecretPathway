@@ -19,6 +19,7 @@
 
 package mhahnFr.SecretPathway.gui.editor.theme;
 
+import mhahnFr.SecretPathway.core.parser.ast.ASTType;
 import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
 import mhahnFr.utils.gui.abstraction.FStyle;
 
@@ -35,6 +36,7 @@ import java.util.Map;
 public class DefaultTheme implements SPTheme {
     /** The mapping containing the styles and token types. */
     private final Map<TokenType, FStyle> styles = new EnumMap<>(TokenType.class);
+    private final Map<ASTType, FStyle> astStyles = new EnumMap<>(ASTType.class);
 
     /**
      * Initializes this default theme.
@@ -119,6 +121,11 @@ public class DefaultTheme implements SPTheme {
 
         styles.put(TokenType.COMMENT_BLOCK, comment);
         styles.put(TokenType.COMMENT_LINE,  comment);
+    }
+
+    @Override
+    public FStyle styleFor(ASTType astType) {
+        return astStyles.getOrDefault(astType, null);
     }
 
     @Override

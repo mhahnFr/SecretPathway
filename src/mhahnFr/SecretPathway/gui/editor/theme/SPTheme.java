@@ -19,6 +19,7 @@
 
 package mhahnFr.SecretPathway.gui.editor.theme;
 
+import mhahnFr.SecretPathway.core.parser.ast.ASTType;
 import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
 import mhahnFr.utils.gui.abstraction.FStyle;
 
@@ -38,6 +39,15 @@ public interface SPTheme {
      */
     FStyle styleFor(final TokenType tokenType);
 
+    /**
+     * Generates the {@link FStyle} for the given {@link ASTType}.
+     *
+     * @param astType the type of the AST node to be highlighted
+     * @return the style used for the highlighting
+     */
+    FStyle styleFor(final ASTType astType);
+
+    @Deprecated
     default FStyle getErrorStyle() {
         final var toReturn = new FStyle();
 

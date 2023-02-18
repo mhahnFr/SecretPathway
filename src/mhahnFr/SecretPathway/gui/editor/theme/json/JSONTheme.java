@@ -19,6 +19,7 @@
 
 package mhahnFr.SecretPathway.gui.editor.theme.json;
 
+import mhahnFr.SecretPathway.core.parser.ast.ASTType;
 import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
 import mhahnFr.utils.StringStream;
@@ -28,10 +29,7 @@ import mhahnFr.utils.json.JSONParser;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class represents a transferable theme for the
@@ -48,21 +46,34 @@ public class JSONTheme implements SPTheme {
      * {@link FStyle} to be used or another {@link TokenType}
      * whose style is then inherited.
      */
-    private Map<TokenType, String> tokenStyles = new EnumMap<>(TokenType.class);
+    private Map<String, String> tokenStyles = new HashMap<>();
     /** A mapping of the possible types to the appropriate {@link FStyle}. */
     @JSONNoSerialization
-    private Map<TokenType, FStyle> cached;
+    private Map<TokenType, FStyle> cachedTokenTypes;
+    @JSONNoSerialization
+    private Map<ASTType, FStyle> cachedASTTypes;
     /** The default style used if a style is not defined.                  */
     @JSONNoSerialization
     private final FStyle defaultStyle = new FStyle();
 
     @Override
     public FStyle styleFor(TokenType tokenType) {
-        if (cached == null) {
+        if (cachedTokenTypes == null) {
             validate();
         }
 
-        final var style = cached.get(tokenType);
+        final var style = cachedTokenTypes.get(tokenType);
+
+        return style == null ? defaultStyle : style;
+    }
+
+    @Override
+    public FStyle styleFor(ASTType astType) {
+        if (cachedASTTypes == null) {
+            validate();
+        }
+
+        final var style = cachedASTTypes.get(astType);
 
         return style == null ? defaultStyle : style;
     }
@@ -87,17 +98,27 @@ public class JSONTheme implements SPTheme {
      * Validates and caches the stored information.
      */
     private void validate() {
-        if (cached == null) {
-            cached = new EnumMap<>(TokenType.class);
+        if (cachedTokenTypes == null) {
+            cachedTokenTypes = new EnumMap<>(TokenType.class);
         } else {
-            cached.clear();
+            cachedTokenTypes.clear();
+        }
+        if (cachedASTTypes == null) {
+            cachedASTTypes = new EnumMap<>(ASTType.class);
+        } else {
+            cachedASTTypes.clear();
         }
 
         for (final var entry : tokenStyles.entrySet()) {
             final var style = findStyleBy(entry.getValue());
 
             if (style != null) {
-                cached.put(entry.getKey(), style.getNative());
+                final var key = entry.getKey();
+                try {
+                    cachedTokenTypes.put(TokenType.valueOf(key), style.getNative());
+                } catch (IllegalArgumentException __) {
+                    cachedASTTypes.put(ASTType.valueOf(key), style.getNative());
+                }
             }
         }
     }
