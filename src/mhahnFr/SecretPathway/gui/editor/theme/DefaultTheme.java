@@ -122,6 +122,17 @@ public class DefaultTheme implements SPTheme {
 
         styles.put(TokenType.COMMENT_BLOCK, comment);
         styles.put(TokenType.COMMENT_LINE,  comment);
+
+        final var errorStyle = new FStyle();
+        errorStyle.setForeground(Color.red);
+        errorStyle.setUnderlined(true);
+
+        astStyles.put(ASTType.WRONG, errorStyle);
+
+        final var missingStyle = new FStyle();
+        missingStyle.setBackground(Color.red);
+
+        astStyles.put(ASTType.MISSING, missingStyle);
     }
 
     @Override
