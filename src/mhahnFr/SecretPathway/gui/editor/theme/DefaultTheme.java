@@ -36,6 +36,7 @@ import java.util.Map;
 public class DefaultTheme implements SPTheme {
     /** The mapping containing the styles and token types. */
     private final Map<TokenType, FStyle> styles = new EnumMap<>(TokenType.class);
+    /** The map with the styles and AST types.             */
     private final Map<ASTType, FStyle> astStyles = new EnumMap<>(ASTType.class);
 
     /**

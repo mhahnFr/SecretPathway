@@ -39,7 +39,7 @@ import java.util.*;
  * @since 14.01.23
  */
 public class JSONTheme implements SPTheme {
-    /** The list of the used styles.                                       */
+    /** The list of the used styles.                                            */
     private List<JSONStyle> styles = new ArrayList<>();
     /**
      * Maps the {@link TokenType}s to either the name of the
@@ -47,12 +47,13 @@ public class JSONTheme implements SPTheme {
      * whose style is then inherited.
      */
     private Map<String, String> tokenStyles = new HashMap<>();
-    /** A mapping of the possible types to the appropriate {@link FStyle}. */
+    /** A mapping of the possible types to the appropriate {@link FStyle}.      */
     @JSONNoSerialization
     private Map<TokenType, FStyle> cachedTokenTypes;
+    /** A mapping of the possible AST types and the appropriate {@link FStyle}. */
     @JSONNoSerialization
     private Map<ASTType, FStyle> cachedASTTypes;
-    /** The default style used if a style is not defined.                  */
+    /** The default style used if a style is not defined.                       */
     @JSONNoSerialization
     private final FStyle defaultStyle = new FStyle();
 
