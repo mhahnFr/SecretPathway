@@ -46,14 +46,4 @@ public interface SPTheme {
      * @return the style used for the highlighting
      */
     FStyle styleFor(final ASTType astType);
-
-    @Deprecated
-    default FStyle getErrorStyle() {
-        final var toReturn = new FStyle();
-
-        toReturn.setForeground(java.awt.Color.red);
-        toReturn.setUnderlined(true);
-
-        return toReturn;
-    }
 }

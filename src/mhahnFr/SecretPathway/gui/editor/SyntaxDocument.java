@@ -165,8 +165,11 @@ public class SyntaxDocument extends DefaultStyledDocument {
                     switch (expression.getASTType()) {
                         case MISSING, WRONG -> {
                             errorRanges.put(new Pair<>(expression.getBegin().position(), expression.getEnd().position()), errorText);
-                            setCharacterAttributes(expression.getBegin().position(), expression.getEnd().position() - expression.getBegin().position(), theme.getErrorStyle().asStyle(def), true);
                         }
+                    }
+                    final var style = theme.styleFor(expression.getASTType());
+                    if (style != null) {
+                        setCharacterAttributes(expression.getBegin().position(), expression.getEnd().position() - expression.getBegin().position(), style.asStyle(def), true);
                     }
                 });
             }
