@@ -48,6 +48,7 @@ public final class Settings {
     private final List<DarkModeListener> darkListeners;
     /** The {@link SettingsListener}s.           */
     private final List<SettingsListener> listeners;
+    /** The cached editor theme.                 */
     private SPTheme cachedTheme;
 
     /**
@@ -262,6 +263,15 @@ public final class Settings {
         return preferences.getInt(Keys.USE_UTF8, 1) == 1;
     }
 
+    /**
+     * Returns the theme that should be used by the editor.
+     * If a cached theme is available it is returned. Otherwise,
+     * the theme in the stored path is opened.
+     * If no path is stored or the file could not be read, a
+     * {@link DefaultTheme} is cached and returned.
+     *
+     * @return the theme to be used by the editor
+     */
     public SPTheme getEditorTheme() {
         if (cachedTheme == null) {
             final var editorThemePath = getEditorThemePath();
@@ -389,7 +399,8 @@ public final class Settings {
     }
 
     /**
-     * Sets the path to the theme used for the editor.
+     * Sets the path to the theme used for the editor. Invalidates
+     * the cached theme.
      *
      * @param path the path
      * @return this instance
@@ -398,6 +409,14 @@ public final class Settings {
         return setEditorTheme(path, null);
     }
 
+    /**
+     * Sets the path to the editor theme and caches the given
+     * {@link SPTheme}.
+     *
+     * @param path the path
+     * @param cache the theme to be cached
+     * @return this instance
+     */
     public Settings setEditorTheme(final String path, final SPTheme cache) {
         callListeners(Keys.EDITOR_THEME_PATH, path);
         preferences.put(Keys.EDITOR_THEME_PATH, path == null ? "" : path);

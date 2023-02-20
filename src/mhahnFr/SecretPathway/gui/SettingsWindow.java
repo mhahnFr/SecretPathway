@@ -48,14 +48,15 @@ import java.util.Objects;
  * @since 09.01.23
  */
 public class SettingsWindow extends JDialog implements DarkModeListener {
-    /** The list with all documents enabling their dark mode. */
+    /** The list with all documents enabling their dark mode.     */
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
-    /** Convenience reference to the settings object.         */
+    /** Convenience reference to the settings object.             */
     private final Settings settings = Settings.getInstance();
-    /** The button used to choose a theme file.               */
+    /** The button used to choose a theme file.                   */
     private JButton themeButton;
-    /** The combo box used for choosing the theme.            */
+    /** The combo box used for choosing the theme.                */
     private JComboBox<String> themeBox;
+    /** The last {@link SPTheme} that has been successfully read. */
     private SPTheme lastRead;
 
     /**
