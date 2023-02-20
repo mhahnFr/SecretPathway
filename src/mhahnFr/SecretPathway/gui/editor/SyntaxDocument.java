@@ -20,12 +20,12 @@
 package mhahnFr.SecretPathway.gui.editor;
 
 import mhahnFr.SecretPathway.core.Settings;
-import mhahnFr.SecretPathway.core.parser.Parser;
-import mhahnFr.SecretPathway.core.parser.ast.ASTMissing;
-import mhahnFr.SecretPathway.core.parser.ast.ASTWrong;
-import mhahnFr.SecretPathway.core.parser.tokenizer.Token;
-import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
-import mhahnFr.SecretPathway.core.parser.tokenizer.Tokenizer;
+import mhahnFr.SecretPathway.core.lpc.parser.Parser;
+import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTMissing;
+import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTWrong;
+import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Token;
+import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
+import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Tokenizer;
 import mhahnFr.SecretPathway.gui.editor.theme.DefaultTheme;
 import mhahnFr.SecretPathway.gui.editor.theme.json.JSONTheme;
 import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;

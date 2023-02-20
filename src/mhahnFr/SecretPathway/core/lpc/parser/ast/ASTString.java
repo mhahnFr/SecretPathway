@@ -17,33 +17,42 @@
  * this program, see the file LICENSE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package mhahnFr.SecretPathway.gui.editor.theme;
+package mhahnFr.SecretPathway.core.lpc.parser.ast;
 
-import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTType;
-import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
-import mhahnFr.utils.gui.abstraction.FStyle;
+import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Token;
 
 /**
- * This interface defines the functionality of a syntax highlighting
- * theme.
+ * This class represents a string expression as an AST node.
  *
  * @author mhahnFr
- * @since 10.01.23
+ * @since 08.02.23
  */
-public interface SPTheme {
-    /**
-     * Generates the {@link FStyle} for the given {@link TokenType}.
-     *
-     * @param tokenType the token type to be highlighted
-     * @return the style used for the highlighting
-     */
-    FStyle styleFor(final TokenType tokenType);
+public class ASTString extends ASTExpression {
+    /** The represented value. */
+    private final String value;
 
     /**
-     * Generates the {@link FStyle} for the given {@link ASTType}.
+     * Constructs this AST node using the given token.
      *
-     * @param astType the type of the AST node to be highlighted
-     * @return the style used for the highlighting
+     * @param token the token to be represented as AST node
      */
-    FStyle styleFor(final ASTType astType);
+    public ASTString(final Token token) {
+        super(token.beginPos(), token.endPos(), ASTType.AST_STRING);
+
+        this.value = (String) token.payload();
+    }
+
+    /**
+     * Returns the represented value.
+     *
+     * @return the represented value
+     */
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String describe(int indentation) {
+        return super.describe(indentation) + " \"" + value + "\"";
+    }
 }

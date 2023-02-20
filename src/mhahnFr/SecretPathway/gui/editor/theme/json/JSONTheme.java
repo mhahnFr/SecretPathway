@@ -19,8 +19,8 @@
 
 package mhahnFr.SecretPathway.gui.editor.theme.json;
 
-import mhahnFr.SecretPathway.core.parser.ast.ASTType;
-import mhahnFr.SecretPathway.core.parser.tokenizer.TokenType;
+import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTType;
+import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
 import mhahnFr.utils.StringStream;
 import mhahnFr.utils.gui.abstraction.FStyle;
