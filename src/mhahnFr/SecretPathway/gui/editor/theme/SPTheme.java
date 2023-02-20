@@ -19,6 +19,7 @@
 
 package mhahnFr.SecretPathway.gui.editor.theme;
 
+import mhahnFr.SecretPathway.core.lpc.interpreter.InterpretationType;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTType;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.utils.gui.abstraction.FStyle;
@@ -46,4 +47,12 @@ public interface SPTheme {
      * @return the style used for the highlighting
      */
     FStyle styleFor(final ASTType astType);
+
+    /**
+     * Generates the {@link FStyle} for the given {@link InterpretationType}.
+     *
+     * @param interpretationType the type of the interpretation to be highlighted
+     * @return the style used for the highlighting
+     */
+    FStyle styleFor(final InterpretationType interpretationType);
 }

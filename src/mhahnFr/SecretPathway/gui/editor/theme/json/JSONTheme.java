@@ -19,6 +19,7 @@
 
 package mhahnFr.SecretPathway.gui.editor.theme.json;
 
+import mhahnFr.SecretPathway.core.lpc.interpreter.InterpretationType;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTType;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
@@ -53,6 +54,9 @@ public class JSONTheme implements SPTheme {
     /** A mapping of the possible AST types and the appropriate {@link FStyle}. */
     @JSONNoSerialization
     private Map<ASTType, FStyle> cachedASTTypes;
+    /** A mapping of the possible interpretation types and the {@link FStyle}.  */
+    @JSONNoSerialization
+    private Map<InterpretationType, FStyle> cachedInterpretationTypes;
     /** The default style used if a style is not defined.                       */
     @JSONNoSerialization
     private final FStyle defaultStyle = new FStyle();
@@ -75,6 +79,15 @@ public class JSONTheme implements SPTheme {
         }
 
         return cachedASTTypes.get(astType);
+    }
+
+    @Override
+    public FStyle styleFor(InterpretationType interpretationType) {
+        if (cachedInterpretationTypes == null) {
+            validate();
+        }
+
+        return cachedInterpretationTypes.get(interpretationType);
     }
 
     /**
@@ -107,6 +120,11 @@ public class JSONTheme implements SPTheme {
         } else {
             cachedASTTypes.clear();
         }
+        if (cachedInterpretationTypes == null) {
+            cachedInterpretationTypes = new EnumMap<>(InterpretationType.class);
+        } else {
+            cachedInterpretationTypes.clear();
+        }
 
         for (final var entry : tokenStyles.entrySet()) {
             final var style = findStyleBy(entry.getValue());
@@ -116,7 +134,11 @@ public class JSONTheme implements SPTheme {
                 try {
                     cachedTokenTypes.put(TokenType.valueOf(key), style.getNative());
                 } catch (IllegalArgumentException __) {
-                    cachedASTTypes.put(ASTType.valueOf(key), style.getNative());
+                    try {
+                        cachedASTTypes.put(ASTType.valueOf(key), style.getNative());
+                    } catch (IllegalArgumentException ___) {
+                        cachedInterpretationTypes.put(InterpretationType.valueOf(key), style.getNative());
+                    }
                 }
             }
         }
