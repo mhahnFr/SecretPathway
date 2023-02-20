@@ -318,7 +318,7 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
                     int len;
                     if (i + 1 < closedStyles.size()) {
                         len = closedStyles.get(i + 1).getFirst();
-                        if (appendix.length() > len && Character.isHighSurrogate(appendix.charAt(len > 0 ? len - 1 : 0))) { // FIXME: SIOOBE
+                        if (appendix.length() > len && Character.isHighSurrogate(appendix.charAt(len > 0 ? len - 1 : 0))) {
                             ++len;
                             shiftByOne = true;
                         }
