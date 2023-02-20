@@ -20,6 +20,9 @@
 package mhahnFr.SecretPathway.core;
 
 import mhahnFr.SecretPathway.SecretPathway;
+import mhahnFr.SecretPathway.gui.editor.theme.DefaultTheme;
+import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
+import mhahnFr.SecretPathway.gui.editor.theme.json.JSONTheme;
 import mhahnFr.utils.SettingsListener;
 import mhahnFr.utils.gui.DarkModeListener;
 
@@ -45,6 +48,7 @@ public final class Settings {
     private final List<DarkModeListener> darkListeners;
     /** The {@link SettingsListener}s.           */
     private final List<SettingsListener> listeners;
+    private SPTheme cachedTheme;
 
     /**
      * Constructs this settings object.
@@ -258,6 +262,19 @@ public final class Settings {
         return preferences.getInt(Keys.USE_UTF8, 1) == 1;
     }
 
+    public SPTheme getEditorTheme() {
+        if (cachedTheme == null) {
+            final var editorThemePath = getEditorThemePath();
+            if (editorThemePath.isBlank()) {
+                cachedTheme = new DefaultTheme();
+            } else {
+                final var from = JSONTheme.from(editorThemePath);
+                cachedTheme = from == null ? new DefaultTheme() : from;
+            }
+        }
+        return cachedTheme;
+    }
+
     /**
      * Stores the given hostname.
      *
@@ -378,8 +395,13 @@ public final class Settings {
      * @return this instance
      */
     public Settings setEditorThemePath(final String path) {
+        return setEditorTheme(path, null);
+    }
+
+    public Settings setEditorTheme(final String path, final SPTheme cache) {
         callListeners(Keys.EDITOR_THEME_PATH, path);
         preferences.put(Keys.EDITOR_THEME_PATH, path == null ? "" : path);
+        cachedTheme = cache;
         return this;
     }
 

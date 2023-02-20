@@ -49,7 +49,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
     /** Indicates whether the syntax highlighting is enabled. */
     private boolean highlighting;
     /** The theme to be used for the syntax highlighting.     */
-    private SPTheme theme = restoreTheme();
+    private SPTheme theme = Settings.getInstance().getEditorTheme();//restoreTheme();
     private Map<Pair<Integer, Integer>, String> errorRanges = new HashMap<>();
 
     /**

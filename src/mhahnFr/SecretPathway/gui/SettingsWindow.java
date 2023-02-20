@@ -21,6 +21,7 @@ package mhahnFr.SecretPathway.gui;
 
 import mhahnFr.SecretPathway.core.Constants;
 import mhahnFr.SecretPathway.core.Settings;
+import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
 import mhahnFr.SecretPathway.gui.editor.theme.json.JSONTheme;
 import mhahnFr.utils.StringStream;
 import mhahnFr.utils.gui.DarkComponent;
@@ -55,6 +56,7 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
     private JButton themeButton;
     /** The combo box used for choosing the theme.            */
     private JComboBox<String> themeBox;
+    private SPTheme lastRead;
 
     /**
      * Constructs this settings window using the given owner.
@@ -185,9 +187,11 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
      * @return whether the file was opened and parsed successfully
      */
     private boolean tryOpen(final File file) {
+        lastRead = null;
         try (final var is = new BufferedInputStream(new FileInputStream(file))) {
             final var theme = new JSONTheme();
             new JSONParser(new StringStream(new String(is.readAllBytes(), StandardCharsets.UTF_8))).readInto(theme);
+            lastRead = theme;
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
                     "Could not read file:\n" + e.getLocalizedMessage(),
@@ -244,7 +248,11 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
 
         final var selected = themeBox.getSelectedItem();
         if (!Objects.equals(selected, Constants.Editor.CHOOSE_THEME)) {
-            settings.setEditorThemePath(Objects.equals(selected, Constants.Editor.DEFAULT_THEME) ? null : (String) selected);
+            if (Objects.equals(selected, Constants.Editor.DEFAULT_THEME)) {
+                settings.setEditorThemePath(null);
+            } else {
+                settings.setEditorTheme((String) selected, lastRead);
+            }
         }
 
         super.dispose();
