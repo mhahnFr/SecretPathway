@@ -74,9 +74,7 @@ public class JSONTheme implements SPTheme {
             validate();
         }
 
-        final var style = cachedASTTypes.get(astType);
-
-        return style == null ? defaultStyle : style;
+        return cachedASTTypes.get(astType);
     }
 
     /**
