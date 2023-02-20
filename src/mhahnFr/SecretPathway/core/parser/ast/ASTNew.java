@@ -47,7 +47,7 @@ public class ASTNew extends ASTExpression {
                   final StreamPosition  end,
                   final ASTExpression   instancingExpression,
                   final List<ASTExpression> arguments) {
-        super(begin, end, ASTType.NEW);
+        super(begin, end, ASTType.AST_NEW);
 
         this.instancingExpression = instancingExpression;
         this.arguments            = arguments;

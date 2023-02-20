@@ -37,7 +37,7 @@ public class ASTString extends ASTExpression {
      * @param token the token to be represented as AST node
      */
     public ASTString(final Token token) {
-        super(token.beginPos(), token.endPos(), ASTType.STRING);
+        super(token.beginPos(), token.endPos(), ASTType.AST_STRING);
 
         this.value = (String) token.payload();
     }

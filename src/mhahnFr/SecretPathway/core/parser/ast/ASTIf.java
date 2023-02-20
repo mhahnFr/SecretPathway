@@ -47,7 +47,7 @@ public class ASTIf extends ASTExpression {
                  final ASTExpression  condition,
                  final ASTExpression  instruction,
                  final ASTExpression  elseInstruction) {
-        super(begin, elseInstruction == null ? instruction.getEnd() : elseInstruction.getEnd(), ASTType.IF);
+        super(begin, elseInstruction == null ? instruction.getEnd() : elseInstruction.getEnd(), ASTType.AST_IF);
 
         this.condition       = condition;
         this.instruction     = instruction;

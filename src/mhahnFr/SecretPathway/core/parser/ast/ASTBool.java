@@ -38,7 +38,7 @@ public class ASTBool extends ASTExpression {
      * @param token the token to be represented as AST node
      */
     public ASTBool(final Token token) {
-        super(token.beginPos(), token.endPos(), ASTType.BOOL);
+        super(token.beginPos(), token.endPos(), ASTType.AST_BOOL);
 
         this.value = token.type() == TokenType.TRUE;
     }

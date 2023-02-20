@@ -40,7 +40,7 @@ public class ASTInclude extends ASTExpression {
      * @param included the inclusion string
      */
     public ASTInclude(final StreamPosition begin, final StreamPosition end, final String included) {
-        super(begin, end, ASTType.INCLUDE);
+        super(begin, end, ASTType.AST_INCLUDE);
 
         this.included = included;
     }

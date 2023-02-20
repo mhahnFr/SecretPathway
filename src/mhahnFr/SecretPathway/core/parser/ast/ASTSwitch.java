@@ -47,7 +47,7 @@ public class ASTSwitch extends ASTExpression {
                      final StreamPosition      end,
                      final ASTExpression       variableExpression,
                      final List<ASTExpression> cases) {
-        super(begin, end, ASTType.SWITCH);
+        super(begin, end, ASTType.AST_SWITCH);
 
         this.variableExpression = variableExpression;
         this.cases              = cases;

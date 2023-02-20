@@ -31,9 +31,9 @@ public enum ASTType {
     /** Represents a function definition.         */
     FUNCTION_DEFINITION,
     /** Represents an include statement.          */
-    INCLUDE,
+    AST_INCLUDE,
     /** Represents an inherit statement.          */
-    INHERITANCE,
+    AST_INHERITANCE,
     /** Represents a missing AST node.            */
     MISSING,
     /** Represents a parameter declaration.       */
@@ -43,7 +43,7 @@ public enum ASTType {
     /** Represents a wrong AST node.              */
     WRONG,
     /** Represents an ellipsis.                   */
-    ELLIPSIS,
+    AST_ELLIPSIS,
     /** Represents a type.                        */
     TYPE,
     /** Represents a name.                        */
@@ -53,11 +53,11 @@ public enum ASTType {
     /** Represents a block of code.               */
     BLOCK,
     /** Represents a break.                       */
-    BREAK,
+    AST_BREAK,
     /** Represents a continue.                    */
-    CONTINUE,
+    AST_CONTINUE,
     /** Represents a return statement.            */
-    RETURN,
+    AST_RETURN,
     /** Represents a unary operator.              */
     UNARY_OPERATOR,
     /** Represents a binary operation.            */
@@ -65,51 +65,51 @@ public enum ASTType {
     /** Represents a function call.               */
     FUNCTION_CALL,
     /** Represents a new expression.              */
-    NEW,
+    AST_NEW,
     /** Represents a cast expression.             */
     CAST,
     /** Represents a "this" expression.           */
-    THIS,
+    AST_THIS,
     /** Represents a nil expression.              */
-    NIL,
+    AST_NIL,
     /** Represents an integer expression.         */
-    INTEGER,
+    AST_INTEGER,
     /** Represents a string expression.           */
-    STRING,
+    AST_STRING,
     /** Represents a symbol expression.           */
-    SYMBOL,
+    AST_SYMBOL,
     /** Represents a boolean expression.          */
-    BOOL,
+    AST_BOOL,
     /** Represents an array expression.           */
     ARRAY,
     /** Represents a mapping expression.          */
-    MAPPING,
+    AST_MAPPING,
     /** Represents a subscript expression.        */
     SUBSCRIPT,
     /** Represents a {@code if} statement.        */
-    IF,
+    AST_IF,
     /** Represents a {@code while} statement.     */
-    WHILE,
+    AST_WHILE,
     /** Represents a {@code do while} statement.  */
     DO_WHILE,
     /** Represents a regular {@code for} loop.    */
-    FOR,
+    AST_FOR,
     /** Represents a {@code foreach} statement.   */
-    FOR_EACH,
+    AST_FOREACH,
     /** Represents an empty statement.            */
     EMPTY,
     /** Represents a {@code try catch} statement. */
     TRY_CATCH,
     /** Represents a {@code default} case.        */
-    DEFAULT,
+    AST_DEFAULT,
     /** Represents a switch case statement.       */
-    CASE,
+    AST_CASE,
     /** Represents a switch statement.            */
-    SWITCH,
+    AST_SWITCH,
     /** Represents a class statement.             */
-    CLASS,
+    AST_CLASS,
     /** Represents a character.                   */
-    CHARACTER,
+    AST_CHARACTER,
     /** Represents a function reference type.     */
     FUNCTION_REFERENCE,
     /** Represents an operator identifier.        */

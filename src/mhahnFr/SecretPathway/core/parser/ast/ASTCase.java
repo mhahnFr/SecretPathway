@@ -41,7 +41,7 @@ public class ASTCase extends ASTExpression {
                    final ASTExpression[] expressions) {
         super(caseStatement.getBegin(),
                 (expressions.length == 0 ? caseStatement : expressions[expressions.length - 1]).getEnd(),
-                ASTType.CASE);
+                ASTType.AST_CASE);
 
         this.caseStatement = caseStatement;
         this.expressions   = expressions;

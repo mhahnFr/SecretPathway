@@ -47,7 +47,7 @@ public class ASTForEach extends ASTExpression {
                       final ASTExpression  variable,
                       final ASTExpression  rangeExpression,
                       final ASTExpression  body) {
-        super(begin, body.getEnd(), ASTType.FOR_EACH);
+        super(begin, body.getEnd(), ASTType.AST_FOREACH);
 
         this.variable        = variable;
         this.rangeExpression = rangeExpression;

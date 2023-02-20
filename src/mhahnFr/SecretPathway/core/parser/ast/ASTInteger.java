@@ -37,7 +37,7 @@ public class ASTInteger extends ASTExpression {
      * @param token the token to be represented by this AST node
      */
     public ASTInteger(final Token token) {
-        super(token.beginPos(), token.endPos(), ASTType.INTEGER);
+        super(token.beginPos(), token.endPos(), ASTType.AST_INTEGER);
 
         this.value = (int) token.payload();
     }

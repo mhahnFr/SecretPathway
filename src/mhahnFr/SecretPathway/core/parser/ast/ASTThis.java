@@ -34,6 +34,6 @@ public class ASTThis extends ASTExpression {
      * @param token the token to be represented by this AST node
      */
     public ASTThis(final Token token) {
-        super(token.beginPos(), token.endPos(), ASTType.THIS);
+        super(token.beginPos(), token.endPos(), ASTType.AST_THIS);
     }
 }

@@ -48,7 +48,7 @@ public class ASTClass extends ASTExpression {
     public ASTClass(final StreamPosition begin,
                     final ASTExpression  name,
                     final ASTExpression  inheritance) {
-        super(begin, (inheritance == null ? name : inheritance).getEnd(), ASTType.CLASS);
+        super(begin, (inheritance == null ? name : inheritance).getEnd(), ASTType.AST_CLASS);
 
         this.name        = name;
         this.inheritance = inheritance;
@@ -66,7 +66,7 @@ public class ASTClass extends ASTExpression {
     public ASTClass(final StreamPosition  begin,
                     final ASTExpression   name,
                     final List<ASTExpression> statements) {
-        super(begin, (statements.isEmpty() ? name : statements.get(statements.size() - 1)).getEnd(), ASTType.CLASS);
+        super(begin, (statements.isEmpty() ? name : statements.get(statements.size() - 1)).getEnd(), ASTType.AST_CLASS);
 
         this.name        = name;
         this.inheritance = null;

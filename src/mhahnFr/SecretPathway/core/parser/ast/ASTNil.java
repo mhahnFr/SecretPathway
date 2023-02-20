@@ -34,6 +34,6 @@ public class ASTNil extends ASTExpression {
      * @param token the token to be represented by this AST node
      */
     public ASTNil(final Token token) {
-        super(token.beginPos(), token.endPos(), ASTType.NIL);
+        super(token.beginPos(), token.endPos(), ASTType.AST_NIL);
     }
 }

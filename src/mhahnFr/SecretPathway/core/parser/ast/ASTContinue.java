@@ -34,6 +34,6 @@ public class ASTContinue extends ASTExpression {
      * @param token the token to be represented
      */
     public ASTContinue(final Token token) {
-        super(token.beginPos(), token.endPos(), ASTType.CONTINUE);
+        super(token.beginPos(), token.endPos(), ASTType.AST_CONTINUE);
     }
 }

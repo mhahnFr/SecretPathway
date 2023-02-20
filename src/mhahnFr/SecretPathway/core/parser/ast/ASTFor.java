@@ -51,7 +51,7 @@ public class ASTFor extends ASTExpression {
                   final ASTExpression  condition,
                   final ASTExpression  afterExpression,
                   final ASTExpression  body) {
-        super(begin, body.getEnd(), ASTType.FOR);
+        super(begin, body.getEnd(), ASTType.AST_FOR);
 
         this.initExpression  = initExpression;
         this.condition       = condition;

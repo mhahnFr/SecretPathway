@@ -43,7 +43,7 @@ public class ASTMapping extends ASTExpression {
     public ASTMapping(final StreamPosition  begin,
                       final StreamPosition  end,
                       final List<ASTExpression> content) {
-        super(begin, end, ASTType.MAPPING);
+        super(begin, end, ASTType.AST_MAPPING);
 
         this.content = content;
     }

@@ -35,6 +35,6 @@ public class ASTDefault extends ASTExpression {
      * @param token the token to be represented by this node
      */
     public ASTDefault(final Token token) {
-        super(token.beginPos(), token.beginPos(), ASTType.DEFAULT);
+        super(token.beginPos(), token.beginPos(), ASTType.AST_DEFAULT);
     }
 }

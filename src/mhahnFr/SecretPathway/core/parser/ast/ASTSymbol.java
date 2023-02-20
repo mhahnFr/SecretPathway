@@ -37,7 +37,7 @@ public class ASTSymbol extends ASTExpression {
      * @param token the token to be represented as AST node
      */
     public ASTSymbol(final Token token) {
-        super(token.beginPos(), token.endPos(), ASTType.SYMBOL);
+        super(token.beginPos(), token.endPos(), ASTType.AST_SYMBOL);
 
         this.symbolName = (String) token.payload();
     }

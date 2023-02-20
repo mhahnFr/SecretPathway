@@ -41,7 +41,7 @@ public class ASTReturn extends ASTExpression {
     public ASTReturn(final StreamPosition begin,
                      final ASTExpression  returned,
                      final StreamPosition end) {
-        super(begin, end, ASTType.RETURN);
+        super(begin, end, ASTType.AST_RETURN);
 
         this.returned = returned;
     }

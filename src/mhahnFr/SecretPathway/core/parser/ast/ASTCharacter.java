@@ -37,7 +37,7 @@ public class ASTCharacter extends ASTExpression {
      * @param token the token to be represented by this node
      */
     public ASTCharacter(final Token token) {
-        super(token.beginPos(), token.endPos(), ASTType.CHARACTER);
+        super(token.beginPos(), token.endPos(), ASTType.AST_CHARACTER);
 
         this.character = (String) token.payload();
     }

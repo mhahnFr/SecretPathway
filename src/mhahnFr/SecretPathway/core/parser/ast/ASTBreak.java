@@ -34,6 +34,6 @@ public class ASTBreak extends ASTExpression {
      * @param token the token to be represented
      */
     public ASTBreak(final Token token) {
-        super(token.beginPos(), token.endPos(), ASTType.BREAK);
+        super(token.beginPos(), token.endPos(), ASTType.AST_BREAK);
     }
 }

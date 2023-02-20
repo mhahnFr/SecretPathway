@@ -45,7 +45,7 @@ public class ASTWhile extends ASTExpression {
                     final ASTExpression  condition,
                     final ASTExpression  body,
                     final boolean        doWhile) {
-        super(begin, body.getEnd(), doWhile ? ASTType.DO_WHILE : ASTType.WHILE);
+        super(begin, body.getEnd(), doWhile ? ASTType.DO_WHILE : ASTType.AST_WHILE);
 
         this.condition = condition;
         this.body      = body;

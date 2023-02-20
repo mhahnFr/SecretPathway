@@ -34,6 +34,6 @@ public class ASTEllipsis extends ASTExpression {
      * @param ellipsis the {@link Token} representing the actual ellipsis
      */
     public ASTEllipsis(final Token ellipsis) {
-        super(ellipsis.beginPos(), ellipsis.endPos(), ASTType.ELLIPSIS);
+        super(ellipsis.beginPos(), ellipsis.endPos(), ASTType.AST_ELLIPSIS);
     }
 }
