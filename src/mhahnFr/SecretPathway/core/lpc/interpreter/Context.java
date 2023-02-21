@@ -19,6 +19,8 @@
 
 package mhahnFr.SecretPathway.core.lpc.interpreter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -76,5 +78,27 @@ public class Context extends Instruction {
         setEnd(end);
 
         return parent;
+    }
+
+    /**
+     * Returns the {@link Instruction} available at the given position.
+     *
+     * @param at the position
+     * @return the available instructions
+     */
+    public List<Instruction> availableInstructions(final int at) {
+        final var toReturn = new ArrayList<Instruction>();
+
+        if (parent != null) {
+            toReturn.addAll(parent.availableInstructions(at));
+        }
+
+        for (final var instruction : instructions.entrySet()) {
+            if (instruction.getKey() < at) {
+                toReturn.add(instruction.getValue());
+            }
+        }
+
+        return toReturn;
     }
 }
