@@ -29,25 +29,49 @@ import java.util.TreeMap;
  * @since 21.02.23
  */
 public class Context extends Instruction {
+    /** The parent context.                           */
     private final Context parent;
+    /** The instructions found in this scope context. */
     private Map<Integer, Instruction> instructions = new TreeMap<>();
 
+    /**
+     * Constructs a global scope.
+     */
     public Context() {
         this(null, 0);
     }
 
+    /**
+     * Constructs a scope context with the given beginning
+     * position and inside the given parent.
+     *
+     * @param parent the parent scope context
+     * @param begin  the beginning position
+     */
     public Context(final Context parent, final int begin) {
         super(begin);
 
         this.parent = parent;
     }
 
+    /**
+     * Pushes and returns a new scope context.
+     *
+     * @param begin the beginning position of the new context
+     * @return the new context
+     */
     public Context pushScope(final int begin) {
         final var newContext = new Context(this, begin);
         instructions.put(begin, newContext);
         return newContext;
     }
 
+    /**
+     * Closes this scope context and returns the parent context.
+     *
+     * @param end the end position
+     * @return the parent scope context
+     */
     public Context popScope(final int end) {
         setEnd(end);
 

@@ -31,8 +31,16 @@ import java.util.List;
  * @since 21.02.23
  */
 public class Interpreter implements ASTVisitor {
+    /** The currently active context. */
     private Context current;
 
+    /**
+     * Creates an execution context for the given list of
+     * {@link ASTExpression}s.
+     *
+     * @param expressions the expressions to be interpreted
+     * @return the generated context
+     */
     public Context createContextFor(final List<ASTExpression> expressions) {
         current = new Context();
         expressions.forEach(this::visit);
