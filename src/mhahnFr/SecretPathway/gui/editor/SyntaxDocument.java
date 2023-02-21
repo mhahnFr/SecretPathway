@@ -94,6 +94,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
      */
     public void setTheme(SPTheme theme) {
         this.theme = theme;
+        maybeUpdateHighlight();
     }
 
     /**

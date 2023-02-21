@@ -418,9 +418,9 @@ public final class Settings {
      * @return this instance
      */
     public Settings setEditorTheme(final String path, final SPTheme cache) {
-        callListeners(Keys.EDITOR_THEME_PATH, path);
         preferences.put(Keys.EDITOR_THEME_PATH, path == null ? "" : path);
         cachedTheme = cache;
+        callListeners(Keys.EDITOR_THEME_PATH, path);
         return this;
     }
 

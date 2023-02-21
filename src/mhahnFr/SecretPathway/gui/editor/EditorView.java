@@ -38,7 +38,7 @@ import java.util.List;
  * @author mhahnFr
  * @since 05.01.23
  */
-public class EditorView extends JPanel implements DarkModeListener, SettingsListener {
+public class EditorView extends JPanel implements SettingsListener {
     /** A list consisting of all components enabling the dark mode. */
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
     /** The document responsible for highlighting the source code.  */
@@ -86,15 +86,9 @@ public class EditorView extends JPanel implements DarkModeListener, SettingsList
         textPane.addCaretListener(e -> status.setText(document.getMessageFor(e.getDot())));
 
         final var settings = Settings.getInstance();
-        settings.addDarkModeListener(this);
         settings.addListener(this);
         setDark(settings.getDarkMode());
         setFontSize(settings.getFontSize());
-    }
-
-    @Override
-    public void darkModeToggled(boolean dark) {
-        setDark(dark);
     }
 
     @Override
@@ -119,9 +113,12 @@ public class EditorView extends JPanel implements DarkModeListener, SettingsList
      * @param key the key of the changed setting
      * @param newValue the new value of the changed setting
      */
+    @Override
     public void settingChanged(final String key, final Object newValue) {
-        if (key.equals(Settings.Keys.FONT_SIZE)) {
-            setFontSize((Float) newValue);
+        switch (key) {
+            case Settings.Keys.DARK_MODE         -> setDark((Boolean) newValue);
+            case Settings.Keys.FONT_SIZE         -> setFontSize((Float) newValue);
+            case Settings.Keys.EDITOR_THEME_PATH -> document.setTheme(Settings.getInstance().getEditorTheme());
         }
     }
 
@@ -167,7 +164,6 @@ public class EditorView extends JPanel implements DarkModeListener, SettingsList
     public void dispose() {
         final var settings = Settings.getInstance();
 
-        settings.removeDarkModeListener(this);
         settings.removeListener(this);
 
         if (disposeListener != null) {
