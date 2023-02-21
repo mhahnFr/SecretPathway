@@ -135,10 +135,13 @@ public class SyntaxDocument extends DefaultStyledDocument {
         errorRanges.clear();
         final var expressions = new Parser(getAllText()).parse();
         try {
-            for (int i = 0; i < expressions.length; ++i) {
-                System.out.println(expressions[i].describe(0));
+            final var iterator = expressions.listIterator();
+            while (iterator.hasNext()) {
+                final var element = iterator.next();
 
-                expressions[i].visit(expression -> {
+                System.out.println(element.describe(0));
+
+                element.visit(expression -> {
                     final String errorText;
                     if (expression instanceof ASTMissing) {
                         errorText = ((ASTMissing) expression).getMessage();

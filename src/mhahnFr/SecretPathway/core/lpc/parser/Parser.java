@@ -1627,10 +1627,10 @@ public class Parser {
     /**
      * Parses the whole source code.
      *
-     * @return an array with all expressions that have been read
+     * @return a list with all expressions that have been read
      */
-    public ASTExpression[] parse() {
-        return parse(TokenType.EOF).toArray(new ASTExpression[0]);
+    public List<ASTExpression> parse() {
+        return parse(TokenType.EOF);
     }
 
     /**
