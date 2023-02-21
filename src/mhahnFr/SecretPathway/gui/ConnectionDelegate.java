@@ -246,6 +246,14 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
 
     @Override
     public void receive(byte[] data, int length) {
+        try {
+            receiveImpl(data, length);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void receiveImpl(byte[] data, int length) {
         if (firstReceive) {
             stopTimer();
             firstReceive = false;
