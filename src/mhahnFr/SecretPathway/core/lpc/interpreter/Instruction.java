@@ -25,22 +25,45 @@ package mhahnFr.SecretPathway.core.lpc.interpreter;
  * @author mhahnFr
  * @since 21.02.23
  */
-public class Instruction {
+public abstract class Instruction {
+    /** The beginning position of this instruction. */
     private final int begin;
+    /** The end position of this instruction.       */
     private int end;
 
-    public Instruction(int begin) {
+    /**
+     * Constructs this instruction using the given beginning
+     * position.
+     *
+     * @param begin the beginning position
+     */
+    protected Instruction(int begin) {
         this.begin = begin;
     }
 
+    /**
+     * Returns the end position of this instruction.
+     *
+     * @return the end position
+     */
     public int getEnd() {
         return end;
     }
 
+    /**
+     * Sets the end position of this instruction.
+     *
+     * @param end the end position
+     */
     public void setEnd(int end) {
         this.end = end;
     }
 
+    /**
+     * Returns the beginning position of this instruction.
+     *
+     * @return the beginning position
+     */
     public int getBegin() {
         return begin;
     }
