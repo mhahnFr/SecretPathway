@@ -19,6 +19,8 @@
 
 package mhahnFr.SecretPathway.core.lpc.interpreter;
 
+import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
+
 /**
  * This class represents an interpreted instruction.
  *
@@ -30,6 +32,8 @@ public abstract class Instruction {
     private final int begin;
     /** The end position of this instruction.       */
     private int end;
+    /** The return type of this instruction.        */
+    private TokenType returnType;
 
     /**
      * Constructs this instruction using the given beginning
@@ -66,5 +70,23 @@ public abstract class Instruction {
      */
     public int getBegin() {
         return begin;
+    }
+
+    /**
+     * Returns the return type of this instruction.
+     *
+     * @return the return type
+     */
+    public TokenType getReturnType() {
+        return returnType;
+    }
+
+    /**
+     * Sets the return type of this instruction.
+     *
+     * @param returnType the new return type
+     */
+    public void setReturnType(TokenType returnType) {
+        this.returnType = returnType;
     }
 }
