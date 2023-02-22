@@ -253,6 +253,12 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
         }
     }
 
+    /**
+     * Handles received data.
+     *
+     * @param data   the received data
+     * @param length the amount of received bytes
+     */
     private void receiveImpl(byte[] data, int length) {
         if (firstReceive) {
             stopTimer();
