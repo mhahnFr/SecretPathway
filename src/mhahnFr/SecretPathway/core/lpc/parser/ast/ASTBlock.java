@@ -40,8 +40,8 @@ public class ASTBlock extends ASTExpression {
      * @param end   the end position
      * @param body  the expressions of this block
      */
-    public ASTBlock(final StreamPosition begin,
-                    final StreamPosition end,
+    public ASTBlock(final StreamPosition      begin,
+                    final StreamPosition      end,
                     final List<ASTExpression> body) {
         super(begin, end, ASTType.BLOCK);
 

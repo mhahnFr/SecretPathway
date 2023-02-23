@@ -30,7 +30,8 @@ import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Token;
 public class ASTWrong extends ASTExpression {
     private final String message;
 
-    public ASTWrong(final Token token, final String message) {
+    public ASTWrong(final Token  token,
+                    final String message) {
         super(token.beginPos(), token.endPos(), ASTType.WRONG);
 
         this.message = message;

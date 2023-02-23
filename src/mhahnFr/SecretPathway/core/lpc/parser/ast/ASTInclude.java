@@ -35,11 +35,13 @@ public class ASTInclude extends ASTExpression {
      * Constructs this AST node using the given positions and
      * the given inclusion string.
      *
-     * @param begin the beginning position
-     * @param end the end position
+     * @param begin    the beginning position
+     * @param end      the end position
      * @param included the inclusion string
      */
-    public ASTInclude(final StreamPosition begin, final StreamPosition end, final String included) {
+    public ASTInclude(final StreamPosition begin,
+                      final StreamPosition end,
+                      final String         included) {
         super(begin, end, ASTType.AST_INCLUDE);
 
         this.included = included;

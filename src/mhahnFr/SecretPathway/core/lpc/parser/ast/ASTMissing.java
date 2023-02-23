@@ -30,7 +30,9 @@ import mhahnFr.utils.StreamPosition;
 public class ASTMissing extends ASTExpression {
     private final String message;
 
-    public ASTMissing(final StreamPosition begin, final StreamPosition end, final String message) {
+    public ASTMissing(final StreamPosition begin,
+                      final StreamPosition end,
+                      final String         message) {
         super(begin, end, ASTType.MISSING);
 
         this.message = message;

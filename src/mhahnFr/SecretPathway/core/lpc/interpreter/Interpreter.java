@@ -20,9 +20,11 @@
 package mhahnFr.SecretPathway.core.lpc.interpreter;
 
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTExpression;
+import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTVariableDefinition;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTVisitor;
 
 import java.util.List;
+import java.util.Stack;
 
 /**
  * This class interprets LPC source code.
@@ -33,6 +35,7 @@ import java.util.List;
 public class Interpreter implements ASTVisitor {
     /** The currently active context. */
     private Context current;
+    private Stack<Integer> scopeEnd;
 
     /**
      * Creates an execution context for the given list of
@@ -43,12 +46,26 @@ public class Interpreter implements ASTVisitor {
      */
     public Context createContextFor(final List<ASTExpression> expressions) {
         current = new Context();
+        scopeEnd = new Stack<>();
         expressions.forEach(this::visit);
         return current;
     }
 
     @Override
     public void visit(ASTExpression expression) {
-
+        if (expression.getBegin().position() > scopeEnd.peek()) {
+            
+        }
+        switch (expression.getASTType()) {
+            case VARIABLE_DEFINITION -> current.addIdentifier(null, null);
+            case FUNCTION_DEFINITION -> {
+                current.addIdentifier(null, null);
+                current = current.pushScope(expression.getBegin().position());
+            }
+            case BLOCK -> {
+                current = current.pushScope(expression.getBegin().position());
+                scopeEnd.push(expression.getEnd().position());
+            }
+        }
     }
 }

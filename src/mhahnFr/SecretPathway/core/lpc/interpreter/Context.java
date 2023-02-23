@@ -19,6 +19,8 @@
 
 package mhahnFr.SecretPathway.core.lpc.interpreter;
 
+import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -101,4 +103,6 @@ public class Context extends Instruction {
 
         return toReturn;
     }
+
+    public void addIdentifier(final String name, final TokenType type) {}
 }

@@ -35,11 +35,13 @@ public class ASTInheritance extends ASTExpression {
      * Constructs this AST node using the given positions
      * and the inheritance string.
      *
-     * @param begin the beginning position
-     * @param end the end position
+     * @param begin     the beginning position
+     * @param end       the end position
      * @param inherited the inheritance string
      */
-    public ASTInheritance(StreamPosition begin, StreamPosition end, final String inherited) {
+    public ASTInheritance(StreamPosition begin,
+                          StreamPosition end,
+                          final String   inherited) {
         super(begin, end, ASTType.AST_INHERITANCE);
 
         this.inherited = inherited;

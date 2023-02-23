@@ -41,11 +41,11 @@ public class ASTVariableDefinition extends ASTExpression {
      * Constructs this AST node for variable definitions using the
      * given information.
      *
-     * @param begin the beginning position of this node
-     * @param end the end position of this node
+     * @param begin     the beginning position of this node
+     * @param end       the end position of this node
      * @param modifiers the declared modifiers of this variable definition
-     * @param type the declared type of this variable definition
-     * @param name the declared name of this variable definition
+     * @param type      the declared type of this variable definition
+     * @param name      the declared name of this variable definition
      */
     public ASTVariableDefinition(final StreamPosition      begin,
                                  final StreamPosition      end,

@@ -43,9 +43,9 @@ public class ASTNew extends ASTExpression {
      * @param instancingExpression the instancing expression
      * @param arguments            the argument expressions
      */
-    public ASTNew(final StreamPosition  begin,
-                  final StreamPosition  end,
-                  final ASTExpression   instancingExpression,
+    public ASTNew(final StreamPosition      begin,
+                  final StreamPosition      end,
+                  final ASTExpression       instancingExpression,
                   final List<ASTExpression> arguments) {
         super(begin, end, ASTType.AST_NEW);
 

@@ -40,8 +40,8 @@ public class ASTArray extends ASTExpression {
      * @param end     the end position
      * @param content the content expressions
      */
-    public ASTArray(final StreamPosition  begin,
-                    final StreamPosition  end,
+    public ASTArray(final StreamPosition      begin,
+                    final StreamPosition      end,
                     final List<ASTExpression> content) {
         super(begin, end, ASTType.ARRAY);
 

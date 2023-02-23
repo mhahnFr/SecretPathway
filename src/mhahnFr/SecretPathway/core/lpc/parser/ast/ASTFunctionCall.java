@@ -43,9 +43,9 @@ public class ASTFunctionCall extends ASTExpression {
      * @param arguments the argument expressions
      * @param end       the end position
      */
-    public ASTFunctionCall(final ASTExpression   name,
+    public ASTFunctionCall(final ASTExpression       name,
                            final List<ASTExpression> arguments,
-                           final StreamPosition  end) {
+                           final StreamPosition      end) {
         super(name.getBegin(), end, ASTType.FUNCTION_CALL);
 
         this.name      = name;

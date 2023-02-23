@@ -38,7 +38,8 @@ public class ASTParameter extends ASTExpression {
      * @param type the declared type
      * @param name the declared name
      */
-    public ASTParameter(final ASTExpression type, final ASTExpression name) {
+    public ASTParameter(final ASTExpression type,
+                        final ASTExpression name) {
         super(type.getBegin(), name.getEnd(), ASTType.PARAMETER);
 
         this.type = type;

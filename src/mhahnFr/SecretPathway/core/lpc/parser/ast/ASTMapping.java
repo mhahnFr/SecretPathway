@@ -40,8 +40,8 @@ public class ASTMapping extends ASTExpression {
      * @param end     the end position
      * @param content the content expressions
      */
-    public ASTMapping(final StreamPosition  begin,
-                      final StreamPosition  end,
+    public ASTMapping(final StreamPosition      begin,
+                      final StreamPosition      end,
                       final List<ASTExpression> content) {
         super(begin, end, ASTType.AST_MAPPING);
 
