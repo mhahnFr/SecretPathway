@@ -28,8 +28,16 @@ import mhahnFr.utils.StreamPosition;
  * @since 26.01.23
  */
 public class ASTMissing extends ASTExpression {
+    /** The message about the missing node. */
     private final String message;
 
+    /**
+     * Constructs this AST node using the given information.
+     *
+     * @param begin   the beginning position
+     * @param end     the end position
+     * @param message the message what node is missing
+     */
     public ASTMissing(final StreamPosition begin,
                       final StreamPosition end,
                       final String         message) {
@@ -38,6 +46,11 @@ public class ASTMissing extends ASTExpression {
         this.message = message;
     }
 
+    /**
+     * Returns the error message.
+     *
+     * @return the error message
+     */
     public String getMessage() {
         return message;
     }
