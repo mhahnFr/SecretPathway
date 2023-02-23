@@ -28,8 +28,16 @@ import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Token;
  * @since 26.01.23
  */
 public class ASTWrong extends ASTExpression {
+    /** The message about this wrong node. */
     private final String message;
 
+    /**
+     * Constructs this AST node using the given {@link Token}
+     * and the given message.
+     *
+     * @param token   the represented token
+     * @param message the reason why the token is wrong
+     */
     public ASTWrong(final Token  token,
                     final String message) {
         super(token.beginPos(), token.endPos(), ASTType.WRONG);
@@ -37,6 +45,11 @@ public class ASTWrong extends ASTExpression {
         this.message = message;
     }
 
+    /**
+     * Returns the error message.
+     *
+     * @return the error message
+     */
     public String getMessage() {
         return message;
     }
