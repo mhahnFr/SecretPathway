@@ -23,7 +23,6 @@ import mhahnFr.SecretPathway.core.lpc.parser.ast.*;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 
 import java.util.List;
-import java.util.Stack;
 
 /**
  * This class interprets LPC source code.
