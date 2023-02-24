@@ -19,6 +19,7 @@
 
 package mhahnFr.SecretPathway.core.lpc.interpreter;
 
+import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTType;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 
 import java.util.ArrayList;
@@ -104,5 +105,12 @@ public class Context extends Instruction {
         return toReturn;
     }
 
-    public void addIdentifier(final String name, final TokenType type) {}
+    /**
+     * Adds the given identifier to this context.
+     *
+     * @param name the name of the identifier
+     * @param type the type of the identifier
+     * @param kind the AST type of the identifier
+     */
+    public void addIdentifier(final String name, final TokenType type, final ASTType kind) {}
 }
