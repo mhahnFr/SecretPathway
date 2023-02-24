@@ -74,6 +74,11 @@ public class Interpreter implements ASTVisitor {
         }
     }
 
+    /**
+     * Visits the given {@link ASTBlock}.
+     *
+     * @param block the block to be visited
+     */
     private void visitBlock(final ASTBlock block) {
         final var iterator = block.getBody().listIterator();
         while (iterator.hasNext()) {
@@ -81,6 +86,14 @@ public class Interpreter implements ASTVisitor {
         }
     }
 
+    /**
+     * Returns the {@link TokenType} represented by the given
+     * {@link ASTExpression}. If the given {@link ASTExpression}
+     * is an {@link ASTCombination}, all other nodes are visited beforehand.
+     *
+     * @param expression the expression representing the type
+     * @return the represented type
+     */
     private TokenType visitASTType(final ASTExpression expression) {
         final TokenType toReturn;
 
@@ -100,6 +113,14 @@ public class Interpreter implements ASTVisitor {
         return toReturn;
     }
 
+    /**
+     * Returns the name represented by the given {@link ASTExpression}.
+     * If the given {@link ASTExpression} is an {@link ASTCombination},
+     * all contained nodes are visited.
+     *
+     * @param expression the expression representing a name
+     * @return the represented name
+     */
     private String visitName(final ASTExpression expression) {
         final String toReturn;
 
