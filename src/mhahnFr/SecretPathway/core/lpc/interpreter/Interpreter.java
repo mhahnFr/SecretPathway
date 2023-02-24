@@ -20,6 +20,7 @@
 package mhahnFr.SecretPathway.core.lpc.interpreter;
 
 import mhahnFr.SecretPathway.core.lpc.parser.ast.*;
+import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 
 import java.util.List;
 import java.util.Stack;
@@ -49,16 +50,17 @@ public class Interpreter implements ASTVisitor {
 
     @Override
     public boolean visitType(ASTType type) {
-        return type != ASTType.BLOCK &&
-               type != ASTType.FUNCTION_DEFINITION;
+        return type != ASTType.BLOCK               &&
+               type != ASTType.FUNCTION_DEFINITION &&
+               type != ASTType.VARIABLE_DEFINITION;
     }
 
     @Override
     public void visit(ASTExpression expression) {
         switch (expression.getASTType()) {
-            case VARIABLE_DEFINITION -> current.addIdentifier(null, null);
+            case VARIABLE_DEFINITION -> current.addIdentifier(visitName(((ASTVariableDefinition) expression).getName()), visitASTType(((ASTVariableDefinition) expression).getType()));
             case FUNCTION_DEFINITION -> {
-                current.addIdentifier(null, null);
+                current.addIdentifier(visitName(((ASTFunctionDefinition) expression).getName()), visitASTType(((ASTFunctionDefinition) expression).getType()));
                 current = current.pushScope(expression.getBegin().position());
                 // TODO: add params
                 visitBlock((ASTBlock) ((ASTFunctionDefinition) expression).getBody());
@@ -77,5 +79,19 @@ public class Interpreter implements ASTVisitor {
         while (iterator.hasNext()) {
             visit(iterator.next());
         }
+    }
+
+    private TokenType visitASTType(final ASTExpression expression) {
+        if (expression.getASTType() == ASTType.COMBINATION) {
+            // search and visit
+            return null;
+        } else return ((ASTTypeDeclaration) expression).getType();
+    }
+
+    private String visitName(final ASTExpression expression) {
+        if (expression.getASTType() == ASTType.COMBINATION) {
+            // search and visit
+            return null;
+        } else return ((ASTName) expression).getName();
     }
 }
