@@ -82,7 +82,7 @@ public class Interpreter implements ASTVisitor {
     private void visitBlock(final ASTBlock block) {
         final var iterator = block.getBody().listIterator();
         while (iterator.hasNext()) {
-            visit(iterator.next());
+            iterator.next().visit(this);
         }
     }
 
