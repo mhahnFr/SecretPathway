@@ -82,16 +82,40 @@ public class Interpreter implements ASTVisitor {
     }
 
     private TokenType visitASTType(final ASTExpression expression) {
+        final TokenType toReturn;
+
         if (expression.getASTType() == ASTType.COMBINATION) {
-            // search and visit
-            return null;
-        } else return ((ASTTypeDeclaration) expression).getType();
+            TokenType found = null;
+            for (final var node : ((ASTCombination) expression).getExpressions()) {
+                if (node.getASTType() == ASTType.TYPE) {
+                    found = ((ASTTypeDeclaration) node).getType();
+                } else {
+                    node.visit(this);
+                }
+            }
+            toReturn = found;
+        } else {
+            toReturn = ((ASTTypeDeclaration) expression).getType();
+        }
+        return toReturn;
     }
 
     private String visitName(final ASTExpression expression) {
+        final String toReturn;
+
         if (expression.getASTType() == ASTType.COMBINATION) {
-            // search and visit
-            return null;
-        } else return ((ASTName) expression).getName();
+            String found = null;
+            for (final var node : ((ASTCombination) expression).getExpressions()) {
+                if (node.getASTType() == ASTType.NAME) {
+                    found = ((ASTName) node).getName();
+                } else {
+                    node.visit(this);
+                }
+            }
+            toReturn = found;
+        } else {
+            toReturn = ((ASTName) expression).getName();
+        }
+        return toReturn;
     }
 }
