@@ -73,10 +73,23 @@ public class Interpreter implements ASTVisitor {
         }
     }
 
+    /**
+     * Adds the given {@link ASTParameter} to the current {@link Context}.
+     *
+     * @param parameter the parameter to be added
+     * @see #current
+     */
     private void addParameter(final ASTParameter parameter) {
         current.addIdentifier(visitName(parameter.getName()), visitASTType(parameter.getType()), ASTType.PARAMETER);
     }
 
+    /**
+     * Adds the parameters represented by the {@link ASTExpression}s in the
+     * given list. If some parameter expressions are {@link ASTCombination}s,
+     * the contained nodes are visited.
+     *
+     * @param params the list of expressions representing parameters
+     */
     private void visitParams(final List<ASTExpression> params) {
         for (final var param : params) {
             if (param.getASTType() == ASTType.COMBINATION) {
