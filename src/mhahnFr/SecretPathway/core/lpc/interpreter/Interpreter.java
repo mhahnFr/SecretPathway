@@ -57,9 +57,9 @@ public class Interpreter implements ASTVisitor {
     @Override
     public void visit(ASTExpression expression) {
         switch (expression.getASTType()) {
-            case VARIABLE_DEFINITION -> current.addIdentifier(visitName(((ASTVariableDefinition) expression).getName()), visitASTType(((ASTVariableDefinition) expression).getType()), ASTType.VARIABLE_DEFINITION);
+            case VARIABLE_DEFINITION -> current.addIdentifier(expression.getBegin().position(), visitName(((ASTVariableDefinition) expression).getName()), visitASTType(((ASTVariableDefinition) expression).getType()), ASTType.VARIABLE_DEFINITION);
             case FUNCTION_DEFINITION -> {
-                current.addIdentifier(visitName(((ASTFunctionDefinition) expression).getName()), visitASTType(((ASTFunctionDefinition) expression).getType()), ASTType.FUNCTION_DEFINITION);
+                current.addIdentifier(expression.getBegin().position(), visitName(((ASTFunctionDefinition) expression).getName()), visitASTType(((ASTFunctionDefinition) expression).getType()), ASTType.FUNCTION_DEFINITION);
                 current = current.pushScope(expression.getBegin().position());
                 visitParams(((ASTFunctionDefinition) expression).getParameters());
                 visitBlock((ASTBlock) ((ASTFunctionDefinition) expression).getBody());
@@ -80,7 +80,7 @@ public class Interpreter implements ASTVisitor {
      * @see #current
      */
     private void addParameter(final ASTParameter parameter) {
-        current.addIdentifier(visitName(parameter.getName()), visitASTType(parameter.getType()), ASTType.PARAMETER);
+        current.addIdentifier(parameter.getBegin().position(), visitName(parameter.getName()), visitASTType(parameter.getType()), ASTType.PARAMETER);
     }
 
     /**

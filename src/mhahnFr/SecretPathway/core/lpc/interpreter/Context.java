@@ -112,5 +112,7 @@ public class Context extends Instruction {
      * @param type the type of the identifier
      * @param kind the AST type of the identifier
      */
-    public void addIdentifier(final String name, final TokenType type, final ASTType kind) {}
+    public void addIdentifier(final int begin, final String name, final TokenType type, final ASTType kind) {
+        instructions.put(begin, new Definition(begin, name, type, kind));
+    }
 }
