@@ -107,6 +107,12 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         removeKeyActions();
     }
 
+    /**
+     * Adds all keyboard actions associated with this editor
+     * to the keymap of the actual text pane.
+     *
+     * @see #textPane
+     */
     private void addKeyActions() {
         final var map = textPane.getKeymap();
 
@@ -120,6 +126,12 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         });
     }
 
+    /**
+     * Removes the keyboard actions associated with this editor
+     * from the keymap of the actual key map.
+     *
+     * @see #textPane
+     */
     private void removeKeyActions() {
         final var map = textPane.getKeymap();
 
