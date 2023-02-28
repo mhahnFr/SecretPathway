@@ -22,10 +22,26 @@ package mhahnFr.SecretPathway.core.lpc.interpreter;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTType;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 
+/**
+ * This class defines a declaration.
+ *
+ * @author mhahnFr
+ * @since 28.02.23
+ */
 public class Definition extends Instruction {
+    /** The name of the declared identifier. */
     private final String name;
+    /** The type of the declared identifier. */
     private final ASTType type;
 
+    /**
+     * Constructs this definition using the given information.
+     *
+     * @param begin      the beginning position
+     * @param name       the name
+     * @param returnType the type the identifier evaluates to
+     * @param type       the AST type of the definition
+     */
     public Definition(final int       begin,
                       final String    name,
                       final TokenType returnType,
@@ -37,10 +53,20 @@ public class Definition extends Instruction {
         this.type       = type;
     }
 
+    /**
+     * Returns the name of this definition.
+     *
+     * @return the name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns the AST type of this definition.
+     *
+     * @return the AST type
+     */
     public ASTType getType() {
         return type;
     }
