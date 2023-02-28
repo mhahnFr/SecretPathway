@@ -97,7 +97,7 @@ public class Context extends Instruction {
         }
 
         for (final var instruction : instructions.entrySet()) {
-            if (instruction.getKey() < at && instruction instanceof Definition) {
+            if (instruction.getKey() < at && instruction.getValue() instanceof Definition) {
                 toReturn.add((Definition) instruction.getValue());
             }
         }

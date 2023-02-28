@@ -29,6 +29,10 @@ import mhahnFr.utils.gui.DarkTextComponent;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +42,7 @@ import java.util.List;
  * @author mhahnFr
  * @since 05.01.23
  */
-public class EditorView extends JPanel implements SettingsListener {
+public class EditorView extends JPanel implements SettingsListener, FocusListener {
     /** A list consisting of all components enabling the dark mode. */
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
     /** The document responsible for highlighting the source code.  */
@@ -89,6 +93,37 @@ public class EditorView extends JPanel implements SettingsListener {
         settings.addListener(this);
         setDark(settings.getDarkMode());
         setFontSize(settings.getFontSize());
+        textPane.addFocusListener(this);
+        addKeyActions();
+    }
+
+    @Override
+    public void focusGained(FocusEvent e) {
+        addKeyActions();
+    }
+
+    @Override
+    public void focusLost(FocusEvent e) {
+        removeKeyActions();
+    }
+
+    private void addKeyActions() {
+        final var map = textPane.getKeymap();
+
+        map.addActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, KeyEvent.CTRL_DOWN_MASK), new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for (final var item : document.getAvailableDefinitions(textPane.getCaretPosition())) {
+                    System.out.println(item.getName());
+                }
+            }
+        });
+    }
+
+    private void removeKeyActions() {
+        final var map = textPane.getKeymap();
+
+        map.removeKeyStrokeBinding(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, KeyEvent.CTRL_DOWN_MASK));
     }
 
     @Override
