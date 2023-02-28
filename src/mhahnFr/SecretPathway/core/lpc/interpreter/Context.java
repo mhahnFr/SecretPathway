@@ -84,21 +84,21 @@ public class Context extends Instruction {
     }
 
     /**
-     * Returns the {@link Instruction} available at the given position.
+     * Returns the {@link Definition}s available at the given position.
      *
      * @param at the position
      * @return the available instructions
      */
-    public List<Instruction> availableInstructions(final int at) {
-        final var toReturn = new ArrayList<Instruction>();
+    public List<Definition> availableDefinitions(final int at) {
+        final var toReturn = new ArrayList<Definition>();
 
         if (parent != null) {
-            toReturn.addAll(parent.availableInstructions(at));
+            toReturn.addAll(parent.availableDefinitions(at));
         }
 
         for (final var instruction : instructions.entrySet()) {
-            if (instruction.getKey() < at) {
-                toReturn.add(instruction.getValue());
+            if (instruction.getKey() < at && instruction instanceof Definition) {
+                toReturn.add((Definition) instruction.getValue());
             }
         }
 

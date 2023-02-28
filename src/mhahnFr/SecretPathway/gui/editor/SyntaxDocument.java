@@ -20,6 +20,9 @@
 package mhahnFr.SecretPathway.gui.editor;
 
 import mhahnFr.SecretPathway.core.Settings;
+import mhahnFr.SecretPathway.core.lpc.interpreter.Context;
+import mhahnFr.SecretPathway.core.lpc.interpreter.Definition;
+import mhahnFr.SecretPathway.core.lpc.interpreter.Interpreter;
 import mhahnFr.SecretPathway.core.lpc.parser.Parser;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTMissing;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTWrong;
@@ -34,7 +37,10 @@ import mhahnFr.utils.StringStream;
 
 import javax.swing.text.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * This class serves as a syntax aware document for LPC
@@ -50,6 +56,8 @@ public class SyntaxDocument extends DefaultStyledDocument {
     private boolean highlighting;
     /** The theme to be used for the syntax highlighting.     */
     private SPTheme theme = Settings.getInstance().getEditorTheme();
+    private volatile Context context;
+    private ExecutorService thread = Executors.newSingleThreadExecutor();
     private Map<Pair<Integer, Integer>, String> errorRanges = new HashMap<>();
 
     @Override
@@ -123,7 +131,9 @@ public class SyntaxDocument extends DefaultStyledDocument {
 
         clearHighlight();
 
-        final var tokenizer = new Tokenizer(new StringStream(getAllText()));
+        final var text = getAllText();
+
+        final var tokenizer = new Tokenizer(new StringStream(text));
         tokenizer.setCommentTokensEnabled(true);
 
         Token token;
@@ -132,7 +142,9 @@ public class SyntaxDocument extends DefaultStyledDocument {
                     theme.styleFor(token.type()).asStyle(def), true);
         }
 
-        errorRanges.clear();
+        thread.execute(() -> this.context = new Interpreter().createContextFor(new Parser(text).parse()));
+
+        /*errorRanges.clear();
         final var expressions = new Parser(getAllText()).parse();
         try {
             final var iterator = expressions.listIterator();
@@ -165,7 +177,14 @@ public class SyntaxDocument extends DefaultStyledDocument {
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
-        System.out.println();
+        System.out.println();*/
+    }
+
+    public List<Definition> getAvailableDefinitions(final int position) {
+        if (context == null) {
+            return null;
+        }
+        return context.availableDefinitions(position);
     }
 
     /**
