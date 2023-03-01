@@ -49,6 +49,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
     private final SyntaxDocument document;
     /** The text pane.                                              */
     private final JTextPane textPane;
+    private final JWindow suggestionsWindow;
     /** The optional {@link DisposeListener}.                       */
     private DisposeListener disposeListener;
 
@@ -95,6 +96,8 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         setFontSize(settings.getFontSize());
         textPane.addFocusListener(this);
         addKeyActions();
+
+        suggestionsWindow = new JWindow();
     }
 
     @Override
@@ -119,9 +122,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         map.addActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, KeyEvent.CTRL_DOWN_MASK), new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                for (final var item : document.getAvailableDefinitions(textPane.getCaretPosition())) {
-                    System.out.println(item.getName());
-                }
+                handleSuggestionMenu();
             }
         });
     }
@@ -136,6 +137,37 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         final var map = textPane.getKeymap();
 
         map.removeKeyStrokeBinding(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, KeyEvent.CTRL_DOWN_MASK));
+    }
+
+    private void addSuggestionKeyActions() {
+        // TODO: Add keys for v ^ <esc> <-|
+    }
+
+    private void removeSuggestionKeyActions() {
+        // TODO: Remove keys for v ^ <esc> <-|
+    }
+
+    private void handleSuggestionMenu() {
+        // TODO: Write its own window class!
+        if (suggestionsWindow.isVisible()) {
+            suggestionsWindow.setVisible(false);
+            removeSuggestionKeyActions();
+        } else {
+            suggestionsWindow.getContentPane().removeAll();
+            final var suggestions = document.getAvailableDefinitions(textPane.getCaretPosition());
+            final var panel = new JPanel(new GridLayout(suggestions.size(), 1));
+            for (final var suggestion : suggestions) {
+                panel.add(new JLabel(suggestion.getName()));
+            }
+
+            suggestionsWindow.getContentPane().add(panel);
+            addSuggestionKeyActions();
+            final var caretPosition = textPane.getCaret().getMagicCaretPosition();
+            final var panePosition  = textPane.getLocationOnScreen();
+            suggestionsWindow.setLocation(caretPosition.x + panePosition.x, caretPosition.y + panePosition.y + Settings.getInstance().getFontSize());
+            suggestionsWindow.pack();
+            suggestionsWindow.setVisible(true);
+        }
     }
 
     @Override

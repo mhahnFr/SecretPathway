@@ -58,7 +58,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
     private SPTheme theme = Settings.getInstance().getEditorTheme();
     private volatile Context context;
     private ExecutorService thread = Executors.newSingleThreadExecutor();
-    private Map<Pair<Integer, Integer>, String> errorRanges = new HashMap<>();
+//    private Map<Pair<Integer, Integer>, String> errorRanges = new HashMap<>();
 
     @Override
     public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
@@ -195,11 +195,11 @@ public class SyntaxDocument extends DefaultStyledDocument {
     }
 
     public String getMessageFor(int position) {
-        for (final var entry : errorRanges.entrySet()) {
-            if (position >= entry.getKey().getFirst() && position <= entry.getKey().getSecond()) {
-                return entry.getValue();
-            }
-        }
+//        for (final var entry : errorRanges.entrySet()) {
+//            if (position >= entry.getKey().getFirst() && position <= entry.getKey().getSecond()) {
+//                return entry.getValue();
+//            }
+//        }
         return "";
     }
 
