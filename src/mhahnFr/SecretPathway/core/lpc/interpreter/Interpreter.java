@@ -62,10 +62,11 @@ public class Interpreter implements ASTVisitor {
         switch (expression.getASTType()) {
             case VARIABLE_DEFINITION -> current.addIdentifier(expression.getBegin().position(), visitName(((ASTVariableDefinition) expression).getName()), visitASTType(((ASTVariableDefinition) expression).getType()), ASTType.VARIABLE_DEFINITION);
             case FUNCTION_DEFINITION -> {
+                final var block = ((ASTFunctionDefinition) expression).getBody();
                 current.addIdentifier(expression.getBegin().position(), visitName(((ASTFunctionDefinition) expression).getName()), visitASTType(((ASTFunctionDefinition) expression).getType()), ASTType.FUNCTION_DEFINITION);
-                current = current.pushScope(expression.getBegin().position());
+                current = current.pushScope(block.getBegin().position());
                 visitParams(((ASTFunctionDefinition) expression).getParameters());
-                visitBlock((ASTBlock) ((ASTFunctionDefinition) expression).getBody());
+                visitBlock((ASTBlock) block);
                 current = current.popScope(expression.getEnd().position());
             }
             case BLOCK -> {

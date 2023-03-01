@@ -22,10 +22,7 @@ package mhahnFr.SecretPathway.core.lpc.interpreter;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTType;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * This class acts as a context of interpreted LPC source code.
@@ -37,7 +34,7 @@ public class Context extends Instruction {
     /** The parent context.                           */
     private final Context parent;
     /** The instructions found in this scope context. */
-    private Map<Integer, Instruction> instructions = new TreeMap<>();
+    private final Map<Integer, Instruction> instructions = new TreeMap<>();
 
     /**
      * Constructs a global scope.
@@ -92,13 +89,14 @@ public class Context extends Instruction {
     public List<Definition> availableDefinitions(final int at) {
         final var toReturn = new ArrayList<Definition>();
 
-        if (parent != null) {
-            toReturn.addAll(parent.availableDefinitions(at));
-        }
-
         for (final var instruction : instructions.entrySet()) {
-            if (instruction.getKey() < at && instruction.getValue() instanceof Definition) {
-                toReturn.add((Definition) instruction.getValue());
+            if (instruction.getKey() < at) {
+                final var value = instruction.getValue();
+                if (value instanceof Definition) {
+                    toReturn.add(((Definition) value));
+                } else if (value instanceof Context && at < value.getEnd()) {
+                    toReturn.addAll(((Context) value).availableDefinitions(at));
+                }
             }
         }
 
