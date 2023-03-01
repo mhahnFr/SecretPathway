@@ -23,7 +23,6 @@ import mhahnFr.SecretPathway.core.Constants;
 import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.utils.SettingsListener;
 import mhahnFr.utils.gui.DarkComponent;
-import mhahnFr.utils.gui.DarkModeListener;
 import mhahnFr.utils.gui.DarkTextComponent;
 
 import javax.swing.*;
@@ -49,6 +48,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
     private final SyntaxDocument document;
     /** The text pane.                                              */
     private final JTextPane textPane;
+    /** The window displaying the available suggestions.            */
     private final JWindow suggestionsWindow;
     /** The optional {@link DisposeListener}.                       */
     private DisposeListener disposeListener;
@@ -139,14 +139,25 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         map.removeKeyStrokeBinding(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, KeyEvent.CTRL_DOWN_MASK));
     }
 
+    /**
+     * Adds the keyboard actions needed when displaying the
+     * suggestions window.
+     */
     private void addSuggestionKeyActions() {
-        // TODO: Add keys for v ^ <esc> <-|
+        // TODO: Add keys for v ^ <esc> <-| ->|
     }
 
+    /**
+     * Removes the keyboard actions needed when displaying
+     * the suggestions window.
+     */
     private void removeSuggestionKeyActions() {
-        // TODO: Remove keys for v ^ <esc> <-|
+        // TODO: Remove keys for v ^ <esc> <-| ->|
     }
 
+    /**
+     * Handles the main keyboard action of the suggestions window.
+     */
     private void handleSuggestionMenu() {
         // TODO: Write its own window class!
         if (suggestionsWindow.isVisible()) {
