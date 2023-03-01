@@ -43,9 +43,8 @@ public class Interpreter implements ASTVisitor {
      */
     public Context createContextFor(final List<ASTExpression> expressions) {
         current = new Context();
-        final var iterator = expressions.listIterator();
-        while (iterator.hasNext()) {
-            iterator.next().visit(this);
+        for (final var expression : expressions) {
+            expression.visit(this);
         }
         return current;
     }
@@ -116,9 +115,8 @@ public class Interpreter implements ASTVisitor {
      * @param block the block to be visited
      */
     private void visitBlock(final ASTBlock block) {
-        final var iterator = block.getBody().listIterator();
-        while (iterator.hasNext()) {
-            iterator.next().visit(this);
+        for (final var expression : block.getBody()) {
+            expression.visit(this);
         }
     }
 
