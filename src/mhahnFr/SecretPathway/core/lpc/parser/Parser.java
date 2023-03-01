@@ -1543,7 +1543,7 @@ public class Parser {
             advance();
         }
 
-        return new ASTBlock(begin, current.endPos(), block);
+        return new ASTBlock(begin, previous.endPos(), block);
     }
 
     /**
