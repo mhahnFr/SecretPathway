@@ -43,7 +43,10 @@ public class Interpreter implements ASTVisitor {
      */
     public Context createContextFor(final List<ASTExpression> expressions) {
         current = new Context();
-        expressions.forEach(this::visit);
+        final var iterator = expressions.listIterator();
+        while (iterator.hasNext()) {
+            iterator.next().visit(this);
+        }
         return current;
     }
 
