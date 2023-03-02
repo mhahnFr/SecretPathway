@@ -54,6 +54,7 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
 
         getContentPane().add(scrollPane);
 
+        Settings.getInstance().addDarkModeListener(this);
         darkModeToggled(Settings.getInstance().getDarkMode());
         setPreferredSize(new Dimension(300, 200));
         setFocusable(false);
@@ -119,5 +120,11 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
     public void clearSuggestions() {
         suggestions.clear();
         suggestionPanel.removeAll();
+    }
+
+    @Override
+    public void dispose() {
+        Settings.getInstance().removeDarkModeListener(this);
+        super.dispose();
     }
 }
