@@ -19,9 +19,13 @@
 
 package mhahnFr.SecretPathway.gui.editor;
 
+import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.SecretPathway.core.lpc.interpreter.Definition;
+import mhahnFr.utils.gui.DarkComponent;
+import mhahnFr.utils.gui.DarkModeListener;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
@@ -33,8 +37,10 @@ import java.util.Vector;
  * @author mhahnFr
  * @since 01.03.23
  */
-public class SuggestionsWindow extends JWindow {
-    /** The list with the suggestions to be displayed. */
+public class SuggestionsWindow extends JWindow implements DarkModeListener {
+    /** A list with all components enabling the dark mode. */
+    private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
+    /** The list with the suggestions to be displayed.     */
     private final List<Definition> suggestions = new Vector<>();
 
     /**
@@ -42,6 +48,14 @@ public class SuggestionsWindow extends JWindow {
      */
     public SuggestionsWindow() {
         // TODO: UI
+        darkModeToggled(Settings.getInstance().getDarkMode());
+    }
+
+    @Override
+    public void darkModeToggled(boolean dark) {
+        for (final var component : components) {
+            component.setDark(dark);
+        }
     }
 
     /**
