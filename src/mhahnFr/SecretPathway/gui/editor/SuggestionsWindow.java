@@ -25,6 +25,7 @@ import mhahnFr.utils.gui.DarkComponent;
 import mhahnFr.utils.gui.DarkModeListener;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -42,13 +43,20 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
     /** The list with the suggestions to be displayed.     */
     private final List<Definition> suggestions = new Vector<>();
+    private final JPanel suggestionPanel;
 
     /**
      * Constructs this window.
      */
     public SuggestionsWindow() {
-        // TODO: UI
+        suggestionPanel = new DarkComponent<>(new JPanel(new GridLayout(1, 0)), components).getComponent();
+        final var scrollPane = new DarkComponent<>(new JScrollPane(suggestionPanel), components).getComponent();
+
+        getContentPane().add(scrollPane);
+
         darkModeToggled(Settings.getInstance().getDarkMode());
+        setPreferredSize(new Dimension(300, 200));
+        setFocusable(false);
     }
 
     @Override
@@ -65,6 +73,11 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      */
     public void addSuggestion(final Definition suggestion) {
         suggestions.add(suggestion);
+        addSuggestionGUI(suggestion);
+    }
+
+    private void addSuggestionGUI(final Definition suggestion) {
+        suggestionPanel.add(new JLabel(suggestion.getName()));
     }
 
     /**
@@ -74,6 +87,9 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      */
     public void addSuggestions(final Collection<Definition> suggestions) {
         this.suggestions.addAll(suggestions);
+        for (final var suggestion : suggestions) {
+            addSuggestionGUI(suggestion);
+        }
     }
 
     /**
@@ -94,6 +110,7 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      */
     public void removeSuggestion(final Definition suggestion) {
         suggestions.remove(suggestion);
+        // TODO: Remove the suggestion
     }
 
     /**
@@ -101,5 +118,6 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      */
     public void clearSuggestions() {
         suggestions.clear();
+        suggestionPanel.removeAll();
     }
 }
