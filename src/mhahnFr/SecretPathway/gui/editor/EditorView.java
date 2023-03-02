@@ -117,7 +117,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
     private void addKeyActions() {
         final var map = textPane.getKeymap();
 
-        map.addActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, KeyEvent.CTRL_DOWN_MASK), new AbstractAction() {
+        map.addActionForKeyStroke(Constants.Editor.SHOW_SUGGESTIONS, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 handleSuggestionMenu();
@@ -134,7 +134,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
     private void removeKeyActions() {
         final var map = textPane.getKeymap();
 
-        map.removeKeyStrokeBinding(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, KeyEvent.CTRL_DOWN_MASK));
+        map.removeKeyStrokeBinding(Constants.Editor.SHOW_SUGGESTIONS);
     }
 
     /**
@@ -142,7 +142,37 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
      * suggestions window.
      */
     private void addSuggestionKeyActions() {
-        // TODO: Add keys for v ^ <esc> <-| ->|
+        final var m = textPane.getKeymap();
+        m.addActionForKeyStroke(Constants.Editor.POPUP_DOWN, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                suggestionsWindow.selectNext();
+            }
+        });
+        m.addActionForKeyStroke(Constants.Editor.POPUP_UP, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                suggestionsWindow.selectPrevious();
+            }
+        });
+        m.addActionForKeyStroke(Constants.Editor.POPUP_CLOSE, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                handleSuggestionMenu();
+            }
+        });
+        m.addActionForKeyStroke(Constants.Editor.POPUP_ENTER, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                document.insertString(textPane.getCaretPosition(), suggestionsWindow.getSelected(), null);
+            }
+        });
+        m.addActionForKeyStroke(Constants.Editor.POPUP_REPLACE, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO: Replace selection
+            }
+        });
     }
 
     /**
@@ -150,7 +180,12 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
      * the suggestions window.
      */
     private void removeSuggestionKeyActions() {
-        // TODO: Remove keys for v ^ <esc> <-| ->|
+        final var m = textPane.getKeymap();
+        m.removeKeyStrokeBinding(Constants.Editor.POPUP_CLOSE);
+        m.removeKeyStrokeBinding(Constants.Editor.POPUP_UP);
+        m.removeKeyStrokeBinding(Constants.Editor.POPUP_DOWN);
+        m.removeKeyStrokeBinding(Constants.Editor.POPUP_ENTER);
+        m.removeKeyStrokeBinding(Constants.Editor.POPUP_REPLACE);
     }
 
     /**

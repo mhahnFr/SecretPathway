@@ -19,7 +19,9 @@
 
 package mhahnFr.SecretPathway.core;
 
+import javax.swing.KeyStroke;
 import java.awt.Font;
+import java.awt.event.KeyEvent;
 
 /**
  * This class contains some constant values used in the whole project.
@@ -65,5 +67,11 @@ public final class Constants {
         public static final String DEFAULT_THEME = "Default";
         /** The string displayed for choosing a theme.  */
         public static final String CHOOSE_THEME = "Choose...";
+        public static final KeyStroke SHOW_SUGGESTIONS = KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, KeyEvent.CTRL_DOWN_MASK);
+        public static final KeyStroke POPUP_DOWN = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0);
+        public static final KeyStroke POPUP_UP = KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0);
+        public static final KeyStroke POPUP_CLOSE = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+        public static final KeyStroke POPUP_ENTER = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
+        public static final KeyStroke POPUP_REPLACE = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0);
     }
 }
