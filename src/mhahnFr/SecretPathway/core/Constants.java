@@ -63,15 +63,21 @@ public final class Constants {
      * Constants for use with the editor.
      */
     public static final class Editor {
-        /** The string displayed for the default theme. */
+        /** The string displayed for the default theme.               */
         public static final String DEFAULT_THEME = "Default";
-        /** The string displayed for choosing a theme.  */
+        /** The string displayed for choosing a theme.                */
         public static final String CHOOSE_THEME = "Choose...";
+        /** The keystroke for toggling the suggestions window.        */
         public static final KeyStroke SHOW_SUGGESTIONS = KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, KeyEvent.CTRL_DOWN_MASK);
+        /** The keystroke for selecting the next suggestion.          */
         public static final KeyStroke POPUP_DOWN = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0);
+        /** The keystroke for selecting the previous suggestion.      */
         public static final KeyStroke POPUP_UP = KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0);
+        /** The keystroke for closing the suggestions window.         */
         public static final KeyStroke POPUP_CLOSE = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+        /** The keystroke for taking the selected suggestion.         */
         public static final KeyStroke POPUP_ENTER = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
+        /** The keystroke for replacing with the selected suggestion. */
         public static final KeyStroke POPUP_REPLACE = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0);
     }
 }

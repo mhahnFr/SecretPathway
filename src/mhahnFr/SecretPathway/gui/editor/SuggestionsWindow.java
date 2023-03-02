@@ -43,6 +43,7 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
     /** The list with the suggestions to be displayed.     */
     private final List<Definition> suggestions = new Vector<>();
+    /** The panel with the suggestions.                    */
     private final JPanel suggestionPanel;
 
     /**
@@ -77,6 +78,11 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
         addSuggestionGUI(suggestion);
     }
 
+    /**
+     * Adds the given suggestion to the UI.
+     *
+     * @param suggestion the suggestion to be added to display
+     */
     private void addSuggestionGUI(final Definition suggestion) {
         suggestionPanel.add(new JLabel(suggestion.getName()));
     }

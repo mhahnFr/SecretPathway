@@ -56,8 +56,10 @@ public class SyntaxDocument extends DefaultStyledDocument {
     private boolean highlighting;
     /** The theme to be used for the syntax highlighting.     */
     private SPTheme theme = Settings.getInstance().getEditorTheme();
+    /** The interpreted context of the source code.           */
     private volatile Context context;
-    private ExecutorService thread = Executors.newSingleThreadExecutor();
+    /** The execution service for interpreting the code.      */
+    private final ExecutorService thread = Executors.newSingleThreadExecutor();
 //    private Map<Pair<Integer, Integer>, String> errorRanges = new HashMap<>();
 
     @Override
@@ -194,6 +196,13 @@ public class SyntaxDocument extends DefaultStyledDocument {
         setCharacterAttributes(0, getLength(), def, true);
     }
 
+    /**
+     * Returns a message about the code at the given
+     * cursor position.
+     *
+     * @param position the position of the cursor
+     * @return the message at that position
+     */
     public String getMessageFor(int position) {
 //        for (final var entry : errorRanges.entrySet()) {
 //            if (position >= entry.getKey().getFirst() && position <= entry.getKey().getSecond()) {
