@@ -49,7 +49,7 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      * Constructs this window.
      */
     public SuggestionsWindow() {
-        suggestionPanel = new DarkComponent<>(new JPanel(new GridLayout(1, 0)), components).getComponent();
+        suggestionPanel = new DarkComponent<>(new JPanel(new GridLayout(0, 1)), components).getComponent();
         final var scrollPane = new DarkComponent<>(new JScrollPane(suggestionPanel), components).getComponent();
 
         getContentPane().add(scrollPane);
@@ -100,8 +100,11 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      * @param newSuggestions the new suggestions to be displayed
      */
     public void updateSuggestions(final Collection<Definition> newSuggestions) {
-        suggestions.clear();
+        clearSuggestions();
         suggestions.addAll(newSuggestions);
+        for (final var suggestion : newSuggestions) {
+            addSuggestionGUI(suggestion);
+        }
     }
 
     /**
