@@ -44,12 +44,12 @@ import java.util.List;
 public class EditorView extends JPanel implements SettingsListener, FocusListener {
     /** A list consisting of all components enabling the dark mode. */
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
+    /** The window displaying the available suggestions.            */
+    private final SuggestionsWindow suggestionsWindow = new SuggestionsWindow();
     /** The document responsible for highlighting the source code.  */
     private final SyntaxDocument document;
     /** The text pane.                                              */
     private final JTextPane textPane;
-    /** The window displaying the available suggestions.            */
-    private final JWindow suggestionsWindow;
     /** The optional {@link DisposeListener}.                       */
     private DisposeListener disposeListener;
 
@@ -96,8 +96,6 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         setFontSize(settings.getFontSize());
         textPane.addFocusListener(this);
         addKeyActions();
-
-        suggestionsWindow = new JWindow();
     }
 
     @Override
@@ -159,19 +157,11 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
      * Handles the main keyboard action of the suggestions window.
      */
     private void handleSuggestionMenu() {
-        // TODO: Write its own window class!
         if (suggestionsWindow.isVisible()) {
             suggestionsWindow.setVisible(false);
             removeSuggestionKeyActions();
         } else {
-            suggestionsWindow.getContentPane().removeAll();
-            final var suggestions = document.getAvailableDefinitions(textPane.getCaretPosition());
-            final var panel = new JPanel(new GridLayout(suggestions.size(), 1));
-            for (final var suggestion : suggestions) {
-                panel.add(new JLabel(suggestion.getName()));
-            }
-
-            suggestionsWindow.getContentPane().add(panel);
+            suggestionsWindow.updateSuggestions(document.getAvailableDefinitions(textPane.getCaretPosition()));
             addSuggestionKeyActions();
             final var caretPosition = textPane.getCaret().getMagicCaretPosition();
             final var panePosition  = textPane.getLocationOnScreen();
