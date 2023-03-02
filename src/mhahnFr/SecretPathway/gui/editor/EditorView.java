@@ -31,7 +31,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -277,6 +276,8 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
      * Destroys this EditorView.
      */
     public void dispose() {
+        suggestionsWindow.dispose();
+        removeKeyActions();
         final var settings = Settings.getInstance();
 
         settings.removeListener(this);
