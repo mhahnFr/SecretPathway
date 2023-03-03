@@ -58,7 +58,6 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
 
         Settings.getInstance().addDarkModeListener(this);
         darkModeToggled(Settings.getInstance().getDarkMode());
-        setPreferredSize(new Dimension(300, 200));
         setFocusable(false);
     }
 
@@ -144,6 +143,18 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
         suggestions.clear();
         suggestionPanel.removeAll();
         index = 0;
+    }
+
+    @Override
+    public void setVisible(boolean b) {
+        pack();
+        if (b) {
+            suggestions.get(index).setSelected(true);
+        } else {
+            suggestions.get(index).setSelected(false);
+            index = 0;
+        }
+        super.setVisible(b);
     }
 
     @Override

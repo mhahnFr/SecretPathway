@@ -22,16 +22,19 @@ package mhahnFr.SecretPathway.gui.editor;
 import mhahnFr.SecretPathway.core.lpc.interpreter.Definition;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class SuggestionLabel extends JPanel {
     private final Definition represented;
+    private final JLabel suggestionLabel;
     private boolean selected;
 
     public SuggestionLabel(final Definition suggestion) {
         super(new BorderLayout());
-            final var suggestionLabel = new JLabel(suggestion.getName());
+            suggestionLabel = new JLabel(suggestion.getName());
             suggestionLabel.setOpaque(false);
+            suggestionLabel.setBorder(new EmptyBorder(0, 5, 0, 5));
 
             final var typeLabel = new JLabel(suggestion.getType().toString());
             typeLabel.setForeground(Color.gray);
@@ -46,8 +49,10 @@ public class SuggestionLabel extends JPanel {
         this.selected = selected;
         if (selected) {
             setBackground(Color.blue);
+            suggestionLabel.setForeground(Color.white);
         } else {
             setBackground(null);
+            suggestionLabel.setForeground(Color.black);
         }
     }
 
