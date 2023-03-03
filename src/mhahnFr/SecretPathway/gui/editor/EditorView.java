@@ -146,6 +146,12 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
      */
     private void addSuggestionKeyActions() {
         final var m = textPane.getKeymap();
+        final var toggleAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                toggleSuggestionMenu();
+            }
+        };
         m.addActionForKeyStroke(Constants.Editor.POPUP_DOWN, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -158,12 +164,9 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
                 suggestionsWindow.selectPrevious();
             }
         });
-        m.addActionForKeyStroke(Constants.Editor.POPUP_CLOSE, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                toggleSuggestionMenu();
-            }
-        });
+        m.addActionForKeyStroke(Constants.Editor.POPUP_CLOSE, toggleAction);
+        m.addActionForKeyStroke(Constants.Editor.POPUP_LEFT, toggleAction);
+        m.addActionForKeyStroke(Constants.Editor.POPUP_RIGHT, toggleAction);
         m.addActionForKeyStroke(Constants.Editor.POPUP_ENTER, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
