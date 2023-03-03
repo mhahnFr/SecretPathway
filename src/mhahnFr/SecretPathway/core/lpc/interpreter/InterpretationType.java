@@ -27,5 +27,6 @@ package mhahnFr.SecretPathway.core.lpc.interpreter;
  * @since 20.02.23
  */
 public enum InterpretationType {
-
+    /** Indicates a syntax error. */
+    ERROR
 }

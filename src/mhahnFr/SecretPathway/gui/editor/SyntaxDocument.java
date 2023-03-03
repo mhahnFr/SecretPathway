@@ -21,12 +21,14 @@ package mhahnFr.SecretPathway.gui.editor;
 
 import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.SecretPathway.core.lpc.interpreter.Context;
+import mhahnFr.SecretPathway.core.lpc.interpreter.InterpretationType;
 import mhahnFr.SecretPathway.core.lpc.interpreter.Interpreter;
 import mhahnFr.SecretPathway.core.lpc.parser.Parser;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Tokenizer;
 import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
+import mhahnFr.utils.Pair;
 import mhahnFr.utils.StringStream;
 
 import javax.swing.text.*;
@@ -50,6 +52,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
     private SPTheme theme = Settings.getInstance().getEditorTheme();
     /** The interpreted context of the source code.           */
     private volatile Context context;
+    private volatile List<Pair<Integer, Integer>> errorRanges;
     /** The execution service for interpreting the code.      */
     private final ExecutorService thread = Executors.newSingleThreadExecutor();
 //    private Map<Pair<Integer, Integer>, String> errorRanges = new HashMap<>();
@@ -136,7 +139,17 @@ public class SyntaxDocument extends DefaultStyledDocument {
                     theme.styleFor(token.type()).asStyle(def), true);
         }
 
-        thread.execute(() -> this.context = new Interpreter().createContextFor(new Parser(text).parse()));
+        if (errorRanges != null) {
+            for (final var range : errorRanges) {
+                setCharacterAttributes(range.getFirst(), range.getSecond() - range.getFirst(), theme.styleFor(InterpretationType.ERROR).asStyle(def), true);
+            }
+        }
+
+        thread.execute(() -> {
+            final var interpreter = new Interpreter();
+            this.context     = interpreter.createContextFor(new Parser(text).parse());
+            this.errorRanges = interpreter.getErrorLines();
+        });
 
         /*errorRanges.clear();
         final var expressions = new Parser(getAllText()).parse();
