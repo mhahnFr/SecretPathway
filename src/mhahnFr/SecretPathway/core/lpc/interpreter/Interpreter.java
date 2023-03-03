@@ -21,7 +21,11 @@ package mhahnFr.SecretPathway.core.lpc.interpreter;
 
 import mhahnFr.SecretPathway.core.lpc.parser.ast.*;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
+import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
+import mhahnFr.utils.Pair;
+import mhahnFr.utils.StreamPosition;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,8 +35,10 @@ import java.util.List;
  * @since 21.02.23
  */
 public class Interpreter implements ASTVisitor {
-    /** The currently active context. */
+    /** The currently active context.            */
     private Context current;
+    /** A list with the ranges of syntax errors. */
+    private final List<Pair<Integer, Integer>> errorLines = new ArrayList<>();
 
     /**
      * Creates an execution context for the given list of
@@ -47,6 +53,15 @@ public class Interpreter implements ASTVisitor {
             expression.visit(this);
         }
         return current;
+    }
+
+    /**
+     * Returns a list with the ranges of the syntax errors.
+     *
+     * @return a list with the error ranges
+     */
+    public List<Pair<Integer, Integer>> getErrorLines() {
+        return errorLines;
     }
 
     @Override
@@ -73,6 +88,18 @@ public class Interpreter implements ASTVisitor {
                 visitBlock((ASTBlock) expression);
                 current = current.popScope(expression.getEnd().position());
             }
+            case MISSING -> {
+                final StreamPosition begin = expression.getBegin(),
+                                     end   = expression.getEnd();
+                final int endPosition;
+                if (!begin.isOnSameLine(end)) {
+                    endPosition = begin.getLineEnd().position();
+                } else {
+                    endPosition = end.position();
+                }
+                errorLines.add(new Pair<>(begin.position(), endPosition));
+            }
+            case WRONG -> errorLines.add(new Pair<>(expression.getBegin().position(), expression.getEnd().position()));
         }
     }
 
