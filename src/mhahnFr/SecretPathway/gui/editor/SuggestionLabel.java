@@ -26,13 +26,31 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.Vector;
 
+/**
+ * This class represents a label with a displayed {@link Suggestion}.
+ *
+ * @author mhahnFr
+ * @since 03.03.23
+ */
 public class SuggestionLabel extends JPanel {
+    /** The represented and thus displayed suggestion.       */
     private final Suggestion represented;
+    /** The label with the actual suggestion.                */
     private final JLabel suggestionLabel;
+    /** A list enabling registered component's dark mode.    */
     private final java.util.List<DarkComponent<? extends JComponent>> components = new Vector<>(2);
+    /** Indicates whether the dark mode is currently active. */
     private boolean dark;
+    /** Indicates whether this label is selected.            */
     private boolean selected;
 
+    /**
+     * Constructs this label. The given {@link Suggestion} is represented
+     * and displayed.
+     *
+     * @param suggestion the suggestion to be displayed
+     * @param dark whether the dark mode is active
+     */
     public SuggestionLabel(final Suggestion suggestion, final boolean dark) {
         super(new BorderLayout());
         components.add(new DarkComponent<>(this));
@@ -50,6 +68,11 @@ public class SuggestionLabel extends JPanel {
         setDark(dark);
     }
 
+    /**
+     * Toggles the dark mode of this component.
+     *
+     * @param dark whether to enable the dark mode
+     */
     public void setDark(final boolean dark) {
         this.dark = dark;
         for (final var component : components) {
@@ -57,6 +80,11 @@ public class SuggestionLabel extends JPanel {
         }
     }
 
+    /**
+     * Sets whether this label should be rendered as being selected.
+     *
+     * @param selected whether this label is selected
+     */
     public void setSelected(final boolean selected) {
         this.selected = selected;
         if (selected) {
@@ -68,10 +96,20 @@ public class SuggestionLabel extends JPanel {
         }
     }
 
+    /**
+     * Returns whether this label is rendered as being selected.
+     *
+     * @return whether this label is selected
+     */
     public boolean isSelected() {
         return selected;
     }
 
+    /**
+     * Returns the represented {@link Suggestion}.
+     *
+     * @return the represented suggestion
+     */
     public Suggestion getRepresented() {
         return represented;
     }

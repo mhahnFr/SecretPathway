@@ -73,7 +73,9 @@ public final class Constants {
         public static final KeyStroke POPUP_DOWN = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0);
         /** The keystroke for selecting the previous suggestion.      */
         public static final KeyStroke POPUP_UP = KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0);
+        /** The keystroke for moving left.                            */
         public static final KeyStroke POPUP_LEFT = KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0);
+        /** The keystroke for moving right.                           */
         public static final KeyStroke POPUP_RIGHT = KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0);
         /** The keystroke for closing the suggestions window.         */
         public static final KeyStroke POPUP_CLOSE = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);

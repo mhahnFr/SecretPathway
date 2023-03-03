@@ -21,5 +21,13 @@ package mhahnFr.SecretPathway.gui.editor;
 
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 
+/**
+ * This class represents a suggestion.
+ *
+ * @param type    the return type of the suggestion
+ * @param content the actual suggestion
+ * @author mhahnFr
+ * @since 03.03.23
+ */
 public record Suggestion(TokenType type, String content) {
 }
