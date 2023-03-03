@@ -195,6 +195,8 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         m.removeKeyStrokeBinding(Constants.Editor.POPUP_CLOSE);
         m.removeKeyStrokeBinding(Constants.Editor.POPUP_UP);
         m.removeKeyStrokeBinding(Constants.Editor.POPUP_DOWN);
+        m.removeKeyStrokeBinding(Constants.Editor.POPUP_LEFT);
+        m.removeKeyStrokeBinding(Constants.Editor.POPUP_RIGHT);
         m.removeKeyStrokeBinding(Constants.Editor.POPUP_ENTER);
         m.removeKeyStrokeBinding(Constants.Editor.POPUP_REPLACE);
     }
