@@ -27,6 +27,7 @@ import mhahnFr.utils.gui.DarkTextComponent;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
@@ -163,7 +164,12 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         m.addActionForKeyStroke(Constants.Editor.POPUP_ENTER, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                document.insertString(textPane.getCaretPosition(), suggestionsWindow.getSelected(), null);
+                try {
+                    document.insertString(textPane.getCaretPosition(), suggestionsWindow.getSelected(), null);
+                } catch (BadLocationException exception) {
+                    exception.printStackTrace();
+                }
+                handleSuggestionMenu();
             }
         });
         m.addActionForKeyStroke(Constants.Editor.POPUP_REPLACE, new AbstractAction() {

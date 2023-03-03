@@ -89,9 +89,9 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
         suggestions.get(index).setSelected(true);
     }
 
-//    public String getSelected() {
-//        return suggestions.get(index).getRepresented().getName();
-//    }
+    public String getSelected() {
+        return suggestions.get(index).getRepresented().getName();
+    }
 
     /**
      * Adds the given suggestion.

@@ -25,6 +25,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class SuggestionLabel extends JPanel {
+    private final Definition represented;
     private boolean selected;
 
     public SuggestionLabel(final Definition suggestion) {
@@ -37,6 +38,8 @@ public class SuggestionLabel extends JPanel {
             typeLabel.setOpaque(false);
         add(suggestionLabel, BorderLayout.WEST);
         add(typeLabel, BorderLayout.EAST);
+
+        this.represented = suggestion;
     }
 
     public void setSelected(final boolean selected) {
@@ -50,5 +53,9 @@ public class SuggestionLabel extends JPanel {
 
     public boolean isSelected() {
         return selected;
+    }
+
+    public Definition getRepresented() {
+        return represented;
     }
 }
