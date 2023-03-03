@@ -174,6 +174,13 @@ public class SyntaxDocument extends DefaultStyledDocument {
         System.out.println();*/
     }
 
+    /**
+     * Returns a list with the available suggestions at the
+     * given text position.
+     *
+     * @param position the text position
+     * @return a list with the suggestions
+     */
     public List<Suggestion> getAvailableSuggestions(final int position) {
         if (context == null) {
             return null;

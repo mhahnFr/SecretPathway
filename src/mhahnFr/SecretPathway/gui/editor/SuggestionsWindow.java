@@ -45,7 +45,9 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
     private final List<SuggestionLabel> suggestions = new Vector<>();
     /** The panel with the suggestions.                    */
     private final JPanel suggestionPanel;
+    /** The index of the currently selected suggestion.    */
     private int index;
+    /** Whether the dark mode is enabled.                  */
     private boolean dark;
 
     /**
@@ -70,6 +72,14 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
         }
     }
 
+    /**
+     * Selects the next available suggestion. If the
+     * currently selected suggestion is the last one,
+     * the first suggestion is selected.
+     *
+     * @see #selectPrevious()
+     * @see #getSelected()
+     */
     public void selectNext() {
         suggestions.get(index).setSelected(false);
         if (index + 1 >= suggestions.size()) {
@@ -80,6 +90,14 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
         suggestions.get(index).setSelected(true);
     }
 
+    /**
+     * Selects the previous suggestion. If the currently
+     * selected suggestion is the first one, the last one
+     * is selected.
+     *
+     * @see #selectNext()
+     * @see #getSelected()
+     */
     public void selectPrevious() {
         suggestions.get(index).setSelected(false);
         if (index - 1 < 0) {
@@ -90,6 +108,14 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
         suggestions.get(index).setSelected(true);
     }
 
+    /**
+     * Returns the text to be inserted of the currently
+     * selected suggestion.
+     *
+     * @return the text of the currently selected suggestion
+     * @see #selectNext()
+     * @see #selectPrevious()
+     */
     public String getSelected() {
         return suggestions.get(index).getRepresented().content();
     }
