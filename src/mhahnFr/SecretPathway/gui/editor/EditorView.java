@@ -204,7 +204,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
             suggestionsWindow.setVisible(false);
             removeSuggestionKeyActions();
         } else {
-            suggestionsWindow.updateSuggestions(document.getAvailableDefinitions(textPane.getCaretPosition()));
+            suggestionsWindow.updateSuggestions(document.getAvailableSuggestions(textPane.getCaretPosition()));
             addSuggestionKeyActions();
             final var caretPosition = textPane.getCaret().getMagicCaretPosition();
             final var panePosition  = textPane.getLocationOnScreen();

@@ -89,7 +89,7 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
     }
 
     public String getSelected() {
-        return suggestions.get(index).getRepresented().getName();
+        return suggestions.get(index).getRepresented().content();
     }
 
     /**
@@ -97,7 +97,7 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      *
      * @param suggestion the suggestion to be added
      */
-    public void addSuggestion(final Definition suggestion) {
+    public void addSuggestion(final Suggestion suggestion) {
         final var label = new SuggestionLabel(suggestion);
         suggestionPanel.add(label);
         suggestions.add(label);
@@ -108,7 +108,7 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      *
      * @param suggestions the suggestions to be added
      */
-    public void addSuggestions(final Collection<Definition> suggestions) {
+    public void addSuggestions(final Collection<Suggestion> suggestions) {
         for (final var suggestion : suggestions) {
             addSuggestion(suggestion);
         }
@@ -120,7 +120,7 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      *
      * @param newSuggestions the new suggestions to be displayed
      */
-    public void updateSuggestions(final Collection<Definition> newSuggestions) {
+    public void updateSuggestions(final Collection<Suggestion> newSuggestions) {
         clearSuggestions();
         for (final var suggestion : newSuggestions) {
             addSuggestion(suggestion);

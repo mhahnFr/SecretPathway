@@ -21,6 +21,7 @@ package mhahnFr.SecretPathway.core.lpc.interpreter;
 
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTType;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
+import mhahnFr.SecretPathway.gui.editor.Suggestion;
 
 import java.util.*;
 
@@ -86,14 +87,14 @@ public class Context extends Instruction {
      * @param at the position
      * @return the available instructions
      */
-    public List<Definition> availableDefinitions(final int at) {
-        final var toReturn = new ArrayList<Definition>();
+    public List<Suggestion> availableDefinitions(final int at) {
+        final var toReturn = new ArrayList<Suggestion>();
 
         for (final var instruction : instructions.entrySet()) {
             if (instruction.getKey() < at) {
                 final var value = instruction.getValue();
                 if (value instanceof Definition) {
-                    toReturn.add(((Definition) value));
+                    toReturn.add(new Suggestion(value.getReturnType(), ((Definition) value).getName()));
                 } else if (value instanceof Context && at < value.getEnd()) {
                     toReturn.addAll(((Context) value).availableDefinitions(at));
                 }

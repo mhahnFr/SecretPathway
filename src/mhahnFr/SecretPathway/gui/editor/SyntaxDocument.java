@@ -21,24 +21,16 @@ package mhahnFr.SecretPathway.gui.editor;
 
 import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.SecretPathway.core.lpc.interpreter.Context;
-import mhahnFr.SecretPathway.core.lpc.interpreter.Definition;
 import mhahnFr.SecretPathway.core.lpc.interpreter.Interpreter;
 import mhahnFr.SecretPathway.core.lpc.parser.Parser;
-import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTMissing;
-import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTWrong;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Tokenizer;
-import mhahnFr.SecretPathway.gui.editor.theme.DefaultTheme;
-import mhahnFr.SecretPathway.gui.editor.theme.json.JSONTheme;
 import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
-import mhahnFr.utils.Pair;
 import mhahnFr.utils.StringStream;
 
 import javax.swing.text.*;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -182,7 +174,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
         System.out.println();*/
     }
 
-    public List<Definition> getAvailableDefinitions(final int position) {
+    public List<Suggestion> getAvailableSuggestions(final int position) {
         if (context == null) {
             return null;
         }
