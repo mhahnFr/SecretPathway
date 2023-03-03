@@ -356,7 +356,7 @@ public final class Settings {
     public Settings setDarkMode(boolean enabled) {
         final var value = enabled ? 1 : 0;
 
-        callListeners(Keys.DARK_MODE, value);
+        callListeners(Keys.DARK_MODE, enabled);
         preferences.putInt(Keys.DARK_MODE, value);
 
         for (final var listener : darkListeners) {
@@ -376,7 +376,7 @@ public final class Settings {
     public Settings setSyntaxHighlighting(final boolean enabled) {
         final var value = enabled ? 1 : 0;
 
-        callListeners(Keys.EDITOR_SYNTAX_HIGHLIGHTING, value);
+        callListeners(Keys.EDITOR_SYNTAX_HIGHLIGHTING, enabled);
         preferences.putInt(Keys.EDITOR_SYNTAX_HIGHLIGHTING, value);
 
         return this;
@@ -392,7 +392,7 @@ public final class Settings {
     public Settings setEditorInlined(final boolean inlined) {
         final var value = inlined ? 1 : 0;
 
-        callListeners(Keys.EDITOR_INLINED, value);
+        callListeners(Keys.EDITOR_INLINED, inlined);
         preferences.putInt(Keys.EDITOR_INLINED, value);
 
         return this;
@@ -433,7 +433,7 @@ public final class Settings {
     public Settings setStartTLS(final boolean enabled) {
         final var value = enabled ? 1 : 0;
 
-        callListeners(Keys.START_TLS, value);
+        callListeners(Keys.START_TLS, enabled);
         preferences.putInt(Keys.START_TLS, value);
 
         return this;
@@ -478,7 +478,7 @@ public final class Settings {
     public Settings setUseUTF8(final boolean useIt) {
         final var value = useIt ? 1 : 0;
 
-        callListeners(Keys.USE_UTF8, value);
+        callListeners(Keys.USE_UTF8, useIt);
         preferences.putInt(Keys.USE_UTF8, value);
 
         return this;
