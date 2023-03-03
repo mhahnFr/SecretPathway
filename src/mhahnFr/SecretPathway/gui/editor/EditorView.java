@@ -106,6 +106,9 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
     @Override
     public void focusLost(FocusEvent e) {
         removeKeyActions();
+        if (suggestionsWindow.isVisible()) {
+            toggleSuggestionMenu();
+        }
     }
 
     /**
@@ -120,7 +123,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         map.addActionForKeyStroke(Constants.Editor.SHOW_SUGGESTIONS, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                handleSuggestionMenu();
+                toggleSuggestionMenu();
             }
         });
     }
@@ -158,7 +161,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         m.addActionForKeyStroke(Constants.Editor.POPUP_CLOSE, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                handleSuggestionMenu();
+                toggleSuggestionMenu();
             }
         });
         m.addActionForKeyStroke(Constants.Editor.POPUP_ENTER, new AbstractAction() {
@@ -169,7 +172,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
                 } catch (BadLocationException exception) {
                     exception.printStackTrace();
                 }
-                handleSuggestionMenu();
+                toggleSuggestionMenu();
             }
         });
         m.addActionForKeyStroke(Constants.Editor.POPUP_REPLACE, new AbstractAction() {
@@ -196,7 +199,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
     /**
      * Handles the main keyboard action of the suggestions window.
      */
-    private void handleSuggestionMenu() {
+    private void toggleSuggestionMenu() {
         if (suggestionsWindow.isVisible()) {
             suggestionsWindow.setVisible(false);
             removeSuggestionKeyActions();
