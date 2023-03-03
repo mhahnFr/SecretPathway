@@ -19,18 +19,24 @@
 
 package mhahnFr.SecretPathway.gui.editor;
 
+import mhahnFr.utils.gui.DarkComponent;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.Vector;
 
 public class SuggestionLabel extends JPanel {
     private final Suggestion represented;
     private final JLabel suggestionLabel;
+    private final java.util.List<DarkComponent<? extends JComponent>> components = new Vector<>(2);
+    private boolean dark;
     private boolean selected;
 
-    public SuggestionLabel(final Suggestion suggestion) {
+    public SuggestionLabel(final Suggestion suggestion, final boolean dark) {
         super(new BorderLayout());
-            suggestionLabel = new JLabel(suggestion.content());
+        components.add(new DarkComponent<>(this));
+            suggestionLabel = new DarkComponent<>(new JLabel(suggestion.content()), components).getComponent();
             suggestionLabel.setOpaque(false);
             suggestionLabel.setBorder(new EmptyBorder(0, 5, 0, 5));
 
@@ -41,6 +47,14 @@ public class SuggestionLabel extends JPanel {
         add(typeLabel, BorderLayout.EAST);
 
         this.represented = suggestion;
+        setDark(dark);
+    }
+
+    public void setDark(final boolean dark) {
+        this.dark = dark;
+        for (final var component : components) {
+            component.setDark(dark);
+        }
     }
 
     public void setSelected(final boolean selected) {
@@ -50,7 +64,7 @@ public class SuggestionLabel extends JPanel {
             suggestionLabel.setForeground(Color.white);
         } else {
             setBackground(null);
-            suggestionLabel.setForeground(Color.black);
+            suggestionLabel.setForeground(dark ? Color.white : Color.black);
         }
     }
 

@@ -46,6 +46,7 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
     /** The panel with the suggestions.                    */
     private final JPanel suggestionPanel;
     private int index;
+    private boolean dark;
 
     /**
      * Constructs this window.
@@ -63,6 +64,7 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
 
     @Override
     public void darkModeToggled(boolean dark) {
+        this.dark = dark;
         for (final var component : components) {
             component.setDark(dark);
         }
@@ -98,7 +100,7 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      * @param suggestion the suggestion to be added
      */
     public void addSuggestion(final Suggestion suggestion) {
-        final var label = new SuggestionLabel(suggestion);
+        final var label = new SuggestionLabel(suggestion, dark);
         suggestionPanel.add(label);
         suggestions.add(label);
     }
