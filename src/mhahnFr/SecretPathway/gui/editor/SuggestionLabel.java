@@ -25,14 +25,30 @@ import javax.swing.*;
 import java.awt.*;
 
 public class SuggestionLabel extends JPanel {
+    private boolean selected;
+
     public SuggestionLabel(final Definition suggestion) {
         super(new BorderLayout());
             final var suggestionLabel = new JLabel(suggestion.getName());
             suggestionLabel.setOpaque(false);
 
             final var typeLabel = new JLabel(suggestion.getType().toString());
+            typeLabel.setForeground(Color.gray);
             typeLabel.setOpaque(false);
         add(suggestionLabel, BorderLayout.WEST);
         add(typeLabel, BorderLayout.EAST);
+    }
+
+    public void setSelected(final boolean selected) {
+        this.selected = selected;
+        if (selected) {
+            setBackground(Color.blue);
+        } else {
+            setBackground(null);
+        }
+    }
+
+    public boolean isSelected() {
+        return selected;
     }
 }

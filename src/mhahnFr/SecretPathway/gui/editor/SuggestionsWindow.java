@@ -42,9 +42,10 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
     /** A list with all components enabling the dark mode. */
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
     /** The list with the suggestions to be displayed.     */
-    private final List<Definition> suggestions = new Vector<>();
+    private final List<SuggestionLabel> suggestions = new Vector<>();
     /** The panel with the suggestions.                    */
     private final JPanel suggestionPanel;
+    private int index;
 
     /**
      * Constructs this window.
@@ -68,23 +69,39 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
         }
     }
 
+    public void selectNext() {
+        suggestions.get(index).setSelected(false);
+        if (index + 1 >= suggestions.size()) {
+            index = 0;
+        } else {
+            ++index;
+        }
+        suggestions.get(index).setSelected(true);
+    }
+
+    public void selectPrevious() {
+        suggestions.get(index).setSelected(false);
+        if (index - 1 < 0) {
+            index = suggestions.size() - 1;
+        } else {
+            --index;
+        }
+        suggestions.get(index).setSelected(true);
+    }
+
+//    public String getSelected() {
+//        return suggestions.get(index).getRepresented().getName();
+//    }
+
     /**
      * Adds the given suggestion.
      *
      * @param suggestion the suggestion to be added
      */
     public void addSuggestion(final Definition suggestion) {
-        suggestions.add(suggestion);
-        addSuggestionGUI(suggestion);
-    }
-
-    /**
-     * Adds the given suggestion to the UI.
-     *
-     * @param suggestion the suggestion to be added to display
-     */
-    private void addSuggestionGUI(final Definition suggestion) {
-        suggestionPanel.add(new JLabel(suggestion.getName()));
+        final var label = new SuggestionLabel(suggestion);
+        suggestionPanel.add(label);
+        suggestions.add(label);
     }
 
     /**
@@ -93,9 +110,8 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      * @param suggestions the suggestions to be added
      */
     public void addSuggestions(final Collection<Definition> suggestions) {
-        this.suggestions.addAll(suggestions);
         for (final var suggestion : suggestions) {
-            addSuggestionGUI(suggestion);
+            addSuggestion(suggestion);
         }
     }
 
@@ -107,9 +123,8 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      */
     public void updateSuggestions(final Collection<Definition> newSuggestions) {
         clearSuggestions();
-        suggestions.addAll(newSuggestions);
         for (final var suggestion : newSuggestions) {
-            addSuggestionGUI(suggestion);
+            addSuggestion(suggestion);
         }
     }
 
@@ -119,7 +134,6 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      * @param suggestion the suggestion to be removed
      */
     public void removeSuggestion(final Definition suggestion) {
-        suggestions.remove(suggestion);
         // TODO: Remove the suggestion
     }
 
@@ -129,6 +143,7 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
     public void clearSuggestions() {
         suggestions.clear();
         suggestionPanel.removeAll();
+        index = 0;
     }
 
     @Override

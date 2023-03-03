@@ -145,13 +145,13 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         m.addActionForKeyStroke(Constants.Editor.POPUP_DOWN, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                suggestionsWindow.selectNext();
+                suggestionsWindow.selectNext();
             }
         });
         m.addActionForKeyStroke(Constants.Editor.POPUP_UP, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                suggestionsWindow.selectPrevious();
+                suggestionsWindow.selectPrevious();
             }
         });
         m.addActionForKeyStroke(Constants.Editor.POPUP_CLOSE, new AbstractAction() {
