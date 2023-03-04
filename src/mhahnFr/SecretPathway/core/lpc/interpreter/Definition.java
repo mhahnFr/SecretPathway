@@ -20,7 +20,7 @@
 package mhahnFr.SecretPathway.core.lpc.interpreter;
 
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTType;
-import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
+import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTTypeDefinition;
 
 /**
  * This class defines a declaration.
@@ -42,10 +42,10 @@ public class Definition extends Instruction {
      * @param returnType the type the identifier evaluates to
      * @param type       the AST type of the definition
      */
-    public Definition(final int       begin,
-                      final String    name,
-                      final TokenType returnType,
-                      final ASTType   type) {
+    public Definition(final int               begin,
+                      final String            name,
+                      final ASTTypeDefinition returnType,
+                      final ASTType           type) {
         super(begin);
         setReturnType(returnType);
 

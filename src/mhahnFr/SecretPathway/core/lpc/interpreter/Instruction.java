@@ -19,7 +19,7 @@
 
 package mhahnFr.SecretPathway.core.lpc.interpreter;
 
-import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
+import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTTypeDefinition;
 
 /**
  * This class represents an interpreted instruction.
@@ -33,7 +33,7 @@ public abstract class Instruction {
     /** The end position of this instruction.       */
     private int end;
     /** The return type of this instruction.        */
-    private TokenType returnType;
+    private ASTTypeDefinition returnType;
 
     /**
      * Constructs this instruction using the given beginning
@@ -77,7 +77,7 @@ public abstract class Instruction {
      *
      * @return the return type
      */
-    public TokenType getReturnType() {
+    public ASTTypeDefinition getReturnType() {
         return returnType;
     }
 
@@ -86,7 +86,7 @@ public abstract class Instruction {
      *
      * @param returnType the new return type
      */
-    public void setReturnType(TokenType returnType) {
+    public void setReturnType(final ASTTypeDefinition returnType) {
         this.returnType = returnType;
     }
 }

@@ -19,7 +19,7 @@
 
 package mhahnFr.SecretPathway.gui.editor;
 
-import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
+import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTTypeDefinition;
 
 /**
  * This class represents a suggestion.
@@ -29,5 +29,5 @@ import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
  * @author mhahnFr
  * @since 03.03.23
  */
-public record Suggestion(TokenType type, String content) {
+public record Suggestion(ASTTypeDefinition type, String content) {
 }

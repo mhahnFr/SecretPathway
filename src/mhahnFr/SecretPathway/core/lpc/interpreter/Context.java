@@ -20,7 +20,7 @@
 package mhahnFr.SecretPathway.core.lpc.interpreter;
 
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTType;
-import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
+import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTTypeDefinition;
 import mhahnFr.SecretPathway.gui.editor.Suggestion;
 
 import java.util.*;
@@ -111,7 +111,7 @@ public class Context extends Instruction {
      * @param type the type of the identifier
      * @param kind the AST type of the identifier
      */
-    public void addIdentifier(final int begin, final String name, final TokenType type, final ASTType kind) {
+    public void addIdentifier(final int begin, final String name, final ASTTypeDefinition type, final ASTType kind) {
         instructions.put(begin, new Definition(begin, name, type, kind));
     }
 }

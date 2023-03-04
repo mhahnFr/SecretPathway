@@ -20,7 +20,6 @@
 package mhahnFr.SecretPathway.core.lpc.interpreter;
 
 import mhahnFr.SecretPathway.core.lpc.parser.ast.*;
-import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.utils.Pair;
 import mhahnFr.utils.StreamPosition;
 
@@ -149,30 +148,28 @@ public class Interpreter implements ASTVisitor {
     }
 
     /**
-     * Returns the {@link TokenType} represented by the given
+     * Returns the {@link ASTTypeDefinition} represented by the given
      * {@link ASTExpression}. If the given {@link ASTExpression}
      * is an {@link ASTCombination}, all other nodes are visited beforehand.
      *
      * @param expression the expression representing the type
      * @return the represented type
      */
-    private TokenType visitASTType(final ASTExpression expression) {
-        final TokenType toReturn;
+    private ASTTypeDefinition visitASTType(final ASTExpression expression) {
+        final ASTTypeDefinition toReturn;
 
         if (expression.getASTType() == ASTType.COMBINATION) {
-            TokenType found = null;
+            ASTTypeDefinition found = null;
             for (final var node : ((ASTCombination) expression).getExpressions()) {
                 if (node.getASTType() == ASTType.TYPE) {
-                    found = ((ASTTypeDeclaration) node).getType();
+                    found = (ASTTypeDefinition) node;
                 } else {
                     node.visit(this);
                 }
             }
             toReturn = found;
-        } else if (expression.getASTType() == ASTType.FUNCTION_REFERENCE) {
-            toReturn = ((ASTFunctionReferenceType) expression).getReturnType();
         } else {
-            toReturn = ((ASTTypeDeclaration) expression).getType();
+            toReturn = (ASTTypeDefinition) expression;
         }
         return toReturn;
     }
