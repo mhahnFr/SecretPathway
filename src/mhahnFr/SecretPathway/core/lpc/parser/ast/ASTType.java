@@ -19,13 +19,15 @@
 
 package mhahnFr.SecretPathway.core.lpc.parser.ast;
 
+import mhahnFr.SecretPathway.core.lpc.interpreter.HighlightType;
+
 /**
  * This enumeration contains the possible types of AST nodes.
  *
  * @author mhahnFr
  * @since 31.01.23
  */
-public enum ASTType {
+public enum ASTType implements HighlightType {
     /** Represents a combination of AST nodes.    */
     COMBINATION,
     /** Represents a function definition.         */

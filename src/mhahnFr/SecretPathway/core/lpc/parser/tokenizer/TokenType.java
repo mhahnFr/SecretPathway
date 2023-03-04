@@ -19,13 +19,15 @@
 
 package mhahnFr.SecretPathway.core.lpc.parser.tokenizer;
 
+import mhahnFr.SecretPathway.core.lpc.interpreter.HighlightType;
+
 /**
  * This enumeration consists of the possible token types.
  *
  * @author mhahnFr
  * @since 05.01.23
  */
-public enum TokenType {
+public enum TokenType implements HighlightType {
     EOF,
 
     IDENTIFIER, INTEGER, STRING, CHARACTER, SYMBOL,

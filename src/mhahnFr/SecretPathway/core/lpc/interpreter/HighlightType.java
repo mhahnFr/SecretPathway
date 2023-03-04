@@ -20,13 +20,11 @@
 package mhahnFr.SecretPathway.core.lpc.interpreter;
 
 /**
- * This enumeration contains the possible interpretation
- * types.
+ * This interface serves as a base class for all enumerated
+ * types that can be highlighted.
  *
  * @author mhahnFr
- * @since 20.02.23
+ * @since 04.03.23
  */
-public enum InterpretationType implements HighlightType {
-    /** Indicates a syntax error. */
-    ERROR
+public interface HighlightType {
 }
