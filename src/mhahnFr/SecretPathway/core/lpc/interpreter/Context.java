@@ -104,6 +104,20 @@ public class Context extends Instruction {
         return toReturn;
     }
 
+    public Definition getIdentifier(final String name, final int begin) {
+        for (final var element : instructions.entrySet()) {
+            if (element.getKey() < begin                 &&
+                element.getValue() instanceof Definition &&
+                ((Definition) element.getValue()).getName().equals(name)) {
+                return (Definition) element.getValue();
+            }
+        }
+        if (parent != null) {
+            return parent.getIdentifier(name, begin);
+        }
+        return null;
+    }
+
     /**
      * Adds the given identifier to this context.
      *
