@@ -19,6 +19,7 @@
 
 package mhahnFr.SecretPathway.gui.editor.theme.json;
 
+import mhahnFr.SecretPathway.core.lpc.interpreter.HighlightType;
 import mhahnFr.SecretPathway.core.lpc.interpreter.InterpretationType;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTType;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
@@ -40,7 +41,7 @@ import java.util.*;
  * @since 14.01.23
  */
 public class JSONTheme implements SPTheme {
-    /** The list of the used styles.                                            */
+    /** The list of the used styles.                                     */
     private List<JSONStyle> styles = new ArrayList<>();
     /**
      * Maps the {@link TokenType}s to either the name of the
@@ -48,46 +49,17 @@ public class JSONTheme implements SPTheme {
      * whose style is then inherited.
      */
     private Map<String, String> tokenStyles = new HashMap<>();
-    /** A mapping of the possible types to the appropriate {@link FStyle}.      */
+    /** A map with the cached types and their associated {@link FStyle}. */
     @JSONNoSerialization
-    private Map<TokenType, FStyle> cachedTokenTypes;
-    /** A mapping of the possible AST types and the appropriate {@link FStyle}. */
-    @JSONNoSerialization
-    private Map<ASTType, FStyle> cachedASTTypes;
-    /** A mapping of the possible interpretation types and the {@link FStyle}.  */
-    @JSONNoSerialization
-    private Map<InterpretationType, FStyle> cachedInterpretationTypes;
-    /** The default style used if a style is not defined.                       */
-    @JSONNoSerialization
-    private final FStyle defaultStyle = new FStyle();
+    private Map<HighlightType, FStyle> cachedHighlightTypes;
 
     @Override
-    public FStyle styleFor(TokenType tokenType) {
-        if (cachedTokenTypes == null) {
+    public FStyle styleFor(HighlightType highlightType) {
+        if (cachedHighlightTypes == null) {
             validate();
         }
 
-        final var style = cachedTokenTypes.get(tokenType);
-
-        return style == null ? defaultStyle : style;
-    }
-
-    @Override
-    public FStyle styleFor(ASTType astType) {
-        if (cachedASTTypes == null) {
-            validate();
-        }
-
-        return cachedASTTypes.get(astType);
-    }
-
-    @Override
-    public FStyle styleFor(InterpretationType interpretationType) {
-        if (cachedInterpretationTypes == null) {
-            validate();
-        }
-
-        return cachedInterpretationTypes.get(interpretationType);
+        return cachedHighlightTypes.get(highlightType);
     }
 
     /**
@@ -107,39 +79,40 @@ public class JSONTheme implements SPTheme {
     }
 
     /**
+     * Returns the {@link HighlightType} described by the given
+     * {@link String}.
+     *
+     * @param element the element whose enumerated value is searched
+     * @return the enumerated value
+     */
+    private HighlightType findTypeBy(final String element) {
+        try {
+            return TokenType.valueOf(element);
+        } catch (IllegalArgumentException __) {
+            try {
+                return ASTType.valueOf(element);
+            } catch (IllegalArgumentException ___) {
+                return InterpretationType.valueOf(element);
+            }
+        }
+    }
+
+    /**
      * Validates and caches the stored information.
      */
     private void validate() {
-        if (cachedTokenTypes == null) {
-            cachedTokenTypes = new EnumMap<>(TokenType.class);
+        if (cachedHighlightTypes == null) {
+            cachedHighlightTypes = new HashMap<>();
         } else {
-            cachedTokenTypes.clear();
-        }
-        if (cachedASTTypes == null) {
-            cachedASTTypes = new EnumMap<>(ASTType.class);
-        } else {
-            cachedASTTypes.clear();
-        }
-        if (cachedInterpretationTypes == null) {
-            cachedInterpretationTypes = new EnumMap<>(InterpretationType.class);
-        } else {
-            cachedInterpretationTypes.clear();
+            cachedHighlightTypes.clear();
         }
 
         for (final var entry : tokenStyles.entrySet()) {
             final var style = findStyleBy(entry.getValue());
 
             if (style != null) {
-                final var key = entry.getKey();
-                try {
-                    cachedTokenTypes.put(TokenType.valueOf(key), style.getNative());
-                } catch (IllegalArgumentException __) {
-                    try {
-                        cachedASTTypes.put(ASTType.valueOf(key), style.getNative());
-                    } catch (IllegalArgumentException ___) {
-                        cachedInterpretationTypes.put(InterpretationType.valueOf(key), style.getNative());
-                    }
-                }
+                final var key = findTypeBy(entry.getKey());
+                cachedHighlightTypes.put(key, style.getNative());
             }
         }
     }

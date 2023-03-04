@@ -19,13 +19,13 @@
 
 package mhahnFr.SecretPathway.gui.editor.theme;
 
-import mhahnFr.SecretPathway.core.lpc.interpreter.InterpretationType;
+import mhahnFr.SecretPathway.core.lpc.interpreter.HighlightType;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTType;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.utils.gui.abstraction.FStyle;
 
 import java.awt.Color;
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -35,12 +35,7 @@ import java.util.Map;
  * @since 10.01.23
  */
 public class DefaultTheme implements SPTheme {
-    /** The mapping containing the styles and token types. */
-    private final Map<TokenType, FStyle> styles = new EnumMap<>(TokenType.class);
-    /** The map with the styles and AST types.             */
-    private final Map<ASTType, FStyle> astStyles = new EnumMap<>(ASTType.class);
-    /** The map with the styles and interpretation types.  */
-    private final Map<InterpretationType, FStyle> interpretationStyles = new EnumMap<>(InterpretationType.class);
+    private final Map<HighlightType, FStyle> styles = new HashMap<>();
 
     /**
      * Initializes this default theme.
@@ -130,26 +125,16 @@ public class DefaultTheme implements SPTheme {
         errorStyle.setForeground(Color.red);
         errorStyle.setUnderlined(true);
 
-        astStyles.put(ASTType.WRONG, errorStyle);
+        styles.put(ASTType.WRONG, errorStyle);
 
         final var missingStyle = new FStyle();
         missingStyle.setBackground(Color.red);
 
-        astStyles.put(ASTType.MISSING, missingStyle);
+        styles.put(ASTType.MISSING, missingStyle);
     }
 
     @Override
-    public FStyle styleFor(ASTType astType) {
-        return astStyles.getOrDefault(astType, null);
-    }
-
-    @Override
-    public FStyle styleFor(TokenType tokenType) {
-        return styles.getOrDefault(tokenType, new FStyle());
-    }
-
-    @Override
-    public FStyle styleFor(InterpretationType interpretationType) {
-        return interpretationStyles.getOrDefault(interpretationType, null);
+    public FStyle styleFor(HighlightType highlightType) {
+        return styles.get(highlightType);
     }
 }
