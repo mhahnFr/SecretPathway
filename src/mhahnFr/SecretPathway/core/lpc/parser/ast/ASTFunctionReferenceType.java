@@ -119,4 +119,27 @@ public class ASTFunctionReferenceType extends ASTTypeDefinition {
         }
         return builder.toString();
     }
+
+    @Override
+    public String toString() {
+        final var builder = new StringBuilder();
+
+        builder.append(returnType.toString().toLowerCase()).append(returnArray ? "[]" : "").append(" (");
+        if (callTypes != null) {
+            final var iterator = callTypes.listIterator();
+            while (iterator.hasNext()) {
+                final var current = iterator.next();
+                if (current instanceof ASTTypeDefinition) {
+                    builder.append(current);
+                } else {
+                    builder.append("<< unknown >>");
+                }
+                if (iterator.hasNext()) {
+                    builder.append(", ");
+                }
+            }
+        }
+        builder.append(')');
+        return builder.toString();
+    }
 }

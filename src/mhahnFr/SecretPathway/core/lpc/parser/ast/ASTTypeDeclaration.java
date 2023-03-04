@@ -86,4 +86,12 @@ public class ASTTypeDeclaration extends ASTTypeDefinition {
     public boolean isArray() {
         return isArray;
     }
+
+    @Override
+    public String toString() {
+        if (type == null) {
+            return null;
+        }
+        return type.toString().toLowerCase() + (isArray ? "[]" : "");
+    }
 }
