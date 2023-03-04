@@ -19,6 +19,7 @@
 
 package mhahnFr.SecretPathway.gui.editor;
 
+import mhahnFr.SecretPathway.core.Constants;
 import mhahnFr.utils.gui.DarkComponent;
 
 import javax.swing.*;
@@ -55,11 +56,13 @@ public class SuggestionLabel extends JPanel {
         super(new BorderLayout());
         components.add(new DarkComponent<>(this));
             suggestionLabel = new DarkComponent<>(new JLabel(suggestion.content()), components).getComponent();
+            suggestionLabel.setFont(Constants.UI.FONT);
             suggestionLabel.setOpaque(false);
             suggestionLabel.setBorder(new EmptyBorder(0, 5, 0, 5));
 
             final var type = suggestion.type();
             final var typeLabel = new JLabel(type == null ? "<< unknown >>" : type.toString());
+            typeLabel.setFont(Constants.UI.FONT);
             typeLabel.setForeground(type == null ? Color.red : Color.gray);
             typeLabel.setOpaque(false);
         add(suggestionLabel, BorderLayout.WEST);
