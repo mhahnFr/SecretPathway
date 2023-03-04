@@ -20,7 +20,6 @@
 package mhahnFr.SecretPathway.core.lpc.interpreter;
 
 import mhahnFr.SecretPathway.core.lpc.parser.ast.*;
-import mhahnFr.utils.Pair;
 import mhahnFr.utils.StreamPosition;
 
 import java.util.ArrayList;
@@ -33,10 +32,10 @@ import java.util.List;
  * @since 21.02.23
  */
 public class Interpreter implements ASTVisitor {
-    /** The currently active context.            */
+    /** The currently active context.               */
     private Context current;
-    /** A list with the ranges of syntax errors. */
-    private final List<Pair<Pair<Integer, Integer>, String>> errorLines = new ArrayList<>();
+    /** A list with the elements to be highlighted. */
+    private final List<Highlight<?>> highlights = new ArrayList<>();
 
     /**
      * Creates an execution context for the given list of
@@ -54,12 +53,12 @@ public class Interpreter implements ASTVisitor {
     }
 
     /**
-     * Returns a list with the ranges of the syntax errors.
+     * Returns the list with the highlighting elements.
      *
-     * @return a list with the error ranges
+     * @return the highlighting list
      */
-    public List<Pair<Pair<Integer, Integer>, String>> getErrorLines() {
-        return errorLines;
+    public List<Highlight<?>> getHighlights() {
+        return highlights;
     }
 
     @Override
@@ -95,9 +94,18 @@ public class Interpreter implements ASTVisitor {
                 } else {
                     endPosition = end.position();
                 }
-                errorLines.add(new Pair<>(new Pair<>(begin.position(), endPosition), ((ASTMissing) expression).getMessage()));
+                highlights.add(new ErrorHighlight<>(begin.position(), endPosition, ASTType.MISSING, ((ASTMissing) expression).getMessage()));
             }
-            case WRONG -> errorLines.add(new Pair<>(new Pair<>(expression.getBegin().position(), expression.getEnd().position()), ((ASTWrong) expression).getMessage()));
+            case WRONG -> highlights.add(new ErrorHighlight<>(expression.getBegin().position(), expression.getEnd().position(), ASTType.WRONG, ((ASTWrong) expression).getMessage()));
+            case NAME -> {
+                final var identifier = current.getIdentifier(((ASTName) expression).getName(), expression.getBegin().position());
+                if (identifier == null) {
+                    highlights.add(new ErrorHighlight<>(expression.getBegin().position(), expression.getEnd().position(), InterpretationType.ERROR, "Identifier not found"));
+                } else {
+                    highlights.add(new ASTHighlight(expression.getBegin().position(), expression.getEnd().position(), identifier.getType()));
+                }
+            }
+            default -> highlights.add(new ASTHighlight(expression));
         }
     }
 
@@ -129,7 +137,7 @@ public class Interpreter implements ASTVisitor {
                     }
                 }
             } else if (param.getASTType() == ASTType.MISSING) {
-                errorLines.add(new Pair<>(new Pair<>(param.getBegin().position(), param.getEnd().position()), ((ASTMissing) param).getMessage()));
+                highlights.add(new ErrorHighlight<>(param.getBegin().position(), param.getEnd().position(), ASTType.MISSING, ((ASTMissing) param).getMessage()));
             } else if (param.getASTType() != ASTType.AST_ELLIPSIS) {
                 addParameter((ASTParameter) param);
             }

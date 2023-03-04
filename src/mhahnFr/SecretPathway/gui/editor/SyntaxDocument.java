@@ -21,14 +21,14 @@ package mhahnFr.SecretPathway.gui.editor;
 
 import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.SecretPathway.core.lpc.interpreter.Context;
-import mhahnFr.SecretPathway.core.lpc.interpreter.InterpretationType;
+import mhahnFr.SecretPathway.core.lpc.interpreter.ErrorHighlight;
+import mhahnFr.SecretPathway.core.lpc.interpreter.Highlight;
 import mhahnFr.SecretPathway.core.lpc.interpreter.Interpreter;
 import mhahnFr.SecretPathway.core.lpc.parser.Parser;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Tokenizer;
 import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
-import mhahnFr.utils.Pair;
 import mhahnFr.utils.StringStream;
 
 import javax.swing.text.*;
@@ -53,7 +53,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
     /** The interpreted context of the source code.           */
     private volatile Context context;
     /** The ranges containing syntax errors.                  */
-    private volatile List<Pair<Pair<Integer, Integer>, String>> errorRanges;
+    private volatile List<Highlight<?>> highlights;
     /** The execution service for interpreting the code.      */
     private final ExecutorService thread = Executors.newSingleThreadExecutor();
 
@@ -135,17 +135,21 @@ public class SyntaxDocument extends DefaultStyledDocument {
 
         Token token;
         while ((token = tokenizer.nextToken()).type() != TokenType.EOF) {
+            final var style = theme.styleFor(token.type());
             setCharacterAttributes(token.begin(), token.end() - token.begin(),
-                    theme.styleFor(token.type()).asStyle(def), true);
+                    style == null ? def : style.asStyle(def), true);
         }
 
 
         thread.execute(() -> {
             final var interpreter = new Interpreter();
-            this.context     = interpreter.createContextFor(new Parser(text).parse());
-            this.errorRanges = interpreter.getErrorLines();
-            for (final var range : errorRanges) {
-                setCharacterAttributes(range.getFirst().getFirst(), range.getFirst().getSecond() - range.getFirst().getFirst(), theme.styleFor(InterpretationType.ERROR).asStyle(def), true);
+            this.context    = interpreter.createContextFor(new Parser(text).parse());
+            this.highlights = interpreter.getHighlights();
+            for (final var range : highlights) {
+                final var style = theme.styleFor(range.getType());
+                if (style != null) {
+                    setCharacterAttributes(range.getBegin(), range.getEnd() - range.getBegin(), style.asStyle(def), true);
+                }
             }
         });
     }
@@ -179,9 +183,10 @@ public class SyntaxDocument extends DefaultStyledDocument {
      * @return the message at that position
      */
     public String getMessageFor(int position) {
-        for (final var entry : errorRanges) {
-            if (position >= entry.getFirst().getFirst() && position <= entry.getFirst().getSecond()) {
-                return entry.getSecond();
+        for (final var entry : highlights) {
+            if (position >= entry.getBegin() && position <= entry.getEnd()
+                    && entry instanceof ErrorHighlight<?>) {
+                return ((ErrorHighlight<?>) entry).getMessage();
             }
         }
         return "";
