@@ -45,6 +45,12 @@ public class ASTModifier extends ASTExpression {
         this.modifier = modifier.type();
     }
 
+    /**
+     * Constructs this AST node using the given bounds.
+     *
+     * @param begin the beginning position
+     * @param end   the end position
+     */
     public ASTModifier(final StreamPosition begin,
                        final StreamPosition end) {
         super(begin, end, ASTType.MODIFIER);

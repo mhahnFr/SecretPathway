@@ -44,6 +44,12 @@ public class ASTName extends ASTExpression {
         this.name = (String) name.payload();
     }
 
+    /**
+     * Constructs this AST node using the given bounds.
+     *
+     * @param begin the beginning position
+     * @param end   the end position
+     */
     public ASTName(final StreamPosition begin,
                    final StreamPosition end) {
         super(begin, end, ASTType.NAME);
