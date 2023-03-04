@@ -156,8 +156,6 @@ public class Interpreter implements ASTVisitor {
      * @return the represented type
      */
     private ASTTypeDefinition visitASTType(final ASTExpression expression) {
-        final ASTTypeDefinition toReturn;
-
         if (expression.getASTType() == ASTType.COMBINATION) {
             ASTTypeDefinition found = null;
             for (final var node : ((ASTCombination) expression).getExpressions()) {
@@ -167,11 +165,16 @@ public class Interpreter implements ASTVisitor {
                     node.visit(this);
                 }
             }
-            toReturn = found;
-        } else {
-            toReturn = (ASTTypeDefinition) expression;
+            return found;
+        } else if (expression.getASTType() == ASTType.FUNCTION_REFERENCE) {
+            final var parameterTypes = ((ASTFunctionReferenceType) expression).getCallTypes();
+            if (parameterTypes != null) {
+                for (final var parameterType : parameterTypes) {
+                    parameterType.visit(this);
+                }
+            }
         }
-        return toReturn;
+        return (ASTTypeDefinition) expression;
     }
 
     /**
