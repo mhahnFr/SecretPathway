@@ -50,6 +50,12 @@ public class ASTTypeDeclaration extends ASTExpression {
         this.isArray = isArray;
     }
 
+    /**
+     * Constructs this AST node using the given positions.
+     *
+     * @param begin the beginning position
+     * @param end   the end position
+     */
     public ASTTypeDeclaration(final StreamPosition begin,
                               final StreamPosition end) {
         super(begin, end, ASTType.TYPE);
