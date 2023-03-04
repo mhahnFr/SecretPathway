@@ -139,16 +139,14 @@ public class SyntaxDocument extends DefaultStyledDocument {
                     theme.styleFor(token.type()).asStyle(def), true);
         }
 
-        if (errorRanges != null) {
-            for (final var range : errorRanges) {
-                setCharacterAttributes(range.getFirst(), range.getSecond() - range.getFirst(), theme.styleFor(InterpretationType.ERROR).asStyle(def), true);
-            }
-        }
 
         thread.execute(() -> {
             final var interpreter = new Interpreter();
             this.context     = interpreter.createContextFor(new Parser(text).parse());
             this.errorRanges = interpreter.getErrorLines();
+            for (final var range : errorRanges) {
+                setCharacterAttributes(range.getFirst(), range.getSecond() - range.getFirst(), theme.styleFor(InterpretationType.ERROR).asStyle(def), true);
+            }
         });
 
         /*errorRanges.clear();
