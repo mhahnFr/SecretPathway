@@ -92,6 +92,13 @@ public class ASTTypeDeclaration extends ASTTypeDefinition {
         if (type == null) {
             return null;
         }
-        return type.toString().toLowerCase() + (isArray ? "[]" : "");
+        return switch (type) {
+            case CHAR_KEYWORD   -> "char";
+            case INT_KEYWORD    -> "int";
+            case STRING_KEYWORD -> "string";
+            case SYMBOL_KEYWORD -> "symbol";
+
+            default             -> type.toString().toLowerCase();
+        };
     }
 }
