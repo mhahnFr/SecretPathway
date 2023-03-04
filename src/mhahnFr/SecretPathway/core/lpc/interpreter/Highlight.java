@@ -26,7 +26,7 @@ package mhahnFr.SecretPathway.core.lpc.interpreter;
  * @author mhahnFr
  * @since 04.03.23
  */
-public abstract class Highlight<T extends HighlightType> {
+public class Highlight<T extends HighlightType> {
     /** The beginning position of this highlight element.           */
     private final int begin;
     /** The end position of this highlight element.                 */
@@ -42,7 +42,7 @@ public abstract class Highlight<T extends HighlightType> {
      * @param end   the end position
      * @param type  the type
      */
-    protected Highlight(final int begin, final int end, final T type) {
+    public Highlight(final int begin, final int end, final T type) {
         this.begin = begin;
         this.end   = end;
         this.type  = type;
