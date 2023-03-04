@@ -52,10 +52,10 @@ public class SyntaxDocument extends DefaultStyledDocument {
     private SPTheme theme = Settings.getInstance().getEditorTheme();
     /** The interpreted context of the source code.           */
     private volatile Context context;
-    private volatile List<Pair<Integer, Integer>> errorRanges;
+    /** The ranges containing syntax errors.                  */
+    private volatile List<Pair<Pair<Integer, Integer>, String>> errorRanges;
     /** The execution service for interpreting the code.      */
     private final ExecutorService thread = Executors.newSingleThreadExecutor();
-//    private Map<Pair<Integer, Integer>, String> errorRanges = new HashMap<>();
 
     @Override
     public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
@@ -145,44 +145,9 @@ public class SyntaxDocument extends DefaultStyledDocument {
             this.context     = interpreter.createContextFor(new Parser(text).parse());
             this.errorRanges = interpreter.getErrorLines();
             for (final var range : errorRanges) {
-                setCharacterAttributes(range.getFirst(), range.getSecond() - range.getFirst(), theme.styleFor(InterpretationType.ERROR).asStyle(def), true);
+                setCharacterAttributes(range.getFirst().getFirst(), range.getFirst().getSecond() - range.getFirst().getFirst(), theme.styleFor(InterpretationType.ERROR).asStyle(def), true);
             }
         });
-
-        /*errorRanges.clear();
-        final var expressions = new Parser(getAllText()).parse();
-        try {
-            final var iterator = expressions.listIterator();
-            while (iterator.hasNext()) {
-                final var element = iterator.next();
-
-                System.out.println(element.describe(0));
-
-                element.visit(expression -> {
-                    final String errorText;
-                    if (expression instanceof ASTMissing) {
-                        errorText = ((ASTMissing) expression).getMessage();
-                    } else if (expression instanceof ASTWrong) {
-                        errorText = ((ASTWrong) expression).getMessage();
-                    } else {
-                        errorText = null;
-                    }
-
-                    switch (expression.getASTType()) {
-                        case MISSING, WRONG -> {
-                            errorRanges.put(new Pair<>(expression.getBegin().position(), expression.getEnd().position()), errorText);
-                        }
-                    }
-                    final var style = theme.styleFor(expression.getASTType());
-                    if (style != null) {
-                        setCharacterAttributes(expression.getBegin().position(), expression.getEnd().position() - expression.getBegin().position(), style.asStyle(def), true);
-                    }
-                });
-            }
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
-        System.out.println();*/
     }
 
     /**
@@ -214,11 +179,11 @@ public class SyntaxDocument extends DefaultStyledDocument {
      * @return the message at that position
      */
     public String getMessageFor(int position) {
-//        for (final var entry : errorRanges.entrySet()) {
-//            if (position >= entry.getKey().getFirst() && position <= entry.getKey().getSecond()) {
-//                return entry.getValue();
-//            }
-//        }
+        for (final var entry : errorRanges) {
+            if (position >= entry.getFirst().getFirst() && position <= entry.getFirst().getSecond()) {
+                return entry.getSecond();
+            }
+        }
         return "";
     }
 

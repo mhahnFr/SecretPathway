@@ -21,7 +21,6 @@ package mhahnFr.SecretPathway.core.lpc.interpreter;
 
 import mhahnFr.SecretPathway.core.lpc.parser.ast.*;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
-import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
 import mhahnFr.utils.Pair;
 import mhahnFr.utils.StreamPosition;
 
@@ -38,7 +37,7 @@ public class Interpreter implements ASTVisitor {
     /** The currently active context.            */
     private Context current;
     /** A list with the ranges of syntax errors. */
-    private final List<Pair<Integer, Integer>> errorLines = new ArrayList<>();
+    private final List<Pair<Pair<Integer, Integer>, String>> errorLines = new ArrayList<>();
 
     /**
      * Creates an execution context for the given list of
@@ -60,7 +59,7 @@ public class Interpreter implements ASTVisitor {
      *
      * @return a list with the error ranges
      */
-    public List<Pair<Integer, Integer>> getErrorLines() {
+    public List<Pair<Pair<Integer, Integer>, String>> getErrorLines() {
         return errorLines;
     }
 
@@ -97,9 +96,9 @@ public class Interpreter implements ASTVisitor {
                 } else {
                     endPosition = end.position();
                 }
-                errorLines.add(new Pair<>(begin.position(), endPosition));
+                errorLines.add(new Pair<>(new Pair<>(begin.position(), endPosition), ((ASTMissing) expression).getMessage()));
             }
-            case WRONG -> errorLines.add(new Pair<>(expression.getBegin().position(), expression.getEnd().position()));
+            case WRONG -> errorLines.add(new Pair<>(new Pair<>(expression.getBegin().position(), expression.getEnd().position()), ((ASTWrong) expression).getMessage()));
         }
     }
 
