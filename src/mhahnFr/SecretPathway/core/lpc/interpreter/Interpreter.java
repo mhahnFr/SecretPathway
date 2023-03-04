@@ -129,7 +129,9 @@ public class Interpreter implements ASTVisitor {
                         node.visit(this);
                     }
                 }
-            } else {
+            } else if (param.getASTType() == ASTType.MISSING) {
+                errorLines.add(new Pair<>(new Pair<>(param.getBegin().position(), param.getEnd().position()), ((ASTMissing) param).getMessage()));
+            } else if (param.getASTType() != ASTType.AST_ELLIPSIS) {
                 addParameter((ASTParameter) param);
             }
         }
@@ -167,6 +169,8 @@ public class Interpreter implements ASTVisitor {
                 }
             }
             toReturn = found;
+        } else if (expression.getASTType() == ASTType.FUNCTION_REFERENCE) {
+            toReturn = ((ASTFunctionReferenceType) expression).getReturnType();
         } else {
             toReturn = ((ASTTypeDeclaration) expression).getType();
         }

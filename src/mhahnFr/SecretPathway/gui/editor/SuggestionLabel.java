@@ -58,8 +58,9 @@ public class SuggestionLabel extends JPanel {
             suggestionLabel.setOpaque(false);
             suggestionLabel.setBorder(new EmptyBorder(0, 5, 0, 5));
 
-            final var typeLabel = new JLabel(suggestion.type().toString());
-            typeLabel.setForeground(Color.gray);
+            final var type = suggestion.type();
+            final var typeLabel = new JLabel(type == null ? "<< unknown >>" : type.toString());
+            typeLabel.setForeground(type == null ? Color.red : Color.gray);
             typeLabel.setOpaque(false);
         add(suggestionLabel, BorderLayout.WEST);
         add(typeLabel, BorderLayout.EAST);
