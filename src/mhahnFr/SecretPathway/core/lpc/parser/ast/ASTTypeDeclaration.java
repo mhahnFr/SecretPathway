@@ -29,7 +29,7 @@ import mhahnFr.utils.StreamPosition;
  * @author mhahnFr
  * @since 02.02.23
  */
-public class ASTTypeDeclaration extends ASTExpression {
+public class ASTTypeDeclaration extends ASTTypeDefinition {
     /** The represented type.                               */
     private final TokenType type;
     /** Indicates whether the represented type is an array. */

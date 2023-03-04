@@ -31,7 +31,7 @@ import java.util.List;
  * @author mhahnFr
  * @since 16.02.23
  */
-public class ASTFunctionReferenceType extends ASTExpression {
+public class ASTFunctionReferenceType extends ASTTypeDefinition {
     /** The return type of the referred function.           */
     private final TokenType returnType;
     /** The potential argument types.                       */
