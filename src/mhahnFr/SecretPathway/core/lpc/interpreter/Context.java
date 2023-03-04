@@ -104,11 +104,20 @@ public class Context extends Instruction {
         return toReturn;
     }
 
+    /**
+     * Returns the {@link Definition} of the named identifier,
+     * whose use ends at the given position. If it is not found
+     * {@code null} is returned.
+     *
+     * @param name  the name of the searched identifier
+     * @param begin the beginning search position
+     * @return the found {@link Definition} of the identifier or {@code null}
+     */
     public Definition getIdentifier(final String name, final int begin) {
         for (final var element : instructions.entrySet()) {
             if (element.getKey() < begin                 &&
                 element.getValue() instanceof Definition &&
-                ((Definition) element.getValue()).getName().equals(name)) {
+                Objects.equals(((Definition) element.getValue()).getName(), name)) {
                 return (Definition) element.getValue();
             }
         }
