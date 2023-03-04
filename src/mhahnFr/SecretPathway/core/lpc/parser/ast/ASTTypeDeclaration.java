@@ -97,6 +97,7 @@ public class ASTTypeDeclaration extends ASTTypeDefinition {
             case INT_KEYWORD    -> "int";
             case STRING_KEYWORD -> "string";
             case SYMBOL_KEYWORD -> "symbol";
+            case IDENTIFIER     -> null;
 
             default             -> type.toString().toLowerCase();
         };
