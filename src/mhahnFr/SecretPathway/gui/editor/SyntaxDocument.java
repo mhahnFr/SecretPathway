@@ -21,8 +21,6 @@ package mhahnFr.SecretPathway.gui.editor;
 
 import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.SecretPathway.core.lpc.interpreter.Context;
-import mhahnFr.SecretPathway.core.lpc.interpreter.ErrorHighlight;
-import mhahnFr.SecretPathway.core.lpc.interpreter.Highlight;
 import mhahnFr.SecretPathway.core.lpc.interpreter.Interpreter;
 import mhahnFr.SecretPathway.core.lpc.parser.Parser;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Token;

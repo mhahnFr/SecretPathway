@@ -19,6 +19,8 @@
 
 package mhahnFr.SecretPathway.core.lpc.interpreter;
 
+import mhahnFr.SecretPathway.gui.editor.HighlightType;
+
 /**
  * This enumeration contains the possible interpretation
  * types.

@@ -20,6 +20,9 @@
 package mhahnFr.SecretPathway.core.lpc.interpreter;
 
 import mhahnFr.SecretPathway.core.lpc.parser.ast.*;
+import mhahnFr.SecretPathway.gui.editor.ASTHighlight;
+import mhahnFr.SecretPathway.gui.editor.ErrorHighlight;
+import mhahnFr.SecretPathway.gui.editor.Highlight;
 import mhahnFr.utils.StreamPosition;
 
 import java.util.ArrayList;

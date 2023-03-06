@@ -19,7 +19,7 @@
 
 package mhahnFr.SecretPathway.core.lpc.parser.tokenizer;
 
-import mhahnFr.SecretPathway.core.lpc.interpreter.HighlightType;
+import mhahnFr.SecretPathway.gui.editor.HighlightType;
 
 /**
  * This enumeration consists of the possible token types.

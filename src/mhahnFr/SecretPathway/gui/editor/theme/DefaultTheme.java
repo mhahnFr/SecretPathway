@@ -19,7 +19,7 @@
 
 package mhahnFr.SecretPathway.gui.editor.theme;
 
-import mhahnFr.SecretPathway.core.lpc.interpreter.HighlightType;
+import mhahnFr.SecretPathway.gui.editor.HighlightType;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTType;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.utils.gui.abstraction.FStyle;

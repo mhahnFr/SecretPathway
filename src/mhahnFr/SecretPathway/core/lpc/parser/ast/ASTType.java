@@ -19,7 +19,7 @@
 
 package mhahnFr.SecretPathway.core.lpc.parser.ast;
 
-import mhahnFr.SecretPathway.core.lpc.interpreter.HighlightType;
+import mhahnFr.SecretPathway.gui.editor.HighlightType;
 
 /**
  * This enumeration contains the possible types of AST nodes.
