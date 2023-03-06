@@ -19,9 +19,11 @@
 
 package mhahnFr.SecretPathway.core.lpc.interpreter;
 
+import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTName;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTType;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTTypeDefinition;
 import mhahnFr.SecretPathway.gui.editor.Suggestion;
+import mhahnFr.utils.StreamPosition;
 
 import java.util.*;
 
@@ -130,11 +132,27 @@ public class Context extends Instruction {
     /**
      * Adds the given identifier to this context.
      *
-     * @param name the name of the identifier
-     * @param type the type of the identifier
-     * @param kind the AST type of the identifier
+     * @param begin the beginning position
+     * @param name  the name of the identifier
+     * @param type  the type of the identifier
+     * @param kind  the AST type of the identifier
      */
     public void addIdentifier(final int begin, final String name, final ASTTypeDefinition type, final ASTType kind) {
         instructions.put(begin, new Definition(begin, name, type, kind));
+    }
+
+    /**
+     * Adds the given identifier to this context.
+     *
+     * @param begin the beginning position
+     * @param name  the name of the identifier
+     * @param type  the type of the identifier
+     * @param kind  the AST type of the identifier
+     */
+    public void addIdentifier(final StreamPosition    begin,
+                              final ASTName           name,
+                              final ASTTypeDefinition type,
+                              final ASTType           kind) {
+        addIdentifier(begin.position(), name.getName(), type, kind);
     }
 }
