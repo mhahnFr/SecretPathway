@@ -80,22 +80,27 @@ public class Interpreter implements ASTVisitor {
                                             cast(ASTName.class, ((ASTVariableDefinition) expression).getName()),
                                             cast(ASTTypeDefinition.class, ((ASTVariableDefinition) expression).getType()),
                                             ASTType.VARIABLE_DEFINITION);
+
             case FUNCTION_DEFINITION -> {
-                final var block = ((ASTFunctionDefinition) expression).getBody();
+                final var function = (ASTFunctionDefinition) expression;
+                final var block    = function.getBody();
+
                 current.addIdentifier(expression.getBegin(),
-                                      cast(ASTName.class, ((ASTFunctionDefinition) expression).getName()),
-                                      cast(ASTTypeDefinition.class, ((ASTFunctionDefinition) expression).getType()),
+                                      cast(ASTName.class, function.getName()),
+                                      cast(ASTTypeDefinition.class, function.getType()),
                                       ASTType.FUNCTION_DEFINITION);
                 current = current.pushScope(block.getBegin().position());
-                visitParams(((ASTFunctionDefinition) expression).getParameters());
-                visitBlock((ASTBlock) block);
+                visitParams(function.getParameters());
+                visitBlock(cast(ASTBlock.class, block));
                 current = current.popScope(expression.getEnd().position());
             }
+
             case BLOCK -> {
                 current = current.pushScope(expression.getBegin().position());
                 visitBlock((ASTBlock) expression);
                 current = current.popScope(expression.getEnd().position());
             }
+
             case MISSING -> {
                 final StreamPosition begin = expression.getBegin(),
                                      end   = expression.getEnd();
@@ -107,15 +112,18 @@ public class Interpreter implements ASTVisitor {
                 }
                 highlights.add(new ErrorHighlight<>(begin.position(), endPosition, ASTType.MISSING, ((ASTMissing) expression).getMessage()));
             }
+
             case WRONG -> highlights.add(new ErrorHighlight<>(expression.getBegin().position(), expression.getEnd().position(), ASTType.WRONG, ((ASTWrong) expression).getMessage()));
+
             case NAME -> {
                 final var identifier = current.getIdentifier(((ASTName) expression).getName(), expression.getBegin().position());
                 if (identifier == null) {
                     highlights.add(new ErrorHighlight<>(expression.getBegin().position(), expression.getEnd().position(), InterpretationType.ERROR, "Identifier not found"));
                 } else {
-                    highlights.add(new ASTHighlight(expression.getBegin().position(), expression.getEnd().position(), identifier.getType()));
+                    highlights.add(new Highlight<>(expression.getBegin().position(), expression.getEnd().position(), identifier.getType()));
                 }
             }
+
             case OPERATION -> {
                 final var op = (ASTOperation) expression;
                 op.getLhs().visit(this);
@@ -126,6 +134,7 @@ public class Interpreter implements ASTVisitor {
                     op.getRhs().visit(this);
                 }
             }
+
             default -> highlights.add(new ASTHighlight(expression));
         }
     }
