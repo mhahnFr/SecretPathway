@@ -74,10 +74,16 @@ public class Interpreter implements ASTVisitor {
     @Override
     public void visit(ASTExpression expression) {
         switch (expression.getASTType()) {
-            case VARIABLE_DEFINITION -> current.addIdentifier(expression.getBegin().position(), visitName(((ASTVariableDefinition) expression).getName()), visitASTType(((ASTVariableDefinition) expression).getType()), ASTType.VARIABLE_DEFINITION);
+            case VARIABLE_DEFINITION -> current.addIdentifier(expression.getBegin(),
+                                            cast(ASTName.class, ((ASTVariableDefinition) expression).getName()),
+                                            cast(ASTTypeDefinition.class, ((ASTVariableDefinition) expression).getType()),
+                                            ASTType.VARIABLE_DEFINITION);
             case FUNCTION_DEFINITION -> {
                 final var block = ((ASTFunctionDefinition) expression).getBody();
-                current.addIdentifier(expression.getBegin().position(), visitName(((ASTFunctionDefinition) expression).getName()), visitASTType(((ASTFunctionDefinition) expression).getType()), ASTType.FUNCTION_DEFINITION);
+                current.addIdentifier(expression.getBegin(),
+                                      cast(ASTName.class, ((ASTFunctionDefinition) expression).getName()),
+                                      cast(ASTTypeDefinition.class, ((ASTFunctionDefinition) expression).getType()),
+                                      ASTType.FUNCTION_DEFINITION);
                 current = current.pushScope(block.getBegin().position());
                 visitParams(((ASTFunctionDefinition) expression).getParameters());
                 visitBlock((ASTBlock) block);
@@ -112,6 +118,29 @@ public class Interpreter implements ASTVisitor {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private <T extends ASTExpression> T cast(final Class<T> type, final ASTExpression expression) {
+        if (type.isAssignableFrom(expression.getClass())) {
+            return (T) expression;
+        } else if (expression instanceof final ASTCombination combination) {
+            return unwrap(combination, type);
+        }
+        throw new IllegalArgumentException("Given expression is neither a combination nor " + type + "!");
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends ASTExpression> T unwrap(final ASTCombination combination, final Class<T> type) {
+        T toReturn = null;
+        for (final var expression : combination.getExpressions()) {
+            if (type.isAssignableFrom(expression.getClass())) {
+                toReturn = (T) expression;
+            } else {
+                expression.visit(this);
+            }
+        }
+        return toReturn;
+    }
+
     /**
      * Adds the given {@link ASTParameter} to the current {@link Context}.
      *
@@ -119,7 +148,10 @@ public class Interpreter implements ASTVisitor {
      * @see #current
      */
     private void addParameter(final ASTParameter parameter) {
-        current.addIdentifier(parameter.getBegin().position(), visitName(parameter.getName()), visitASTType(parameter.getType()), ASTType.PARAMETER);
+        current.addIdentifier(parameter.getBegin(),
+                              cast(ASTName.class, parameter.getName()),
+                              cast(ASTTypeDefinition.class, parameter.getType()),
+                              ASTType.PARAMETER);
     }
 
     /**
@@ -131,18 +163,10 @@ public class Interpreter implements ASTVisitor {
      */
     private void visitParams(final List<ASTExpression> params) {
         for (final var param : params) {
-            if (param.getASTType() == ASTType.COMBINATION) {
-                for (final var node : ((ASTCombination) param).getExpressions()) {
-                    if (node.getASTType() == ASTType.PARAMETER) {
-                        addParameter((ASTParameter) node);
-                    } else {
-                        node.visit(this);
-                    }
-                }
-            } else if (param.getASTType() == ASTType.MISSING) {
+            if (param.getASTType() == ASTType.MISSING) {
                 highlights.add(new ErrorHighlight<>(param.getBegin().position(), param.getEnd().position(), ASTType.MISSING, ((ASTMissing) param).getMessage()));
             } else if (param.getASTType() != ASTType.AST_ELLIPSIS) {
-                addParameter((ASTParameter) param);
+                addParameter(cast(ASTParameter.class, param));
             }
         }
     }
@@ -156,62 +180,5 @@ public class Interpreter implements ASTVisitor {
         for (final var expression : block.getBody()) {
             expression.visit(this);
         }
-    }
-
-    /**
-     * Returns the {@link ASTTypeDefinition} represented by the given
-     * {@link ASTExpression}. If the given {@link ASTExpression}
-     * is an {@link ASTCombination}, all other nodes are visited beforehand.
-     *
-     * @param expression the expression representing the type
-     * @return the represented type
-     */
-    private ASTTypeDefinition visitASTType(final ASTExpression expression) {
-        if (expression.getASTType() == ASTType.COMBINATION) {
-            ASTTypeDefinition found = null;
-            for (final var node : ((ASTCombination) expression).getExpressions()) {
-                if (node.getASTType() == ASTType.TYPE) {
-                    found = (ASTTypeDefinition) node;
-                } else {
-                    node.visit(this);
-                }
-            }
-            return found;
-        } else if (expression.getASTType() == ASTType.FUNCTION_REFERENCE) {
-            final var parameterTypes = ((ASTFunctionReferenceType) expression).getCallTypes();
-            if (parameterTypes != null) {
-                for (final var parameterType : parameterTypes) {
-                    parameterType.visit(this);
-                }
-            }
-        }
-        return (ASTTypeDefinition) expression;
-    }
-
-    /**
-     * Returns the name represented by the given {@link ASTExpression}.
-     * If the given {@link ASTExpression} is an {@link ASTCombination},
-     * all contained nodes are visited.
-     *
-     * @param expression the expression representing a name
-     * @return the represented name
-     */
-    private String visitName(final ASTExpression expression) {
-        final String toReturn;
-
-        if (expression.getASTType() == ASTType.COMBINATION) {
-            String found = null;
-            for (final var node : ((ASTCombination) expression).getExpressions()) {
-                if (node.getASTType() == ASTType.NAME) {
-                    found = ((ASTName) node).getName();
-                } else {
-                    node.visit(this);
-                }
-            }
-            toReturn = found;
-        } else {
-            toReturn = ((ASTName) expression).getName();
-        }
-        return toReturn;
     }
 }
