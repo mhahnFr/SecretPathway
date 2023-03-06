@@ -130,6 +130,16 @@ public class Interpreter implements ASTVisitor {
         }
     }
 
+    /**
+     * Casts the given expression to the given type. If the given
+     * expression is an {@link ASTCombination}, its contents are visited
+     * and the desired AST node of the given type is extracted.
+     *
+     * @param type       the {@link Class} of the requested type
+     * @param expression the expression to be cast
+     * @return the cast expression
+     * @param <T> the requested type
+     */
     @SuppressWarnings("unchecked")
     private <T extends ASTExpression> T cast(final Class<T> type, final ASTExpression expression) {
         if (type.isAssignableFrom(expression.getClass())) {
@@ -140,6 +150,16 @@ public class Interpreter implements ASTVisitor {
         throw new IllegalArgumentException("Given expression is neither a combination nor " + type + "!");
     }
 
+    /**
+     * Unwraps the given {@link ASTCombination} and returns the {@link ASTExpression}
+     * of the given type found in the combination. If it is not found {@code null} is
+     * returned.
+     *
+     * @param combination the combination to unwrap
+     * @param type        the class of the requested type
+     * @return the expression of the given type contained in the given combination
+     * @param <T> the type of the requested AST node
+     */
     @SuppressWarnings("unchecked")
     private <T extends ASTExpression> T unwrap(final ASTCombination combination, final Class<T> type) {
         T toReturn = null;
