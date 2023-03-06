@@ -20,6 +20,7 @@
 package mhahnFr.SecretPathway.core.lpc.interpreter;
 
 import mhahnFr.SecretPathway.core.lpc.parser.ast.*;
+import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.gui.editor.ASTHighlight;
 import mhahnFr.SecretPathway.gui.editor.ErrorHighlight;
 import mhahnFr.SecretPathway.gui.editor.Highlight;
@@ -68,7 +69,8 @@ public class Interpreter implements ASTVisitor {
     public boolean visitType(ASTType type) {
         return type != ASTType.BLOCK               &&
                type != ASTType.FUNCTION_DEFINITION &&
-               type != ASTType.VARIABLE_DEFINITION;
+               type != ASTType.VARIABLE_DEFINITION &&
+               type != ASTType.OPERATION;
     }
 
     @Override
@@ -112,6 +114,16 @@ public class Interpreter implements ASTVisitor {
                     highlights.add(new ErrorHighlight<>(expression.getBegin().position(), expression.getEnd().position(), InterpretationType.ERROR, "Identifier not found"));
                 } else {
                     highlights.add(new ASTHighlight(expression.getBegin().position(), expression.getEnd().position(), identifier.getType()));
+                }
+            }
+            case OPERATION -> {
+                final var op = (ASTOperation) expression;
+                op.getLhs().visit(this);
+                if (op.getOperatorType() == TokenType.DOT ||
+                    op.getOperatorType() == TokenType.ARROW) {
+                    cast(ASTFunctionCall.class, op.getRhs());
+                } else {
+                    op.getRhs().visit(this);
                 }
             }
             default -> highlights.add(new ASTHighlight(expression));
