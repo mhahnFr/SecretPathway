@@ -174,6 +174,12 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
         themeBox.addItemListener(this::themeChanged);
     }
 
+    /**
+     * Stores the new selected appearance. Triggers an appearance
+     * update if necessary.
+     *
+     * @param event the event
+     */
     private void appearanceChanged(final ItemEvent event) {
         final var settings = Settings.getInstance();
         switch ((String) event.getItem()) {
