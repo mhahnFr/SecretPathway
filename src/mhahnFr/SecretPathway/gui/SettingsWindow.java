@@ -93,9 +93,15 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
             spinnerPanel.add(stepperLabel);
             spinnerPanel.add(stepper);
 
-            final var checkBoxes = new DarkComponent<>(new JPanel(new GridLayout(5, 1)), components).getComponent();
-                final var darkMode = new DarkComponent<>(new JCheckBox("Enable dark mode"), components).getComponent();
+            final var appearancePanel = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
+                final var appearanceLabel = new DarkComponent<>(new JLabel("Appearance:"), components).getComponent();
 
+                final var appearanceBox = new JComboBox<String>();
+                appearanceBox.setEditable(false);
+            appearancePanel.add(appearanceLabel, BorderLayout.WEST);
+            appearancePanel.add(appearanceBox, BorderLayout.CENTER);
+
+            final var checkBoxes = new DarkComponent<>(new JPanel(new GridLayout(4, 1)), components).getComponent();
                 final var editorInlined = new DarkComponent<>(new JCheckBox("Use inlined editor"), components).getComponent();
 
                 final var editorHighlighting = new DarkComponent<>(new JCheckBox("Automatically enable syntax highlighting in the editor"), components).getComponent();
@@ -103,7 +109,6 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
                 final var enableStartTlS = new DarkComponent<>(new JCheckBox("Enable StartTLS"), components).getComponent();
 
                 final var enableUTF8 = new DarkComponent<>(new JCheckBox("Enable UTF-8 by default"), components).getComponent();
-            checkBoxes.add(darkMode);
             checkBoxes.add(editorInlined);
             checkBoxes.add(editorHighlighting);
             checkBoxes.add(enableStartTlS);
@@ -123,6 +128,7 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
             themePanel.add(themeLabel);
             themePanel.add(themeBoxPanel);
         panel.add(spinnerPanel);
+        panel.add(appearancePanel);
         panel.add(checkBoxes);
         panel.add(themePanel);
 
@@ -133,13 +139,21 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
 
         stepper.addChangeListener(__ -> settings.setFontSize((Integer) stepper.getValue()));
 
-        darkMode.setSelected(settings.getDarkMode());
+        appearanceBox.addItem("Auto");
+        appearanceBox.addItem("Dark");
+        appearanceBox.addItem("Light");
+        if (settings.getAutoDarkMode()) {
+            appearanceBox.setSelectedItem("Auto");
+        } else {
+            appearanceBox.setSelectedItem(settings.getDarkMode() ? "Dark" : "Light");
+        }
+        appearanceBox.addItemListener(this::appearanceChanged);
+
         editorInlined.setSelected(settings.getEditorInlined());
         editorHighlighting.setSelected(settings.getSyntaxHighlighting());
         enableStartTlS.setSelected(settings.getStartTLS());
         enableUTF8.setSelected(settings.useUTF8());
 
-        darkMode.addItemListener(__ -> settings.setDarkMode(darkMode.isSelected()));
         editorInlined.addItemListener(__ -> settings.setEditorInlined(editorInlined.isSelected()));
         editorHighlighting.addItemListener(__ -> settings.setSyntaxHighlighting(editorHighlighting.isSelected()));
         enableStartTlS.addItemListener(__ -> settings.setStartTLS(enableStartTlS.isSelected()));
@@ -158,6 +172,23 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
             themeButton.setVisible(false);
         }
         themeBox.addItemListener(this::themeChanged);
+    }
+
+    private void appearanceChanged(final ItemEvent event) {
+        final var settings = Settings.getInstance();
+        switch ((String) event.getItem()) {
+            case "Auto" -> settings.setAutoDarkMode(true);
+
+            case "Dark" -> {
+                settings.setAutoDarkMode(false);
+                settings.setDarkMode(true);
+            }
+
+            case "Light" -> {
+                settings.setAutoDarkMode(false);
+                settings.setDarkMode(false);
+            }
+        }
     }
 
     /**
