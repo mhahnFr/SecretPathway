@@ -264,6 +264,15 @@ public final class Settings {
     }
 
     /**
+     * Returns whether the dark mode should be enabled automatically.
+     *
+     * @return whether to use the automated dark mode
+     */
+    public boolean getAutoDarkMode() {
+        return preferences.getInt(Keys.AUTO_DARK_MODE, 1) == 1;
+    }
+
+    /**
      * Returns the theme that should be used by the editor.
      * If a cached theme is available it is returned. Otherwise,
      * the theme in the stored path is opened.
@@ -485,6 +494,21 @@ public final class Settings {
     }
 
     /**
+     * Sets whether the dark mode should be set automatically.
+     *
+     * @param autoDarkMode whether to use the auto dark mode
+     * @return this instance
+     */
+    public Settings setAutoDarkMode(final boolean autoDarkMode) {
+        final var value = autoDarkMode ? 1 : 0;
+
+        callListeners(Keys.AUTO_DARK_MODE, autoDarkMode);
+        preferences.putInt(Keys.AUTO_DARK_MODE, value);
+
+        return this;
+    }
+
+    /**
      * Attempts to flush the underlying {@link Preferences}. Returns whether the
      * operation was successful.
      *
@@ -543,6 +567,8 @@ public final class Settings {
         public static final String FONT_SIZE                  = BUNDLE_ID + ".fontSize";
         /** The key used to store the dark mode state.                      */
         public static final String DARK_MODE                  = BUNDLE_ID + ".darkMode";
+        /** The key used to store the auto dark mode.                       */
+        public static final String AUTO_DARK_MODE             = BUNDLE_ID + ".autoDarkMode";
         /** The key used to store the StartTLS state.                       */
         public static final String START_TLS                  = BUNDLE_ID + ".startTLS";
         /** The key used to store the UTF-8 state.                          */
