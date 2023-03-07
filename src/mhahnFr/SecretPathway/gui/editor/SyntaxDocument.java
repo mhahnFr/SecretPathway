@@ -46,6 +46,8 @@ public class SyntaxDocument extends DefaultStyledDocument {
     private final Style def = getLogicalStyle(0);
     /** Indicates whether the syntax highlighting is enabled. */
     private boolean highlighting;
+    /** The callback to be called after parsing the content.  */
+    private Runnable updateCallback;
     /** The theme to be used for the syntax highlighting.     */
     private SPTheme theme = Settings.getInstance().getEditorTheme();
     /** The interpreted context of the source code.           */
@@ -149,6 +151,9 @@ public class SyntaxDocument extends DefaultStyledDocument {
                     setCharacterAttributes(range.getBegin(), range.getEnd() - range.getBegin(), style.asStyle(def), true);
                 }
             }
+            if (updateCallback != null) {
+                updateCallback.run();
+            }
         });
     }
 
@@ -213,5 +218,26 @@ public class SyntaxDocument extends DefaultStyledDocument {
         } else {
             clearHighlight();
         }
+    }
+
+    /**
+     * Returns the update callback, which is called after the content
+     * has been parsed.
+     *
+     * @return the update callback
+     */
+    public Runnable getUpdateCallback() {
+        return updateCallback;
+    }
+
+    /**
+     * Sets the update callback, which is called after the content
+     * has been parsed. If a callback has been set already, it is
+     * replaced.
+     *
+     * @param updateCallback the new update callback
+     */
+    public void setUpdateCallback(Runnable updateCallback) {
+        this.updateCallback = updateCallback;
     }
 }

@@ -189,6 +189,7 @@ public class Interpreter implements ASTVisitor {
      * @see #current
      */
     private void addParameter(final ASTParameter parameter) {
+        // TODO: bool (any (int (string) ) )
         current.addIdentifier(parameter.getBegin(),
                               cast(ASTName.class, parameter.getName()),
                               cast(ASTTypeDefinition.class, parameter.getType()),

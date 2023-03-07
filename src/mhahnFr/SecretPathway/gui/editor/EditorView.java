@@ -50,6 +50,8 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
     private final SyntaxDocument document;
     /** The text pane.                                              */
     private final JTextPane textPane;
+    /** The status label.                                           */
+    private final JLabel statusLabel;
     /** The optional {@link DisposeListener}.                       */
     private DisposeListener disposeListener;
 
@@ -64,7 +66,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
             final var scrollPane = new DarkComponent<>(new JScrollPane(textPane), components).getComponent();
 
             final var south = new DarkComponent<>(new JPanel(new GridLayout(2, 1)), components).getComponent();
-                final var status = new DarkComponent<>(new JLabel("Status"), components).getComponent();
+                statusLabel = new DarkComponent<>(new JLabel(), components).getComponent();
 
                 final var buttons = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
                     final var highlight = new DarkComponent<>(new JCheckBox("Syntax highlighting"), components).getComponent();
@@ -81,20 +83,22 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
                     pushButtons.add(saveButton);
                 buttons.add(highlight,   BorderLayout.CENTER);
                 buttons.add(pushButtons, BorderLayout.EAST);
-            south.add(status);
+            south.add(statusLabel);
             south.add(buttons);
         add(scrollPane, BorderLayout.CENTER);
         add(south,      BorderLayout.SOUTH);
         setBorder(new EmptyBorder(5, 5, 5, 5));
 
 
-        textPane.addCaretListener(e -> status.setText(document.getMessageFor(e.getDot())));
+        textPane.addCaretListener(e -> statusLabel.setText(document.getMessageFor(e.getDot())));
+        textPane.addFocusListener(this);
+
+        document.setUpdateCallback(this::update);
 
         final var settings = Settings.getInstance();
         settings.addListener(this);
         setDark(settings.getDarkMode());
         setFontSize(settings.getFontSize());
-        textPane.addFocusListener(this);
         addKeyActions();
     }
 
@@ -108,6 +112,18 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         removeKeyActions();
         if (suggestionsWindow.isVisible()) {
             toggleSuggestionMenu();
+        }
+    }
+
+    /**
+     * Updates document related UI parts. Asserts that the update
+     * is executed in the {@link EventQueue} dispatch thread.
+     */
+    private void update() {
+        if (!EventQueue.isDispatchThread()) {
+            EventQueue.invokeLater(this::update);
+        } else {
+            statusLabel.setText(document.getMessageFor(textPane.getCaretPosition()));
         }
     }
 
