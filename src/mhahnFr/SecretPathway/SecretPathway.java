@@ -1,7 +1,7 @@
 /*
  * SecretPathway - A MUD client.
  *
- * Copyright (C) 2022  mhahnFr
+ * Copyright (C) 2022 - 2023  mhahnFr
  *
  * This file is part of the SecretPathway. This program is free software:
  * you can redistribute it and/or modify it under the terms of the
@@ -20,6 +20,7 @@
 package mhahnFr.SecretPathway;
 
 import mhahnFr.SecretPathway.core.Constants;
+import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.SecretPathway.core.net.ConnectionFactory;
 import mhahnFr.SecretPathway.gui.MainWindow;
 
@@ -135,7 +136,23 @@ public class SecretPathway {
      * and {@link SecretPathway#port}.
      */
     private void openWindow() {
+        setAppearance();
         EventQueue.invokeLater(() -> new MainWindow(ConnectionFactory.create(hostname, port)).setVisible(true));
+    }
+
+    /**
+     * Enables appearance related settings.
+     */
+    private void setAppearance() {
+        final var settings = Settings.getInstance();
+
+        if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+            if (settings.getAutoDarkMode()) {
+                System.setProperty("apple.awt.application.appearance", "system");
+            } else {
+                System.setProperty("apple.awt.application.appearance", "NSAppearanceName" + (settings.getDarkMode() ? "DarkAqua" : "Aqua"));
+            }
+        }
     }
 
     /**
