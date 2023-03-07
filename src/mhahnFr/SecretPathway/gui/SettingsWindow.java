@@ -139,13 +139,13 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
 
         stepper.addChangeListener(__ -> settings.setFontSize((Integer) stepper.getValue()));
 
-        appearanceBox.addItem("Auto");
-        appearanceBox.addItem("Dark");
-        appearanceBox.addItem("Light");
+        appearanceBox.addItem(Constants.UI.APPEARANCE_AUTO);
+        appearanceBox.addItem(Constants.UI.APPEARANCE_DARK);
+        appearanceBox.addItem(Constants.UI.APPEARANCE_LIGHT);
         if (settings.getAutoDarkMode()) {
-            appearanceBox.setSelectedItem("Auto");
+            appearanceBox.setSelectedItem(Constants.UI.APPEARANCE_AUTO);
         } else {
-            appearanceBox.setSelectedItem(settings.getDarkMode() ? "Dark" : "Light");
+            appearanceBox.setSelectedItem(settings.getDarkMode() ? Constants.UI.APPEARANCE_DARK : Constants.UI.APPEARANCE_LIGHT);
         }
         appearanceBox.addItemListener(this::appearanceChanged);
 
@@ -177,14 +177,14 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
     private void appearanceChanged(final ItemEvent event) {
         final var settings = Settings.getInstance();
         switch ((String) event.getItem()) {
-            case "Auto" -> settings.setAutoDarkMode(true);
+            case Constants.UI.APPEARANCE_AUTO -> settings.setAutoDarkMode(true);
 
-            case "Dark" -> {
+            case Constants.UI.APPEARANCE_DARK -> {
                 settings.setAutoDarkMode(false);
                 settings.setDarkMode(true);
             }
 
-            case "Light" -> {
+            case Constants.UI.APPEARANCE_LIGHT -> {
                 settings.setAutoDarkMode(false);
                 settings.setDarkMode(false);
             }

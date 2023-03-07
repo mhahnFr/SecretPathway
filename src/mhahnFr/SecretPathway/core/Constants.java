@@ -55,8 +55,14 @@ public final class Constants {
      * Constants for use in the user interface.
      */
     public static final class UI {
-        /** The default monospaced font to be used. */
+        /** The default monospaced font to be used.            */
         public static final Font FONT = new Font("monospaced", Font.PLAIN, 12);
+        /** The string displayed for the automatic appearance. */
+        public static final String APPEARANCE_AUTO = "Auto";
+        /** The string displayed for the dark appearance.      */
+        public static final String APPEARANCE_DARK = "Dark";
+        /** The string displayed for the light appearance.     */
+        public static final String APPEARANCE_LIGHT = "Light";
     }
 
     /**
