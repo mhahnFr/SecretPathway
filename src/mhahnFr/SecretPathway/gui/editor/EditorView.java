@@ -21,6 +21,7 @@ package mhahnFr.SecretPathway.gui.editor;
 
 import mhahnFr.SecretPathway.core.Constants;
 import mhahnFr.SecretPathway.core.Settings;
+import mhahnFr.SecretPathway.core.lpc.interpreter.FunctionDefinition;
 import mhahnFr.utils.SettingsListener;
 import mhahnFr.utils.gui.DarkComponent;
 import mhahnFr.utils.gui.DarkTextComponent;
@@ -189,8 +190,9 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
             public void actionPerformed(ActionEvent e) {
                 try {
                     final var suggestion = suggestionsWindow.getSelected();
-                    document.insertString(textPane.getCaretPosition(), suggestion.content(), null);
-                    if (suggestion.isFunction()) {
+                    document.insertString(textPane.getCaretPosition(), suggestion.content().getName(), null);
+                    if (suggestion.content() instanceof FunctionDefinition) {
+                        // TODO: argument stumps
                         document.insertString(textPane.getCaretPosition(), "()", null);
                         textPane.setCaretPosition(textPane.getCaretPosition() - 1);
                     }

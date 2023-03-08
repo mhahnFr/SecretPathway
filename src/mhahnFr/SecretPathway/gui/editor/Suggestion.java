@@ -19,6 +19,7 @@
 
 package mhahnFr.SecretPathway.gui.editor;
 
+import mhahnFr.SecretPathway.core.lpc.interpreter.Definition;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTTypeDefinition;
 
 /**
@@ -26,9 +27,8 @@ import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTTypeDefinition;
  *
  * @param type       the return type of the suggestion
  * @param content    the actual suggestion
- * @param isFunction whether the represented suggestion is a function
  * @author mhahnFr
  * @since 03.03.23
  */
-public record Suggestion(ASTTypeDefinition type, String content, boolean isFunction) {
+public record Suggestion(ASTTypeDefinition type, Definition content) {
 }
