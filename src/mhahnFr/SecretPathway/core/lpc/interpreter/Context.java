@@ -96,7 +96,7 @@ public class Context extends Instruction {
             if (instruction.getKey() < at) {
                 final var value = instruction.getValue();
                 if (value instanceof final Definition definition) {
-                    toReturn.add(new Suggestion(definition.getReturnType(), definition.getName(), definition.getType() == ASTType.FUNCTION_DEFINITION));
+                    toReturn.add(new Suggestion(definition.getReturnType(), definition.toString(), definition.getType() == ASTType.FUNCTION_DEFINITION));
                 } else if (value instanceof Context && at < value.getEnd()) {
                     toReturn.addAll(((Context) value).availableDefinitions(at));
                 }
@@ -172,8 +172,8 @@ public class Context extends Instruction {
                                final ASTName           name,
                                final ASTTypeDefinition returnType,
                                final List<Definition>  parameters) {
-        // TODO: FunctionDefinition class
-        addIdentifier(begin, name, returnType, ASTType.FUNCTION_DEFINITION);
+        instructions.put(begin.position(), new FunctionDefinition(begin.position(), name.getName(), returnType, parameters));
+
         final var newContext = pushScope(scopeBegin.position());
         for (final var parameter : parameters) {
             newContext.instructions.put(parameter.getBegin(), parameter);
