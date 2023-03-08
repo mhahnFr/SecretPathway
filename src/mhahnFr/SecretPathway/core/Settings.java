@@ -504,6 +504,7 @@ public final class Settings {
 
         callListeners(Keys.AUTO_DARK_MODE, autoDarkMode);
         preferences.putInt(Keys.AUTO_DARK_MODE, value);
+        // TODO: Activate appropriate mode
 
         return this;
     }
