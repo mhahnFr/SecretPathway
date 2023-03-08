@@ -75,6 +75,8 @@ public class Interpreter implements ASTVisitor {
 
     @Override
     public void visit(ASTExpression expression) {
+        var highlight = true;
+
         switch (expression.getASTType()) {
             case VARIABLE_DEFINITION -> current.addIdentifier(expression.getBegin(),
                                             cast(ASTName.class, ((ASTVariableDefinition) expression).getName()),
@@ -111,9 +113,13 @@ public class Interpreter implements ASTVisitor {
                     endPosition = end.position();
                 }
                 highlights.add(new MessagedHighlight<>(begin.position(), endPosition, ASTType.MISSING, ((ASTMissing) expression).getMessage()));
+                highlight = false;
             }
 
-            case WRONG -> highlights.add(new MessagedHighlight<>(expression.getBegin().position(), expression.getEnd().position(), ASTType.WRONG, ((ASTWrong) expression).getMessage()));
+            case WRONG -> {
+                highlights.add(new MessagedHighlight<>(expression.getBegin().position(), expression.getEnd().position(), ASTType.WRONG, ((ASTWrong) expression).getMessage()));
+                highlight = false;
+            }
 
             case NAME -> {
                 final var name = (ASTName) expression;
@@ -127,6 +133,7 @@ public class Interpreter implements ASTVisitor {
                 } else {
                     highlights.add(new Highlight<>(expression.getBegin().position(), expression.getEnd().position(), identifier.getType()));
                 }
+                highlight = false;
             }
 
             case OPERATION -> {
@@ -144,10 +151,12 @@ public class Interpreter implements ASTVisitor {
                 final var inheritance = (ASTInheritance) expression;
                 if (inheritance.getInherited() == null) {
                     highlights.add(new MessagedHighlight<>(inheritance.getBegin().position(), inheritance.getEnd().position(), InterpretationType.WARNING, "Inheriting from nothing"));
+                    highlight = false;
                 }
             }
-
-            default -> highlights.add(new ASTHighlight(expression));
+        }
+        if (highlight) {
+            highlights.add(new ASTHighlight(expression));
         }
     }
 
