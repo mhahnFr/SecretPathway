@@ -95,8 +95,8 @@ public class Context extends Instruction {
         for (final var instruction : instructions.entrySet()) {
             if (instruction.getKey() < at) {
                 final var value = instruction.getValue();
-                if (value instanceof Definition) {
-                    toReturn.add(new Suggestion(value.getReturnType(), ((Definition) value).getName()));
+                if (value instanceof final Definition definition) {
+                    toReturn.add(new Suggestion(definition.getReturnType(), definition.getName(), definition.getType() == ASTType.FUNCTION_DEFINITION));
                 } else if (value instanceof Context && at < value.getEnd()) {
                     toReturn.addAll(((Context) value).availableDefinitions(at));
                 }

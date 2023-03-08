@@ -24,10 +24,11 @@ import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTTypeDefinition;
 /**
  * This class represents a suggestion.
  *
- * @param type    the return type of the suggestion
- * @param content the actual suggestion
+ * @param type       the return type of the suggestion
+ * @param content    the actual suggestion
+ * @param isFunction whether the represented suggestion is a function
  * @author mhahnFr
  * @since 03.03.23
  */
-public record Suggestion(ASTTypeDefinition type, String content) {
+public record Suggestion(ASTTypeDefinition type, String content, boolean isFunction) {
 }

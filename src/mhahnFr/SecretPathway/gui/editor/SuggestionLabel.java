@@ -55,7 +55,7 @@ public class SuggestionLabel extends JPanel {
     public SuggestionLabel(final Suggestion suggestion, final boolean dark) {
         super(new BorderLayout());
         components.add(new DarkComponent<>(this));
-            suggestionLabel = new DarkComponent<>(new JLabel(suggestion.content()), components).getComponent();
+            suggestionLabel = new DarkComponent<>(new JLabel(suggestion.content() + (suggestion.isFunction() ? "()" : "")), components).getComponent();
             suggestionLabel.setFont(Constants.UI.FONT);
             suggestionLabel.setOpaque(false);
             suggestionLabel.setBorder(new EmptyBorder(0, 5, 0, 5));

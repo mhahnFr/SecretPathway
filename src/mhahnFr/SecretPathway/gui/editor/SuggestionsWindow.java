@@ -109,15 +109,14 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
     }
 
     /**
-     * Returns the text to be inserted of the currently
-     * selected suggestion.
+     * Returns the currently selected suggestion.
      *
-     * @return the text of the currently selected suggestion
+     * @return the currently selected suggestion
      * @see #selectNext()
      * @see #selectPrevious()
      */
-    public String getSelected() {
-        return suggestions.get(index).getRepresented().content();
+    public Suggestion getSelected() {
+        return suggestions.get(index).getRepresented();
     }
 
     /**
