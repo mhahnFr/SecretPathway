@@ -60,14 +60,22 @@ public class SuggestionLabel extends JPanel {
             suggestionLabel.setOpaque(false);
             suggestionLabel.setBorder(new EmptyBorder(0, 5, 0, 5));
 
-            final var type = suggestion.type();
-            final var typeLabel = new JLabel(type == null ? "<< unknown >>" : type.toString());
+            final var typeLabel = new JLabel();
             typeLabel.setFont(Constants.UI.FONT);
-            typeLabel.setForeground(type == null ? Color.red : Color.gray);
             typeLabel.setOpaque(false);
         add(suggestionLabel, BorderLayout.WEST);
         add(typeLabel, BorderLayout.EAST);
 
+        final String typeString;
+        final var type = suggestion.type();
+        final String ts;
+        if (type == null || (ts = type.toString()) == null) {
+            typeString = "<< unknown >>";
+            typeLabel.setForeground(Color.red);
+        } else {
+            typeString = ts;
+        }
+        typeLabel.setText(typeString);
         this.represented = suggestion;
         setDark(dark);
     }
