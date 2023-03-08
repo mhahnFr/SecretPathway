@@ -22,7 +22,7 @@ package mhahnFr.SecretPathway.core.lpc.interpreter;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.*;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.gui.editor.ASTHighlight;
-import mhahnFr.SecretPathway.gui.editor.ErrorHighlight;
+import mhahnFr.SecretPathway.gui.editor.MessagedHighlight;
 import mhahnFr.SecretPathway.gui.editor.Highlight;
 import mhahnFr.utils.StreamPosition;
 
@@ -110,15 +110,20 @@ public class Interpreter implements ASTVisitor {
                 } else {
                     endPosition = end.position();
                 }
-                highlights.add(new ErrorHighlight<>(begin.position(), endPosition, ASTType.MISSING, ((ASTMissing) expression).getMessage()));
+                highlights.add(new MessagedHighlight<>(begin.position(), endPosition, ASTType.MISSING, ((ASTMissing) expression).getMessage()));
             }
 
-            case WRONG -> highlights.add(new ErrorHighlight<>(expression.getBegin().position(), expression.getEnd().position(), ASTType.WRONG, ((ASTWrong) expression).getMessage()));
+            case WRONG -> highlights.add(new MessagedHighlight<>(expression.getBegin().position(), expression.getEnd().position(), ASTType.WRONG, ((ASTWrong) expression).getMessage()));
 
             case NAME -> {
-                final var identifier = current.getIdentifier(((ASTName) expression).getName(), expression.getBegin().position());
+                final var name = (ASTName) expression;
+                final var identifier = current.getIdentifier(name.getName(), expression.getBegin().position());
                 if (identifier == null) {
-                    highlights.add(new ErrorHighlight<>(expression.getBegin().position(), expression.getEnd().position(), InterpretationType.ERROR, "Identifier not found"));
+                    if (name.getName().startsWith("$")) {
+                        highlights.add(new MessagedHighlight<>(name.getBegin().position(), name.getEnd().position(), InterpretationType.WARNING, "Built-in not found"));
+                    } else {
+                        highlights.add(new MessagedHighlight<>(expression.getBegin().position(), expression.getEnd().position(), InterpretationType.ERROR, "Identifier not found"));
+                    }
                 } else {
                     highlights.add(new Highlight<>(expression.getBegin().position(), expression.getEnd().position(), identifier.getType()));
                 }
@@ -206,7 +211,7 @@ public class Interpreter implements ASTVisitor {
     private void visitParams(final List<ASTExpression> params) {
         for (final var param : params) {
             if (param.getASTType() == ASTType.MISSING) {
-                highlights.add(new ErrorHighlight<>(param.getBegin().position(), param.getEnd().position(), ASTType.MISSING, ((ASTMissing) param).getMessage()));
+                highlights.add(new MessagedHighlight<>(param.getBegin().position(), param.getEnd().position(), ASTType.MISSING, ((ASTMissing) param).getMessage()));
             } else if (param.getASTType() != ASTType.AST_ELLIPSIS) {
                 addParameter(cast(ASTParameter.class, param));
             }

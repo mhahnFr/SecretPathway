@@ -30,5 +30,7 @@ import mhahnFr.SecretPathway.gui.editor.HighlightType;
  */
 public enum InterpretationType implements HighlightType {
     /** Indicates a syntax error. */
-    ERROR
+    ERROR,
+    /** Indicates a warning.      */
+    WARNING
 }
