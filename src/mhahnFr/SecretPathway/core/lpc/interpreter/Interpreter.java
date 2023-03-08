@@ -140,6 +140,13 @@ public class Interpreter implements ASTVisitor {
                 }
             }
 
+            case AST_INHERITANCE -> {
+                final var inheritance = (ASTInheritance) expression;
+                if (inheritance.getInherited() == null) {
+                    highlights.add(new MessagedHighlight<>(inheritance.getBegin().position(), inheritance.getEnd().position(), InterpretationType.WARNING, "Inheriting from nothing"));
+                }
+            }
+
             default -> highlights.add(new ASTHighlight(expression));
         }
     }
