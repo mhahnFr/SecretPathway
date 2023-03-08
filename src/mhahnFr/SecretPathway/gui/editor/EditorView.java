@@ -32,6 +32,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -227,9 +228,18 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         } else {
             suggestionsWindow.updateSuggestions(document.getAvailableSuggestions(textPane.getCaretPosition()));
             addSuggestionKeyActions();
-            final var caretPosition = textPane.getCaret().getMagicCaretPosition();
+            final Rectangle2D caretPosition;
+            try {
+                caretPosition = textPane.modelToView2D(textPane.getCaretPosition());
+            } catch (BadLocationException e) {
+                System.err.println("Impossible error:");
+                e.printStackTrace();
+                System.err.println("-----------------");
+                return;
+            }
             final var panePosition  = textPane.getLocationOnScreen();
-            suggestionsWindow.setLocation(caretPosition.x + panePosition.x, caretPosition.y + panePosition.y + Settings.getInstance().getFontSize());
+            suggestionsWindow.setLocation((int) (caretPosition.getX() + panePosition.x),
+                                          (int) (caretPosition.getY() + panePosition.y + Settings.getInstance().getFontSize()));
             suggestionsWindow.pack();
             suggestionsWindow.setVisible(true);
         }
