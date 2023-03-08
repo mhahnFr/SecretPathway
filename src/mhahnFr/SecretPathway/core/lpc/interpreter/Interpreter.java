@@ -28,6 +28,7 @@ import mhahnFr.utils.StreamPosition;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * This class interprets LPC source code.
@@ -87,12 +88,12 @@ public class Interpreter implements ASTVisitor {
                 final var function = (ASTFunctionDefinition) expression;
                 final var block    = function.getBody();
 
-                current.addIdentifier(expression.getBegin(),
-                                      cast(ASTName.class, function.getName()),
-                                      cast(ASTTypeDefinition.class, function.getType()),
-                                      ASTType.FUNCTION_DEFINITION);
-                current = current.pushScope(block.getBegin().position());
-                visitParams(function.getParameters());
+                final var params = visitParams(function.getParameters());
+                current = current.addFunction(expression.getBegin(),
+                                              block.getBegin(),
+                                              cast(ASTName.class, function.getName()),
+                                              cast(ASTTypeDefinition.class, function.getType()),
+                                              params);
                 visitBlock(cast(ASTBlock.class, block));
                 current = current.popScope(expression.getEnd().position());
             }
@@ -204,34 +205,30 @@ public class Interpreter implements ASTVisitor {
     }
 
     /**
-     * Adds the given {@link ASTParameter} to the current {@link Context}.
-     *
-     * @param parameter the parameter to be added
-     * @see #current
-     */
-    private void addParameter(final ASTParameter parameter) {
-        // TODO: bool (any (int (string) ) )
-        current.addIdentifier(parameter.getBegin(),
-                              cast(ASTName.class, parameter.getName()),
-                              cast(ASTTypeDefinition.class, parameter.getType()),
-                              ASTType.PARAMETER);
-    }
-
-    /**
-     * Adds the parameters represented by the {@link ASTExpression}s in the
+     * Returns the parameters represented by the {@link ASTExpression}s in the
      * given list. If some parameter expressions are {@link ASTCombination}s,
      * the contained nodes are visited.
      *
      * @param params the list of expressions representing parameters
+     * @return a list with the parameter definitions
      */
-    private void visitParams(final List<ASTExpression> params) {
+    private List<Definition> visitParams(final List<ASTExpression> params) {
+        final List<Definition> parameters = new Vector<>(params.size());
+
+        // TODO: bool (any (int (string) ) )
         for (final var param : params) {
             if (param.getASTType() == ASTType.MISSING) {
                 highlights.add(new MessagedHighlight<>(param.getBegin().position(), param.getEnd().position(), ASTType.MISSING, ((ASTMissing) param).getMessage()));
             } else if (param.getASTType() != ASTType.AST_ELLIPSIS) {
-                addParameter(cast(ASTParameter.class, param));
+                final var parameter = cast(ASTParameter.class, param);
+
+                parameters.add(new Definition(parameter.getBegin().position(),
+                                              cast(ASTName.class, parameter.getName()).getName(),
+                                              cast(ASTTypeDefinition.class, parameter.getType()),
+                                              ASTType.PARAMETER));
             }
         }
+        return parameters;
     }
 
     /**

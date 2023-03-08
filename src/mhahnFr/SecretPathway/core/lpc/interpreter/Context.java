@@ -155,4 +155,29 @@ public class Context extends Instruction {
                               final ASTType           kind) {
         addIdentifier(begin.position(), name.getName(), type, kind);
     }
+
+    /**
+     * Adds a function to this context. The {@link #pushScope(int) pushed} scope
+     * context is returned. The given parameters are added to the pushed scope.
+     *
+     * @param begin      the beginning position of the function definition
+     * @param scopeBegin the beginning position of the function's scope
+     * @param name       the name of the function
+     * @param returnType the return type of the function
+     * @param parameters the parameter definitions of the function
+     * @return the new scope context for the contents of the function
+     */
+    public Context addFunction(final StreamPosition    begin,
+                               final StreamPosition    scopeBegin,
+                               final ASTName           name,
+                               final ASTTypeDefinition returnType,
+                               final List<Definition>  parameters) {
+        // TODO: FunctionDefinition class
+        addIdentifier(begin, name, returnType, ASTType.FUNCTION_DEFINITION);
+        final var newContext = pushScope(scopeBegin.position());
+        for (final var parameter : parameters) {
+            newContext.instructions.put(parameter.getBegin(), parameter);
+        }
+        return newContext;
+    }
 }
