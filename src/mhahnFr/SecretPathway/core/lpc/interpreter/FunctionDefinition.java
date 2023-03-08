@@ -22,6 +22,7 @@ package mhahnFr.SecretPathway.core.lpc.interpreter;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTType;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTTypeDefinition;
 
+import java.awt.*;
 import java.util.List;
 
 /**
@@ -69,7 +70,16 @@ public class FunctionDefinition extends Definition {
         final var iterator = parameters.listIterator();
         while (iterator.hasNext()) {
             final var parameter = iterator.next();
-            builder.append(parameter.getReturnType()).append(' ').append(parameter.getName());
+
+            final String typeString;
+            final var type = parameter.getReturnType();
+            final String ts;
+            if (type == null || (ts = type.toString()) == null) {
+                typeString = "<< unknown >>";
+            } else {
+                typeString = ts;
+            }
+            builder.append(typeString).append(' ').append(parameter.getName());
             if (iterator.hasNext()) {
                 builder.append(", ");
             }
