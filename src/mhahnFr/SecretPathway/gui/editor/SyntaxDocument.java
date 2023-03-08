@@ -188,8 +188,8 @@ public class SyntaxDocument extends DefaultStyledDocument {
     public String getMessageFor(int position) {
         for (final var entry : highlights) {
             if (position >= entry.getBegin() && position <= entry.getEnd()
-                    && entry instanceof ErrorHighlight<?>) {
-                return ((ErrorHighlight<?>) entry).getMessage();
+                    && entry instanceof MessagedHighlight<?>) {
+                return ((MessagedHighlight<?>) entry).getMessage();
             }
         }
         return "";

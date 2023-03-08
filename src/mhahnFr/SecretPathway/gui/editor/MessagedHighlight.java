@@ -27,7 +27,7 @@ package mhahnFr.SecretPathway.gui.editor;
  * @author mhahnFr
  * @since 04.03.23
  */
-public class ErrorHighlight<T extends HighlightType> extends Highlight<T> {
+public class MessagedHighlight<T extends HighlightType> extends Highlight<T> {
     /** The message for this highlighting element. */
     private final String message;
 
@@ -39,10 +39,10 @@ public class ErrorHighlight<T extends HighlightType> extends Highlight<T> {
      * @param type    the type
      * @param message the message
      */
-    public ErrorHighlight(final int    begin,
-                          final int    end,
-                          final T      type,
-                          final String message) {
+    public MessagedHighlight(final int    begin,
+                             final int    end,
+                             final T      type,
+                             final String message) {
         super(begin, end, type);
 
         this.message = message;
