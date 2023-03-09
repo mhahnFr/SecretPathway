@@ -29,7 +29,7 @@ import mhahnFr.utils.StreamPosition;
  */
 public class ASTInheritance extends ASTExpression {
     /** The inheritance string. */
-    private final String inherited;
+    private final ASTExpression inherited;
 
     /**
      * Constructs this AST node using the given positions
@@ -39,9 +39,9 @@ public class ASTInheritance extends ASTExpression {
      * @param end       the end position
      * @param inherited the inheritance string
      */
-    public ASTInheritance(StreamPosition begin,
-                          StreamPosition end,
-                          final String   inherited) {
+    public ASTInheritance(final StreamPosition begin,
+                          final StreamPosition end,
+                          final ASTExpression  inherited) {
         super(begin, end, ASTType.AST_INHERITANCE);
 
         this.inherited = inherited;
@@ -52,12 +52,22 @@ public class ASTInheritance extends ASTExpression {
      *
      * @return the inheritance string
      */
-    public String getInherited() {
+    public ASTExpression getInherited() {
         return inherited;
     }
 
     @Override
+    public void visit(ASTVisitor visitor) {
+        if (visitor.maybeVisit(this)) {
+            if (inherited != null) {
+                inherited.visit(visitor);
+            }
+        }
+    }
+
+    @Override
     public String describe(int indentation) {
-        return super.describe(indentation) + " inheriting from \"" + inherited + "\"";
+        return super.describe(indentation) + " inheriting from:\n" +
+                (inherited == null ? " ".repeat(Math.max(0, indentation)) + "nothing" : inherited.describe(indentation + 4));
     }
 }
