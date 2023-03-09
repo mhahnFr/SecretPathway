@@ -54,6 +54,8 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
     private final JTextPane textPane;
     /** The status label.                                           */
     private final JLabel statusLabel;
+    private final JButton saveButton;
+    private final JButton closeButton;
     /** The optional {@link DisposeListener}.                       */
     private DisposeListener disposeListener;
 
@@ -76,10 +78,10 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
                     highlight.setSelected(Settings.getInstance().getSyntaxHighlighting());
 
                     final var pushButtons = new DarkComponent<>(new JPanel(new GridLayout(1, 2)), components).getComponent();
-                        final var closeButton = new JButton("Close");
+                        closeButton = new JButton("Close");
                         closeButton.addActionListener(__ -> dispose());
 
-                        final var saveButton = new JButton("Save");
+                        saveButton = new JButton("Save");
                         saveButton.addActionListener(__ -> saveText());
                     pushButtons.add(closeButton);
                     pushButtons.add(saveButton);
@@ -129,6 +131,23 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         }
     }
 
+    private void addSaveCloseActions() {
+        final var map = textPane.getKeymap();
+
+        map.addActionForKeyStroke(Constants.Editor.SAVE_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveButton.doClick();
+            }
+        });
+        map.addActionForKeyStroke(Constants.Editor.CLOSE_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                closeButton.doClick();
+            }
+        });
+    }
+
     /**
      * Adds all keyboard actions associated with this editor
      * to the keymap of the actual text pane.
@@ -144,6 +163,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
                 toggleSuggestionMenu();
             }
         });
+        addSaveCloseActions();
     }
 
     /**
@@ -164,6 +184,8 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
      */
     private void addSuggestionKeyActions() {
         final var m = textPane.getKeymap();
+        m.removeKeyStrokeBinding(Constants.Editor.SAVE_KEY);
+        m.removeKeyStrokeBinding(Constants.Editor.CLOSE_KEY);
         m.addActionForKeyStroke(Constants.Editor.POPUP_DOWN, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -242,6 +264,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         m.removeKeyStrokeBinding(Constants.Editor.POPUP_RIGHT);
         m.removeKeyStrokeBinding(Constants.Editor.POPUP_ENTER);
         m.removeKeyStrokeBinding(Constants.Editor.POPUP_REPLACE);
+        addSaveCloseActions();
     }
 
     /**
