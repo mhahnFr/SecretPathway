@@ -75,7 +75,9 @@ public final class Constants {
         public static final String CHOOSE_THEME = "Choose...";
         /** The keystroke for toggling the suggestions window.        */
         public static final KeyStroke SHOW_SUGGESTIONS = KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, KeyEvent.CTRL_DOWN_MASK);
+        /** The keystroke for saving the document.                    */
         public static final KeyStroke SAVE_KEY = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.META_DOWN_MASK);
+        /** The keystroke for closing the editor.                     */
         public static final KeyStroke CLOSE_KEY = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
         /** The keystroke for selecting the next suggestion.          */
         public static final KeyStroke POPUP_DOWN = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0);

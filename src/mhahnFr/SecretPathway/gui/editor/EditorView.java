@@ -54,7 +54,9 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
     private final JTextPane textPane;
     /** The status label.                                           */
     private final JLabel statusLabel;
+    /** The button used for saving the document.                    */
     private final JButton saveButton;
+    /** The button used for closing the editor.                     */
     private final JButton closeButton;
     /** The optional {@link DisposeListener}.                       */
     private DisposeListener disposeListener;
@@ -131,6 +133,10 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         }
     }
 
+    /**
+     * Adds the key actions that collide with the suggestion key actions
+     * to the keymap.
+     */
     private void addSaveCloseActions() {
         final var map = textPane.getKeymap();
 
