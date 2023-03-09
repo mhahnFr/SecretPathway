@@ -119,10 +119,11 @@ public class Parser {
             return combine(new ASTInclude(previous.beginPos(), current.beginPos(), null),
                            new ASTMissing(previous.endPos(), current.beginPos(), "Expected a string literal"));
         } else {
-            toReturn = new ASTInclude(previous.beginPos(), current.endPos(), (String) current.payload());
+            final var begin   = previous.beginPos();
+            final var strings = parseStrings();
+            toReturn = new ASTInclude(begin, previous.endPos(), strings);
         }
 
-        advance();
         return toReturn;
     }
 

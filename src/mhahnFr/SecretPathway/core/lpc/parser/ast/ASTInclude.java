@@ -29,7 +29,7 @@ import mhahnFr.utils.StreamPosition;
  */
 public class ASTInclude extends ASTExpression {
     /** The raw value of the inclusion. */
-    private final String included;
+    private final ASTExpression included;
 
     /**
      * Constructs this AST node using the given positions and
@@ -41,7 +41,7 @@ public class ASTInclude extends ASTExpression {
      */
     public ASTInclude(final StreamPosition begin,
                       final StreamPosition end,
-                      final String         included) {
+                      final ASTExpression  included) {
         super(begin, end, ASTType.AST_INCLUDE);
 
         this.included = included;
@@ -52,12 +52,22 @@ public class ASTInclude extends ASTExpression {
      *
      * @return the inclusion string
      */
-    public String getIncluded() {
+    public ASTExpression getIncluded() {
         return included;
     }
 
     @Override
+    public void visit(ASTVisitor visitor) {
+        if (visitor.maybeVisit(this)) {
+            if (included != null) {
+                included.visit(visitor);
+            }
+        }
+    }
+
+    @Override
     public String describe(int indentation) {
-        return super.describe(indentation) + "included: \"" + included + "\"";
+        return super.describe(indentation) + " included:\n" +
+                (included == null ? " ".repeat(Math.max(0, indentation + 4)) + "nothing" : included.describe(indentation + 4));
     }
 }
