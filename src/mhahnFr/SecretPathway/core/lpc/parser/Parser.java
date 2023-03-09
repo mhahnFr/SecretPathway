@@ -146,7 +146,7 @@ public class Parser {
         } else if (current.type() == TokenType.STRING) {
             final var begin   = previous.beginPos();
             final var strings = parseStrings();
-            toReturn = assertSemicolon(new ASTInheritance(begin, previous.endPos(), strings));
+            toReturn = assertSemicolon(new ASTInheritance(begin, (current.type() == TokenType.SEMICOLON ? current : previous).endPos(), strings));
         } else if (current.type() != TokenType.SEMICOLON && next.type() != TokenType.SEMICOLON) {
             return combine(new ASTInheritance(previous.beginPos(), previous.endPos(), null),
                            new ASTMissing(previous.endPos(), current.beginPos(), "Expected ';'"));

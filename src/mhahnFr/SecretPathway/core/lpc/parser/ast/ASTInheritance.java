@@ -68,6 +68,6 @@ public class ASTInheritance extends ASTExpression {
     @Override
     public String describe(int indentation) {
         return super.describe(indentation) + " inheriting from:\n" +
-                (inherited == null ? " ".repeat(Math.max(0, indentation)) + "nothing" : inherited.describe(indentation + 4));
+                (inherited == null ? " ".repeat(Math.max(0, indentation + 4)) + "nothing" : inherited.describe(indentation + 4));
     }
 }
