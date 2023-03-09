@@ -139,17 +139,18 @@ public class Parser {
         if (current.type() == TokenType.SEMICOLON) {
             toReturn = new ASTInheritance(previous.beginPos(), current.endPos(), null);
         } else if (next.type() == TokenType.SEMICOLON && current.type() != TokenType.STRING) {
-            toReturn = combine(new ASTInheritance(previous.beginPos(), next.endPos(), null),
+            toReturn = new ASTInheritance(previous.beginPos(), next.endPos(),
                                new ASTWrong(current, "Expected a string literal"));
             advance();
-        } else if (current.type() == TokenType.STRING && next.type() != TokenType.SEMICOLON) {
-            toReturn = combine(new ASTInheritance(previous.beginPos(), current.endPos(), (String) current.payload()),
-                               new ASTMissing(current.endPos(), next.beginPos(), "Expected ';'"));
+        } else if (current.type() == TokenType.STRING) {
+            final var begin   = previous.beginPos();
+            final var strings = parseStrings();
+            toReturn = assertSemicolon(new ASTInheritance(begin, previous.endPos(), strings));
         } else if (current.type() != TokenType.SEMICOLON && next.type() != TokenType.SEMICOLON) {
-            return combine(new ASTInheritance(previous.beginPos(), current.beginPos(), null),
+            return combine(new ASTInheritance(previous.beginPos(), previous.endPos(), null),
                            new ASTMissing(previous.endPos(), current.beginPos(), "Expected ';'"));
         } else {
-            toReturn = new ASTInheritance(previous.beginPos(), next.endPos(), (String) current.payload());
+            toReturn = new ASTInheritance(previous.beginPos(), next.endPos(), null);
             advance();
         }
         advance();
@@ -177,8 +178,9 @@ public class Parser {
                 (current.type() != TokenType.LEFT_CURLY && next.type() == TokenType.SEMICOLON)) {
             final ASTExpression inheritance;
             if (current.type() == TokenType.STRING) {
-                inheritance = new ASTInheritance(current.beginPos(), current.endPos(), (String) current.payload());
-                advance();
+                final var inheritanceBegin  = current.beginPos();
+                final var inheritExpression = parseStrings();
+                inheritance = new ASTInheritance(inheritanceBegin, previous.endPos(), inheritExpression);
             } else if (current.type() == TokenType.SEMICOLON) {
                 inheritance = null;
             } else {
