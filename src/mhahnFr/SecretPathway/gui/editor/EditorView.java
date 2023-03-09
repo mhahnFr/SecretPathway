@@ -83,9 +83,13 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
                         closeButton = new JButton("Close");
                         closeButton.addActionListener(__ -> dispose());
 
+                        final var compileButton = new JButton("Compile");
+                        compileButton.addActionListener(__ -> compile());
+
                         saveButton = new JButton("Save");
                         saveButton.addActionListener(__ -> saveText());
                     pushButtons.add(closeButton);
+                    pushButtons.add(compileButton);
                     pushButtons.add(saveButton);
                 buttons.add(highlight,   BorderLayout.CENTER);
                 buttons.add(pushButtons, BorderLayout.EAST);
@@ -347,6 +351,15 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
     private void saveText() {
         // TODO: Save the text
         System.out.println("Saving...");
+    }
+
+    /**
+     * Saves the text of the editor and compiles it by sending
+     * a message to the server.
+     */
+    private void compile() {
+        // TODO: Compile the text
+        System.out.println("Compiling...");
     }
 
     /**
