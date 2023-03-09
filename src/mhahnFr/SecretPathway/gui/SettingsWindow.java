@@ -139,14 +139,14 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
 
         stepper.addChangeListener(__ -> settings.setFontSize((Integer) stepper.getValue()));
 
-        appearanceBox.addItem(Constants.UI.APPEARANCE_AUTO);
+//        appearanceBox.addItem(Constants.UI.APPEARANCE_AUTO);
         appearanceBox.addItem(Constants.UI.APPEARANCE_DARK);
         appearanceBox.addItem(Constants.UI.APPEARANCE_LIGHT);
-        if (settings.getAutoDarkMode()) {
-            appearanceBox.setSelectedItem(Constants.UI.APPEARANCE_AUTO);
-        } else {
+//        if (settings.getAutoDarkMode()) {
+//            appearanceBox.setSelectedItem(Constants.UI.APPEARANCE_AUTO);
+//        } else {
             appearanceBox.setSelectedItem(settings.getDarkMode() ? Constants.UI.APPEARANCE_DARK : Constants.UI.APPEARANCE_LIGHT);
-        }
+//        }
         appearanceBox.addItemListener(this::appearanceChanged);
 
         editorInlined.setSelected(settings.getEditorInlined());

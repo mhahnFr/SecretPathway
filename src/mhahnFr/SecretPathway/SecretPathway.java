@@ -147,11 +147,16 @@ public class SecretPathway {
         final var settings = Settings.getInstance();
 
         if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-            if (settings.getAutoDarkMode()) {
-                System.setProperty("apple.awt.application.appearance", "system");
+
+//            if (settings.getAutoDarkMode()) {
+            if (settings.getDarkMode()) {
+                System.setProperty("apple.awt.application.appearance", "NSAppearanceNameDarkAqua");
             } else {
-                System.setProperty("apple.awt.application.appearance", "NSAppearanceName" + (settings.getDarkMode() ? "DarkAqua" : "Aqua"));
+                System.setProperty("apple.awt.application.appearance", "system");
             }
+//            } else {
+//                System.setProperty("apple.awt.application.appearance", "NSAppearanceName" + (settings.getDarkMode() ? "DarkAqua" : "Aqua"));
+//            }
         }
     }
 
