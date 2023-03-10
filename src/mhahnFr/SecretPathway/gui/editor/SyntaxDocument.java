@@ -30,6 +30,7 @@ import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
 import mhahnFr.utils.StringStream;
 
 import javax.swing.text.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -133,13 +134,17 @@ public class SyntaxDocument extends DefaultStyledDocument {
         final var tokenizer = new Tokenizer(new StringStream(text));
         tokenizer.setCommentTokensEnabled(true);
 
+        final var comments = new ArrayList<Token>();
+
         Token token;
         while ((token = tokenizer.nextToken()).type() != TokenType.EOF) {
             final var style = theme.styleFor(token.type());
             setCharacterAttributes(token.begin(), token.end() - token.begin(),
                     style == null ? def : style.asStyle(def), true);
+            if (token.is(TokenType.COMMENT_LINE) || token.is(TokenType.COMMENT_BLOCK)) {
+                comments.add(token);
+            }
         }
-
 
         thread.execute(() -> {
             final var interpreter = new Interpreter();
@@ -148,8 +153,13 @@ public class SyntaxDocument extends DefaultStyledDocument {
             for (final var range : highlights) {
                 final var style = theme.styleFor(range.getType());
                 if (style != null) {
-                    setCharacterAttributes(range.getBegin(), range.getEnd() - range.getBegin(), style.asStyle(def), true);
+                    setCharacterAttributes(range.getBegin(), range.getEnd() - range.getBegin(), style.asStyle(def), false);
                 }
+            }
+            for (final var comment : comments) {
+                final var style = theme.styleFor(comment.type());
+                setCharacterAttributes(comment.begin(), comment.end() - comment.begin(),
+                        style == null ? def : style.asStyle(def), true);
             }
             if (updateCallback != null) {
                 updateCallback.run();
