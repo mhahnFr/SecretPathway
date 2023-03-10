@@ -58,6 +58,15 @@ public class SyntaxDocument extends DefaultStyledDocument {
     /** The execution service for interpreting the code.      */
     private final ExecutorService thread = Executors.newSingleThreadExecutor();
 
+    /**
+     * Returns whether the character at the given offset
+     * is a whitespace.
+     *
+     * @param offset the offset of the character
+     * @return whether the character at the given offset is a whitespace
+     * @throws BadLocationException if the position is negative
+     * @see String#isBlank()
+     */
     private boolean isWhitespace(final int offset) throws BadLocationException {
         if (offset >= getLength()) {
             return true;
@@ -65,6 +74,13 @@ public class SyntaxDocument extends DefaultStyledDocument {
         return getText(offset, 1).isBlank();
     }
 
+    /**
+     * Returns the indentation of the previous line.
+     *
+     * @param offset the offset
+     * @return the indentation of the previous line
+     * @throws BadLocationException if the offset is out of bounds
+     */
     private String getPreviousIndent(int offset) throws BadLocationException {
         int lineBegin = getLineBegin(offset);
         int indent;
@@ -72,6 +88,14 @@ public class SyntaxDocument extends DefaultStyledDocument {
         return " ".repeat(indent);
     }
 
+    /**
+     * Returns whether the character at the previous position is
+     * an opening parenthesis.
+     *
+     * @param offset the offset of the current character
+     * @return whether the previous character is an opening parenthesis
+     * @throws BadLocationException if the offset is out of bounds
+     */
     private boolean isPreviousOpeningParenthesis(final int offset) throws BadLocationException {
         if (offset > 0) {
             final var c = getText(offset - 1, 1);
@@ -83,6 +107,13 @@ public class SyntaxDocument extends DefaultStyledDocument {
         }
     }
 
+    /**
+     * Returns whether the given {@link String} contains only
+     * spaces.
+     *
+     * @param string the string to be checked
+     * @return whether the given string consists only of spaces
+     */
     private boolean isSpaces(final String string) {
         for (final char c : string.toCharArray()) {
             if (c != ' ') {
@@ -92,11 +123,27 @@ public class SyntaxDocument extends DefaultStyledDocument {
         return true;
     }
 
+    /**
+     * Returns whether the characters preceding the given position on
+     * the same line are only spaces.
+     *
+     * @param offset the current position
+     * @return whether only whitespaces precede the given position
+     * @throws BadLocationException if the position is out of bounds
+     */
     private boolean isOnlyWhitespacesOnLine(final int offset) throws BadLocationException {
         final var lineBegin = getLineBegin(offset);
         return isSpaces(getText(lineBegin, offset - lineBegin));
     }
 
+    /**
+     * Returns the character index of the beginning of the line
+     * the given position is on.
+     *
+     * @param offset the position
+     * @return the beginning position of the line
+     * @throws BadLocationException if the position is out of bounds
+     */
     private int getLineBegin(final int offset) throws BadLocationException {
         int lineBegin;
         for (lineBegin = offset > 0 ? offset - 1 : 0; lineBegin > 0 && !getText(lineBegin, 1).equals("\n"); --lineBegin);
