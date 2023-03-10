@@ -22,6 +22,7 @@ package mhahnFr.SecretPathway.gui.editor;
 import mhahnFr.SecretPathway.core.Constants;
 import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.SecretPathway.core.lpc.interpreter.FunctionDefinition;
+import mhahnFr.utils.Pair;
 import mhahnFr.utils.SettingsListener;
 import mhahnFr.utils.gui.DarkComponent;
 import mhahnFr.utils.gui.DarkTextComponent;
@@ -49,7 +50,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
     /** The window displaying the available suggestions.            */
     private final SuggestionsWindow suggestionsWindow = new SuggestionsWindow();
     /** The document responsible for highlighting the source code.  */
-    private final SyntaxDocument document;
+    private final SyntaxDocument document = new SyntaxDocument();
     /** The text pane.                                              */
     private final JTextPane textPane;
     /** The status label.                                           */
@@ -67,7 +68,6 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
     public EditorView() {
         super(new BorderLayout());
         components.add(new DarkComponent<>(this));
-            document = new SyntaxDocument();
             textPane = new DarkTextComponent<>(new JTextPane(document), components).getComponent();
             final var scrollPane = new DarkComponent<>(new JScrollPane(textPane), components).getComponent();
 
@@ -104,6 +104,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         textPane.addFocusListener(this);
 
         document.setUpdateCallback(this::update);
+        document.setCaretMover(delta -> textPane.setCaretPosition(textPane.getCaretPosition() + delta));
 
         final var settings = Settings.getInstance();
         settings.addListener(this);

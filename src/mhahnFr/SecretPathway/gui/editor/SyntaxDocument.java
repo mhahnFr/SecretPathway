@@ -27,7 +27,10 @@ import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Tokenizer;
 import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
+import mhahnFr.utils.Pair;
 import mhahnFr.utils.StringStream;
+import mhahnFr.utils.functional.Closure;
+import mhahnFr.utils.functional.ClosureCallee;
 
 import javax.swing.text.*;
 import java.util.ArrayList;
@@ -49,6 +52,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
     private boolean highlighting;
     /** The callback to be called after parsing the content.  */
     private Runnable updateCallback;
+    private CaretMover caretMover;
     /** The theme to be used for the syntax highlighting.     */
     private SPTheme theme = Settings.getInstance().getEditorTheme();
     /** The interpreted context of the source code.           */
@@ -57,6 +61,10 @@ public class SyntaxDocument extends DefaultStyledDocument {
     private volatile List<Highlight<?>> highlights;
     /** The execution service for interpreting the code.      */
     private final ExecutorService thread = Executors.newSingleThreadExecutor();
+
+    public void setCaretMover(final CaretMover caretMover) {
+        this.caretMover = caretMover;
+    }
 
     /**
      * Returns whether the character at the given offset
@@ -153,14 +161,36 @@ public class SyntaxDocument extends DefaultStyledDocument {
 
     @Override
     public void insertString(int offs, final String str, final AttributeSet a) throws BadLocationException {
+        int cursorDelta = 0;
+
         final String insertion;
         switch (str) {
             case "\t" -> insertion = "    ";
 
-            // TODO: Cursor position
-            case "(" -> insertion = isWhitespace(offs) ? "()" : str;
-            case "{" -> insertion = isWhitespace(offs) ? "{}" : str;
-            case "[" -> insertion = isWhitespace(offs) ? "[]" : str;
+            case "(" -> {
+                if (isWhitespace(offs)) {
+                    insertion = "()";
+                    cursorDelta = -1;
+                } else {
+                    insertion = str;
+                }
+            }
+            case "{" -> {
+                if (isWhitespace(offs)) {
+                    insertion = "{}";
+                    cursorDelta = -1;
+                } else {
+                    insertion = str;
+                }
+            }
+            case "[" -> {
+                if (isWhitespace(offs)) {
+                    insertion = "[]";
+                    cursorDelta = -1;
+                } else {
+                    insertion = str;
+                }
+            }
 
             case "}" -> {
                 if (isOnlyWhitespacesOnLine(offs)) {
@@ -181,6 +211,9 @@ public class SyntaxDocument extends DefaultStyledDocument {
         }
 
         super.insertString(offs, insertion, a);
+        if (cursorDelta != 0 && caretMover != null) {
+            caretMover.move(cursorDelta);
+        }
         maybeUpdateHighlight();
     }
 
