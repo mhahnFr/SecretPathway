@@ -58,9 +58,29 @@ public class SyntaxDocument extends DefaultStyledDocument {
     /** The execution service for interpreting the code.      */
     private final ExecutorService thread = Executors.newSingleThreadExecutor();
 
+    private boolean isWhitespace(final int offset) {
+        try {
+            return getText(offset, 1).isBlank();
+        } catch (BadLocationException __) {
+            return true;
+        }
+    }
+
     @Override
-    public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
-        super.insertString(offs, str, a);
+    public void insertString(final int offs, final String str, final AttributeSet a) throws BadLocationException {
+        final String insertion;
+        switch (str) {
+            case "\t" -> insertion = "    ";
+
+            // TODO: Cursor position
+            case "(" -> insertion = isWhitespace(offs) ? "()" : str;
+            case "{" -> insertion = isWhitespace(offs) ? "{}" : str;
+            case "[" -> insertion = isWhitespace(offs) ? "[]" : str;
+
+            default -> insertion = str;
+        }
+
+        super.insertString(offs, insertion, a);
         maybeUpdateHighlight();
     }
 
