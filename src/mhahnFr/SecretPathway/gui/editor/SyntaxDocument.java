@@ -75,8 +75,40 @@ public class SyntaxDocument extends DefaultStyledDocument {
         return " ".repeat(indent);
     }
 
+    private boolean isPreviousOpeningParenthesis(final int offset) throws BadLocationException {
+        if (offset > 0) {
+            final var c = getText(offset - 1, 1);
+            return c.equals("(") ||
+                   c.equals("{") ||
+                   c.equals("[");
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isSpaces(final String string) {
+        for (final char c : string.toCharArray()) {
+            if (c != ' ') {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isOnlyWhitespacesOnLine(final int offset) throws BadLocationException {
+        final var lineBegin = getLineBegin(offset);
+        return isSpaces(getText(lineBegin, offset - lineBegin));
+    }
+
+    private int getLineBegin(final int offset) throws BadLocationException {
+        int lineBegin;
+        for (lineBegin = offset > 0 ? offset - 1 : 0; lineBegin > 0 && !getText(lineBegin, 1).equals("\n"); --lineBegin);
+        lineBegin = lineBegin > 0 ? ++lineBegin : 0;
+        return lineBegin;
+    }
+
     @Override
-    public void insertString(final int offs, final String str, final AttributeSet a) throws BadLocationException {
+    public void insertString(int offs, final String str, final AttributeSet a) throws BadLocationException {
         final String insertion;
         switch (str) {
             case "\t" -> insertion = "    ";
@@ -86,8 +118,19 @@ public class SyntaxDocument extends DefaultStyledDocument {
             case "{" -> insertion = isWhitespace(offs) ? "{}" : str;
             case "[" -> insertion = isWhitespace(offs) ? "[]" : str;
 
+            case "}" -> {
+                if (isOnlyWhitespacesOnLine(offs)) {
+                    final int lineBegin = getLineBegin(offs);
+                    final var len = Math.min(offs - lineBegin, 4);
+                    offs = offs - len;
+                    remove(offs, len);
+                }
+                insertion = str;
+            }
+
             case "\n" -> {
-                insertion = str + getPreviousIndent(offs);
+                // TODO: Closing bracket?
+                insertion = str + getPreviousIndent(offs) + (isPreviousOpeningParenthesis(offs) ? "    " : "");
             }
 
             default -> insertion = str;
