@@ -27,10 +27,7 @@ import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Tokenizer;
 import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
-import mhahnFr.utils.Pair;
 import mhahnFr.utils.StringStream;
-import mhahnFr.utils.functional.Closure;
-import mhahnFr.utils.functional.ClosureCallee;
 
 import javax.swing.text.*;
 import java.util.ArrayList;
@@ -110,6 +107,25 @@ public class SyntaxDocument extends DefaultStyledDocument {
             return c.equals("(") ||
                    c.equals("{") ||
                    c.equals("[");
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns whether the character at the given offset is
+     * a closing parenthesis.
+     *
+     * @param offset the offset of the current character
+     * @return whether the current character is a closing parenthesis
+     * @throws BadLocationException if the offset is out of bounds
+     */
+    private boolean isClosingParenthesis(final int offset) throws BadLocationException {
+        if (offset < getLength()) {
+            final var c = getText(offset, 1);
+            return c.equals(")") ||
+                   c.equals("}") ||
+                   c.equals("]");
         } else {
             return false;
         }
@@ -203,8 +219,14 @@ public class SyntaxDocument extends DefaultStyledDocument {
             }
 
             case "\n" -> {
-                // TODO: Closing bracket?
-                insertion = str + getPreviousIndent(offs) + (isPreviousOpeningParenthesis(offs) ? "    " : "");
+                final var openingParenthesis = isPreviousOpeningParenthesis(offs);
+                if (openingParenthesis && isClosingParenthesis(offs)) {
+                    final var indent = getPreviousIndent(offs);
+                    insertion = str + indent + "    \n" + indent;
+                    cursorDelta = -indent.length() - 1;
+                } else {
+                    insertion = str + getPreviousIndent(offs) + (openingParenthesis ? "    " : "");
+                }
             }
 
             default -> insertion = str;
