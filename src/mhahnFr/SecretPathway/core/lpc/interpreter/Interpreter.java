@@ -171,10 +171,9 @@ public class Interpreter implements ASTVisitor {
      * @return the cast expression
      * @param <T> the requested type
      */
-    @SuppressWarnings("unchecked")
     private <T extends ASTExpression> T cast(final Class<T> type, final ASTExpression expression) {
         if (type.isAssignableFrom(expression.getClass())) {
-            return (T) expression;
+            return type.cast(expression);
         } else if (expression instanceof final ASTCombination combination) {
             return unwrap(combination, type);
         }
@@ -191,12 +190,11 @@ public class Interpreter implements ASTVisitor {
      * @return the expression of the given type contained in the given combination
      * @param <T> the type of the requested AST node
      */
-    @SuppressWarnings("unchecked")
     private <T extends ASTExpression> T unwrap(final ASTCombination combination, final Class<T> type) {
         T toReturn = null;
         for (final var expression : combination.getExpressions()) {
             if (type.isAssignableFrom(expression.getClass())) {
-                toReturn = (T) expression;
+                toReturn = type.cast(expression);
             } else {
                 expression.visit(this);
             }
