@@ -108,4 +108,14 @@ public class Token {
     public StreamPosition endPos() {
         return endPos;
     }
+
+    /**
+     * Returns whether this token is of the given type.
+     *
+     * @param type the type to be checked
+     * @return whether this token has the given type
+     */
+    public boolean is(final TokenType type) {
+        return this.type == type;
+    }
 }
