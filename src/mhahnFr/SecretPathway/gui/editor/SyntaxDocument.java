@@ -49,6 +49,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
     private boolean highlighting;
     /** The callback to be called after parsing the content.  */
     private Runnable updateCallback;
+    /** The caret mover responsible for moving the caret.     */
     private CaretMover caretMover;
     /** The theme to be used for the syntax highlighting.     */
     private SPTheme theme = Settings.getInstance().getEditorTheme();
@@ -59,6 +60,23 @@ public class SyntaxDocument extends DefaultStyledDocument {
     /** The execution service for interpreting the code.      */
     private final ExecutorService thread = Executors.newSingleThreadExecutor();
 
+    /**
+     * Returns the currently used caret mover.
+     *
+     * @return the set caret mover
+     * @see #setCaretMover(CaretMover)
+     */
+    public CaretMover getCaretMover() {
+        return caretMover;
+    }
+
+    /**
+     * Sets the caret mover to be called when the cursor
+     * position should be updated.
+     *
+     * @param caretMover the new caret mover
+     * @see #getCaretMover()
+     */
     public void setCaretMover(final CaretMover caretMover) {
         this.caretMover = caretMover;
     }
