@@ -66,6 +66,15 @@ public class SyntaxDocument extends DefaultStyledDocument {
         }
     }
 
+    private String getPreviousIndent(int offset) throws BadLocationException {
+        int lineBegin;
+        for (lineBegin = offset > 0 ? offset - 1 : 0; lineBegin > 0 && !getText(lineBegin, 1).equals("\n"); --lineBegin);
+        lineBegin = lineBegin > 0 ? ++lineBegin : 0;
+        int indent;
+        for (indent = 0; lineBegin < offset && getText(lineBegin, 1).equals(" "); ++lineBegin, ++indent);
+        return " ".repeat(indent);
+    }
+
     @Override
     public void insertString(final int offs, final String str, final AttributeSet a) throws BadLocationException {
         final String insertion;
@@ -76,6 +85,10 @@ public class SyntaxDocument extends DefaultStyledDocument {
             case "(" -> insertion = isWhitespace(offs) ? "()" : str;
             case "{" -> insertion = isWhitespace(offs) ? "{}" : str;
             case "[" -> insertion = isWhitespace(offs) ? "[]" : str;
+
+            case "\n" -> {
+                insertion = str + getPreviousIndent(offs);
+            }
 
             default -> insertion = str;
         }
