@@ -58,18 +58,15 @@ public class SyntaxDocument extends DefaultStyledDocument {
     /** The execution service for interpreting the code.      */
     private final ExecutorService thread = Executors.newSingleThreadExecutor();
 
-    private boolean isWhitespace(final int offset) {
-        try {
-            return getText(offset, 1).isBlank();
-        } catch (BadLocationException __) {
+    private boolean isWhitespace(final int offset) throws BadLocationException {
+        if (offset >= getLength()) {
             return true;
         }
+        return getText(offset, 1).isBlank();
     }
 
     private String getPreviousIndent(int offset) throws BadLocationException {
-        int lineBegin;
-        for (lineBegin = offset > 0 ? offset - 1 : 0; lineBegin > 0 && !getText(lineBegin, 1).equals("\n"); --lineBegin);
-        lineBegin = lineBegin > 0 ? ++lineBegin : 0;
+        int lineBegin = getLineBegin(offset);
         int indent;
         for (indent = 0; lineBegin < offset && getText(lineBegin, 1).equals(" "); ++lineBegin, ++indent);
         return " ".repeat(indent);
