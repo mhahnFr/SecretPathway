@@ -22,9 +22,11 @@ package mhahnFr.SecretPathway.core.lpc.interpreter;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTName;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTType;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTTypeDefinition;
+import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.gui.editor.DefinitionSuggestion;
 import mhahnFr.SecretPathway.gui.editor.PlainSuggestion;
 import mhahnFr.SecretPathway.gui.editor.Suggestion;
+import mhahnFr.SecretPathway.gui.editor.TypeSuggestion;
 import mhahnFr.utils.StreamPosition;
 
 import java.util.*;
@@ -133,18 +135,20 @@ public class Context extends Instruction {
         final var toReturn = new ArrayList<>(availableDefinitions(position));
 
         if (isGlobalScope(position)) {
-            toReturn.add(new PlainSuggestion("object"));
-            toReturn.add(new PlainSuggestion("any"));
-            toReturn.add(new PlainSuggestion("int"));
-            toReturn.add(new PlainSuggestion("string"));
-            toReturn.add(new PlainSuggestion("char"));
-            toReturn.add(new PlainSuggestion("void"));
-            toReturn.add(new PlainSuggestion("private"));
-            toReturn.add(new PlainSuggestion("protected"));
-            toReturn.add(new PlainSuggestion("public"));
-            toReturn.add(new PlainSuggestion("override"));
-            toReturn.add(new PlainSuggestion("nosave"));
-            toReturn.add(new PlainSuggestion("deprecated"));
+            toReturn.add(new TypeSuggestion(TokenType.OBJECT));
+            toReturn.add(new TypeSuggestion(TokenType.ANY));
+            toReturn.add(new TypeSuggestion(TokenType.INT_KEYWORD));
+            toReturn.add(new TypeSuggestion(TokenType.STRING));
+            toReturn.add(new TypeSuggestion(TokenType.CHAR_KEYWORD));
+            toReturn.add(new TypeSuggestion(TokenType.SYMBOL_KEYWORD));
+            toReturn.add(new TypeSuggestion(TokenType.VOID));
+
+            toReturn.add(new TypeSuggestion(TokenType.PRIVATE));
+            toReturn.add(new TypeSuggestion(TokenType.PROTECTED));
+            toReturn.add(new TypeSuggestion(TokenType.PUBLIC));
+            toReturn.add(new TypeSuggestion(TokenType.OVERRIDE));
+            toReturn.add(new TypeSuggestion(TokenType.NOSAVE));
+            toReturn.add(new TypeSuggestion(TokenType.DEPRECATED));
         } else {
             toReturn.add(new PlainSuggestion("new"));
             toReturn.add(new PlainSuggestion("if"));
