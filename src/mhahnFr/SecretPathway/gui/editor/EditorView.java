@@ -241,11 +241,13 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
             public void actionPerformed(ActionEvent e) {
                 try {
                     final var suggestion = suggestionsWindow.getSelected();
-                    document.insertString(textPane.getCaretPosition(), suggestion.content().getName(), null);
-                    if (suggestion.content() instanceof FunctionDefinition) {
-                        // TODO: argument stumps
-                        document.insertString(textPane.getCaretPosition(), "()", null);
-                        textPane.setCaretPosition(textPane.getCaretPosition() - 1);
+                    if (suggestion != null) {
+                        document.insertString(textPane.getCaretPosition(), suggestion.content().getName(), null);
+                        if (suggestion.content() instanceof FunctionDefinition) {
+                            // TODO: argument stumps
+                            document.insertString(textPane.getCaretPosition(), "()", null);
+                            textPane.setCaretPosition(textPane.getCaretPosition() - 1);
+                        }
                     }
                 } catch (BadLocationException exception) {
                     exception.printStackTrace();

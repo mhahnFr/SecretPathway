@@ -45,6 +45,7 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
     private final List<SuggestionLabel> suggestions = new Vector<>();
     /** The panel with the suggestions.                    */
     private final JPanel suggestionPanel;
+    private final JLabel noSuggestionsLabel;
     /** The index of the currently selected suggestion.    */
     private int index;
     /** Whether the dark mode is enabled.                  */
@@ -56,6 +57,8 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
     public SuggestionsWindow() {
         suggestionPanel = new DarkComponent<>(new JPanel(new GridLayout(0, 1)), components).getComponent();
         final var scrollPane = new DarkComponent<>(new JScrollPane(suggestionPanel), components).getComponent();
+
+        noSuggestionsLabel = new DarkComponent<>(new JLabel("No suggestions available"), components).getComponent();
 
         getContentPane().add(scrollPane);
 
@@ -81,13 +84,15 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      * @see #getSelected()
      */
     public void selectNext() {
-        suggestions.get(index).setSelected(false);
-        if (index + 1 >= suggestions.size()) {
-            index = 0;
-        } else {
-            ++index;
+        if (!suggestions.isEmpty()) {
+            suggestions.get(index).setSelected(false);
+            if (index + 1 >= suggestions.size()) {
+                index = 0;
+            } else {
+                ++index;
+            }
+            suggestions.get(index).setSelected(true);
         }
-        suggestions.get(index).setSelected(true);
     }
 
     /**
@@ -99,13 +104,15 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      * @see #getSelected()
      */
     public void selectPrevious() {
-        suggestions.get(index).setSelected(false);
-        if (index - 1 < 0) {
-            index = suggestions.size() - 1;
-        } else {
-            --index;
+        if (!suggestions.isEmpty()) {
+            suggestions.get(index).setSelected(false);
+            if (index - 1 < 0) {
+                index = suggestions.size() - 1;
+            } else {
+                --index;
+            }
+            suggestions.get(index).setSelected(true);
         }
-        suggestions.get(index).setSelected(true);
     }
 
     /**
@@ -116,7 +123,7 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      * @see #selectPrevious()
      */
     public Suggestion getSelected() {
-        return suggestions.get(index).getRepresented();
+        return suggestions.isEmpty() ? null : suggestions.get(index).getRepresented();
     }
 
     /**
@@ -187,13 +194,21 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
 
     @Override
     public void setVisible(boolean b) {
-        pack();
         if (b) {
-            suggestions.get(index).setSelected(true);
+            if (suggestions.isEmpty()) {
+                suggestionPanel.add(noSuggestionsLabel);
+            } else {
+                suggestions.get(index).setSelected(true);
+            }
         } else {
-            suggestions.get(index).setSelected(false);
-            index = 0;
+            if (suggestions.isEmpty()) {
+                suggestionPanel.remove(noSuggestionsLabel);
+            } else {
+                suggestions.get(index).setSelected(false);
+                index = 0;
+            }
         }
+        pack();
         super.setVisible(b);
     }
 
