@@ -38,16 +38,17 @@ import java.util.Vector;
  * @since 01.03.23
  */
 public class SuggestionsWindow extends JWindow implements DarkModeListener {
-    /** A list with all components enabling the dark mode. */
+    /** A list with all components enabling the dark mode.      */
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
-    /** The list with the suggestions to be displayed.     */
+    /** The list with the suggestions to be displayed.          */
     private final List<SuggestionLabel> suggestions = new Vector<>();
-    /** The panel with the suggestions.                    */
+    /** The panel with the suggestions.                         */
     private final JPanel suggestionPanel;
+    /** The label indicating that no suggestions are available. */
     private final JLabel noSuggestionsLabel;
-    /** The index of the currently selected suggestion.    */
+    /** The index of the currently selected suggestion.         */
     private int index;
-    /** Whether the dark mode is enabled.                  */
+    /** Whether the dark mode is enabled.                       */
     private boolean dark;
 
     /**

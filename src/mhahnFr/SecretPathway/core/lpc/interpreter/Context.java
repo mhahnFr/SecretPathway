@@ -108,6 +108,12 @@ public class Context extends Instruction {
         return toReturn;
     }
 
+    /**
+     * Returns whether the given position is in the global scope.
+     *
+     * @param position the position to be checked
+     * @return whether the position is in global scope
+     */
     private boolean isGlobalScope(final int position) {
         for (final var instruction : instructions.entrySet()) {
             if (instruction.getKey() < position && instruction.getValue().getEnd() > position) {
@@ -117,6 +123,12 @@ public class Context extends Instruction {
         return true;
     }
 
+    /**
+     * Returns a list with the available suggestions at the given position.
+     *
+     * @param position the position
+     * @return a list with suggestions
+     */
     public List<Suggestion> createSuggestions(final int position) {
         final var toReturn = new ArrayList<>(availableDefinitions(position));
 
