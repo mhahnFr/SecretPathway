@@ -104,11 +104,11 @@ public class SyntaxDocument extends DefaultStyledDocument {
      * @return the indentation of the previous line
      * @throws BadLocationException if the offset is out of bounds
      */
-    private String getPreviousIndent(int offset) throws BadLocationException {
+    private int getPreviousIndent(int offset) throws BadLocationException {
         int lineBegin = getLineBegin(offset);
         int indent;
         for (indent = 0; lineBegin < offset && getText(lineBegin, 1).equals(" "); ++lineBegin, ++indent);
-        return " ".repeat(indent);
+        return indent;
     }
 
     /**
@@ -239,15 +239,22 @@ public class SyntaxDocument extends DefaultStyledDocument {
             case "\n" -> {
                 final var openingParenthesis = isPreviousOpeningParenthesis(offs);
                 if (openingParenthesis && isClosingParenthesis(offs)) {
-                    final var indent = getPreviousIndent(offs);
+                    final var indent = " ".repeat(getPreviousIndent(offs));
                     insertion = str + indent + "    \n" + indent;
                     cursorDelta = -indent.length() - 1;
                 } else {
-                    insertion = str + getPreviousIndent(offs) + (openingParenthesis ? "    " : "");
+                    insertion = str + " ".repeat(getPreviousIndent(offs)) + (openingParenthesis ? "    " : "");
                 }
             }
 
-            default -> insertion = str;
+            default -> {
+                if (str.contains("\n")) {
+                    final var nlIndex = str.indexOf('\n');
+                    insertion = str.substring(0, nlIndex + 1) + str.substring(nlIndex + 1).indent(getPreviousIndent(offs));
+                } else {
+                    insertion = str;
+                }
+            }
         }
 
         super.insertString(offs, insertion, a);
@@ -255,6 +262,37 @@ public class SyntaxDocument extends DefaultStyledDocument {
             caretMover.move(cursorDelta);
         }
         maybeUpdateHighlight();
+    }
+
+    public void insertSuggestion(final int offset, final Suggestion suggestion) throws BadLocationException {
+        final var str    = suggestion.getSuggestion();
+        final var indent = getPreviousIndent(offset);
+
+        insertString(offset, str, null);
+
+        final int toMove;
+        if (suggestion.getRelativeCursorPosition() >= 0) {
+            if (str.contains("\n")) {
+                int nlCount = 0,
+                    fpnl    = 0;
+                for (int i = 0; i < str.length(); ++i) {
+                    if (str.charAt(i) == '\n') {
+                        if (i < suggestion.getRelativeCursorPosition()) {
+                            ++fpnl;
+                        }
+                        ++nlCount;
+                    }
+                }
+                toMove = -(str.length() + nlCount * indent) + suggestion.getRelativeCursorPosition() + fpnl * indent - 1;
+            } else {
+                toMove = -str.length() + suggestion.getRelativeCursorPosition();
+            }
+        } else {
+            toMove = 0;
+        }
+        if (toMove != 0 && caretMover != null) {
+            caretMover.move(toMove);
+        }
     }
 
     @Override

@@ -242,7 +242,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
                 try {
                     final var suggestion = suggestionsWindow.getSelected();
                     if (suggestion != null) {
-                        document.insertString(textPane.getCaretPosition(), suggestion.getSuggestion(), null);
+                        document.insertSuggestion(textPane.getCaretPosition(), suggestion);
                         if (suggestion instanceof final DefinitionSuggestion definitionSuggestion &&
                             definitionSuggestion.definition() instanceof FunctionDefinition) {
                             // TODO: argument stumps
