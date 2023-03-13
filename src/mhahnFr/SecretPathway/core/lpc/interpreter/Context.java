@@ -22,6 +22,7 @@ package mhahnFr.SecretPathway.core.lpc.interpreter;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTName;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTType;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTTypeDefinition;
+import mhahnFr.SecretPathway.gui.editor.DefinitionSuggestion;
 import mhahnFr.SecretPathway.gui.editor.Suggestion;
 import mhahnFr.utils.StreamPosition;
 
@@ -96,7 +97,7 @@ public class Context extends Instruction {
             if (instruction.getKey() < at) {
                 final var value = instruction.getValue();
                 if (value instanceof final Definition definition) {
-                    toReturn.add(new Suggestion(definition.getReturnType(), definition));
+                    toReturn.add(new DefinitionSuggestion(definition.getReturnType(), definition));
                 } else if (value instanceof Context && at < value.getEnd()) {
                     toReturn.addAll(((Context) value).availableDefinitions(at));
                 }

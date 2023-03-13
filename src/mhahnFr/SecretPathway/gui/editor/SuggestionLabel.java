@@ -55,7 +55,7 @@ public class SuggestionLabel extends JPanel {
     public SuggestionLabel(final Suggestion suggestion, final boolean dark) {
         super(new BorderLayout());
         components.add(new DarkComponent<>(this));
-            suggestionLabel = new DarkComponent<>(new JLabel(suggestion.content().toString()), components).getComponent();
+            suggestionLabel = new DarkComponent<>(new JLabel(suggestion.getSuggestion()), components).getComponent();
             suggestionLabel.setFont(Constants.UI.FONT);
             suggestionLabel.setOpaque(false);
             suggestionLabel.setBorder(new EmptyBorder(0, 5, 0, 5));
@@ -68,13 +68,17 @@ public class SuggestionLabel extends JPanel {
         add(typeLabel, BorderLayout.EAST);
 
         final String typeString;
-        final var type = suggestion.type();
-        final String ts;
-        if (type == null || (ts = type.toString()) == null) {
-            typeString = "<< unknown >>";
-            typeLabel.setForeground(Color.red);
+        if (suggestion instanceof final DefinitionSuggestion definitionSuggestion) {
+            final var type = definitionSuggestion.type();
+            final String ts;
+            if (type == null || (ts = type.toString()) == null) {
+                typeString = "<< unknown >>";
+                typeLabel.setForeground(Color.red);
+            } else {
+                typeString = ts;
+            }
         } else {
-            typeString = ts;
+            typeString = "";
         }
         typeLabel.setText(typeString);
         this.represented = suggestion;

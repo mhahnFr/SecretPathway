@@ -19,17 +19,18 @@
 
 package mhahnFr.SecretPathway.gui.editor;
 
+import mhahnFr.SecretPathway.core.lpc.interpreter.Definition;
+import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTTypeDefinition;
+
 /**
- * This interface defines a suggestion.
+ * This record represents a {@link Definition} suggestion.
  *
- * @author mhahnFr
- * @since 03.03.23
+ * @param type       the (return) type of the suggested definition
+ * @param definition the suggested definition
  */
-public interface Suggestion {
-    /**
-     * Returns the suggested text.
-     *
-     * @return the suggested text
-     */
-    String getSuggestion();
+public record DefinitionSuggestion(ASTTypeDefinition type, Definition definition) implements Suggestion {
+    @Override
+    public String getSuggestion() {
+        return definition.getName();
+    }
 }

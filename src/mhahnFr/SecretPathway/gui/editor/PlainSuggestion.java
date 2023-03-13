@@ -20,16 +20,13 @@
 package mhahnFr.SecretPathway.gui.editor;
 
 /**
- * This interface defines a suggestion.
+ * This record represents a plain text suggestion.
  *
- * @author mhahnFr
- * @since 03.03.23
+ * @param suggestion the actual suggestion
  */
-public interface Suggestion {
-    /**
-     * Returns the suggested text.
-     *
-     * @return the suggested text
-     */
-    String getSuggestion();
+public record PlainSuggestion(String suggestion) implements Suggestion {
+    @Override
+    public String getSuggestion() {
+        return suggestion;
+    }
 }
