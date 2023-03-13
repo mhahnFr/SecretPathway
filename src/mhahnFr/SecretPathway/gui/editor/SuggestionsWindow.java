@@ -20,7 +20,6 @@
 package mhahnFr.SecretPathway.gui.editor;
 
 import mhahnFr.SecretPathway.core.Settings;
-import mhahnFr.SecretPathway.core.lpc.interpreter.Definition;
 import mhahnFr.utils.gui.DarkComponent;
 import mhahnFr.utils.gui.DarkModeListener;
 
