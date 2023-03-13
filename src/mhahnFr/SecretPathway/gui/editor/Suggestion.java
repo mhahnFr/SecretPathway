@@ -32,4 +32,23 @@ public interface Suggestion {
      * @return the suggested text
      */
     String getSuggestion();
+
+    /**
+     * Returns the description of the suggestion to be displayed.
+     *
+     * @return the display string of this suggestion
+     */
+    default String getDescription() {
+        return getSuggestion();
+    }
+
+    /**
+     * Returns the relative cursor position for this suggestion.
+     * {@code -1} indicates no cursor movement.
+     *
+     * @return the desired relative cursor position
+     */
+    default int getRelativeCursorPosition() {
+        return -1;
+    }
 }
