@@ -264,6 +264,13 @@ public class SyntaxDocument extends DefaultStyledDocument {
         maybeUpdateHighlight();
     }
 
+    /**
+     * Inserts the given suggestion and moves the cursor accordingly.
+     *
+     * @param offset     where to insert the suggestion
+     * @param suggestion the suggestion to be inserted
+     * @throws BadLocationException if the position is out of bounds
+     */
     public void insertSuggestion(final int offset, final Suggestion suggestion) throws BadLocationException {
         final var str    = suggestion.getSuggestion();
         final var indent = getPreviousIndent(offset);
