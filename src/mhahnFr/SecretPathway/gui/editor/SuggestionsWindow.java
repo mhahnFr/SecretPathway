@@ -159,8 +159,21 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      *
      * @param suggestion the suggestion to be removed
      */
-    public void removeSuggestion(final Definition suggestion) {
-        // TODO: Remove the suggestion
+    public void removeSuggestion(final Suggestion suggestion) {
+        SuggestionLabel toRemove = null;
+        for (final var label : suggestions) {
+            if (label.getRepresented().equals(suggestion)) {
+                toRemove = label;
+                break;
+            }
+        }
+        if (toRemove != null) {
+            if (toRemove.isSelected()) {
+                selectPrevious();
+            }
+            suggestions.remove(toRemove);
+            suggestionPanel.remove(toRemove);
+        }
     }
 
     /**
