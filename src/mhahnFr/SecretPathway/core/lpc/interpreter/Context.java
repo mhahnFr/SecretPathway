@@ -23,10 +23,7 @@ import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTName;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTType;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTTypeDefinition;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
-import mhahnFr.SecretPathway.gui.editor.DefinitionSuggestion;
-import mhahnFr.SecretPathway.gui.editor.PlainSuggestion;
-import mhahnFr.SecretPathway.gui.editor.Suggestion;
-import mhahnFr.SecretPathway.gui.editor.TypeSuggestion;
+import mhahnFr.SecretPathway.gui.editor.*;
 import mhahnFr.utils.StreamPosition;
 
 import java.util.*;
@@ -150,13 +147,13 @@ public class Context extends Instruction {
             toReturn.add(new TypeSuggestion(TokenType.NOSAVE));
             toReturn.add(new TypeSuggestion(TokenType.DEPRECATED));
         } else {
-            toReturn.add(new PlainSuggestion("new"));
-            toReturn.add(new PlainSuggestion("if"));
-            toReturn.add(new PlainSuggestion("try"));
-            toReturn.add(new PlainSuggestion("for"));
-            toReturn.add(new PlainSuggestion("foreach"));
-            toReturn.add(new PlainSuggestion("while"));
-            toReturn.add(new PlainSuggestion("do"));
+            toReturn.add(new NewSuggestion());
+            toReturn.add(new ParenthesizedSuggestion(TokenType.IF));
+            toReturn.add(new TrySuggestion());
+            toReturn.add(new ParenthesizedSuggestion(TokenType.FOR));
+            toReturn.add(new ParenthesizedSuggestion(TokenType.FOREACH));
+            toReturn.add(new ParenthesizedSuggestion(TokenType.WHILE));
+            toReturn.add(new DoSuggestion());
         }
 
         return toReturn;
