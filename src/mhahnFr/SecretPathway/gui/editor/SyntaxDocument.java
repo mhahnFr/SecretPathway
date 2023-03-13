@@ -371,7 +371,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
         if (context == null) {
             return null;
         }
-        return context.availableDefinitions(position);
+        return context.createSuggestions(position);
     }
 
     /**

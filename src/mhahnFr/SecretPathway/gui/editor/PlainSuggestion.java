@@ -27,6 +27,6 @@ package mhahnFr.SecretPathway.gui.editor;
 public record PlainSuggestion(String suggestion) implements Suggestion {
     @Override
     public String getSuggestion() {
-        return suggestion;
+        return suggestion + " ";
     }
 }

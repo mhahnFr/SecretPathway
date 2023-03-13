@@ -23,6 +23,7 @@ import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTName;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTType;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTTypeDefinition;
 import mhahnFr.SecretPathway.gui.editor.DefinitionSuggestion;
+import mhahnFr.SecretPathway.gui.editor.PlainSuggestion;
 import mhahnFr.SecretPathway.gui.editor.Suggestion;
 import mhahnFr.utils.StreamPosition;
 
@@ -90,7 +91,7 @@ public class Context extends Instruction {
      * @param at the position
      * @return the available instructions
      */
-    public List<Suggestion> availableDefinitions(final int at) {
+    private List<Suggestion> availableDefinitions(final int at) {
         final var toReturn = new ArrayList<Suggestion>();
 
         for (final var instruction : instructions.entrySet()) {
@@ -102,6 +103,44 @@ public class Context extends Instruction {
                     toReturn.addAll(((Context) value).availableDefinitions(at));
                 }
             }
+        }
+
+        return toReturn;
+    }
+
+    private boolean isGlobalScope(final int position) {
+        for (final var instruction : instructions.entrySet()) {
+            if (instruction.getKey() < position && instruction.getValue().getEnd() > position) {
+                return !(instruction.getValue() instanceof Context);
+            }
+        }
+        return true;
+    }
+
+    public List<Suggestion> createSuggestions(final int position) {
+        final var toReturn = new ArrayList<>(availableDefinitions(position));
+
+        if (isGlobalScope(position)) {
+            toReturn.add(new PlainSuggestion("object"));
+            toReturn.add(new PlainSuggestion("any"));
+            toReturn.add(new PlainSuggestion("int"));
+            toReturn.add(new PlainSuggestion("string"));
+            toReturn.add(new PlainSuggestion("char"));
+            toReturn.add(new PlainSuggestion("void"));
+            toReturn.add(new PlainSuggestion("private"));
+            toReturn.add(new PlainSuggestion("protected"));
+            toReturn.add(new PlainSuggestion("public"));
+            toReturn.add(new PlainSuggestion("override"));
+            toReturn.add(new PlainSuggestion("nosave"));
+            toReturn.add(new PlainSuggestion("deprecated"));
+        } else {
+            toReturn.add(new PlainSuggestion("new"));
+            toReturn.add(new PlainSuggestion("if"));
+            toReturn.add(new PlainSuggestion("try"));
+            toReturn.add(new PlainSuggestion("for"));
+            toReturn.add(new PlainSuggestion("foreach"));
+            toReturn.add(new PlainSuggestion("while"));
+            toReturn.add(new PlainSuggestion("do"));
         }
 
         return toReturn;
