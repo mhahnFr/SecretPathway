@@ -222,7 +222,11 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
                 index = 0;
             }
         }
-        pack();
+        if (suggestions.size() > 10) {
+            setSize(suggestionPanel.getWidth() + 20, suggestions.get(0).getHeight() * 10);
+        } else {
+            pack();
+        }
         super.setVisible(b);
     }
 
