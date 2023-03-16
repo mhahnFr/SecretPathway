@@ -91,7 +91,13 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
             } else {
                 ++index;
             }
-            suggestions.get(index).setSelected(true);
+
+            final var suggestion = suggestions.get(index);
+            suggestion.setSelected(true);
+            suggestionPanel.scrollRectToVisible(new Rectangle(suggestion.getX(),
+                                                              suggestion.getY(),
+                                                              suggestion.getWidth(),
+                                                              suggestion.getHeight() * 3));
         }
     }
 
@@ -111,7 +117,15 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
             } else {
                 --index;
             }
-            suggestions.get(index).setSelected(true);
+
+            final var suggestion = suggestions.get(index);
+            final var height     = suggestion.getHeight();
+
+            suggestion.setSelected(true);
+            suggestionPanel.scrollRectToVisible(new Rectangle(suggestion.getX(),
+                                                              suggestion.getY() - height * 2,
+                                                              suggestion.getWidth(),
+                                                              height * 3));
         }
     }
 
