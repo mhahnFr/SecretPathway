@@ -154,6 +154,7 @@ public class Context extends Instruction {
             toReturn.add(new ParenthesizedSuggestion(TokenType.FOREACH));
             toReturn.add(new ParenthesizedSuggestion(TokenType.WHILE));
             toReturn.add(new DoSuggestion());
+            toReturn.add(new SwitchSuggestion());
         }
 
         return toReturn;
