@@ -1,7 +1,7 @@
 /*
  * SecretPathway - A MUD client.
  *
- * Copyright (C) 2023  mhahnFr
+ * Copyright (C) 2022 - 2023  mhahnFr
  *
  * This file is part of the SecretPathway. This program is free software:
  * you can redistribute it and/or modify it under the terms of the
@@ -21,8 +21,6 @@ package mhahnFr.SecretPathway.core.lpc.parser.tokenizer;
 
 import mhahnFr.utils.StringStream;
 
-import java.util.Stack;
-
 /**
  * This class tokenizes a text into tokens.
  *
@@ -32,8 +30,6 @@ import java.util.Stack;
 public class Tokenizer {
     /** The stream of the source text.                      */
     private final StringStream stream;
-    /** A stack containing pushed backed tokens.            */
-    private final Stack<Token> pushbacks;
     /** Indicates whether comment tokens should be emitted. */
     private boolean commentTokens;
 
@@ -44,16 +40,6 @@ public class Tokenizer {
      */
     public Tokenizer(StringStream stream) {
         this.stream = stream;
-        this.pushbacks = new Stack<>();
-    }
-
-    /**
-     * Pushes back the given token.
-     *
-     * @param token the token to be pushed back
-     */
-    public void pushback(final Token token) {
-        pushbacks.push(token);
     }
 
     /**
@@ -71,10 +57,6 @@ public class Tokenizer {
      * @return the next token found in the stream
      */
     public Token nextToken() {
-        if (!pushbacks.isEmpty()) {
-            return pushbacks.pop();
-        }
-
         skipWhitespaces();
 
         if (!stream.hasNext()) {
