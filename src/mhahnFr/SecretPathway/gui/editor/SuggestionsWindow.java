@@ -55,7 +55,7 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      * Constructs this window.
      */
     public SuggestionsWindow() {
-        suggestionPanel = new DarkComponent<>(new JPanel(new GridLayout(0, 1)), components).getComponent();
+        suggestionPanel = new DarkComponent<>(new JPanel(new GridLayout(0, 2)), components).getComponent();
         final var scrollPane = new DarkComponent<>(new JScrollPane(suggestionPanel), components).getComponent();
 
         noSuggestionsLabel = new DarkComponent<>(new JLabel("No suggestions available"), components).getComponent();
@@ -147,7 +147,8 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      */
     public void addSuggestion(final Suggestion suggestion) {
         final var label = new SuggestionLabel(suggestion, dark);
-        suggestionPanel.add(label);
+        suggestionPanel.add(label.getLeftPart());
+        suggestionPanel.add(label.getRightPart());
         suggestions.add(label);
     }
 
@@ -193,7 +194,8 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
                 selectPrevious();
             }
             suggestions.remove(toRemove);
-            suggestionPanel.remove(toRemove);
+            suggestionPanel.remove(toRemove.getLeftPart());
+            suggestionPanel.remove(toRemove.getRightPart());
         }
     }
 

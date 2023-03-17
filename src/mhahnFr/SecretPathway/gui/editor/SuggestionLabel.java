@@ -33,11 +33,12 @@ import java.util.Vector;
  * @author mhahnFr
  * @since 03.03.23
  */
-public class SuggestionLabel extends JPanel {
+public class SuggestionLabel {
     /** The represented and thus displayed suggestion.       */
     private final Suggestion represented;
     /** The label with the actual suggestion.                */
     private final JLabel suggestionLabel;
+    private final JLabel typeLabel;
     /** A list enabling registered component's dark mode.    */
     private final java.util.List<DarkComponent<? extends JComponent>> components = new Vector<>(2);
     /** Indicates whether the dark mode is currently active. */
@@ -53,19 +54,15 @@ public class SuggestionLabel extends JPanel {
      * @param dark whether the dark mode is active
      */
     public SuggestionLabel(final Suggestion suggestion, final boolean dark) {
-        super(new BorderLayout());
-        components.add(new DarkComponent<>(this));
-            suggestionLabel = new DarkComponent<>(new JLabel(suggestion.getDescription()), components).getComponent();
-            suggestionLabel.setFont(Constants.UI.FONT);
-            suggestionLabel.setOpaque(false);
-            suggestionLabel.setBorder(new EmptyBorder(0, 5, 0, 5));
+        suggestionLabel = new DarkComponent<>(new JLabel(suggestion.getDescription()), components).getComponent();
+        suggestionLabel.setFont(Constants.UI.FONT);
+        suggestionLabel.setOpaque(true);
+        suggestionLabel.setBorder(new EmptyBorder(0, 5, 0, 5));
 
-            final var typeLabel = new JLabel();
-            typeLabel.setForeground(Color.gray);
-            typeLabel.setFont(Constants.UI.FONT);
-            typeLabel.setOpaque(false);
-        add(suggestionLabel, BorderLayout.WEST);
-        add(typeLabel, BorderLayout.EAST);
+        typeLabel = new JLabel();
+        typeLabel.setForeground(Color.gray);
+        typeLabel.setFont(Constants.UI.FONT);
+        typeLabel.setOpaque(false);
 
         final String typeString;
         if (suggestion instanceof final DefinitionSuggestion definitionSuggestion) {
@@ -83,6 +80,30 @@ public class SuggestionLabel extends JPanel {
         typeLabel.setText(typeString);
         this.represented = suggestion;
         setDark(dark);
+    }
+
+    public JComponent getLeftPart() {
+        return suggestionLabel;
+    }
+
+    public JComponent getRightPart() {
+        return typeLabel;
+    }
+
+    public int getHeight() {
+        return suggestionLabel.getHeight();
+    }
+
+    public int getWidth() {
+        return suggestionLabel.getWidth() + typeLabel.getWidth();
+    }
+
+    public int getX() {
+        return suggestionLabel.getX();
+    }
+
+    public int getY() {
+        return suggestionLabel.getY();
     }
 
     /**
@@ -105,10 +126,14 @@ public class SuggestionLabel extends JPanel {
     public void setSelected(final boolean selected) {
         this.selected = selected;
         if (selected) {
-            setBackground(Color.blue);
+            suggestionLabel.setBackground(Color.blue);
+            typeLabel.setBackground(Color.blue);
+            typeLabel.setOpaque(true);
             suggestionLabel.setForeground(Color.white);
         } else {
-            setBackground(null);
+            suggestionLabel.setBackground(null);
+            typeLabel.setBackground(null);
+            typeLabel.setOpaque(false);
             suggestionLabel.setForeground(dark ? Color.white : Color.black);
         }
     }
