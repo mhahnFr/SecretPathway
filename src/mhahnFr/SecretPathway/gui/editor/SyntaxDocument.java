@@ -325,6 +325,11 @@ public class SyntaxDocument extends DefaultStyledDocument {
 
     @Override
     public void remove(int offs, int len) throws BadLocationException {
+        if (isOnlyWhitespacesOnLine(offs)) {
+            final var oldOffs = offs;
+            offs = getLineBegin(offs);
+            len += oldOffs - offs;
+        }
         super.remove(offs, len);
         maybeUpdateHighlight();
     }
