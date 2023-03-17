@@ -24,6 +24,7 @@ import mhahnFr.utils.gui.DarkComponent;
 import mhahnFr.utils.gui.DarkModeListener;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,6 +45,8 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
     private final List<SuggestionLabel> suggestions = new Vector<>();
     /** The panel with the suggestions.                         */
     private final JPanel suggestionPanel;
+    private final JPanel suggestionLeftPanel;
+    private final JPanel suggestionRightPanel;
     /** The label indicating that no suggestions are available. */
     private final JLabel noSuggestionsLabel;
     /** The index of the currently selected suggestion.         */
@@ -55,10 +58,16 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      * Constructs this window.
      */
     public SuggestionsWindow() {
-        suggestionPanel = new DarkComponent<>(new JPanel(new GridLayout(0, 2)), components).getComponent();
+        suggestionPanel = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
         final var scrollPane = new DarkComponent<>(new JScrollPane(suggestionPanel), components).getComponent();
+            suggestionLeftPanel = new DarkComponent<>(new JPanel(new GridLayout(0, 1)), components).getComponent();
+
+            suggestionRightPanel = new DarkComponent<>(new JPanel(new GridLayout(0, 1)), components).getComponent();
+        suggestionPanel.add(suggestionLeftPanel, BorderLayout.CENTER);
+        suggestionPanel.add(suggestionRightPanel, BorderLayout.EAST);
 
         noSuggestionsLabel = new DarkComponent<>(new JLabel("No suggestions available"), components).getComponent();
+        noSuggestionsLabel.setBorder(new EmptyBorder(0, 5, 0, 5));
 
         getContentPane().add(scrollPane);
 
@@ -147,8 +156,8 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      */
     public void addSuggestion(final Suggestion suggestion) {
         final var label = new SuggestionLabel(suggestion, dark);
-        suggestionPanel.add(label.getLeftPart());
-        suggestionPanel.add(label.getRightPart());
+        suggestionLeftPanel.add(label.getLeftPart());
+        suggestionRightPanel.add(label.getRightPart());
         suggestions.add(label);
     }
 
@@ -194,8 +203,8 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
                 selectPrevious();
             }
             suggestions.remove(toRemove);
-            suggestionPanel.remove(toRemove.getLeftPart());
-            suggestionPanel.remove(toRemove.getRightPart());
+            suggestionLeftPanel.remove(toRemove.getLeftPart());
+            suggestionRightPanel.remove(toRemove.getRightPart());
         }
     }
 
@@ -204,7 +213,8 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      */
     public void clearSuggestions() {
         suggestions.clear();
-        suggestionPanel.removeAll();
+        suggestionLeftPanel.removeAll();
+        suggestionRightPanel.removeAll();
         index = 0;
     }
 
@@ -212,20 +222,21 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
     public void setVisible(boolean b) {
         if (b) {
             if (suggestions.isEmpty()) {
-                suggestionPanel.add(noSuggestionsLabel);
+                suggestionLeftPanel.add(noSuggestionsLabel);
             } else {
                 suggestions.get(index).setSelected(true);
             }
         } else {
             if (suggestions.isEmpty()) {
-                suggestionPanel.remove(noSuggestionsLabel);
+                suggestionLeftPanel.remove(noSuggestionsLabel);
             } else {
                 suggestions.get(index).setSelected(false);
                 index = 0;
             }
         }
         if (suggestions.size() > 10) {
-            setSize(suggestionPanel.getWidth() + 20, suggestions.get(0).getHeight() * 10);
+            final var suggestion = suggestions.get(0);
+            setSize(suggestion.getWidth() + 20, suggestion.getHeight() * 10);
         } else {
             pack();
         }

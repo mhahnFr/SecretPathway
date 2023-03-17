@@ -59,7 +59,8 @@ public class SuggestionLabel {
         suggestionLabel.setOpaque(true);
         suggestionLabel.setBorder(new EmptyBorder(0, 5, 0, 5));
 
-        typeLabel = new JLabel();
+        typeLabel = new JLabel("", SwingConstants.TRAILING);
+        typeLabel.setBorder(new EmptyBorder(0, 0, 0, 5));
         typeLabel.setForeground(Color.gray);
         typeLabel.setFont(Constants.UI.FONT);
         typeLabel.setOpaque(false);
