@@ -27,6 +27,7 @@ import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Tokenizer;
 import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
+import mhahnFr.utils.Pair;
 import mhahnFr.utils.StringStream;
 
 import javax.swing.text.*;
@@ -51,6 +52,8 @@ public class SyntaxDocument extends DefaultStyledDocument {
     private Runnable updateCallback;
     /** The caret mover responsible for moving the caret.     */
     private CaretMover caretMover;
+    /** Ignores an insertion.                                 */
+    private Pair<Integer, String> ignore;
     /** The theme to be used for the syntax highlighting.     */
     private SPTheme theme = Settings.getInstance().getEditorTheme();
     /** The interpreted context of the source code.           */
@@ -197,6 +200,14 @@ public class SyntaxDocument extends DefaultStyledDocument {
     public void insertString(int offs, final String str, final AttributeSet a) throws BadLocationException {
         int cursorDelta = 0;
 
+        if (ignore != null && offs == ignore.getFirst() && str.equals(ignore.getSecond())) {
+            ignore = null;
+            caretMover.move(+1);
+            return;
+        } else {
+            ignore = null;
+        }
+
         final String insertion;
         switch (str) {
             case "\t" -> insertion = "    ";
@@ -205,6 +216,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
                 if (isWhitespace(offs)) {
                     insertion = "()";
                     cursorDelta = -1;
+                    ignore = new Pair<>(offs + 1, ")");
                 } else {
                     insertion = str;
                 }
@@ -213,6 +225,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
                 if (isWhitespace(offs)) {
                     insertion = "{}";
                     cursorDelta = -1;
+                    ignore = new Pair<>(offs + 1, "}");
                 } else {
                     insertion = str;
                 }
@@ -221,6 +234,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
                 if (isWhitespace(offs)) {
                     insertion = "[]";
                     cursorDelta = -1;
+                    ignore = new Pair<>(offs + 1, "]");
                 } else {
                     insertion = str;
                 }
