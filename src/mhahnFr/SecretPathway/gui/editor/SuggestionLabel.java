@@ -38,6 +38,7 @@ public class SuggestionLabel {
     private final Suggestion represented;
     /** The label with the actual suggestion.                */
     private final JLabel suggestionLabel;
+    /** The label with the type information.                 */
     private final JLabel typeLabel;
     /** A list enabling registered component's dark mode.    */
     private final java.util.List<DarkComponent<? extends JComponent>> components = new Vector<>(2);
@@ -83,26 +84,56 @@ public class SuggestionLabel {
         setDark(dark);
     }
 
+    /**
+     * Returns the left part of this suggestion.
+     *
+     * @return the left UI part
+     */
     public JComponent getLeftPart() {
         return suggestionLabel;
     }
 
+    /**
+     * Returns the right part of this suggestion.
+     *
+     * @return the right UI part
+     */
     public JComponent getRightPart() {
         return typeLabel;
     }
 
+    /**
+     * Returns the height of this component.
+     *
+     * @return the height in pixels
+     */
     public int getHeight() {
         return suggestionLabel.getHeight();
     }
 
+    /**
+     * Returns the width of this component.
+     *
+     * @return the width in pixels
+     */
     public int getWidth() {
         return suggestionLabel.getWidth() + typeLabel.getWidth();
     }
 
+    /**
+     * Returns the X-coordinate of this component.
+     *
+     * @return the X-coordinate in the parent component
+     */
     public int getX() {
         return suggestionLabel.getX();
     }
 
+    /**
+     * Returns the Y-coordinate of this component.
+     *
+     * @return the Y-coordinate in the parent component
+     */
     public int getY() {
         return suggestionLabel.getY();
     }

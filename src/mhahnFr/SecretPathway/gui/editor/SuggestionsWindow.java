@@ -43,9 +43,11 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
     /** The list with the suggestions to be displayed.          */
     private final List<SuggestionLabel> suggestions = new Vector<>();
-    /** The panel with the suggestions.                         */
+    /** The panel with the suggestion part panels.              */
     private final JPanel suggestionPanel;
+    /** The panel with the left suggestion parts.               */
     private final JPanel suggestionLeftPanel;
+    /** The panel with the right suggestion parts.              */
     private final JPanel suggestionRightPanel;
     /** The label indicating that no suggestions are available. */
     private final JLabel noSuggestionsLabel;
