@@ -239,6 +239,15 @@ public class SyntaxDocument extends DefaultStyledDocument {
                     insertion = str;
                 }
             }
+            case "\"" -> {
+                if (isWhitespace(offs)) {
+                    insertion = "\"\"";
+                    cursorDelta = -1;
+                    ignore = new Pair<>(offs + 1, "\"");
+                } else {
+                    insertion = str;
+                }
+            }
 
             case "}" -> {
                 if (isOnlyWhitespacesOnLine(offs)) {
