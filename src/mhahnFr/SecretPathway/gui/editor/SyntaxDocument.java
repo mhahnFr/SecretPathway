@@ -207,6 +207,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
             case "(" -> ")";
             case "{" -> "}";
             case "[" -> "]";
+
             default  -> opening;
         };
     }
@@ -233,6 +234,14 @@ public class SyntaxDocument extends DefaultStyledDocument {
                     insertion = str + closing;
                     cursorDelta = -1;
                     ignore = new Pair<>(offs + 1, closing);
+                } else {
+                    insertion = str;
+                }
+            }
+            case "!" -> {
+                if (getText(offs - 2, 2).equals("/*") && isWhitespace(offs)) {
+                    insertion = "!!*/";
+                    cursorDelta = -3;
                 } else {
                     insertion = str;
                 }
