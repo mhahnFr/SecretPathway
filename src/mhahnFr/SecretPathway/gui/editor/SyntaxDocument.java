@@ -196,6 +196,21 @@ public class SyntaxDocument extends DefaultStyledDocument {
         return lineBegin;
     }
 
+    /**
+     * Returns the corresponding closing string for the given one.
+     *
+     * @param opening the opening string
+     * @return the according closing string
+     */
+    private String getClosingString(final String opening) {
+        return switch (opening) {
+            case "(" -> ")";
+            case "{" -> "}";
+            case "[" -> "]";
+            default  -> opening;
+        };
+    }
+
     @Override
     public void insertString(int offs, final String str, final AttributeSet a) throws BadLocationException {
         int cursorDelta = 0;
@@ -212,47 +227,12 @@ public class SyntaxDocument extends DefaultStyledDocument {
         switch (str) {
             case "\t" -> insertion = "    ";
 
-            case "(" -> {
+            case "(", "{", "[", "\"", "'" -> {
                 if (isWhitespace(offs)) {
-                    insertion = "()";
+                    final var closing = getClosingString(str);
+                    insertion = str + closing;
                     cursorDelta = -1;
-                    ignore = new Pair<>(offs + 1, ")");
-                } else {
-                    insertion = str;
-                }
-            }
-            case "{" -> {
-                if (isWhitespace(offs)) {
-                    insertion = "{}";
-                    cursorDelta = -1;
-                    ignore = new Pair<>(offs + 1, "}");
-                } else {
-                    insertion = str;
-                }
-            }
-            case "[" -> {
-                if (isWhitespace(offs)) {
-                    insertion = "[]";
-                    cursorDelta = -1;
-                    ignore = new Pair<>(offs + 1, "]");
-                } else {
-                    insertion = str;
-                }
-            }
-            case "\"" -> {
-                if (isWhitespace(offs)) {
-                    insertion = "\"\"";
-                    cursorDelta = -1;
-                    ignore = new Pair<>(offs + 1, "\"");
-                } else {
-                    insertion = str;
-                }
-            }
-            case "'" -> {
-                if (isWhitespace(offs)) {
-                    insertion = "''";
-                    cursorDelta = -1;
-                    ignore = new Pair<>(offs + 1, "'");
+                    ignore = new Pair<>(offs + 1, closing);
                 } else {
                     insertion = str;
                 }
