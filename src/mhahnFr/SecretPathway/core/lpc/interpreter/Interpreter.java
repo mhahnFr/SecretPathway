@@ -215,16 +215,10 @@ public class Interpreter implements ASTVisitor {
                 currentType = new ReturnType(TokenType.VOID);
             }
 
-            // TODO: AST_RETURN, UNARY_OPERATOR
-
             case CAST -> {
                 final var cast = (ASTCast) expression;
                 cast.getCast().visit(this);
                 currentType = cast(ASTTypeDefinition.class, cast.getType());
-            }
-
-            case UNARY_OPERATOR -> {
-                // TODO
             }
 
             case AST_NEW             -> currentType = new ReturnType(TokenType.ANY); // TODO: Load new expression
@@ -236,8 +230,9 @@ public class Interpreter implements ASTVisitor {
             case AST_BOOL            -> currentType = new ReturnType(TokenType.BOOL);
             case ARRAY, AST_MAPPING  -> currentType = new ReturnType(TokenType.ANY); // No array nor mapping types -> any.
             case AST_CHARACTER       -> currentType = new ReturnType(TokenType.CHARACTER);
+            case UNARY_OPERATOR      -> ((ASTUnaryOperator) expression).getIdentifier().visit(this);
 
-            // TODO AST_If
+            // TODO AST_If, AST_Return
 
             default -> currentType = new ReturnType(TokenType.VOID);
         }
