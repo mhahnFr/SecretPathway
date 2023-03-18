@@ -79,10 +79,20 @@ public class Interpreter implements ASTVisitor {
         var highlight = true;
 
         switch (expression.getASTType()) {
-            case VARIABLE_DEFINITION -> current.addIdentifier(expression.getBegin(),
-                                            cast(ASTName.class, ((ASTVariableDefinition) expression).getName()),
-                                            cast(ASTTypeDefinition.class, ((ASTVariableDefinition) expression).getType()),
-                                            ASTType.VARIABLE_DEFINITION);
+            case VARIABLE_DEFINITION -> {
+                final var type = cast(ASTTypeDefinition.class, ((ASTVariableDefinition) expression).getType());
+
+                current.addIdentifier(expression.getBegin(),
+                        cast(ASTName.class, ((ASTVariableDefinition) expression).getName()),
+                        type,
+                        ASTType.VARIABLE_DEFINITION);
+                if (type instanceof final ASTTypeDeclaration declaration && declaration.getType() == TokenType.VOID) {
+                    highlights.add(new MessagedHighlight<>(declaration.getBegin().position(),
+                                                           declaration.getEnd().position(),
+                                                           InterpretationType.ERROR,
+                                                           "'void' not allowed here"));
+                }
+            }
 
             case FUNCTION_DEFINITION -> {
                 final var function = (ASTFunctionDefinition) expression;
@@ -219,10 +229,17 @@ public class Interpreter implements ASTVisitor {
                 highlights.add(new MessagedHighlight<>(param.getBegin().position(), param.getEnd().position(), ASTType.MISSING, ((ASTMissing) param).getMessage()));
             } else if (param.getASTType() != ASTType.AST_ELLIPSIS) {
                 final var parameter = cast(ASTParameter.class, param);
+                final var type      = cast(ASTTypeDefinition.class, parameter.getType());
 
+                if (type instanceof final ASTTypeDeclaration declaration && declaration.getType() == TokenType.VOID) {
+                    highlights.add(new MessagedHighlight<>(declaration.getBegin().position(),
+                                                           declaration.getEnd().position(),
+                                                           InterpretationType.ERROR,
+                                                           "'void' not allowed here"));
+                }
                 parameters.add(new Definition(parameter.getBegin().position(),
                                               cast(ASTName.class, parameter.getName()).getName(),
-                                              cast(ASTTypeDefinition.class, parameter.getType()),
+                                              type,
                                               ASTType.PARAMETER));
             }
         }
