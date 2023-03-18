@@ -24,7 +24,18 @@ import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.utils.StreamPosition;
 
+/**
+ * This class represents a literal return type.
+ *
+ * @author mhahnFr
+ * @since 18.03.23
+ */
 public class ReturnType extends ASTTypeDeclaration {
+    /**
+     * Constructs this return type using the given type literal.
+     *
+     * @param type the type
+     */
     public ReturnType(final TokenType type) {
         super(new Token(new StreamPosition(0, ""),
                         type,
