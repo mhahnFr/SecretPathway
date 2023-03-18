@@ -97,6 +97,7 @@ public class Interpreter implements ASTVisitor {
                 }
                 // TODO
 //                currentType = type;
+                currentType = TokenType.ANY;
             }
 
             case FUNCTION_DEFINITION -> {
@@ -150,6 +151,7 @@ public class Interpreter implements ASTVisitor {
                     highlights.add(new Highlight<>(expression.getBegin().position(), expression.getEnd().position(), identifier.getType()));
                     // TODO
 //                    currentType = identifier.getReturnType();
+                    currentType = TokenType.ANY;
                 }
                 highlight = false;
             }
@@ -167,7 +169,6 @@ public class Interpreter implements ASTVisitor {
                     case IS,
                          OR,
                          AND,
-                         NOT,
                          EQUALS,
                          NOT_EQUAL,
                          LESS,
@@ -209,6 +210,18 @@ public class Interpreter implements ASTVisitor {
                     highlight = false;
                 }
             }
+
+            // TODO: AST_RETURN, CAST, UNARY_OPERATOR
+
+            case AST_NEW             -> currentType = TokenType.ANY; // TODO: Load new expression
+            case AST_THIS            -> currentType = TokenType.ANY; // Cannot be known from here.
+            case AST_INTEGER         -> currentType = TokenType.INTEGER;
+            case AST_NIL             -> currentType = TokenType.NIL;
+            case AST_STRING, STRINGS -> currentType = TokenType.STRING;
+            case AST_SYMBOL          -> currentType = TokenType.SYMBOL;
+            case AST_BOOL            -> currentType = TokenType.BOOL;
+            case ARRAY, AST_MAPPING  -> currentType = TokenType.ANY; // No array nor mapping types -> any.
+            case AST_CHARACTER       -> currentType = TokenType.CHARACTER;
 
             default -> currentType = TokenType.VOID;
         }
