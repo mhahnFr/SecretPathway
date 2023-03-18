@@ -40,7 +40,7 @@ public class Interpreter implements ASTVisitor {
     /** The currently active context.               */
     private Context current;
     /** The current return type of the expression.  */
-    private TokenType currentType;
+    private ASTTypeDefinition currentType;
     /** A list with the elements to be highlighted. */
     private final List<Highlight<?>> highlights = new ArrayList<>();
 
@@ -95,9 +95,7 @@ public class Interpreter implements ASTVisitor {
                                                            InterpretationType.ERROR,
                                                            "'void' not allowed here"));
                 }
-                // TODO
-//                currentType = type;
-                currentType = TokenType.ANY;
+                currentType = type;
             }
 
             case FUNCTION_DEFINITION -> {
@@ -112,12 +110,14 @@ public class Interpreter implements ASTVisitor {
                                               params);
                 visitBlock(cast(ASTBlock.class, block));
                 current = current.popScope(expression.getEnd().position());
+                currentType = new ReturnType(TokenType.VOID);
             }
 
             case BLOCK -> {
                 current = current.pushScope(expression.getBegin().position());
                 visitBlock((ASTBlock) expression);
                 current = current.popScope(expression.getEnd().position());
+                currentType = new ReturnType(TokenType.VOID);
             }
 
             case MISSING -> {
@@ -131,11 +131,13 @@ public class Interpreter implements ASTVisitor {
                 }
                 highlights.add(new MessagedHighlight<>(begin.position(), endPosition, ASTType.MISSING, ((ASTMissing) expression).getMessage()));
                 highlight = false;
+                currentType = new ReturnType(TokenType.ANY);
             }
 
             case WRONG -> {
                 highlights.add(new MessagedHighlight<>(expression.getBegin().position(), expression.getEnd().position(), ASTType.WRONG, ((ASTWrong) expression).getMessage()));
                 highlight = false;
+                currentType = new ReturnType(TokenType.ANY);
             }
 
             case NAME -> {
@@ -147,11 +149,10 @@ public class Interpreter implements ASTVisitor {
                     } else {
                         highlights.add(new MessagedHighlight<>(expression.getBegin().position(), expression.getEnd().position(), InterpretationType.NOT_FOUND, "Identifier not found"));
                     }
+                    currentType = new ReturnType(TokenType.ANY);
                 } else {
                     highlights.add(new Highlight<>(expression.getBegin().position(), expression.getEnd().position(), identifier.getType()));
-                    // TODO
-//                    currentType = identifier.getReturnType();
-                    currentType = TokenType.ANY;
+                    currentType = identifier.getReturnType();
                 }
                 highlight = false;
             }
@@ -174,11 +175,11 @@ public class Interpreter implements ASTVisitor {
                          LESS,
                          LESS_OR_EQUAL,
                          GREATER,
-                         GREATER_OR_EQUAL -> TokenType.BOOL;
+                         GREATER_OR_EQUAL -> new ReturnType(TokenType.BOOL);
                     case RANGE,
                          ELLIPSIS,
                          DOT,
-                         ARROW            -> TokenType.ANY;
+                         ARROW            -> new ReturnType(TokenType.ANY);
                     case ASSIGNMENT,
                          AMPERSAND,
                          PIPE,
@@ -199,7 +200,7 @@ public class Interpreter implements ASTVisitor {
                          ASSIGNMENT_SLASH,
                          ASSIGNMENT_PERCENT -> currentType;
 
-                    default -> TokenType.VOID;
+                    default -> new ReturnType(TokenType.VOID);
                 };
             }
 
@@ -209,21 +210,24 @@ public class Interpreter implements ASTVisitor {
                     highlights.add(new MessagedHighlight<>(inheritance.getBegin().position(), inheritance.getEnd().position(), InterpretationType.WARNING, "Inheriting from nothing"));
                     highlight = false;
                 }
+                currentType = new ReturnType(TokenType.VOID);
             }
 
             // TODO: AST_RETURN, CAST, UNARY_OPERATOR
 
-            case AST_NEW             -> currentType = TokenType.ANY; // TODO: Load new expression
-            case AST_THIS            -> currentType = TokenType.ANY; // Cannot be known from here.
-            case AST_INTEGER         -> currentType = TokenType.INTEGER;
-            case AST_NIL             -> currentType = TokenType.NIL;
-            case AST_STRING, STRINGS -> currentType = TokenType.STRING;
-            case AST_SYMBOL          -> currentType = TokenType.SYMBOL;
-            case AST_BOOL            -> currentType = TokenType.BOOL;
-            case ARRAY, AST_MAPPING  -> currentType = TokenType.ANY; // No array nor mapping types -> any.
-            case AST_CHARACTER       -> currentType = TokenType.CHARACTER;
+            case AST_NEW             -> currentType = new ReturnType(TokenType.ANY); // TODO: Load new expression
+            case AST_THIS            -> currentType = new ReturnType(TokenType.ANY); // Cannot be known from here.
+            case AST_INTEGER         -> currentType = new ReturnType(TokenType.INTEGER);
+            case AST_NIL             -> currentType = new ReturnType(TokenType.NIL);
+            case AST_STRING, STRINGS -> currentType = new ReturnType(TokenType.STRING);
+            case AST_SYMBOL          -> currentType = new ReturnType(TokenType.SYMBOL);
+            case AST_BOOL            -> currentType = new ReturnType(TokenType.BOOL);
+            case ARRAY, AST_MAPPING  -> currentType = new ReturnType(TokenType.ANY); // No array nor mapping types -> any.
+            case AST_CHARACTER       -> currentType = new ReturnType(TokenType.CHARACTER);
 
-            default -> currentType = TokenType.VOID;
+            // TODO AST_If
+
+            default -> currentType = new ReturnType(TokenType.VOID);
         }
         if (highlight) {
             highlights.add(new ASTHighlight(expression));
