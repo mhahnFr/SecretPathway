@@ -127,9 +127,9 @@ public class Interpreter implements ASTVisitor {
                 final var identifier = current.getIdentifier(name.getName(), expression.getBegin().position());
                 if (identifier == null) {
                     if (name.getName().startsWith("$")) {
-                        highlights.add(new MessagedHighlight<>(name.getBegin().position(), name.getEnd().position(), InterpretationType.WARNING, "Built-in not found"));
+                        highlights.add(new MessagedHighlight<>(name.getBegin().position(), name.getEnd().position(), InterpretationType.NOT_FOUND_BUILTIN, "Built-in not found"));
                     } else {
-                        highlights.add(new MessagedHighlight<>(expression.getBegin().position(), expression.getEnd().position(), InterpretationType.ERROR, "Identifier not found"));
+                        highlights.add(new MessagedHighlight<>(expression.getBegin().position(), expression.getEnd().position(), InterpretationType.NOT_FOUND, "Identifier not found"));
                     }
                 } else {
                     highlights.add(new Highlight<>(expression.getBegin().position(), expression.getEnd().position(), identifier.getType()));
