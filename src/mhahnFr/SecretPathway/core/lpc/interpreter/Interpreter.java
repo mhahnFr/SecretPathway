@@ -74,7 +74,9 @@ public class Interpreter implements ASTVisitor {
         return type != ASTType.BLOCK               &&
                type != ASTType.FUNCTION_DEFINITION &&
                type != ASTType.VARIABLE_DEFINITION &&
-               type != ASTType.OPERATION;
+               type != ASTType.OPERATION           &&
+               type != ASTType.CAST                &&
+               type != ASTType.UNARY_OPERATOR;
     }
 
     @Override
@@ -213,7 +215,17 @@ public class Interpreter implements ASTVisitor {
                 currentType = new ReturnType(TokenType.VOID);
             }
 
-            // TODO: AST_RETURN, CAST, UNARY_OPERATOR
+            // TODO: AST_RETURN, UNARY_OPERATOR
+
+            case CAST -> {
+                final var cast = (ASTCast) expression;
+                cast.getCast().visit(this);
+                currentType = cast(ASTTypeDefinition.class, cast.getType());
+            }
+
+            case UNARY_OPERATOR -> {
+                // TODO
+            }
 
             case AST_NEW             -> currentType = new ReturnType(TokenType.ANY); // TODO: Load new expression
             case AST_THIS            -> currentType = new ReturnType(TokenType.ANY); // Cannot be known from here.
