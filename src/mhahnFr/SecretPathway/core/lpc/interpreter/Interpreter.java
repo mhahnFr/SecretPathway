@@ -39,6 +39,8 @@ import java.util.Vector;
 public class Interpreter implements ASTVisitor {
     /** The currently active context.               */
     private Context current;
+    /** The current return type of the expression.  */
+    private TokenType currentType;
     /** A list with the elements to be highlighted. */
     private final List<Highlight<?>> highlights = new ArrayList<>();
 
@@ -54,6 +56,7 @@ public class Interpreter implements ASTVisitor {
         for (final var expression : expressions) {
             expression.visit(this);
         }
+        System.out.println();
         return current;
     }
 
@@ -92,6 +95,8 @@ public class Interpreter implements ASTVisitor {
                                                            InterpretationType.ERROR,
                                                            "'void' not allowed here"));
                 }
+                // TODO
+//                currentType = type;
             }
 
             case FUNCTION_DEFINITION -> {
@@ -143,6 +148,8 @@ public class Interpreter implements ASTVisitor {
                     }
                 } else {
                     highlights.add(new Highlight<>(expression.getBegin().position(), expression.getEnd().position(), identifier.getType()));
+                    // TODO
+//                    currentType = identifier.getReturnType();
                 }
                 highlight = false;
             }
@@ -156,6 +163,43 @@ public class Interpreter implements ASTVisitor {
                 } else {
                     op.getRhs().visit(this);
                 }
+                currentType = switch (op.getOperatorType()) {
+                    case IS,
+                         OR,
+                         AND,
+                         NOT,
+                         EQUALS,
+                         NOT_EQUAL,
+                         LESS,
+                         LESS_OR_EQUAL,
+                         GREATER,
+                         GREATER_OR_EQUAL -> TokenType.BOOL;
+                    case RANGE,
+                         ELLIPSIS,
+                         DOT,
+                         ARROW            -> TokenType.ANY;
+                    case ASSIGNMENT,
+                         AMPERSAND,
+                         PIPE,
+                         LEFT_SHIFT,
+                         RIGHT_SHIFT,
+                         DOUBLE_QUESTION,
+                         QUESTION,
+                         INCREMENT,
+                         DECREMENT,
+                         PLUS,
+                         MINUS,
+                         STAR,
+                         SLASH,
+                         PERCENT,
+                         ASSIGNMENT_PLUS,
+                         ASSIGNMENT_MINUS,
+                         ASSIGNMENT_STAR,
+                         ASSIGNMENT_SLASH,
+                         ASSIGNMENT_PERCENT -> currentType;
+
+                    default -> TokenType.VOID;
+                };
             }
 
             case AST_INHERITANCE -> {
@@ -165,10 +209,13 @@ public class Interpreter implements ASTVisitor {
                     highlight = false;
                 }
             }
+
+            default -> currentType = TokenType.VOID;
         }
         if (highlight) {
             highlights.add(new ASTHighlight(expression));
         }
+        System.out.println(expression.getASTType() + ", return type: " + currentType);
     }
 
     /**
