@@ -38,4 +38,13 @@ public abstract class ASTTypeDefinition extends ASTExpression {
     protected ASTTypeDefinition(StreamPosition begin, StreamPosition end, ASTType type) {
         super(begin, end, type);
     }
+
+    /**
+     * Returns whether the type represented by this instance can be assigned
+     * by the given other {@link ASTTypeDefinition}.
+     *
+     * @param other the other type representation
+     * @return whether the given type can be assigned to this type
+     */
+    public abstract boolean isAssignableFrom(final ASTTypeDefinition other);
 }

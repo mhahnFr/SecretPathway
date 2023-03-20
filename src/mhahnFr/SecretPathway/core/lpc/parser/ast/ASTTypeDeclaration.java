@@ -88,6 +88,27 @@ public class ASTTypeDeclaration extends ASTTypeDefinition {
     }
 
     @Override
+    public boolean isAssignableFrom(ASTTypeDefinition other) {
+        if (other instanceof final ASTTypeDeclaration declaration) {
+            switch (type) {
+                case ANY          -> { return true; }
+                case OBJECT       -> { return declaration.type != TokenType.ANY  &&
+                                              declaration.type != TokenType.BOOL &&
+                                              declaration.type != TokenType.INT_KEYWORD;
+                                     }
+                case INT_KEYWORD,
+                     BOOL         -> { return (declaration.type == TokenType.INT_KEYWORD || declaration.type == TokenType.BOOL) &&
+                                               isArray == declaration.isArray;
+                                     }
+                default           -> { return type == declaration.type &&
+                                              isArray == declaration.isArray;
+                                     }
+            }
+        }
+        return false;
+    }
+
+    @Override
     public String toString() {
         if (type == null) {
             return null;
