@@ -224,13 +224,13 @@ public class Interpreter implements ASTVisitor {
             }
 
             case AST_NEW             -> currentType = new ReturnType(TokenType.ANY); // TODO: Load new expression
-            case AST_THIS            -> currentType = new ReturnType(TokenType.ANY); // Cannot be known from here.
+            case AST_THIS,                                                           // Cannot be known from here.
+                 ARRAY, AST_MAPPING  -> currentType = new ReturnType(TokenType.ANY); // No array nor mapping types -> any.
             case AST_INTEGER         -> currentType = new ReturnType(TokenType.INTEGER);
             case AST_NIL             -> currentType = new ReturnType(TokenType.NIL);
             case AST_STRING, STRINGS -> currentType = new ReturnType(TokenType.STRING);
             case AST_SYMBOL          -> currentType = new ReturnType(TokenType.SYMBOL);
             case AST_BOOL            -> currentType = new ReturnType(TokenType.BOOL);
-            case ARRAY, AST_MAPPING  -> currentType = new ReturnType(TokenType.ANY); // No array nor mapping types -> any.
             case AST_CHARACTER       -> currentType = new ReturnType(TokenType.CHARACTER);
             case UNARY_OPERATOR      -> ((ASTUnaryOperator) expression).getIdentifier().visit(this);
 
@@ -253,10 +253,20 @@ public class Interpreter implements ASTVisitor {
             }
 
             case AST_RETURN -> {
-                final var ret = (ASTReturn) expression;
-                ret.getReturned().visit(this);
-                System.out.println("Return type: " + currentType);
-                // TODO: check type with enclosing function
+                final var ret      = (ASTReturn) expression;
+                final var returned = ret.getReturned();
+
+                if (returned != null) {
+                    returned.visit(this);
+                }
+                final var e = current.queryEnclosingFunction();
+                if (e != null && !e.getReturnType().equals(currentType)) {
+//                if (!current.queryEnclosingFunction().getReturnType().isAssignableFrom(currentType)) {
+                    highlights.add(new MessagedHighlight<>(ret.getBegin().position(),
+                                                           ret.getEnd().position(),
+                                                           InterpretationType.WARNING,
+                                                           "Return type mismatch"));
+                }
             }
 
             default -> currentType = new ReturnType(TokenType.VOID);
