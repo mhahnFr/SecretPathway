@@ -162,13 +162,22 @@ public class Interpreter implements ASTVisitor {
             }
 
             case OPERATION -> {
-                final var op = (ASTOperation) expression;
+                final var op  = (ASTOperation) expression;
+                final var rhs = op.getRhs();
                 op.getLhs().visit(this);
+                final var lhsType = currentType;
                 if (op.getOperatorType() == TokenType.DOT ||
                     op.getOperatorType() == TokenType.ARROW) {
-                    cast(ASTFunctionCall.class, op.getRhs());
+                    cast(ASTFunctionCall.class, rhs);
                 } else {
-                    op.getRhs().visit(this);
+                    rhs.visit(this);
+                }
+                if (op.getOperatorType() == TokenType.ASSIGNMENT &&
+                    !lhsType.isAssignableFrom(currentType)) {
+                    highlights.add(new MessagedHighlight<>(rhs.getBegin().position(),
+                                                           rhs.getEnd().position(),
+                                                           InterpretationType.WARNING,
+                                                           "Type mismatch"));
                 }
                 currentType = switch (op.getOperatorType()) {
                     case IS,
@@ -228,10 +237,10 @@ public class Interpreter implements ASTVisitor {
                  ARRAY, AST_MAPPING  -> currentType = new ReturnType(TokenType.ANY); // No array nor mapping types -> any.
             case AST_INTEGER         -> currentType = new ReturnType(TokenType.INT_KEYWORD);
             case AST_NIL             -> currentType = new ReturnType(TokenType.NIL);
-            case AST_STRING, STRINGS -> currentType = new ReturnType(TokenType.STRING);
+            case AST_STRING, STRINGS -> currentType = new ReturnType(TokenType.STRING_KEYWORD);
             case AST_SYMBOL          -> currentType = new ReturnType(TokenType.SYMBOL);
             case AST_BOOL            -> currentType = new ReturnType(TokenType.BOOL);
-            case AST_CHARACTER       -> currentType = new ReturnType(TokenType.CHARACTER);
+            case AST_CHARACTER       -> currentType = new ReturnType(TokenType.CHAR_KEYWORD);
             case UNARY_OPERATOR      -> ((ASTUnaryOperator) expression).getIdentifier().visit(this);
 
             case AST_IF -> {
