@@ -142,4 +142,13 @@ public class ASTFunctionReferenceType extends ASTTypeDefinition {
         builder.append(')');
         return builder.toString();
     }
+
+    @Override
+    public boolean isAssignableFrom(ASTTypeDefinition other) {
+        if (other instanceof final ASTFunctionReferenceType referenceType) {
+            // TODO
+            return true;
+        }
+        return false;
+    }
 }

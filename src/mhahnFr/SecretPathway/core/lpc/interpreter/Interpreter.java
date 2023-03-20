@@ -226,7 +226,7 @@ public class Interpreter implements ASTVisitor {
             case AST_NEW             -> currentType = new ReturnType(TokenType.ANY); // TODO: Load new expression
             case AST_THIS,                                                           // Cannot be known from here.
                  ARRAY, AST_MAPPING  -> currentType = new ReturnType(TokenType.ANY); // No array nor mapping types -> any.
-            case AST_INTEGER         -> currentType = new ReturnType(TokenType.INTEGER);
+            case AST_INTEGER         -> currentType = new ReturnType(TokenType.INT_KEYWORD);
             case AST_NIL             -> currentType = new ReturnType(TokenType.NIL);
             case AST_STRING, STRINGS -> currentType = new ReturnType(TokenType.STRING);
             case AST_SYMBOL          -> currentType = new ReturnType(TokenType.SYMBOL);
@@ -258,10 +258,12 @@ public class Interpreter implements ASTVisitor {
 
                 if (returned != null) {
                     returned.visit(this);
+                } else {
+                    currentType = new ReturnType(TokenType.VOID);
                 }
+
                 final var e = current.queryEnclosingFunction();
-                if (e != null && !e.getReturnType().equals(currentType)) {
-//                if (!current.queryEnclosingFunction().getReturnType().isAssignableFrom(currentType)) {
+                if (e != null && !e.getReturnType().isAssignableFrom(currentType)) {
                     highlights.add(new MessagedHighlight<>(ret.getBegin().position(),
                                                            ret.getEnd().position(),
                                                            InterpretationType.WARNING,
