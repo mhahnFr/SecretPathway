@@ -76,7 +76,9 @@ public class Interpreter implements ASTVisitor {
                type != ASTType.VARIABLE_DEFINITION &&
                type != ASTType.OPERATION           &&
                type != ASTType.CAST                &&
-               type != ASTType.UNARY_OPERATOR;
+               type != ASTType.UNARY_OPERATOR      &&
+               type != ASTType.AST_IF              &&
+               type != ASTType.AST_RETURN;
     }
 
     @Override
@@ -232,7 +234,30 @@ public class Interpreter implements ASTVisitor {
             case AST_CHARACTER       -> currentType = new ReturnType(TokenType.CHARACTER);
             case UNARY_OPERATOR      -> ((ASTUnaryOperator) expression).getIdentifier().visit(this);
 
-            // TODO AST_If, AST_Return
+            case AST_IF -> {
+                final var i         = (ASTIf) expression;
+                final var condition = i.getCondition();
+
+                condition.visit(this);
+                if (currentType instanceof final ASTTypeDeclaration declaration &&
+                    declaration.getType() != TokenType.BOOL) {
+                    highlights.add(new MessagedHighlight<>(condition.getBegin().position(),
+                                                           condition.getEnd().position(),
+                                                           InterpretationType.WARNING,
+                                                          "Condition should be a boolean expression"));
+                }
+                i.getInstruction().visit(this);
+                if (i.getElseInstruction() != null) {
+                    i.getElseInstruction().visit(this);
+                }
+            }
+
+            case AST_RETURN -> {
+                final var ret = (ASTReturn) expression;
+                ret.getReturned().visit(this);
+                System.out.println("Return type: " + currentType);
+                // TODO: check type with enclosing function
+            }
 
             default -> currentType = new ReturnType(TokenType.VOID);
         }
