@@ -38,7 +38,7 @@ public class Context extends Instruction {
     /** The parent context.                           */
     private final Context parent;
     /** The instructions found in this scope context. */
-    private final Map<Integer, Instruction> instructions = new TreeMap<>();
+    private final NavigableMap<Integer, Instruction> instructions = new TreeMap<>();
 
     /**
      * Constructs a global scope.
@@ -120,6 +120,23 @@ public class Context extends Instruction {
             }
         }
         return true;
+    }
+
+    /**
+     * Returns the enclosing function of this context.
+     * Returns {@code null} if there is no enclosing function.
+     *
+     * @return the enclosing function
+     */
+    public FunctionDefinition queryEnclosingFunction() {
+        if (parent == null) return null;
+
+        final var result = parent.instructions.lowerEntry(getBegin());
+        if (result != null && result.getValue() instanceof final FunctionDefinition definition) {
+            return definition;
+        } else {
+            return parent.queryEnclosingFunction();
+        }
     }
 
     /**
