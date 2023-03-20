@@ -148,15 +148,15 @@ public class Context extends Instruction {
     public List<Suggestion> createSuggestions(final int position) {
         final var toReturn = new ArrayList<>(availableDefinitions(position));
 
-        if (isGlobalScope(position)) {
-            toReturn.add(new TypeSuggestion(TokenType.OBJECT));
-            toReturn.add(new TypeSuggestion(TokenType.ANY));
-            toReturn.add(new TypeSuggestion(TokenType.INT_KEYWORD));
-            toReturn.add(new TypeSuggestion(TokenType.STRING));
-            toReturn.add(new TypeSuggestion(TokenType.CHAR_KEYWORD));
-            toReturn.add(new TypeSuggestion(TokenType.SYMBOL_KEYWORD));
-            toReturn.add(new TypeSuggestion(TokenType.VOID));
+        toReturn.add(new TypeSuggestion(TokenType.OBJECT));
+        toReturn.add(new TypeSuggestion(TokenType.ANY));
+        toReturn.add(new TypeSuggestion(TokenType.INT_KEYWORD));
+        toReturn.add(new TypeSuggestion(TokenType.STRING));
+        toReturn.add(new TypeSuggestion(TokenType.CHAR_KEYWORD));
+        toReturn.add(new TypeSuggestion(TokenType.SYMBOL_KEYWORD));
+        toReturn.add(new TypeSuggestion(TokenType.VOID));
 
+        if (isGlobalScope(position)) {
             toReturn.add(new TypeSuggestion(TokenType.PRIVATE));
             toReturn.add(new TypeSuggestion(TokenType.PROTECTED));
             toReturn.add(new TypeSuggestion(TokenType.PUBLIC));
