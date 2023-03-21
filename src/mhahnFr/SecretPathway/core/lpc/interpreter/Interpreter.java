@@ -88,6 +88,7 @@ public class Interpreter implements ASTVisitor {
             case VARIABLE_DEFINITION -> {
                 // TODO: lets
                 final var type = cast(ASTTypeDefinition.class, ((ASTVariableDefinition) expression).getType());
+                type.visit(this);
 
                 current.addIdentifier(expression.getBegin(),
                         cast(ASTName.class, ((ASTVariableDefinition) expression).getName()),
@@ -106,11 +107,14 @@ public class Interpreter implements ASTVisitor {
                 final var function = (ASTFunctionDefinition) expression;
                 final var block    = function.getBody();
 
-                final var params = visitParams(function.getParameters());
+                final var retType  = cast(ASTTypeDefinition.class, function.getType());
+                retType.visit(this);
+                final var params   = visitParams(function.getParameters());
+
                 current = current.addFunction(expression.getBegin(),
                                               block.getBegin(),
                                               cast(ASTName.class, function.getName()),
-                                              cast(ASTTypeDefinition.class, function.getType()),
+                                              retType,
                                               params);
                 visitBlock(cast(ASTBlock.class, block));
                 current = current.popScope(expression.getEnd().position());
@@ -358,7 +362,6 @@ public class Interpreter implements ASTVisitor {
     private List<Definition> visitParams(final List<ASTExpression> params) {
         final List<Definition> parameters = new Vector<>(params.size());
 
-        // TODO: bool (any (int (string) ) )
         for (final var param : params) {
             if (param.getASTType() == ASTType.MISSING) {
                 highlights.add(new MessagedHighlight<>(param.getBegin(),
@@ -368,6 +371,8 @@ public class Interpreter implements ASTVisitor {
             } else if (param.getASTType() != ASTType.AST_ELLIPSIS) {
                 final var parameter = cast(ASTParameter.class, param);
                 final var type      = cast(ASTTypeDefinition.class, parameter.getType());
+
+                type.visit(this);
 
                 if (type instanceof final ASTTypeDeclaration declaration && declaration.getType() == TokenType.VOID) {
                     highlights.add(new MessagedHighlight<>(declaration.getBegin(),
