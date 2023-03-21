@@ -171,48 +171,9 @@ public class Interpreter implements ASTVisitor {
                 final var name = cast(ASTName.class, fc.getName());
                 name.visit(this);
                 final var id = current.getIdentifier(name.getName(), name.getBegin().position());
-                if (id instanceof final FunctionDefinition definition) {
-                    final var arguments = fc.getArguments();
-                    if (arguments != null) {
-                        final var it  = arguments.listIterator();
-                        final var it2 = definition.getParameters().listIterator();
-                        Optional<StreamPosition> tooManyBegin = Optional.empty();
-                        ASTExpression elem = null;
-                        while (it.hasNext()) {
-                            elem = it.next();
-                            elem.visit(this);
-                            if (!it2.hasNext()) {
-                                if (!definition.isVariadic()) {
-                                    tooManyBegin = tooManyBegin.isEmpty() ? Optional.of(elem.getBegin()) : tooManyBegin;
-                                }
-                            } else {
-                                final var elem2 = it2.next();
-                                if (!elem2.getReturnType().isAssignableFrom(currentType)) {
-                                    final var typeString = Optional.ofNullable(elem2.getReturnType().toString());
-                                    highlights.add(new MessagedHighlight<>(elem.getBegin(),
-                                                                           elem.getEnd(),
-                                                                           InterpretationType.TYPE_MISMATCH,
-                                                                           typeString.orElse("<< unknown >>") +
-                                                                           " is not assignable from " + currentType));
-                                }
-                            }
-                        }
-                        tooManyBegin.ifPresent(position -> highlights.add(new MessagedHighlight<>(
-                                                                            position,
-                                                                            arguments.get(arguments.size() - 1).getEnd(),
-                                                                            InterpretationType.ERROR,
-                                                                            String.format("Expected %d arguments, got %d",
-                                                                                    definition.getParameters().size(),
-                                                                                    arguments.size()))));
-                        if (it2.hasNext()) {
-                            highlights.add(new MessagedHighlight<>((elem == null ? fc.getBegin() : elem.getEnd()),
-                                                                   fc.getEnd(),
-                                                                   InterpretationType.ERROR,
-                                                                   String.format("Expected %d arguments, got %d",
-                                                                           definition.getParameters().size(),
-                                                                           arguments.size())));
-                        }
-                    }
+                if (id instanceof final FunctionDefinition definition &&
+                    fc.getArguments() != null) {
+                    visitFunctionCall(fc, definition);
                     currentType = id.getReturnType();
                 }
             }
@@ -394,6 +355,54 @@ public class Interpreter implements ASTVisitor {
         }
         if (highlight) {
             highlights.add(new ASTHighlight(expression));
+        }
+    }
+
+    /**
+     * Visits a function call.
+     *
+     * @param fc         the actual function call
+     * @param definition the fetched {@link Definition} of the function
+     */
+    private void visitFunctionCall(final ASTFunctionCall fc, final FunctionDefinition definition) {
+        final var arguments = fc.getArguments();
+        final var it  = arguments.listIterator();
+        final var it2 = definition.getParameters().listIterator();
+        Optional<StreamPosition> tooManyBegin = Optional.empty();
+        ASTExpression elem = null;
+        while (it.hasNext()) {
+            elem = it.next();
+            elem.visit(this);
+            if (!it2.hasNext()) {
+                if (!definition.isVariadic()) {
+                    tooManyBegin = tooManyBegin.isEmpty() ? Optional.of(elem.getBegin()) : tooManyBegin;
+                }
+            } else {
+                final var elem2 = it2.next();
+                if (!elem2.getReturnType().isAssignableFrom(currentType)) {
+                    final var typeString = Optional.ofNullable(elem2.getReturnType().toString());
+                    highlights.add(new MessagedHighlight<>(elem.getBegin(),
+                            elem.getEnd(),
+                            InterpretationType.TYPE_MISMATCH,
+                            typeString.orElse("<< unknown >>") +
+                                    " is not assignable from " + currentType));
+                }
+            }
+        }
+        tooManyBegin.ifPresent(position -> highlights.add(new MessagedHighlight<>(
+                position,
+                arguments.get(arguments.size() - 1).getEnd(),
+                InterpretationType.ERROR,
+                String.format("Expected %d arguments, got %d",
+                        definition.getParameters().size(),
+                        arguments.size()))));
+        if (it2.hasNext()) {
+            highlights.add(new MessagedHighlight<>((elem == null ? fc.getBegin() : elem.getEnd()),
+                    fc.getEnd(),
+                    InterpretationType.ERROR,
+                    String.format("Expected %d arguments, got %d",
+                            definition.getParameters().size(),
+                            arguments.size())));
         }
     }
 
