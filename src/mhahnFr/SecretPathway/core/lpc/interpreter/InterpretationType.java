@@ -36,5 +36,7 @@ public enum InterpretationType implements HighlightType {
     /** Indicates a not found symbol.  */
     NOT_FOUND,
     /** Indicates a not found builtin. */
-    NOT_FOUND_BUILTIN
+    NOT_FOUND_BUILTIN,
+    /** Indicates a type mismatch.     */
+    TYPE_MISMATCH
 }

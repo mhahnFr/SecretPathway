@@ -95,7 +95,7 @@ public class Interpreter implements ASTVisitor {
                 if (type instanceof final ASTTypeDeclaration declaration && declaration.getType() == TokenType.VOID) {
                     highlights.add(new MessagedHighlight<>(declaration.getBegin(),
                                                            declaration.getEnd(),
-                                                           InterpretationType.ERROR,
+                                                           InterpretationType.TYPE_MISMATCH,
                                                            "'void' not allowed here"));
                 }
                 currentType = type;
@@ -157,12 +157,12 @@ public class Interpreter implements ASTVisitor {
                         highlights.add(new MessagedHighlight<>(name.getBegin(),
                                                                name.getEnd(),
                                                                InterpretationType.NOT_FOUND_BUILTIN,
-                                                              "Built-in not found"));
+                                                               "Built-in not found"));
                     } else {
                         highlights.add(new MessagedHighlight<>(expression.getBegin(),
                                                                expression.getEnd(),
                                                                InterpretationType.NOT_FOUND,
-                                                              "Identifier not found"));
+                                                               "Identifier not found"));
                     }
                     currentType = new ReturnType(TokenType.ANY);
                 } else {
@@ -189,8 +189,8 @@ public class Interpreter implements ASTVisitor {
                     !lhsType.isAssignableFrom(currentType)) {
                     highlights.add(new MessagedHighlight<>(rhs.getBegin(),
                                                            rhs.getEnd(),
-                                                           InterpretationType.WARNING,
-                                                           "Type mismatch"));
+                                                           InterpretationType.TYPE_MISMATCH,
+                                                           lhsType + " is not assignable from " + currentType));
                 }
                 currentType = switch (op.getOperatorType()) {
                     case IS,
@@ -238,7 +238,7 @@ public class Interpreter implements ASTVisitor {
                     highlights.add(new MessagedHighlight<>(inheritance.getBegin(),
                                                            inheritance.getEnd(),
                                                            InterpretationType.WARNING,
-                                                          "Inheriting from nothing"));
+                                                           "Inheriting from nothing"));
                     highlight = false;
                 }
                 currentType = new ReturnType(TokenType.VOID);
@@ -269,8 +269,8 @@ public class Interpreter implements ASTVisitor {
                 if (!new ReturnType(TokenType.BOOL).isAssignableFrom(currentType)) {
                     highlights.add(new MessagedHighlight<>(condition.getBegin(),
                                                            condition.getEnd(),
-                                                           InterpretationType.WARNING,
-                                                          "Condition should be a boolean expression"));
+                                                           InterpretationType.TYPE_MISMATCH,
+                                                           "Condition should be a boolean expression"));
                 }
                 i.getInstruction().visit(this);
                 if (i.getElseInstruction() != null) {
@@ -292,8 +292,8 @@ public class Interpreter implements ASTVisitor {
                 if (e != null && !e.getReturnType().isAssignableFrom(currentType)) {
                     highlights.add(new MessagedHighlight<>(ret.getBegin(),
                                                            ret.getEnd(),
-                                                           InterpretationType.WARNING,
-                                                           "Return type mismatch"));
+                                                           InterpretationType.TYPE_MISMATCH,
+                                                           e + " is not assignable from " + currentType));
                 }
             }
 
@@ -370,7 +370,7 @@ public class Interpreter implements ASTVisitor {
                 if (type instanceof final ASTTypeDeclaration declaration && declaration.getType() == TokenType.VOID) {
                     highlights.add(new MessagedHighlight<>(declaration.getBegin(),
                                                            declaration.getEnd(),
-                                                           InterpretationType.ERROR,
+                                                           InterpretationType.TYPE_MISMATCH,
                                                            "'void' not allowed here"));
                 }
                 parameters.add(new Definition(parameter.getBegin().position(),
