@@ -248,8 +248,7 @@ public class Interpreter implements ASTVisitor {
                 final var condition = i.getCondition();
 
                 condition.visit(this);
-                if (currentType instanceof final ASTTypeDeclaration declaration &&
-                    declaration.getType() != TokenType.BOOL) {
+                if (!new ReturnType(TokenType.BOOL).isAssignableFrom(currentType)) {
                     highlights.add(new MessagedHighlight<>(condition.getBegin().position(),
                                                            condition.getEnd().position(),
                                                            InterpretationType.WARNING,
