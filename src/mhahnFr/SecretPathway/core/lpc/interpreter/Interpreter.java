@@ -330,7 +330,8 @@ public class Interpreter implements ASTVisitor {
                 currentType = new ReturnType(TokenType.ANY);
             }
 
-            case AST_NEW             -> currentType = new ReturnType(TokenType.ANY); // TODO: Load new expression
+            case AST_NEW             -> currentType = new ReturnType(TokenType.OBJECT); // TODO: Load new expression
+
             case AST_THIS,                                                           // Cannot be known from here.
                  ARRAY, AST_MAPPING  -> currentType = new ReturnType(TokenType.ANY); // No array nor mapping types -> any.
             case AST_INTEGER         -> currentType = new ReturnType(TokenType.INT_KEYWORD);
