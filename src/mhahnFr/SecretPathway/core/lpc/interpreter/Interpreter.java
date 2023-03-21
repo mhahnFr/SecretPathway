@@ -93,8 +93,8 @@ public class Interpreter implements ASTVisitor {
                         type,
                         ASTType.VARIABLE_DEFINITION);
                 if (type instanceof final ASTTypeDeclaration declaration && declaration.getType() == TokenType.VOID) {
-                    highlights.add(new MessagedHighlight<>(declaration.getBegin().position(),
-                                                           declaration.getEnd().position(),
+                    highlights.add(new MessagedHighlight<>(declaration.getBegin(),
+                                                           declaration.getEnd(),
                                                            InterpretationType.ERROR,
                                                            "'void' not allowed here"));
                 }
@@ -132,13 +132,19 @@ public class Interpreter implements ASTVisitor {
                 } else {
                     endPosition = end.position();
                 }
-                highlights.add(new MessagedHighlight<>(begin.position(), endPosition, ASTType.MISSING, ((ASTMissing) expression).getMessage()));
+                highlights.add(new MessagedHighlight<>(begin.position(),
+                                                       endPosition,
+                                                       ASTType.MISSING,
+                                                       ((ASTMissing) expression).getMessage()));
                 highlight = false;
                 currentType = new ReturnType(TokenType.ANY);
             }
 
             case WRONG -> {
-                highlights.add(new MessagedHighlight<>(expression.getBegin().position(), expression.getEnd().position(), ASTType.WRONG, ((ASTWrong) expression).getMessage()));
+                highlights.add(new MessagedHighlight<>(expression.getBegin(),
+                                                       expression.getEnd(),
+                                                       ASTType.WRONG,
+                                                       ((ASTWrong) expression).getMessage()));
                 highlight = false;
                 currentType = new ReturnType(TokenType.ANY);
             }
@@ -148,13 +154,21 @@ public class Interpreter implements ASTVisitor {
                 final var identifier = current.getIdentifier(name.getName(), expression.getBegin().position());
                 if (identifier == null) {
                     if (name.getName().startsWith("$")) {
-                        highlights.add(new MessagedHighlight<>(name.getBegin().position(), name.getEnd().position(), InterpretationType.NOT_FOUND_BUILTIN, "Built-in not found"));
+                        highlights.add(new MessagedHighlight<>(name.getBegin(),
+                                                               name.getEnd(),
+                                                               InterpretationType.NOT_FOUND_BUILTIN,
+                                                              "Built-in not found"));
                     } else {
-                        highlights.add(new MessagedHighlight<>(expression.getBegin().position(), expression.getEnd().position(), InterpretationType.NOT_FOUND, "Identifier not found"));
+                        highlights.add(new MessagedHighlight<>(expression.getBegin(),
+                                                               expression.getEnd(),
+                                                               InterpretationType.NOT_FOUND,
+                                                              "Identifier not found"));
                     }
                     currentType = new ReturnType(TokenType.ANY);
                 } else {
-                    highlights.add(new Highlight<>(expression.getBegin().position(), expression.getEnd().position(), identifier.getType()));
+                    highlights.add(new Highlight<>(expression.getBegin().position(),
+                                                   expression.getEnd().position(),
+                                                   identifier.getType()));
                     currentType = identifier.getReturnType();
                 }
                 highlight = false;
@@ -173,8 +187,8 @@ public class Interpreter implements ASTVisitor {
                 }
                 if (op.getOperatorType() == TokenType.ASSIGNMENT &&
                     !lhsType.isAssignableFrom(currentType)) {
-                    highlights.add(new MessagedHighlight<>(rhs.getBegin().position(),
-                                                           rhs.getEnd().position(),
+                    highlights.add(new MessagedHighlight<>(rhs.getBegin(),
+                                                           rhs.getEnd(),
                                                            InterpretationType.WARNING,
                                                            "Type mismatch"));
                 }
@@ -188,10 +202,12 @@ public class Interpreter implements ASTVisitor {
                          LESS_OR_EQUAL,
                          GREATER,
                          GREATER_OR_EQUAL -> new ReturnType(TokenType.BOOL);
+
                     case RANGE,
                          ELLIPSIS,
                          DOT,
                          ARROW            -> new ReturnType(TokenType.ANY);
+
                     case ASSIGNMENT,
                          AMPERSAND,
                          PIPE,
@@ -219,7 +235,10 @@ public class Interpreter implements ASTVisitor {
             case AST_INHERITANCE -> {
                 final var inheritance = (ASTInheritance) expression;
                 if (inheritance.getInherited() == null) {
-                    highlights.add(new MessagedHighlight<>(inheritance.getBegin().position(), inheritance.getEnd().position(), InterpretationType.WARNING, "Inheriting from nothing"));
+                    highlights.add(new MessagedHighlight<>(inheritance.getBegin(),
+                                                           inheritance.getEnd(),
+                                                           InterpretationType.WARNING,
+                                                          "Inheriting from nothing"));
                     highlight = false;
                 }
                 currentType = new ReturnType(TokenType.VOID);
@@ -248,8 +267,8 @@ public class Interpreter implements ASTVisitor {
 
                 condition.visit(this);
                 if (!new ReturnType(TokenType.BOOL).isAssignableFrom(currentType)) {
-                    highlights.add(new MessagedHighlight<>(condition.getBegin().position(),
-                                                           condition.getEnd().position(),
+                    highlights.add(new MessagedHighlight<>(condition.getBegin(),
+                                                           condition.getEnd(),
                                                            InterpretationType.WARNING,
                                                           "Condition should be a boolean expression"));
                 }
@@ -271,8 +290,8 @@ public class Interpreter implements ASTVisitor {
 
                 final var e = current.queryEnclosingFunction();
                 if (e != null && !e.getReturnType().isAssignableFrom(currentType)) {
-                    highlights.add(new MessagedHighlight<>(ret.getBegin().position(),
-                                                           ret.getEnd().position(),
+                    highlights.add(new MessagedHighlight<>(ret.getBegin(),
+                                                           ret.getEnd(),
                                                            InterpretationType.WARNING,
                                                            "Return type mismatch"));
                 }
@@ -340,14 +359,17 @@ public class Interpreter implements ASTVisitor {
         // TODO: bool (any (int (string) ) )
         for (final var param : params) {
             if (param.getASTType() == ASTType.MISSING) {
-                highlights.add(new MessagedHighlight<>(param.getBegin().position(), param.getEnd().position(), ASTType.MISSING, ((ASTMissing) param).getMessage()));
+                highlights.add(new MessagedHighlight<>(param.getBegin(),
+                                                       param.getEnd(),
+                                                       ASTType.MISSING,
+                                                       ((ASTMissing) param).getMessage()));
             } else if (param.getASTType() != ASTType.AST_ELLIPSIS) {
                 final var parameter = cast(ASTParameter.class, param);
                 final var type      = cast(ASTTypeDefinition.class, parameter.getType());
 
                 if (type instanceof final ASTTypeDeclaration declaration && declaration.getType() == TokenType.VOID) {
-                    highlights.add(new MessagedHighlight<>(declaration.getBegin().position(),
-                                                           declaration.getEnd().position(),
+                    highlights.add(new MessagedHighlight<>(declaration.getBegin(),
+                                                           declaration.getEnd(),
                                                            InterpretationType.ERROR,
                                                            "'void' not allowed here"));
                 }

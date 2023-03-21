@@ -19,6 +19,8 @@
 
 package mhahnFr.SecretPathway.gui.editor;
 
+import mhahnFr.utils.StreamPosition;
+
 /**
  * This class represents an error as highlighting
  * element. They contain as addition a message.
@@ -46,6 +48,21 @@ public class MessagedHighlight<T extends HighlightType> extends Highlight<T> {
         super(begin, end, type);
 
         this.message = message;
+    }
+
+    /**
+     * Constructs this messaged highlighting element.
+     *
+     * @param begin   the beginning position
+     * @param end     the end position
+     * @param type    the type
+     * @param message the message
+     */
+    public MessagedHighlight(final StreamPosition begin,
+                             final StreamPosition end,
+                             final T              type,
+                             final String         message) {
+        this(begin.position(), end.position(), type, message);
     }
 
     /**
