@@ -260,45 +260,48 @@ public class Interpreter implements ASTVisitor {
                                                            InterpretationType.TYPE_MISMATCH,
                                                            lhsType + " is not assignable from " + currentType));
                 }
-                currentType = switch (op.getOperatorType()) {
-                    case IS,
-                         OR, // FIXME: myVar || new(...)
-                         AND,
-                         EQUALS,
-                         NOT_EQUAL,
-                         LESS,
-                         LESS_OR_EQUAL,
-                         GREATER,
-                         GREATER_OR_EQUAL -> new ReturnType(TokenType.BOOL);
+                if (op.getOperatorType() != null) {
+                    currentType = switch (op.getOperatorType()) {
+                        case IS,
+                             AND,
+                             EQUALS,
+                             NOT_EQUAL,
+                             LESS,
+                             LESS_OR_EQUAL,
+                             GREATER,
+                             GREATER_OR_EQUAL -> new ReturnType(TokenType.BOOL);
 
-                    case RANGE,
-                         ELLIPSIS,
-                         ARROW            -> new ReturnType(TokenType.ANY);
+                        case RANGE,
+                             ELLIPSIS,
+                             ARROW -> new ReturnType(TokenType.ANY);
 
-                    case DOT              -> new ReturnType(null);
+                        case DOT -> new ReturnType(null);
 
-                    case ASSIGNMENT,
-                         AMPERSAND,
-                         PIPE,
-                         LEFT_SHIFT,
-                         RIGHT_SHIFT,
-                         DOUBLE_QUESTION,
-                         QUESTION,
-                         INCREMENT,
-                         DECREMENT,
-                         PLUS,
-                         MINUS,
-                         STAR,
-                         SLASH,
-                         PERCENT,
-                         ASSIGNMENT_PLUS,
-                         ASSIGNMENT_MINUS,
-                         ASSIGNMENT_STAR,
-                         ASSIGNMENT_SLASH,
-                         ASSIGNMENT_PERCENT -> currentType;
+                        case ASSIGNMENT,
+                             OR,
+                             AMPERSAND,
+                             PIPE,
+                             LEFT_SHIFT,
+                             RIGHT_SHIFT,
+                             DOUBLE_QUESTION,
+                             QUESTION,
+                             INCREMENT,
+                             DECREMENT,
+                             COLON,
+                             PLUS,
+                             MINUS,
+                             STAR,
+                             SLASH,
+                             PERCENT,
+                             ASSIGNMENT_PLUS,
+                             ASSIGNMENT_MINUS,
+                             ASSIGNMENT_STAR,
+                             ASSIGNMENT_SLASH,
+                             ASSIGNMENT_PERCENT -> currentType;
 
-                    default -> new ReturnType(TokenType.VOID);
-                };
+                        default -> new ReturnType(TokenType.VOID);
+                    };
+                }
             }
 
             case AST_INHERITANCE -> {
