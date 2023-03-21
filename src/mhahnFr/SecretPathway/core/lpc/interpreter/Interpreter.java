@@ -124,7 +124,8 @@ public class Interpreter implements ASTVisitor {
                                               retType,
                                               params,
                                               !paramExpressions.isEmpty() &&
-                                              paramExpressions.get(paramExpressions.size() - 1).getASTType() == ASTType.AST_ELLIPSIS);
+                                              paramExpressions.get(paramExpressions.size() - 1).getASTType()
+                                                      == ASTType.AST_ELLIPSIS);
                 visitBlock(cast(ASTBlock.class, block));
                 current = current.popScope(expression.getEnd().position());
                 currentType = new ReturnType(TokenType.VOID);
@@ -179,8 +180,9 @@ public class Interpreter implements ASTVisitor {
                             elem = it.next();
                             elem.visit(this);
                             if (!it2.hasNext()) {
-                                // TODO: Ok if ellipsis
-                                tooManyBegin = tooManyBegin.isEmpty() ? Optional.of(elem.getBegin()) : tooManyBegin;
+                                if (!definition.isVariadic()) {
+                                    tooManyBegin = tooManyBegin.isEmpty() ? Optional.of(elem.getBegin()) : tooManyBegin;
+                                }
                             } else {
                                 final var elem2 = it2.next();
                                 if (!elem2.getReturnType().isAssignableFrom(currentType)) {
@@ -197,13 +199,16 @@ public class Interpreter implements ASTVisitor {
                                                                             position,
                                                                             arguments.get(arguments.size() - 1).getEnd(),
                                                                             InterpretationType.ERROR,
-                                                                            String.format("Expected %d arguments, got %d", definition.getParameters().size(), arguments.size()))));
+                                                                            String.format("Expected %d arguments, got %d",
+                                                                                    definition.getParameters().size(),
+                                                                                    arguments.size()))));
                         if (it2.hasNext()) {
-                            // TODO: Ok if last ellipsis or last argument ellipsis
                             highlights.add(new MessagedHighlight<>((elem == null ? fc.getBegin() : elem.getEnd()),
                                                                    fc.getEnd(),
                                                                    InterpretationType.ERROR,
-                                                                   String.format("Expected %d arguments, got %d", definition.getParameters().size(), arguments.size())));
+                                                                   String.format("Expected %d arguments, got %d",
+                                                                           definition.getParameters().size(),
+                                                                           arguments.size())));
                         }
                     }
                     currentType = id.getReturnType();
@@ -326,9 +331,20 @@ public class Interpreter implements ASTVisitor {
                 currentType = cast(ASTTypeDefinition.class, cast.getType());
             }
 
+            case AST_ELLIPSIS -> {
+                final var enclosing = current.queryEnclosingFunction();
+                if (enclosing == null || !enclosing.isVariadic()) {
+                    highlights.add(new MessagedHighlight<>(expression.getBegin(),
+                                                           expression.getEnd(),
+                                                           InterpretationType.ERROR,
+                                                           "Enclosing function is not variadic"));
+                    highlight = false;
+                }
+                currentType = new ReturnType(TokenType.ANY);
+            }
+
             case AST_NEW             -> currentType = new ReturnType(TokenType.ANY); // TODO: Load new expression
-            case AST_ELLIPSIS, // TODO: If function is not variadic -> not allowed
-                 AST_THIS,                                                           // Cannot be known from here.
+            case AST_THIS,                                                           // Cannot be known from here.
                  ARRAY, AST_MAPPING  -> currentType = new ReturnType(TokenType.ANY); // No array nor mapping types -> any.
             case AST_INTEGER         -> currentType = new ReturnType(TokenType.INT_KEYWORD);
             case AST_NIL             -> currentType = new ReturnType(TokenType.NIL);
