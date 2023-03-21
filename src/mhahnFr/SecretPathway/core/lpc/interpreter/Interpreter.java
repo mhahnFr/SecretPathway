@@ -56,7 +56,6 @@ public class Interpreter implements ASTVisitor {
         for (final var expression : expressions) {
             expression.visit(this);
         }
-        System.out.println();
         return current;
     }
 
@@ -284,7 +283,6 @@ public class Interpreter implements ASTVisitor {
         if (highlight) {
             highlights.add(new ASTHighlight(expression));
         }
-        System.out.println(expression.getASTType() + ", return type: " + currentType);
     }
 
     /**
