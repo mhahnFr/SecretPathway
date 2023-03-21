@@ -19,10 +19,12 @@
 
 package mhahnFr.SecretPathway.core.lpc.parser.ast;
 
+import mhahnFr.SecretPathway.core.lpc.interpreter.ReturnType;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.utils.StreamPosition;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -143,10 +145,43 @@ public class ASTFunctionReferenceType extends ASTTypeDefinition {
         return builder.toString();
     }
 
+    /**
+     * Casts the given expression to a {@link ASTTypeDefinition}. If
+     * the given expression is a {@link ASTCombination}, the type definition
+     * is searched inside of that combination.
+     *
+     * @param expression the expression to be cast
+     * @return the found {@link ASTTypeDefinition}
+     */
+    private ASTTypeDefinition cast(final ASTExpression expression) {
+        if (expression instanceof final ASTTypeDefinition definition) {
+            return definition;
+        } else if (expression instanceof final ASTCombination combination) {
+            for (final var expr : combination.getExpressions()) {
+                if (expr instanceof final ASTTypeDefinition definition) {
+                    return definition;
+                }
+            }
+        }
+        throw new IllegalArgumentException("Given expression is neither a combination nor a ASTTypeDefinition!");
+    }
+
     @Override
     public boolean isAssignableFrom(ASTTypeDefinition other) {
         if (other instanceof final ASTFunctionReferenceType referenceType) {
-            // TODO
+            if (!new ReturnType(returnType).isAssignableFrom(new ReturnType(referenceType.returnType))) {
+                return false;
+            }
+            if (callTypes.size() != referenceType.callTypes.size()) {
+                return false;
+            }
+            final var it  = callTypes.listIterator();
+            final var it2 = referenceType.callTypes.listIterator();
+            while (it.hasNext()) {
+                if (!cast(it.next()).isAssignableFrom(cast(it2.next()))) {
+                    return false;
+                }
+            }
             return true;
         }
         return false;

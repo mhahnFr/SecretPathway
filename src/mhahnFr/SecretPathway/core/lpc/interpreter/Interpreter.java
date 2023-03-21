@@ -86,6 +86,7 @@ public class Interpreter implements ASTVisitor {
 
         switch (expression.getASTType()) {
             case VARIABLE_DEFINITION -> {
+                // TODO: lets
                 final var type = cast(ASTTypeDefinition.class, ((ASTVariableDefinition) expression).getType());
 
                 current.addIdentifier(expression.getBegin(),
@@ -251,7 +252,8 @@ public class Interpreter implements ASTVisitor {
             }
 
             case AST_NEW             -> currentType = new ReturnType(TokenType.ANY); // TODO: Load new expression
-            case AST_THIS,                                                           // Cannot be known from here.
+            case AST_ELLIPSIS,
+                 AST_THIS,                                                           // Cannot be known from here.
                  ARRAY, AST_MAPPING  -> currentType = new ReturnType(TokenType.ANY); // No array nor mapping types -> any.
             case AST_INTEGER         -> currentType = new ReturnType(TokenType.INT_KEYWORD);
             case AST_NIL             -> currentType = new ReturnType(TokenType.NIL);
