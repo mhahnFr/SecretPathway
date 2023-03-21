@@ -163,7 +163,7 @@ public class Interpreter implements ASTVisitor {
                 final var name = (ASTName) expression;
                 final var identifier = current.getIdentifier(name.getName(), expression.getBegin().position());
                 if (identifier == null) {
-                    if (name.getName().startsWith("$")) {
+                    if (name.getName() != null && name.getName().startsWith("$")) {
                         highlights.add(new MessagedHighlight<>(name.getBegin(),
                                                                name.getEnd(),
                                                                InterpretationType.NOT_FOUND_BUILTIN,

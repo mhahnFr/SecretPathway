@@ -139,6 +139,7 @@ public class Parser {
         advance();
         if (current.type() == TokenType.SEMICOLON) {
             toReturn = new ASTInheritance(previous.beginPos(), current.endPos(), null);
+            advance();
         } else if (next.type() == TokenType.SEMICOLON && current.type() != TokenType.STRING) {
             toReturn = new ASTInheritance(previous.beginPos(), next.endPos(),
                                new ASTWrong(current, "Expected a string literal"));
@@ -154,7 +155,6 @@ public class Parser {
             toReturn = new ASTInheritance(previous.beginPos(), next.endPos(), null);
             advance();
         }
-        advance();
         return toReturn;
     }
 
