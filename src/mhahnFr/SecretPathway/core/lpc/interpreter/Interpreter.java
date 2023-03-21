@@ -238,7 +238,7 @@ public class Interpreter implements ASTVisitor {
             case AST_INTEGER         -> currentType = new ReturnType(TokenType.INT_KEYWORD);
             case AST_NIL             -> currentType = new ReturnType(TokenType.NIL);
             case AST_STRING, STRINGS -> currentType = new ReturnType(TokenType.STRING_KEYWORD);
-            case AST_SYMBOL          -> currentType = new ReturnType(TokenType.SYMBOL);
+            case AST_SYMBOL          -> currentType = new ReturnType(TokenType.SYMBOL_KEYWORD);
             case AST_BOOL            -> currentType = new ReturnType(TokenType.BOOL);
             case AST_CHARACTER       -> currentType = new ReturnType(TokenType.CHAR_KEYWORD);
             case UNARY_OPERATOR      -> ((ASTUnaryOperator) expression).getIdentifier().visit(this);
