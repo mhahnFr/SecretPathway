@@ -81,7 +81,8 @@ public class Interpreter implements ASTVisitor {
                type != ASTType.UNARY_OPERATOR      &&
                type != ASTType.AST_IF              &&
                type != ASTType.AST_RETURN          &&
-               type != ASTType.FUNCTION_REFERENCE;
+               type != ASTType.FUNCTION_REFERENCE  &&
+               type != ASTType.FUNCTION_CALL;
     }
 
     @Override
@@ -159,6 +160,55 @@ public class Interpreter implements ASTVisitor {
                 currentType = new ReturnType(TokenType.ANY);
             }
 
+            case FUNCTION_CALL -> {
+                final var fc = (ASTFunctionCall) expression;
+
+                final var name = cast(ASTName.class, fc.getName());
+                final var id = current.getIdentifier(name.getName(), name.getBegin().position());
+                if (id instanceof final FunctionDefinition definition) {
+                    // TODO: Check arguments
+                    if (fc.getArguments() != null) {
+                        final var it  = fc.getArguments().listIterator();
+                        final var it2 = definition.getParameters().listIterator();
+                        while (it.hasNext()) {
+                            final var elem = it.next();
+                            elem.visit(this);
+                            if (!it2.hasNext()) {
+                                // TODO: Too many arguments, except ellipsis
+                            } else {
+                                final var elem2 = it2.next();
+                                if (!elem2.getReturnType().isAssignableFrom(currentType)) {
+                                    final var typeString = Optional.ofNullable(elem2.getReturnType().toString());
+                                    highlights.add(new MessagedHighlight<>(elem.getBegin(),
+                                                                           elem.getEnd(),
+                                                                           InterpretationType.TYPE_MISMATCH,
+                                                                           typeString.orElse("<< unknown >>") +
+                                                                           " is not assignable from " + currentType));
+                                }
+                            }
+                        }
+                        if (it2.hasNext()) {
+                            // TODO: not enough arguments, except ellipsis
+                        }
+                    }
+                    currentType = id.getReturnType();
+                } else {
+                    if (name.getName() != null && name.getName().startsWith("$")) {
+                        highlights.add(new MessagedHighlight<>(name.getBegin(),
+                                                               name.getEnd(),
+                                                               InterpretationType.NOT_FOUND_BUILTIN,
+                                                               "Built-in not found"));
+                    } else {
+                        highlights.add(new MessagedHighlight<>(name.getBegin(),
+                                                               name.getEnd(),
+                                                               InterpretationType.NOT_FOUND,
+                                                               "Function not found"));
+                    }
+                    currentType = new ReturnType(TokenType.ANY);
+                    highlight = false;
+                }
+            }
+
             case NAME -> {
                 final var name = (ASTName) expression;
                 final var identifier = current.getIdentifier(name.getName(), expression.getBegin().position());
@@ -195,6 +245,7 @@ public class Interpreter implements ASTVisitor {
                 } else {
                     rhs.visit(this);
                 }
+                // TODO: let lhs
                 if (op.getOperatorType() == TokenType.ASSIGNMENT &&
                     !lhsType.isAssignableFrom(currentType)) {
                     highlights.add(new MessagedHighlight<>(rhs.getBegin(),
