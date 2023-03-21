@@ -166,15 +166,18 @@ public class Interpreter implements ASTVisitor {
                 final var name = cast(ASTName.class, fc.getName());
                 final var id = current.getIdentifier(name.getName(), name.getBegin().position());
                 if (id instanceof final FunctionDefinition definition) {
-                    // TODO: Check arguments
-                    if (fc.getArguments() != null) {
-                        final var it  = fc.getArguments().listIterator();
+                    final var arguments = fc.getArguments();
+                    if (arguments != null) {
+                        final var it  = arguments.listIterator();
                         final var it2 = definition.getParameters().listIterator();
+                        Optional<StreamPosition> tooManyBegin = Optional.empty();
+                        ASTExpression elem = null;
                         while (it.hasNext()) {
-                            final var elem = it.next();
+                            elem = it.next();
                             elem.visit(this);
                             if (!it2.hasNext()) {
-                                // TODO: Too many arguments, except ellipsis
+                                // TODO: Ok if ellipsis
+                                tooManyBegin = tooManyBegin.isEmpty() ? Optional.of(elem.getBegin()) : tooManyBegin;
                             } else {
                                 final var elem2 = it2.next();
                                 if (!elem2.getReturnType().isAssignableFrom(currentType)) {
@@ -187,8 +190,17 @@ public class Interpreter implements ASTVisitor {
                                 }
                             }
                         }
+                        tooManyBegin.ifPresent(position -> highlights.add(new MessagedHighlight<>(
+                                                                            position,
+                                                                            arguments.get(arguments.size() - 1).getEnd(),
+                                                                            InterpretationType.ERROR,
+                                                                            String.format("Expected %d arguments, got %d", definition.getParameters().size(), arguments.size()))));
                         if (it2.hasNext()) {
-                            // TODO: not enough arguments, except ellipsis
+                            // TODO: Ok if last ellipsis or last argument ellipsis
+                            highlights.add(new MessagedHighlight<>((elem == null ? fc.getBegin() : elem.getEnd()),
+                                                                   fc.getEnd(),
+                                                                   InterpretationType.ERROR,
+                                                                   String.format("Expected %d arguments, got %d", definition.getParameters().size(), arguments.size())));
                         }
                     }
                     currentType = id.getReturnType();
@@ -312,7 +324,7 @@ public class Interpreter implements ASTVisitor {
             }
 
             case AST_NEW             -> currentType = new ReturnType(TokenType.ANY); // TODO: Load new expression
-            case AST_ELLIPSIS,
+            case AST_ELLIPSIS, // TODO: If function is not variadic -> not allowed
                  AST_THIS,                                                           // Cannot be known from here.
                  ARRAY, AST_MAPPING  -> currentType = new ReturnType(TokenType.ANY); // No array nor mapping types -> any.
             case AST_INTEGER         -> currentType = new ReturnType(TokenType.INT_KEYWORD);
