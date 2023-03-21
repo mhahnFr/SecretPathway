@@ -93,11 +93,12 @@ public class Interpreter implements ASTVisitor {
             case VARIABLE_DEFINITION -> {
                 final var varDefinition = (ASTVariableDefinition) expression;
 
-                final ASTTypeDefinition type;
-                if (varDefinition.getType() == null) {
-                    type = null;
+                ASTTypeDefinition type;
+                if (varDefinition.getType() == null ||
+                    ((type = cast(ASTTypeDefinition.class, varDefinition.getType())) instanceof final ASTTypeDeclaration declaration
+                            && declaration.getType() == null)) {
+                    type = new ReturnType(TokenType.ANY);
                 } else {
-                    type = cast(ASTTypeDefinition.class, ((ASTVariableDefinition) expression).getType());
                     type.visit(this);
                 }
 
@@ -168,6 +169,7 @@ public class Interpreter implements ASTVisitor {
                 final var fc = (ASTFunctionCall) expression;
 
                 final var name = cast(ASTName.class, fc.getName());
+                name.visit(this);
                 final var id = current.getIdentifier(name.getName(), name.getBegin().position());
                 if (id instanceof final FunctionDefinition definition) {
                     final var arguments = fc.getArguments();
@@ -212,20 +214,6 @@ public class Interpreter implements ASTVisitor {
                         }
                     }
                     currentType = id.getReturnType();
-                } else {
-                    if (name.getName() != null && name.getName().startsWith("$")) {
-                        highlights.add(new MessagedHighlight<>(name.getBegin(),
-                                                               name.getEnd(),
-                                                               InterpretationType.NOT_FOUND_BUILTIN,
-                                                               "Built-in not found"));
-                    } else {
-                        highlights.add(new MessagedHighlight<>(name.getBegin(),
-                                                               name.getEnd(),
-                                                               InterpretationType.NOT_FOUND,
-                                                               "Function not found"));
-                    }
-                    currentType = new ReturnType(TokenType.ANY);
-                    highlight = false;
                 }
             }
 
@@ -265,7 +253,6 @@ public class Interpreter implements ASTVisitor {
                 } else {
                     rhs.visit(this);
                 }
-                // TODO: let lhs
                 if (op.getOperatorType() == TokenType.ASSIGNMENT &&
                     !lhsType.isAssignableFrom(currentType)) {
                     highlights.add(new MessagedHighlight<>(rhs.getBegin(),
