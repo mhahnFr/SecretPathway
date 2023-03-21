@@ -236,14 +236,20 @@ public class Context extends Instruction {
      * @param name       the name of the function
      * @param returnType the return type of the function
      * @param parameters the parameter definitions of the function
+     * @param variadic   whether the function takes variadic arguments
      * @return the new scope context for the contents of the function
      */
     public Context addFunction(final StreamPosition    begin,
                                final StreamPosition    scopeBegin,
                                final ASTName           name,
                                final ASTTypeDefinition returnType,
-                               final List<Definition>  parameters) {
-        instructions.put(begin.position(), new FunctionDefinition(begin.position(), name.getName(), returnType, parameters));
+                               final List<Definition>  parameters,
+                               final boolean           variadic) {
+        instructions.put(begin.position(), new FunctionDefinition(begin.position(),
+                                                                  name.getName(),
+                                                                  returnType,
+                                                                  parameters,
+                                                                  variadic));
 
         final var newContext = pushScope(scopeBegin.position());
         for (final var parameter : parameters) {

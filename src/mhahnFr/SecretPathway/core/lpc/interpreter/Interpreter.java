@@ -110,18 +110,21 @@ public class Interpreter implements ASTVisitor {
             }
 
             case FUNCTION_DEFINITION -> {
-                final var function = (ASTFunctionDefinition) expression;
-                final var block    = function.getBody();
+                final var function           = (ASTFunctionDefinition) expression;
+                final var block              = function.getBody();
+                final var paramExpressions   = function.getParameters();
 
                 final var retType  = cast(ASTTypeDefinition.class, function.getType());
                 retType.visit(this);
-                final var params   = visitParams(function.getParameters());
+                final var params   = visitParams(paramExpressions);
 
                 current = current.addFunction(expression.getBegin(),
                                               block.getBegin(),
                                               cast(ASTName.class, function.getName()),
                                               retType,
-                                              params);
+                                              params,
+                                              !paramExpressions.isEmpty() &&
+                                              paramExpressions.get(paramExpressions.size() - 1).getASTType() == ASTType.AST_ELLIPSIS);
                 visitBlock(cast(ASTBlock.class, block));
                 current = current.popScope(expression.getEnd().position());
                 currentType = new ReturnType(TokenType.VOID);

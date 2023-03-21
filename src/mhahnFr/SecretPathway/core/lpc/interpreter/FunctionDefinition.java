@@ -31,8 +31,10 @@ import java.util.List;
  * @since 08.03.23
  */
 public class FunctionDefinition extends Definition {
-    /** The list with the parameter definitions. */
+    /** The list with the parameter definitions.     */
     private final List<Definition> parameters;
+    /** Indicates whether this function is variadic. */
+    private final boolean variadic;
 
     /**
      * Constructs this function definition using the given information.
@@ -41,14 +43,17 @@ public class FunctionDefinition extends Definition {
      * @param name       the name of the function
      * @param returnType the return type of the function
      * @param parameters the list with the parameter definitions
+     * @param variadic   whether this function takes variadic parameters
      */
     public FunctionDefinition(final int               begin,
                               final String            name,
                               final ASTTypeDefinition returnType,
-                              final List<Definition>  parameters) {
+                              final List<Definition>  parameters,
+                              final boolean           variadic) {
         super(begin, name, returnType, ASTType.FUNCTION_DEFINITION);
 
         this.parameters = parameters;
+        this.variadic   = variadic;
     }
 
     /**
@@ -83,8 +88,20 @@ public class FunctionDefinition extends Definition {
                 builder.append(", ");
             }
         }
+        if (variadic) {
+            builder.append("...");
+        }
         builder.append(')');
 
         return builder.toString();
+    }
+
+    /**
+     * Returns whether this function takes variadic arguments.
+     *
+     * @return whether this function takes variadic arguments
+     */
+    public boolean isVariadic() {
+        return variadic;
     }
 }
