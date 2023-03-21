@@ -28,6 +28,7 @@ import mhahnFr.utils.StreamPosition;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Vector;
 
 /**
@@ -89,9 +90,15 @@ public class Interpreter implements ASTVisitor {
 
         switch (expression.getASTType()) {
             case VARIABLE_DEFINITION -> {
-                // TODO: lets
-                final var type = cast(ASTTypeDefinition.class, ((ASTVariableDefinition) expression).getType());
-                type.visit(this);
+                final var varDefinition = (ASTVariableDefinition) expression;
+
+                final ASTTypeDefinition type;
+                if (varDefinition.getType() == null) {
+                    type = null;
+                } else {
+                    type = cast(ASTTypeDefinition.class, ((ASTVariableDefinition) expression).getType());
+                    type.visit(this);
+                }
 
                 current.addIdentifier(expression.getBegin(),
                         cast(ASTName.class, ((ASTVariableDefinition) expression).getName()),
@@ -294,10 +301,12 @@ public class Interpreter implements ASTVisitor {
 
                 final var e = current.queryEnclosingFunction();
                 if (e != null && !e.getReturnType().isAssignableFrom(currentType)) {
+                    final var typeString = Optional.ofNullable(e.getReturnType().toString());
                     highlights.add(new MessagedHighlight<>(ret.getBegin(),
                                                            ret.getEnd(),
                                                            InterpretationType.TYPE_MISMATCH,
-                                                           e + " is not assignable from " + currentType));
+                                                           typeString.orElse("<< unknown >>") +
+                                                           " is not assignable from " + currentType));
                 }
             }
 
