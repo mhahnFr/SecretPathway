@@ -24,7 +24,6 @@ import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.utils.StreamPosition;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**

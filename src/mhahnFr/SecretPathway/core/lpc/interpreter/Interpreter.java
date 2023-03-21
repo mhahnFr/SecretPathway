@@ -42,7 +42,7 @@ public class Interpreter implements ASTVisitor {
     /** The current return type of the expression.  */
     private ASTTypeDefinition currentType;
     /** A list with the elements to be highlighted. */
-    private final List<Highlight<?>> highlights = new ArrayList<>();
+    private List<Highlight<?>> highlights;
 
     /**
      * Creates an execution context for the given list of
@@ -52,7 +52,9 @@ public class Interpreter implements ASTVisitor {
      * @return the generated context
      */
     public Context createContextFor(final List<ASTExpression> expressions) {
-        current = new Context();
+        highlights = new ArrayList<>(expressions.size());
+        current    = new Context();
+
         for (final var expression : expressions) {
             expression.visit(this);
         }
@@ -77,7 +79,8 @@ public class Interpreter implements ASTVisitor {
                type != ASTType.CAST                &&
                type != ASTType.UNARY_OPERATOR      &&
                type != ASTType.AST_IF              &&
-               type != ASTType.AST_RETURN;
+               type != ASTType.AST_RETURN          &&
+               type != ASTType.FUNCTION_REFERENCE;
     }
 
     @Override
@@ -94,12 +97,7 @@ public class Interpreter implements ASTVisitor {
                         cast(ASTName.class, ((ASTVariableDefinition) expression).getName()),
                         type,
                         ASTType.VARIABLE_DEFINITION);
-                if (type instanceof final ASTTypeDeclaration declaration && declaration.getType() == TokenType.VOID) {
-                    highlights.add(new MessagedHighlight<>(declaration.getBegin(),
-                                                           declaration.getEnd(),
-                                                           InterpretationType.TYPE_MISMATCH,
-                                                           "'void' not allowed here"));
-                }
+                maybeWrongVoid(type);
                 currentType = type;
             }
 
@@ -303,10 +301,31 @@ public class Interpreter implements ASTVisitor {
                 }
             }
 
+            case FUNCTION_REFERENCE -> {
+                for (final var type : ((ASTFunctionReferenceType) expression).getCallTypes()) {
+                    maybeWrongVoid(cast(ASTTypeDefinition.class, type));
+                }
+            }
+
             default -> currentType = new ReturnType(TokenType.VOID);
         }
         if (highlight) {
             highlights.add(new ASTHighlight(expression));
+        }
+    }
+
+    /**
+     * Adds a type mismatch highlight if the given type represents {@code void}.
+     *
+     * @param definition the type definition to be checked
+     */
+    private void maybeWrongVoid(final ASTTypeDefinition definition) {
+        if (definition instanceof final ASTTypeDeclaration declaration &&
+            declaration.getType() == TokenType.VOID && !declaration.isArray()) {
+            highlights.add(new MessagedHighlight<>(declaration.getBegin(),
+                                                   declaration.getEnd(),
+                                                   InterpretationType.TYPE_MISMATCH,
+                                                   "'void' not allowed here"));
         }
     }
 
@@ -373,13 +392,8 @@ public class Interpreter implements ASTVisitor {
                 final var type      = cast(ASTTypeDefinition.class, parameter.getType());
 
                 type.visit(this);
+                maybeWrongVoid(type);
 
-                if (type instanceof final ASTTypeDeclaration declaration && declaration.getType() == TokenType.VOID) {
-                    highlights.add(new MessagedHighlight<>(declaration.getBegin(),
-                                                           declaration.getEnd(),
-                                                           InterpretationType.TYPE_MISMATCH,
-                                                           "'void' not allowed here"));
-                }
                 parameters.add(new Definition(parameter.getBegin().position(),
                                               cast(ASTName.class, parameter.getName()).getName(),
                                               type,
