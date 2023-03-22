@@ -241,29 +241,38 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         m.addActionForKeyStroke(Constants.Editor.POPUP_ENTER, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    final var suggestion = suggestionsWindow.getSelected();
-                    if (suggestion != null) {
-                        document.insertSuggestion(textPane.getCaretPosition(), suggestion, false);
-                        if (suggestion instanceof final DefinitionSuggestion definitionSuggestion &&
-                            definitionSuggestion.definition() instanceof FunctionDefinition) {
-                            // TODO: argument stumps
-                            document.insertString(textPane.getCaretPosition(), "()", null);
-                            textPane.setCaretPosition(textPane.getCaretPosition() - 1);
-                        }
-                    }
-                } catch (BadLocationException exception) {
-                    exception.printStackTrace();
-                }
-                toggleSuggestionMenu();
+                insertSelectedSuggestion(false);
             }
         });
         m.addActionForKeyStroke(Constants.Editor.POPUP_REPLACE, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO: Replace selection
+                insertSelectedSuggestion(true);
             }
         });
+    }
+
+    /**
+     * Inserts the currently selected {@link mhahnFr.SecretPathway.gui.editor.suggestions.Suggestion}.
+     *
+     * @param replace whether to replace the current word by the suggestion
+     */
+    private void insertSelectedSuggestion(final boolean replace) {
+        try {
+            final var suggestion = suggestionsWindow.getSelected();
+            if (suggestion != null) {
+                document.insertSuggestion(textPane.getCaretPosition(), suggestion, replace);
+                if (suggestion instanceof final DefinitionSuggestion definitionSuggestion &&
+                        definitionSuggestion.definition() instanceof FunctionDefinition) {
+                    // TODO: argument stumps
+                    document.insertString(textPane.getCaretPosition(), "()", null);
+                    textPane.setCaretPosition(textPane.getCaretPosition() - 1);
+                }
+            }
+        } catch (BadLocationException exception) {
+            exception.printStackTrace();
+        }
+        toggleSuggestionMenu();
     }
 
     /**

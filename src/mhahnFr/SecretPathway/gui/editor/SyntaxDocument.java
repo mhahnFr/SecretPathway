@@ -278,12 +278,14 @@ public class SyntaxDocument extends DefaultStyledDocument {
                               + str.substring(nlIndex + 1).indent(getPreviousIndent(offs));
                 } else {
 //                    if (str.length() == 1 && !Tokenizer.isSpecial(str.charAt(0))) {
-                        // Show suggestions
+                    // Show suggestions
 //                        try {
 //                            System.out.println("In word: " + getWord(offs));
 //                        } catch (Exception e) {
 //                            e.printStackTrace();
 //                        }
+//                    } else {
+//                        don't show suggestions
 //                    }
                     insertion = str;
                 }
@@ -307,7 +309,8 @@ public class SyntaxDocument extends DefaultStyledDocument {
      */
     public String getWord(final int at) throws BadLocationException {
         if (isInWord(at)) {
-            return getText(getWordBegin(at), getWordEnd(at));
+            final var wordBegin = getWordBegin(at);
+            return getText(wordBegin, getWordEnd(at) - wordBegin);
         }
         return null;
     }
@@ -378,7 +381,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
      * @param replaceWord whether to replace the current word
      * @throws BadLocationException if the position is out of bounds
      */
-    public void insertSuggestion(final int        offset,
+    public void insertSuggestion(int offset,
                                  final Suggestion suggestion,
                                  final boolean    replaceWord) throws BadLocationException {
         final var suggString = suggestion.getSuggestion();
@@ -386,7 +389,16 @@ public class SyntaxDocument extends DefaultStyledDocument {
 
         final String str;
         if (isInWord(offset)) {
-            str = suggString.substring(offset - getWordBegin(offset));
+            final var word = getWord(offset);
+            if (replaceWord || (!suggString.startsWith(word) && suggString.contains(word))) {
+                final int begin = getWordBegin(offset),
+                          end   = getWordEnd(offset);
+                offset = begin;
+                remove(begin, end - begin + (end < getLength() ? 1 : 0));
+                str = suggString;
+            } else {
+                str = suggString.substring(offset - getWordBegin(offset));
+            }
         } else {
             str = suggString;
         }
@@ -421,11 +433,6 @@ public class SyntaxDocument extends DefaultStyledDocument {
 
     @Override
     public void remove(int offs, int len) throws BadLocationException {
-        if (isOnlyWhitespacesOnLine(offs)) {
-            final var oldOffs = offs;
-            offs = getLineBegin(offs);
-            len += oldOffs - offs;
-        }
         super.remove(offs, len);
         maybeUpdateHighlight();
     }
