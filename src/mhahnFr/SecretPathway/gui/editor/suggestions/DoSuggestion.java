@@ -26,7 +26,7 @@ package mhahnFr.SecretPathway.gui.editor.suggestions;
  * @author mhahnFr
  * @since 13.03.23
  */
-public class DoSuggestion implements Suggestion {
+public class DoSuggestion extends StatementSuggestion {
     @Override
     public String getSuggestion() {
         return "do {\n    \n} while ();";
@@ -34,7 +34,7 @@ public class DoSuggestion implements Suggestion {
 
     @Override
     public String getDescription() {
-        return "do-while statement";
+        return "do-while";
     }
 
     @Override

@@ -20,28 +20,14 @@
 package mhahnFr.SecretPathway.gui.editor.suggestions;
 
 /**
- * This class represents a suggestion for the {@code new}
- * statement.
+ * This class defines a statement suggestion.
  *
  * @author mhahnFr
- * @since 13.03.23
+ * @since 22.03.23
  */
-public class NewSuggestion extends StatementSuggestion {
-    /** The suggestion {@link String}. */
-    private static final String string = "new(\"\")";
-
+public abstract class StatementSuggestion implements Suggestion {
     @Override
-    public String getSuggestion() {
-        return string;
-    }
-
-    @Override
-    public String getDescription() {
-        return "new";
-    }
-
-    @Override
-    public int getRelativeCursorPosition() {
-        return string.length() - 2;
+    public String getRightSite() {
+        return "statement";
     }
 }

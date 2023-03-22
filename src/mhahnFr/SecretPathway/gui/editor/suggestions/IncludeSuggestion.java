@@ -25,7 +25,7 @@ package mhahnFr.SecretPathway.gui.editor.suggestions;
  * @author mhahnFr
  * @since 22.03.23
  */
-public class IncludeSuggestion implements Suggestion {
+public class IncludeSuggestion extends StatementSuggestion {
     @Override
     public String getSuggestion() {
         return "#include \"\"";
@@ -33,7 +33,7 @@ public class IncludeSuggestion implements Suggestion {
 
     @Override
     public String getDescription() {
-        return "include statement";
+        return "include";
     }
 
     @Override

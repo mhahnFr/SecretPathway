@@ -25,7 +25,7 @@ package mhahnFr.SecretPathway.gui.editor.suggestions;
  * @author mhahnFr
  * @since 22.03.23
  */
-public class InheritSuggestion implements Suggestion {
+public class InheritSuggestion extends StatementSuggestion {
     @Override
     public String getSuggestion() {
         return "inherit \"\";";
@@ -33,7 +33,7 @@ public class InheritSuggestion implements Suggestion {
 
     @Override
     public String getDescription() {
-        return "inherit statement";
+        return "inherit";
     }
 
     @Override

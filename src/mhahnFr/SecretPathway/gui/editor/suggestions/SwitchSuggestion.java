@@ -28,7 +28,7 @@ import mhahnFr.SecretPathway.gui.editor.suggestions.Suggestion;
  * @author mhahnFr
  * @since 16.03.23
  */
-public class SwitchSuggestion implements Suggestion {
+public class SwitchSuggestion extends StatementSuggestion {
     @Override
     public String getSuggestion() {
         return "switch () {\n    \n}";
@@ -36,7 +36,7 @@ public class SwitchSuggestion implements Suggestion {
 
     @Override
     public String getDescription() {
-        return "switch-statement";
+        return "switch";
     }
 
     @Override

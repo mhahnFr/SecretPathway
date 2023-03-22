@@ -28,7 +28,7 @@ import mhahnFr.SecretPathway.gui.editor.suggestions.Suggestion;
  * @author mhahnFr
  * @since 13.03.23
  */
-public class TrySuggestion implements Suggestion {
+public class TrySuggestion extends StatementSuggestion {
     @Override
     public String getSuggestion() {
         return "try {\n    \n} catch {\n    \n}";
@@ -36,7 +36,7 @@ public class TrySuggestion implements Suggestion {
 
     @Override
     public String getDescription() {
-        return "try-catch statement";
+        return "try-catch";
     }
 
     @Override

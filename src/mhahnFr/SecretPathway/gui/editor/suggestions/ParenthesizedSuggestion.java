@@ -27,7 +27,7 @@ import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
  * @author mhahnFr
  * @since 13.03.23
  */
-public class ParenthesizedSuggestion implements Suggestion {
+public class ParenthesizedSuggestion extends StatementSuggestion {
     /** The {@link TokenType} to be suggested. */
     private final TokenType keyword;
     /** The suggested string.                  */
@@ -50,7 +50,7 @@ public class ParenthesizedSuggestion implements Suggestion {
 
     @Override
     public String getDescription() {
-        return string + " statement";
+        return string;
     }
 
     @Override
