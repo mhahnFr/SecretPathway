@@ -23,7 +23,7 @@ import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTName;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTType;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTTypeDefinition;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
-import mhahnFr.SecretPathway.gui.editor.*;
+import mhahnFr.SecretPathway.gui.editor.suggestions.*;
 import mhahnFr.utils.StreamPosition;
 
 import java.util.*;
@@ -157,6 +157,7 @@ public class Context extends Instruction {
         toReturn.add(new TypeSuggestion(TokenType.VOID));
 
         if (isGlobalScope(position)) {
+
             toReturn.add(new TypeSuggestion(TokenType.PRIVATE));
             toReturn.add(new TypeSuggestion(TokenType.PROTECTED));
             toReturn.add(new TypeSuggestion(TokenType.PUBLIC));

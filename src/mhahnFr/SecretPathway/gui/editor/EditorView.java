@@ -22,6 +22,8 @@ package mhahnFr.SecretPathway.gui.editor;
 import mhahnFr.SecretPathway.core.Constants;
 import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.SecretPathway.core.lpc.interpreter.FunctionDefinition;
+import mhahnFr.SecretPathway.gui.editor.suggestions.DefinitionSuggestion;
+import mhahnFr.SecretPathway.gui.editor.suggestions.SuggestionsWindow;
 import mhahnFr.utils.SettingsListener;
 import mhahnFr.utils.gui.DarkComponent;
 import mhahnFr.utils.gui.DarkTextComponent;

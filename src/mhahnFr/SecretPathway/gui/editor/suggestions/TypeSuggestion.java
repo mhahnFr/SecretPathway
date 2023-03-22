@@ -17,28 +17,25 @@
  * this program, see the file LICENSE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package mhahnFr.SecretPathway.gui.editor;
+package mhahnFr.SecretPathway.gui.editor.suggestions;
+
+import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
+import mhahnFr.SecretPathway.gui.editor.suggestions.Suggestion;
 
 /**
- * This class represents a suggestion for the do-while
- * statement.
+ * This record represents a {@link TokenType} suggestion.
  *
- * @author mhahnFr
- * @since 13.03.23
+ * @param type the type to suggest
  */
-public class DoSuggestion implements Suggestion {
+public record TypeSuggestion(TokenType type) implements Suggestion {
     @Override
     public String getSuggestion() {
-        return "do {\n    \n} while ();";
-    }
+        return switch(type) {
+            case INT_KEYWORD    -> "int";
+            case CHAR_KEYWORD   -> "char";
+            case SYMBOL_KEYWORD -> "symbol";
 
-    @Override
-    public String getDescription() {
-        return "do-while statement";
-    }
-
-    @Override
-    public int getRelativeCursorPosition() {
-        return 9;
+            default -> type.toString().toLowerCase();
+        } + " ";
     }
 }

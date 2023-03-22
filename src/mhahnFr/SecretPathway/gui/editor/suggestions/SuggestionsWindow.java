@@ -17,9 +17,11 @@
  * this program, see the file LICENSE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package mhahnFr.SecretPathway.gui.editor;
+package mhahnFr.SecretPathway.gui.editor.suggestions;
 
 import mhahnFr.SecretPathway.core.Settings;
+import mhahnFr.SecretPathway.gui.editor.suggestions.Suggestion;
+import mhahnFr.SecretPathway.gui.editor.suggestions.SuggestionLabel;
 import mhahnFr.utils.gui.DarkComponent;
 import mhahnFr.utils.gui.DarkModeListener;
 

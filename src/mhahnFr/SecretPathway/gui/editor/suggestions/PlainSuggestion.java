@@ -17,38 +17,16 @@
  * this program, see the file LICENSE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package mhahnFr.SecretPathway.gui.editor;
+package mhahnFr.SecretPathway.gui.editor.suggestions;
 
 /**
- * This interface defines a suggestion.
+ * This record represents a plain text suggestion.
  *
- * @author mhahnFr
- * @since 03.03.23
+ * @param suggestion the actual suggestion
  */
-public interface Suggestion {
-    /**
-     * Returns the suggested text.
-     *
-     * @return the suggested text
-     */
-    String getSuggestion();
-
-    /**
-     * Returns the description of the suggestion to be displayed.
-     *
-     * @return the display string of this suggestion
-     */
-    default String getDescription() {
-        return getSuggestion();
-    }
-
-    /**
-     * Returns the relative cursor position for this suggestion.
-     * {@code -1} indicates no cursor movement.
-     *
-     * @return the desired relative cursor position
-     */
-    default int getRelativeCursorPosition() {
-        return -1;
+public record PlainSuggestion(String suggestion) implements Suggestion {
+    @Override
+    public String getSuggestion() {
+        return suggestion + " ";
     }
 }

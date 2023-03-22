@@ -17,16 +17,30 @@
  * this program, see the file LICENSE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package mhahnFr.SecretPathway.gui.editor;
+package mhahnFr.SecretPathway.gui.editor.suggestions;
+
+import mhahnFr.SecretPathway.gui.editor.suggestions.Suggestion;
 
 /**
- * This record represents a plain text suggestion.
+ * This class represents a suggestion for the {@code switch}
+ * statement.
  *
- * @param suggestion the actual suggestion
+ * @author mhahnFr
+ * @since 16.03.23
  */
-public record PlainSuggestion(String suggestion) implements Suggestion {
+public class SwitchSuggestion implements Suggestion {
     @Override
     public String getSuggestion() {
-        return suggestion + " ";
+        return "switch () {\n    \n}";
+    }
+
+    @Override
+    public String getDescription() {
+        return "switch-statement";
+    }
+
+    @Override
+    public int getRelativeCursorPosition() {
+        return 8;
     }
 }

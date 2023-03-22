@@ -17,24 +17,30 @@
  * this program, see the file LICENSE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package mhahnFr.SecretPathway.gui.editor;
+package mhahnFr.SecretPathway.gui.editor.suggestions;
 
-import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
+import mhahnFr.SecretPathway.gui.editor.suggestions.Suggestion;
 
 /**
- * This record represents a {@link TokenType} suggestion.
+ * This class represents a suggestion for the {@code try}
+ * statement.
  *
- * @param type the type to suggest
+ * @author mhahnFr
+ * @since 13.03.23
  */
-public record TypeSuggestion(TokenType type) implements Suggestion {
+public class TrySuggestion implements Suggestion {
     @Override
     public String getSuggestion() {
-        return switch(type) {
-            case INT_KEYWORD    -> "int";
-            case CHAR_KEYWORD   -> "char";
-            case SYMBOL_KEYWORD -> "symbol";
+        return "try {\n    \n} catch {\n    \n}";
+    }
 
-            default -> type.toString().toLowerCase();
-        } + " ";
+    @Override
+    public String getDescription() {
+        return "try-catch statement";
+    }
+
+    @Override
+    public int getRelativeCursorPosition() {
+        return 10;
     }
 }

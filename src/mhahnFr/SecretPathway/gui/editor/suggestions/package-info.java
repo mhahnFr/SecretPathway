@@ -17,28 +17,10 @@
  * this program, see the file LICENSE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package mhahnFr.SecretPathway.gui.editor;
-
 /**
- * This class represents a suggestion for the {@code switch}
- * statement.
+ * This package contains all suggestion related classes.
  *
  * @author mhahnFr
- * @since 16.03.23
+ * @since 22.03.23
  */
-public class SwitchSuggestion implements Suggestion {
-    @Override
-    public String getSuggestion() {
-        return "switch () {\n    \n}";
-    }
-
-    @Override
-    public String getDescription() {
-        return "switch-statement";
-    }
-
-    @Override
-    public int getRelativeCursorPosition() {
-        return 8;
-    }
-}
+package mhahnFr.SecretPathway.gui.editor.suggestions;

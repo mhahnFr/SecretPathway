@@ -26,6 +26,7 @@ import mhahnFr.SecretPathway.core.lpc.parser.Parser;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Tokenizer;
+import mhahnFr.SecretPathway.gui.editor.suggestions.Suggestion;
 import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
 import mhahnFr.utils.Pair;
 import mhahnFr.utils.StringStream;
