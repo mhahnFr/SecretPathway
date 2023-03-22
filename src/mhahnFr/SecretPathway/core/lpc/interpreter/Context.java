@@ -157,7 +157,8 @@ public class Context extends Instruction {
         toReturn.add(new TypeSuggestion(TokenType.VOID));
 
         if (isGlobalScope(position)) {
-
+            toReturn.add(new InheritSuggestion());
+            toReturn.add(new IncludeSuggestion());
             toReturn.add(new TypeSuggestion(TokenType.PRIVATE));
             toReturn.add(new TypeSuggestion(TokenType.PROTECTED));
             toReturn.add(new TypeSuggestion(TokenType.PUBLIC));
