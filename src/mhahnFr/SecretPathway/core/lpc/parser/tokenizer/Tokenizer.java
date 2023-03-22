@@ -228,11 +228,7 @@ public class Tokenizer {
         stream.skip(2);
 
         final var buffer = new StringBuilder();
-        while (stream.hasNext() && (Character.isAlphabetic(stream.peek()) ||
-                                    Character.isDigit(stream.peek())      ||
-                                    stream.peek() == '_'                  ||
-                                    stream.peek() == '$'                  ||
-                                    stream.peek() == '#')) {
+        while (stream.hasNext() && !isSpecial(stream.peek())) {
             buffer.append(stream.next());
         }
         return buffer.toString();
@@ -279,7 +275,7 @@ public class Tokenizer {
      * @param c the character to be checked
      * @return whether the given character is special
      */
-    private boolean isSpecial(char c) {
+    public static boolean isSpecial(char c) {
         return !(Character.isAlphabetic(c) || Character.isDigit(c) || c == '_' || c == '$' || c == '#');
     }
 }
