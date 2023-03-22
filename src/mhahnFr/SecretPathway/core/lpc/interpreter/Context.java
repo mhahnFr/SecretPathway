@@ -104,6 +104,11 @@ public class Context extends Instruction {
             }
         }
 
+        final var definition = queryEnclosingFunction();
+        if (definition != null && definition.isVariadic()) {
+            toReturn.add(new PlainSuggestion("..."));
+        }
+
         return toReturn;
     }
 

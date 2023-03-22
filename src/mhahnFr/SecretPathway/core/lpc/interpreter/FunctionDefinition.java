@@ -84,7 +84,7 @@ public class FunctionDefinition extends Definition {
                 typeString = ts;
             }
             builder.append(typeString).append(' ').append(parameter.getName());
-            if (iterator.hasNext()) {
+            if (iterator.hasNext() || variadic) {
                 builder.append(", ");
             }
         }
