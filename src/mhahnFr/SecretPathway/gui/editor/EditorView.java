@@ -290,18 +290,45 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
             suggestionsWindow.setVisible(false);
             removeSuggestionKeyActions();
         } else {
-            suggestionsWindow.updateSuggestions(document.getAvailableSuggestions(textPane.getCaretPosition()));
-            addSuggestionKeyActions();
+            final var suggestions = document.getAvailableSuggestions(textPane.getCaretPosition());
+            final var position = textPane.getCaretPosition();
             final Rectangle2D caretPosition;
             try {
-                caretPosition = textPane.modelToView2D(textPane.getCaretPosition());
+                if (document.isInWord(position)) {
+                    final var begin = document.getWordBegin(position);
+                    final var wordBegin = document.getText(begin, position - begin);
+                    suggestions.sort((a, b) -> {
+                        final String aDesc = a.getDescription(),
+                                     bDesc = b.getDescription();
+
+                        boolean aa = aDesc != null && aDesc.startsWith(wordBegin),
+                                bb = bDesc != null && bDesc.startsWith(wordBegin);
+
+                        if (!aa && !bb) {
+                            aa = aDesc != null && aDesc.contains(wordBegin);
+                            bb = bDesc != null && bDesc.contains(wordBegin);
+                        }
+                        if (aa == bb) {
+                            return 0;
+                        } else if (aa) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    });
+                    caretPosition = textPane.modelToView2D(begin);
+                } else {
+                    caretPosition = textPane.modelToView2D(textPane.getCaretPosition());
+                }
             } catch (BadLocationException e) {
                 System.err.println("Impossible error:");
                 e.printStackTrace();
                 System.err.println("-----------------");
                 return;
             }
-            final var panePosition  = textPane.getLocationOnScreen();
+            suggestionsWindow.updateSuggestions(suggestions);
+            addSuggestionKeyActions();
+            final var panePosition = textPane.getLocationOnScreen();
             suggestionsWindow.setLocation((int) (caretPosition.getX() + panePosition.x),
                                           (int) (caretPosition.getY() + panePosition.y + Settings.getInstance().getFontSize()));
             suggestionsWindow.pack();

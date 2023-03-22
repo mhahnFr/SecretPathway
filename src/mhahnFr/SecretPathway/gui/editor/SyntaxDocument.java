@@ -277,6 +277,14 @@ public class SyntaxDocument extends DefaultStyledDocument {
                     insertion = str.substring(0, nlIndex + 1)
                               + str.substring(nlIndex + 1).indent(getPreviousIndent(offs));
                 } else {
+//                    if (str.length() == 1 && !Tokenizer.isSpecial(str.charAt(0))) {
+                        // Show suggestions
+//                        try {
+//                            System.out.println("In word: " + getWord(offs));
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
                     insertion = str;
                 }
             }
@@ -314,7 +322,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
      * @return whether the position is in or at a word
      * @throws BadLocationException if the given position is out of bounds
      */
-    private boolean isInWord(final int offs) throws BadLocationException {
+    public boolean isInWord(final int offs) throws BadLocationException {
         return (offs > 0 && !Tokenizer.isSpecial(getText(offs - 1, 1).charAt(0))) ||
                (offs < getLength() && !Tokenizer.isSpecial(getText(offs, 1).charAt(0)));
     }
@@ -328,7 +336,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
      * @return the beginning position of the word
      * @throws BadLocationException if the position is out of bounds
      */
-    private int getWordBegin(final int offs) throws BadLocationException {
+    public int getWordBegin(final int offs) throws BadLocationException {
         final var previousText = getText(0, offs);
 
         int begin;
