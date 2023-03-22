@@ -36,6 +36,7 @@ import mhahnFr.utils.StringStream;
 import javax.swing.text.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -55,6 +56,8 @@ public class SyntaxDocument extends DefaultStyledDocument {
     private Runnable updateCallback;
     /** The caret mover responsible for moving the caret.     */
     private CaretMover caretMover;
+    /** The suggestion shower.                                */
+    private SuggestionShower suggestionShower;
     /** Ignores an insertion.                                 */
     private Pair<Integer, String> ignore;
     /** The theme to be used for the syntax highlighting.     */
@@ -85,6 +88,24 @@ public class SyntaxDocument extends DefaultStyledDocument {
      */
     public void setCaretMover(final CaretMover caretMover) {
         this.caretMover = caretMover;
+    }
+
+    /**
+     * Returns the currently set {@link SuggestionShower}.
+     *
+     * @return the suggestion shower
+     */
+    public SuggestionShower getSuggestionShower() {
+        return suggestionShower;
+    }
+
+    /**
+     * Sets the {@link SuggestionShower} to be used.
+     *
+     * @param suggestionShower the new suggestion shower
+     */
+    public void setSuggestionShower(final SuggestionShower suggestionShower) {
+        this.suggestionShower = suggestionShower;
     }
 
     /**
@@ -277,16 +298,10 @@ public class SyntaxDocument extends DefaultStyledDocument {
                     insertion = str.substring(0, nlIndex + 1)
                               + str.substring(nlIndex + 1).indent(getPreviousIndent(offs));
                 } else {
-//                    if (str.length() == 1 && !Tokenizer.isSpecial(str.charAt(0))) {
-                    // Show suggestions
-//                        try {
-//                            System.out.println("In word: " + getWord(offs));
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
-//                    } else {
-//                        don't show suggestions
-//                    }
+                    if (suggestionShower != null) {
+                        suggestionShower.showSuggestions(
+                                str.length() == 1 && !Tokenizer.isSpecial(str.charAt(0)));
+                    }
                     insertion = str;
                 }
             }
