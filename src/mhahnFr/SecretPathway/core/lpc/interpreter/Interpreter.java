@@ -21,9 +21,9 @@ package mhahnFr.SecretPathway.core.lpc.interpreter;
 
 import mhahnFr.SecretPathway.core.lpc.parser.ast.*;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
-import mhahnFr.SecretPathway.gui.editor.ASTHighlight;
-import mhahnFr.SecretPathway.gui.editor.MessagedHighlight;
-import mhahnFr.SecretPathway.gui.editor.Highlight;
+import mhahnFr.SecretPathway.core.lpc.interpreter.highlight.ASTHighlight;
+import mhahnFr.SecretPathway.core.lpc.interpreter.highlight.MessagedHighlight;
+import mhahnFr.SecretPathway.core.lpc.interpreter.highlight.Highlight;
 import mhahnFr.utils.StreamPosition;
 
 import java.util.ArrayList;

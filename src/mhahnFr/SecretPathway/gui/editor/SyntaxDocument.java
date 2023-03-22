@@ -22,6 +22,8 @@ package mhahnFr.SecretPathway.gui.editor;
 import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.SecretPathway.core.lpc.interpreter.Context;
 import mhahnFr.SecretPathway.core.lpc.interpreter.Interpreter;
+import mhahnFr.SecretPathway.core.lpc.interpreter.highlight.Highlight;
+import mhahnFr.SecretPathway.core.lpc.interpreter.highlight.MessagedHighlight;
 import mhahnFr.SecretPathway.core.lpc.parser.Parser;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;

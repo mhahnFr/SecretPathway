@@ -17,14 +17,10 @@
  * this program, see the file LICENSE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package mhahnFr.SecretPathway.gui.editor;
-
 /**
- * This interface serves as a base class for all enumerated
- * types that can be highlighted.
+ * This package contains all highlight interface classes.
  *
  * @author mhahnFr
- * @since 04.03.23
+ * @since 22.03.23
  */
-public interface HighlightType {
-}
+package mhahnFr.SecretPathway.core.lpc.interpreter.highlight;

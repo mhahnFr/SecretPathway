@@ -17,25 +17,14 @@
  * this program, see the file LICENSE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package mhahnFr.SecretPathway.gui.editor.theme;
-
-import mhahnFr.SecretPathway.core.lpc.interpreter.highlight.HighlightType;
-import mhahnFr.utils.gui.abstraction.FStyle;
+package mhahnFr.SecretPathway.core.lpc.interpreter.highlight;
 
 /**
- * This interface defines the functionality of a syntax highlighting
- * theme.
+ * This interface serves as a base class for all enumerated
+ * types that can be highlighted.
  *
  * @author mhahnFr
- * @since 10.01.23
+ * @since 04.03.23
  */
-public interface SPTheme {
-    /**
-     * Generates and returns the style for the given
-     * highlighting type.
-     *
-     * @param highlightType the type to be highlighted
-     * @return the style used for the highlighting
-     */
-    FStyle styleFor(final HighlightType highlightType);
+public interface HighlightType {
 }

@@ -17,7 +17,7 @@
  * this program, see the file LICENSE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package mhahnFr.SecretPathway.gui.editor;
+package mhahnFr.SecretPathway.core.lpc.interpreter.highlight;
 
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTExpression;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTType;

@@ -19,7 +19,7 @@
 
 package mhahnFr.SecretPathway.core.lpc.interpreter;
 
-import mhahnFr.SecretPathway.gui.editor.HighlightType;
+import mhahnFr.SecretPathway.core.lpc.interpreter.highlight.HighlightType;
 
 /**
  * This enumeration contains the possible interpretation
