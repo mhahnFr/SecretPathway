@@ -244,7 +244,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
                 try {
                     final var suggestion = suggestionsWindow.getSelected();
                     if (suggestion != null) {
-                        document.insertSuggestion(textPane.getCaretPosition(), suggestion);
+                        document.insertSuggestion(textPane.getCaretPosition(), suggestion, false);
                         if (suggestion instanceof final DefinitionSuggestion definitionSuggestion &&
                             definitionSuggestion.definition() instanceof FunctionDefinition) {
                             // TODO: argument stumps
@@ -330,7 +330,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
             addSuggestionKeyActions();
             final var panePosition = textPane.getLocationOnScreen();
             suggestionsWindow.setLocation((int) (caretPosition.getX() + panePosition.x),
-                                          (int) (caretPosition.getY() + panePosition.y + Settings.getInstance().getFontSize()));
+                                          (int) (caretPosition.getY() + panePosition.y + Settings.getInstance().getFontSize() + 5));
             suggestionsWindow.pack();
             suggestionsWindow.setVisible(true);
         }

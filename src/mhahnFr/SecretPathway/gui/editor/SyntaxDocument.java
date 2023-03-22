@@ -373,32 +373,43 @@ public class SyntaxDocument extends DefaultStyledDocument {
     /**
      * Inserts the given suggestion and moves the cursor accordingly.
      *
-     * @param offset     where to insert the suggestion
-     * @param suggestion the suggestion to be inserted
+     * @param offset      where to insert the suggestion
+     * @param suggestion  the suggestion to be inserted
+     * @param replaceWord whether to replace the current word
      * @throws BadLocationException if the position is out of bounds
      */
-    public void insertSuggestion(final int offset, final Suggestion suggestion) throws BadLocationException {
-        final var str    = suggestion.getSuggestion();
+    public void insertSuggestion(final int        offset,
+                                 final Suggestion suggestion,
+                                 final boolean    replaceWord) throws BadLocationException {
+        final var suggString = suggestion.getSuggestion();
+        final var strLength  = suggString.length();
+
+        final String str;
+        if (isInWord(offset)) {
+            str = suggString.substring(offset - getWordBegin(offset));
+        } else {
+            str = suggString;
+        }
         final var indent = getPreviousIndent(offset);
 
         insertString(offset, str, null);
 
         final int toMove;
         if (suggestion.getRelativeCursorPosition() >= 0) {
-            if (str.contains("\n")) {
+            if (suggString.contains("\n")) {
                 int nlCount = 0,
                     fpnl    = 0;
-                for (int i = 0; i < str.length(); ++i) {
-                    if (str.charAt(i) == '\n') {
+                for (int i = 0; i < strLength; ++i) {
+                    if (suggString.charAt(i) == '\n') {
                         if (i < suggestion.getRelativeCursorPosition()) {
                             ++fpnl;
                         }
                         ++nlCount;
                     }
                 }
-                toMove = -(str.length() + nlCount * indent) + suggestion.getRelativeCursorPosition() + fpnl * indent - 1;
+                toMove = -(strLength + nlCount * indent) + suggestion.getRelativeCursorPosition() + fpnl * indent - 1;
             } else {
-                toMove = -str.length() + suggestion.getRelativeCursorPosition();
+                toMove = -strLength + suggestion.getRelativeCursorPosition();
             }
         } else {
             toMove = 0;
