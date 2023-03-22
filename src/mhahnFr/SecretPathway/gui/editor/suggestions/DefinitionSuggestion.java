@@ -33,4 +33,9 @@ public record DefinitionSuggestion(ASTTypeDefinition type, Definition definition
     public String getSuggestion() {
         return definition.getName();
     }
+
+    @Override
+    public String getDescription() {
+        return definition.toString();
+    }
 }
