@@ -106,6 +106,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
 
         document.setUpdateCallback(this::update);
         document.setCaretMover(delta -> textPane.setCaretPosition(textPane.getCaretPosition() + delta));
+        document.setSuggestionShower(this::showSuggestions);
 
         final var settings = Settings.getInstance();
         settings.addListener(this);
@@ -291,6 +292,61 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         addSaveCloseActions();
     }
 
+    private void showSuggestions(final boolean show) {
+        final var visible = suggestionsWindow.isVisible();
+        if ((show && !visible) ||
+            (!show && visible)) {
+            toggleSuggestionMenu();
+        }
+        if (show && visible) {
+            updateSuggestions();
+        }
+    }
+
+    /**
+     * Updates the suggestions displayed by the {@link #suggestionsWindow}.
+     *
+     * @return the beginning position
+     */
+    private int updateSuggestions() {
+        final var suggestions = document.getAvailableSuggestions(textPane.getCaretPosition());
+        final var position    = textPane.getCaretPosition();
+        var toReturn    = position;
+        try {
+            if (document.isInWord(position)) {
+                final var begin = document.getWordBegin(position);
+                toReturn = begin;
+                final var wordBegin = document.getText(begin, position - begin);
+                suggestions.sort((a, b) -> {
+                    final String aDesc = a.getDescription(),
+                            bDesc = b.getDescription();
+
+                    boolean aa = aDesc != null && aDesc.startsWith(wordBegin),
+                            bb = bDesc != null && bDesc.startsWith(wordBegin);
+
+                    if (!aa && !bb) {
+                        aa = aDesc != null && aDesc.contains(wordBegin);
+                        bb = bDesc != null && bDesc.contains(wordBegin);
+                    }
+                    if (aa == bb) {
+                        return 0;
+                    } else if (aa) {
+                        return -1;
+                    } else {
+                        return 1;
+                    }
+                });
+            }
+        } catch (BadLocationException e) {
+            System.err.println("Impossible error:");
+            e.printStackTrace();
+            System.err.println("-----------------");
+        }
+        suggestionsWindow.updateSuggestions(suggestions);
+        suggestionsWindow.validate();
+        return toReturn;
+    }
+
     /**
      * Handles the main keyboard action of the suggestions window.
      */
@@ -299,43 +355,15 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
             suggestionsWindow.setVisible(false);
             removeSuggestionKeyActions();
         } else {
-            final var suggestions = document.getAvailableSuggestions(textPane.getCaretPosition());
-            final var position = textPane.getCaretPosition();
             final Rectangle2D caretPosition;
             try {
-                if (document.isInWord(position)) {
-                    final var begin = document.getWordBegin(position);
-                    final var wordBegin = document.getText(begin, position - begin);
-                    suggestions.sort((a, b) -> {
-                        final String aDesc = a.getDescription(),
-                                     bDesc = b.getDescription();
-
-                        boolean aa = aDesc != null && aDesc.startsWith(wordBegin),
-                                bb = bDesc != null && bDesc.startsWith(wordBegin);
-
-                        if (!aa && !bb) {
-                            aa = aDesc != null && aDesc.contains(wordBegin);
-                            bb = bDesc != null && bDesc.contains(wordBegin);
-                        }
-                        if (aa == bb) {
-                            return 0;
-                        } else if (aa) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
-                    });
-                    caretPosition = textPane.modelToView2D(begin);
-                } else {
-                    caretPosition = textPane.modelToView2D(textPane.getCaretPosition());
-                }
+                caretPosition = textPane.modelToView2D(updateSuggestions());
             } catch (BadLocationException e) {
                 System.err.println("Impossible error:");
                 e.printStackTrace();
                 System.err.println("-----------------");
                 return;
             }
-            suggestionsWindow.updateSuggestions(suggestions);
             addSuggestionKeyActions();
             final var panePosition = textPane.getLocationOnScreen();
             suggestionsWindow.setLocation((int) (caretPosition.getX() + panePosition.x),

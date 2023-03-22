@@ -298,16 +298,16 @@ public class SyntaxDocument extends DefaultStyledDocument {
                     insertion = str.substring(0, nlIndex + 1)
                               + str.substring(nlIndex + 1).indent(getPreviousIndent(offs));
                 } else {
-                    if (suggestionShower != null) {
-                        suggestionShower.showSuggestions(
-                                str.length() == 1 && !Tokenizer.isSpecial(str.charAt(0)));
-                    }
                     insertion = str;
                 }
             }
         }
 
         super.insertString(offs, insertion, a);
+        if (suggestionShower != null) {
+            suggestionShower.showSuggestions(
+                    insertion.length() == 1 && !Tokenizer.isSpecial(insertion.charAt(0)));
+        }
         if (cursorDelta != 0 && caretMover != null) {
             caretMover.move(cursorDelta);
         }
@@ -443,6 +443,9 @@ public class SyntaxDocument extends DefaultStyledDocument {
         }
         if (toMove != 0 && caretMover != null) {
             caretMover.move(toMove);
+        }
+        if (suggestionShower != null) {
+            suggestionShower.showSuggestions(false);
         }
     }
 

@@ -187,6 +187,7 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
         for (final var suggestion : newSuggestions) {
             addSuggestion(suggestion);
         }
+        // FIXME: Don't loose selected suggestion - if removed, select first
     }
 
     /**
