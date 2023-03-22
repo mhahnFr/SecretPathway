@@ -51,4 +51,14 @@ public interface Suggestion {
     default int getRelativeCursorPosition() {
         return -1;
     }
+
+    /**
+     * Returns a text to be displayed on the right site
+     * of the {@link SuggestionsWindow}.
+     *
+     * @return the right site {@link String}
+     */
+    default String getRightSite() {
+        return "";
+    }
 }

@@ -38,4 +38,9 @@ public record DefinitionSuggestion(ASTTypeDefinition type, Definition definition
     public String getDescription() {
         return definition.toString();
     }
+
+    @Override
+    public String getRightSite() {
+        return type == null ? null : type.toString();
+    }
 }

@@ -64,24 +64,17 @@ public class SuggestionLabel {
 
         typeLabel = new JLabel("", SwingConstants.TRAILING);
         typeLabel.setBorder(new EmptyBorder(0, 0, 0, 5));
-        typeLabel.setForeground(Color.gray);
         typeLabel.setFont(Constants.UI.FONT);
         typeLabel.setOpaque(false);
 
-        final String typeString;
-        if (suggestion instanceof final DefinitionSuggestion definitionSuggestion) {
-            final var type = definitionSuggestion.type();
-            final String ts;
-            if (type == null || (ts = type.toString()) == null) {
-                typeString = "<< unknown >>";
-                typeLabel.setForeground(Color.red);
-            } else {
-                typeString = ts;
-            }
+        final var rightSite = suggestion.getRightSite();
+        if (rightSite == null) {
+            typeLabel.setText("<< unknown >>");
+            typeLabel.setForeground(Color.red);
         } else {
-            typeString = "";
+            typeLabel.setText(rightSite);
+            typeLabel.setForeground(Color.gray);
         }
-        typeLabel.setText(typeString);
         this.represented = suggestion;
         setDark(dark);
     }
