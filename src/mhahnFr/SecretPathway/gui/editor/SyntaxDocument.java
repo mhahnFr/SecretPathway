@@ -274,7 +274,8 @@ public class SyntaxDocument extends DefaultStyledDocument {
             default -> {
                 if (str.contains("\n")) {
                     final var nlIndex = str.indexOf('\n');
-                    insertion = str.substring(0, nlIndex + 1) + str.substring(nlIndex + 1).indent(getPreviousIndent(offs));
+                    insertion = str.substring(0, nlIndex + 1)
+                              + str.substring(nlIndex + 1).indent(getPreviousIndent(offs));
                 } else {
                     insertion = str;
                 }
@@ -286,6 +287,79 @@ public class SyntaxDocument extends DefaultStyledDocument {
             caretMover.move(cursorDelta);
         }
         maybeUpdateHighlight();
+    }
+
+    /**
+     * Returns the word that is found at the given position.
+     * If no word is found, {@code null} is returned.
+     *
+     * @param at the position
+     * @return the found word or {@code null}
+     * @throws BadLocationException if the given position is out of bounds
+     */
+    public String getWord(final int at) throws BadLocationException {
+        if (isInWord(at)) {
+            return getText(getWordBegin(at), getWordEnd(at));
+        }
+        return null;
+    }
+
+    /**
+     * Returns whether the given position is in a word.
+     * That includes the word following immediately to the
+     * given position as well as immediately preceding the
+     * given position.
+     *
+     * @param offs the position to be checked
+     * @return whether the position is in or at a word
+     * @throws BadLocationException if the given position is out of bounds
+     */
+    private boolean isInWord(final int offs) throws BadLocationException {
+        return (offs > 0 && !Tokenizer.isSpecial(getText(offs - 1, 1).charAt(0))) ||
+               (offs < getLength() && !Tokenizer.isSpecial(getText(offs, 1).charAt(0)));
+    }
+
+    /**
+     * Returns the beginning position of the word found at the given
+     * position. There must be a word at the given position, e. g. when
+     * {@link #isInWord(int)} returns {@code true}.
+     *
+     * @param offs the position
+     * @return the beginning position of the word
+     * @throws BadLocationException if the position is out of bounds
+     */
+    private int getWordBegin(final int offs) throws BadLocationException {
+        final var previousText = getText(0, offs);
+
+        int begin;
+        for (begin = offs - 1; begin > 0 && !Tokenizer.isSpecial(previousText.charAt(begin)); --begin);
+
+        if (begin < 0 || Tokenizer.isSpecial(previousText.charAt(begin))) {
+            ++begin;
+        }
+        return begin;
+    }
+
+    /**
+     * Returns the end position of the word found at the given
+     * position. There must be a word at the given position, e. g.
+     * when {@link #isInWord(int)} returns {@link true}.
+     *
+     * @param offs the position
+     * @return the end position of the word
+     * @throws BadLocationException if the position is out of bounds
+     */
+    private int getWordEnd(final int offs) throws BadLocationException {
+        final var nextText = getText(offs, getLength() - offs);
+
+        int i;
+        for (i = 0; i < nextText.length() && !Tokenizer.isSpecial(nextText.charAt(i)); ++i);
+
+        if (i < nextText.length() && Tokenizer.isSpecial(nextText.charAt(i))) {
+            --i;
+        }
+
+        return offs + i;
     }
 
     /**
@@ -420,7 +494,8 @@ public class SyntaxDocument extends DefaultStyledDocument {
             for (final var range : highlights) {
                 final var style = theme.styleFor(range.getType());
                 if (style != null) {
-                    setCharacterAttributes(range.getBegin(), range.getEnd() - range.getBegin(), style.asStyle(def), false);
+                    setCharacterAttributes(range.getBegin(), range.getEnd() - range.getBegin(),
+                            style.asStyle(def), false);
                 }
             }
             for (final var comment : comments) {
