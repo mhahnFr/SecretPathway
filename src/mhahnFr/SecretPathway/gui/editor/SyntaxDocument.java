@@ -248,6 +248,9 @@ public class SyntaxDocument extends DefaultStyledDocument {
             ignore = null;
         }
 
+        boolean update = false,
+                begin  = false,
+                end    = true;
         final String insertion;
         switch (str) {
             case "\t" -> insertion = "    ";
@@ -298,6 +301,13 @@ public class SyntaxDocument extends DefaultStyledDocument {
                     insertion = str.substring(0, nlIndex + 1)
                               + str.substring(nlIndex + 1).indent(getPreviousIndent(offs));
                 } else {
+                    if (str.length() == 1 && !Tokenizer.isSpecial(str.charAt(0))) {
+                        if (isSpecial(offs - 1) && isSpecial(offs)) {
+                            begin = true;
+                        }
+                        update = true;
+                        end = false;
+                    }
                     insertion = str;
                 }
             }
@@ -305,13 +315,31 @@ public class SyntaxDocument extends DefaultStyledDocument {
 
         super.insertString(offs, insertion, a);
         if (suggestionShower != null) {
-            suggestionShower.showSuggestions(
-                    insertion.length() == 1 && !Tokenizer.isSpecial(insertion.charAt(0)));
+            if (update)   suggestionShower.updateSuggestions();
+            if (begin)    suggestionShower.beginSuggestions();
+            else if (end) suggestionShower.endSuggestions();
         }
         if (cursorDelta != 0 && caretMover != null) {
             caretMover.move(cursorDelta);
         }
         maybeUpdateHighlight();
+    }
+
+    /**
+     * Returns whether the character found at the given offset is considered
+     * to be special. If the offset is out of bounds, {@code true} is returned.
+     *
+     * @param offset the offset of the character to be checked
+     * @return whether the found character is special
+     */
+    private boolean isSpecial(final int offset) {
+        if (offset < 0 || offset > getLength()) return true;
+
+        try {
+            return Tokenizer.isSpecial(getText(offset, 1).charAt(0));
+        } catch (BadLocationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -445,7 +473,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
             caretMover.move(toMove);
         }
         if (suggestionShower != null) {
-            suggestionShower.showSuggestions(false);
+            suggestionShower.endSuggestions();
         }
     }
 

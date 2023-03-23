@@ -26,13 +26,10 @@ package mhahnFr.SecretPathway.gui.editor;
  * @author mhahnFr
  * @since 22.03.23
  */
-@FunctionalInterface
 public interface SuggestionShower {
-    /**
-     * Called when the suggestions should be shown or
-     * not shown.
-     *
-     * @param show whether to show the suggestions
-     */
-    void showSuggestions(final boolean show);
+    void updateSuggestions();
+
+    void beginSuggestions();
+
+    void endSuggestions();
 }

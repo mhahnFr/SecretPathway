@@ -45,7 +45,7 @@ import java.util.List;
  * @author mhahnFr
  * @since 05.01.23
  */
-public class EditorView extends JPanel implements SettingsListener, FocusListener {
+public class EditorView extends JPanel implements SettingsListener, FocusListener, SuggestionShower {
     /** A list consisting of all components enabling the dark mode. */
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
     /** The window displaying the available suggestions.            */
@@ -106,13 +106,32 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
 
         document.setUpdateCallback(this::update);
         document.setCaretMover(delta -> textPane.setCaretPosition(textPane.getCaretPosition() + delta));
-        document.setSuggestionShower(this::showSuggestions);
+        document.setSuggestionShower(this);
 
         final var settings = Settings.getInstance();
         settings.addListener(this);
         setDark(settings.getDarkMode());
         setFontSize(settings.getFontSize());
         addKeyActions();
+    }
+
+    @Override
+    public void beginSuggestions() {
+        if (!suggestionsWindow.isVisible()) {
+            toggleSuggestionMenu();
+        }
+    }
+
+    @Override
+    public void endSuggestions() {
+        if (suggestionsWindow.isVisible()) {
+            toggleSuggestionMenu();
+        }
+    }
+
+    @Override
+    public void updateSuggestions() {
+        updateSuggestionsImpl();
     }
 
     @Override
@@ -292,7 +311,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         addSaveCloseActions();
     }
 
-    private void showSuggestions(final boolean show) {
+    private void showSuggestionsOld(final boolean show) {
         final var visible = suggestionsWindow.isVisible();
         if ((show && !visible) ||
             (!show && visible)) {
@@ -308,7 +327,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
      *
      * @return the beginning position
      */
-    private int updateSuggestions() {
+    private int updateSuggestionsImpl() {
         final var suggestions = document.getAvailableSuggestions(textPane.getCaretPosition());
         final var position    = textPane.getCaretPosition();
         var toReturn    = position;
@@ -357,7 +376,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         } else {
             final Rectangle2D caretPosition;
             try {
-                caretPosition = textPane.modelToView2D(updateSuggestions());
+                caretPosition = textPane.modelToView2D(updateSuggestionsImpl());
             } catch (BadLocationException e) {
                 System.err.println("Impossible error:");
                 e.printStackTrace();
