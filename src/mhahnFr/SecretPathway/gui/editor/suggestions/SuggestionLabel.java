@@ -20,8 +20,6 @@
 package mhahnFr.SecretPathway.gui.editor.suggestions;
 
 import mhahnFr.SecretPathway.core.Constants;
-import mhahnFr.SecretPathway.gui.editor.suggestions.DefinitionSuggestion;
-import mhahnFr.SecretPathway.gui.editor.suggestions.Suggestion;
 import mhahnFr.utils.gui.DarkComponent;
 
 import javax.swing.*;
