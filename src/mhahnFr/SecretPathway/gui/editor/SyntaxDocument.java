@@ -34,8 +34,9 @@ import mhahnFr.utils.Pair;
 import mhahnFr.utils.StringStream;
 
 import javax.swing.text.*;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -67,6 +68,8 @@ public class SyntaxDocument extends DefaultStyledDocument {
     private volatile List<Highlight<?>> highlights;
     /** The execution service for interpreting the code.      */
     private final ExecutorService thread = Executors.newSingleThreadExecutor();
+    /** All previously recognized tokens.                     */
+    private final Vector<Token> tokens = new Vector<>();
 
     /**
      * Returns the currently used caret mover.
@@ -300,9 +303,12 @@ public class SyntaxDocument extends DefaultStyledDocument {
                     insertion = str.substring(0, nlIndex + 1)
                               + str.substring(nlIndex + 1).indent(getPreviousIndent(offs));
                 } else {
-                    if (str.length() == 1 && !Tokenizer.isSpecial(str.charAt(0))) {
+                    if (str.length() == 1 && !Tokenizer.isSpecial(str.charAt(0)) && !Character.isDigit(str.charAt(0))) {
                         if (isSpecial(offs - 1) && isSpecial(offs)) {
-                            begin = true;
+                            begin = !isInToken(offs, TokenType.STRING,
+                                                     TokenType.CHARACTER,
+                                                     TokenType.COMMENT_BLOCK,
+                                                     TokenType.COMMENT_LINE);
                         }
                         update = true;
                         end = false;
@@ -322,6 +328,25 @@ public class SyntaxDocument extends DefaultStyledDocument {
             caretMover.move(cursorDelta);
         }
         maybeUpdateHighlight();
+    }
+
+    /**
+     * Returns whether the given offset is in a {@link Token}
+     * of the given {@link TokenType}.
+     *
+     * @param offset the offset
+     * @param type   the types
+     * @return whether the position is in a token of the given type
+     */
+    private boolean isInToken(final int offset, final TokenType... type) {
+        final var types = Arrays.asList(type);
+
+        for (final var token : tokens) {
+            if (types.contains(token.type()) && offset < token.end() && offset > token.begin()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -555,16 +580,14 @@ public class SyntaxDocument extends DefaultStyledDocument {
         final var tokenizer = new Tokenizer(new StringStream(text));
         tokenizer.setCommentTokensEnabled(true);
 
-        final var comments = new ArrayList<Token>();
+        tokens.clear();
 
         Token token;
         while ((token = tokenizer.nextToken()).type() != TokenType.EOF) {
             final var style = theme.styleFor(token.type());
             setCharacterAttributes(token.begin(), token.end() - token.begin(),
                     style == null ? def : style.asStyle(def), true);
-            if (token.is(TokenType.COMMENT_LINE) || token.is(TokenType.COMMENT_BLOCK)) {
-                comments.add(token);
-            }
+            tokens.add(token);
         }
 
         thread.execute(() -> {
@@ -578,10 +601,12 @@ public class SyntaxDocument extends DefaultStyledDocument {
                             style.asStyle(def), false);
                 }
             }
-            for (final var comment : comments) {
-                final var style = theme.styleFor(comment.type());
-                setCharacterAttributes(comment.begin(), comment.end() - comment.begin(),
-                        style == null ? def : style.asStyle(def), true);
+            for (final var t : tokens) {
+                if (t.is(TokenType.COMMENT_LINE) || t.is(TokenType.COMMENT_BLOCK)) {
+                    final var style = theme.styleFor(t.type());
+                    setCharacterAttributes(t.begin(), t.end() - t.begin(),
+                            style == null ? def : style.asStyle(def), true);
+                }
             }
             if (updateCallback != null) {
                 updateCallback.run();
@@ -620,7 +645,8 @@ public class SyntaxDocument extends DefaultStyledDocument {
     public String getMessageFor(int position) {
         for (final var entry : highlights) {
             if (position >= entry.getBegin() && position <= entry.getEnd()
-                    && entry instanceof MessagedHighlight<?>) {
+                    && entry instanceof MessagedHighlight<?>
+                    && !isInToken(position, TokenType.COMMENT_BLOCK, TokenType.COMMENT_LINE)) {
                 return ((MessagedHighlight<?>) entry).getMessage();
             }
         }
