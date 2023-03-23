@@ -27,9 +27,18 @@ package mhahnFr.SecretPathway.gui.editor;
  * @since 22.03.23
  */
 public interface SuggestionShower {
+    /**
+     * Called when the suggestions should be updated.
+     */
     void updateSuggestions();
 
+    /**
+     * Called when the shower of suggestions should start.
+     */
     void beginSuggestions();
 
+    /**
+     * Called when the shower should be turned off.
+     */
     void endSuggestions();
 }
