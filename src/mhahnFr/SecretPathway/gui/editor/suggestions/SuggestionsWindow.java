@@ -126,6 +126,14 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
         }
     }
 
+    /**
+     * Selects the suggestion at the given index. Deselects
+     * the currently selected one. The given index will be set
+     * as the current index.
+     *
+     * @param newIndex the new index
+     * @see #index
+     */
     private void select(final int newIndex) {
         suggestions.get(index).setSelected(false);
         index = newIndex;
@@ -213,6 +221,9 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
         updateSize();
     }
 
+    /**
+     * Updates the size of this popup.
+     */
     private void updateSize() {
         if (suggestions.size() > 10) {
             final var suggestion = suggestions.get(0);
@@ -266,9 +277,9 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
         } else {
             if (suggestions.isEmpty()) {
                 suggestionLeftPanel.remove(noSuggestionsLabel);
-            } else {
+            }/* else {
                 suggestions.get(index).setSelected(false);
-            }
+            }*/
         }
         updateSize();
         super.setVisible(b);
