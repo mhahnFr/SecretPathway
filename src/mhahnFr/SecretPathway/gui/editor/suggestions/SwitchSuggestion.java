@@ -19,8 +19,6 @@
 
 package mhahnFr.SecretPathway.gui.editor.suggestions;
 
-import mhahnFr.SecretPathway.gui.editor.suggestions.Suggestion;
-
 /**
  * This class represents a suggestion for the {@code switch}
  * statement.
