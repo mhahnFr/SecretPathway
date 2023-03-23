@@ -182,10 +182,10 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      */
     public void updateSuggestions(final Collection<Suggestion> newSuggestions) {
         final Suggestion selected;
-        if (!suggestions.isEmpty()) {
-            selected = suggestions.get(index).getRepresented();
-        } else {
+        if (suggestions.isEmpty()) {
             selected = null;
+        } else {
+            selected = suggestions.get(index).getRepresented();
         }
         clearSuggestions();
         index = 0;
@@ -198,12 +198,19 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
                 found = true;
             }
         }
-        if (index >= suggestions.size()) {
-            index = 0;
+        if (suggestions.isEmpty()) {
+            suggestionLeftPanel.add(noSuggestionsLabel);
+        } else {
+            if (selected == null) {
+                suggestionLeftPanel.remove(noSuggestionsLabel);
+            }
+            if (index >= suggestions.size()) {
+                index = 0;
+            }
+            select(index);
         }
         validate();
         updateSize();
-        select(index);
     }
 
     private void updateSize() {

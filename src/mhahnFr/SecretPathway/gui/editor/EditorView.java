@@ -156,6 +156,9 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
             EventQueue.invokeLater(this::update);
         } else {
             statusLabel.setText(document.getMessageFor(textPane.getCaretPosition()));
+            if (suggestionsWindow.isVisible()) {
+                updateSuggestionsImpl();
+            }
         }
     }
 
@@ -329,7 +332,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
                 final var wordBegin = document.getText(begin, position - begin);
                 suggestions.sort((a, b) -> {
                     final String aDesc = a.getDescription(),
-                            bDesc = b.getDescription();
+                                 bDesc = b.getDescription();
 
                     boolean aa = aDesc != null && aDesc.startsWith(wordBegin),
                             bb = bDesc != null && bDesc.startsWith(wordBegin);
@@ -345,6 +348,10 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
                     } else {
                         return 1;
                     }
+                });
+                suggestions.removeIf(suggestion -> {
+                    final var desc = suggestion.getDescription();
+                    return desc == null || !desc.contains(wordBegin);
                 });
             }
         } catch (BadLocationException e) {

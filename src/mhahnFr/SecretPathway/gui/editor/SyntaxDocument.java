@@ -480,8 +480,12 @@ public class SyntaxDocument extends DefaultStyledDocument {
     public void remove(int offs, int len) throws BadLocationException {
         super.remove(offs, len);
 
-        if (suggestionShower != null && !isInWord(offs)) {
-            suggestionShower.endSuggestions();
+        if (suggestionShower != null) {
+            if (!isInWord(offs)) {
+                suggestionShower.endSuggestions();
+            } else {
+                suggestionShower.updateSuggestions();
+            }
         }
 
         maybeUpdateHighlight();
