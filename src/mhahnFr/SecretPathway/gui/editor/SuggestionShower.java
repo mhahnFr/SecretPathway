@@ -38,6 +38,11 @@ public interface SuggestionShower {
     void beginSuggestions();
 
     /**
+     * Called when suggestions for super sends should be shown.
+     */
+    void beginSuperSuggestions();
+
+    /**
      * Called when the shower should be turned off.
      */
     void endSuggestions();

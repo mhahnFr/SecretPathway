@@ -123,6 +123,11 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
     }
 
     @Override
+    public void beginSuperSuggestions() {
+        beginSuggestions();
+    }
+
+    @Override
     public void endSuggestions() {
         if (suggestionsWindow.isVisible()) {
             toggleSuggestionMenu();

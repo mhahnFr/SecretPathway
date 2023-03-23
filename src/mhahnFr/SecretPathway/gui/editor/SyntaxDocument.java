@@ -238,6 +238,23 @@ public class SyntaxDocument extends DefaultStyledDocument {
         };
     }
 
+    /**
+     * Returns whether the character at the given position is a colon.
+     * If the offset is out of bounds, {@code false} is returned.
+     *
+     * @param offset the offset
+     * @return whether the found character is a colon
+     */
+    private boolean isColon(final int offset) {
+        if (offset < 0 || offset > getLength()) return false;
+
+        try {
+            return getText(offset, 1).equals(":");
+        } catch (BadLocationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void insertString(int offs, final String str, final AttributeSet a) throws BadLocationException {
         int cursorDelta = 0;
@@ -250,9 +267,10 @@ public class SyntaxDocument extends DefaultStyledDocument {
             ignore = null;
         }
 
-        boolean update = false,
-                begin  = false,
-                end    = true;
+        boolean superBegin = false,
+                update     = false,
+                begin      = false,
+                end        = true;
         final String insertion;
         switch (str) {
             case "\t" -> insertion = "    ";
@@ -297,6 +315,13 @@ public class SyntaxDocument extends DefaultStyledDocument {
                 }
             }
 
+            case ":" -> {
+                if (isColon(offs - 1)) {
+                    superBegin = true;
+                }
+                insertion = str;
+            }
+
             default -> {
                 if (str.contains("\n")) {
                     final var nlIndex = str.indexOf('\n');
@@ -320,9 +345,10 @@ public class SyntaxDocument extends DefaultStyledDocument {
 
         super.insertString(offs, insertion, a);
         if (suggestionShower != null) {
-            if (update)   suggestionShower.updateSuggestions();
-            if (begin)    suggestionShower.beginSuggestions();
-            else if (end) suggestionShower.endSuggestions();
+            if (update)          suggestionShower.updateSuggestions();
+            if (begin)           suggestionShower.beginSuggestions();
+            else if (superBegin) suggestionShower.beginSuperSuggestions();
+            else if (end)        suggestionShower.endSuggestions();
         }
         if (cursorDelta != 0 && caretMover != null) {
             caretMover.move(cursorDelta);
