@@ -330,6 +330,11 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
                 final var begin = document.getWordBegin(position);
                 toReturn = begin;
                 final var wordBegin = document.getText(begin, position - begin);
+                suggestions.removeIf(suggestion -> {
+                    final var desc = suggestion.getDescription();
+
+                    return suggestion.getSuggestion() == null || desc == null || !desc.contains(wordBegin);
+                });
                 suggestions.sort((a, b) -> {
                     final String aDesc = a.getDescription(),
                                  bDesc = b.getDescription();
@@ -349,11 +354,8 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
                         return 1;
                     }
                 });
-                suggestions.removeIf(suggestion -> {
-                    final var desc = suggestion.getDescription();
-                    return desc == null || !desc.contains(wordBegin);
-                });
             }
+            suggestions.removeIf(s -> s.getSuggestion() == null);
         } catch (BadLocationException e) {
             System.err.println("Impossible error:");
             e.printStackTrace();
