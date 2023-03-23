@@ -105,8 +105,18 @@ public class Context extends Instruction {
         }
 
         final var definition = queryEnclosingFunction();
-        if (definition != null && definition.isVariadic()) {
-            toReturn.add(new PlainSuggestion("..."));
+        if (definition != null) {
+            if (definition.isVariadic()) {
+                toReturn.add(new PlainSuggestion("..."));
+            }
+            if (definition.getReturnType().isAssignableFrom(new ReturnType(TokenType.VOID))) {
+                toReturn.add(new ReturnSuggestion());
+            } else if (definition.getReturnType().isAssignableFrom(new ReturnType(TokenType.BOOL))) {
+                toReturn.add(new ValueReturnSuggestion(true));
+                toReturn.add(new ValueReturnSuggestion(false));
+            } else {
+                toReturn.add(new ValueReturnSuggestion());
+            }
         }
 
         return toReturn;
