@@ -20,8 +20,6 @@
 package mhahnFr.SecretPathway.gui.editor.suggestions;
 
 import mhahnFr.SecretPathway.core.Settings;
-import mhahnFr.SecretPathway.gui.editor.suggestions.Suggestion;
-import mhahnFr.SecretPathway.gui.editor.suggestions.SuggestionLabel;
 import mhahnFr.utils.gui.DarkComponent;
 import mhahnFr.utils.gui.DarkModeListener;
 
@@ -98,19 +96,13 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      */
     public void selectNext() {
         if (!suggestions.isEmpty()) {
-            suggestions.get(index).setSelected(false);
+            final int newIndex;
             if (index + 1 >= suggestions.size()) {
-                index = 0;
+                newIndex = 0;
             } else {
-                ++index;
+                newIndex = index + 1;
             }
-
-            final var suggestion = suggestions.get(index);
-            suggestion.setSelected(true);
-            suggestionPanel.scrollRectToVisible(new Rectangle(suggestion.getX(),
-                                                              suggestion.getY(),
-                                                              suggestion.getWidth(),
-                                                              suggestion.getHeight() * 3));
+            select(newIndex);
         }
     }
 
@@ -124,22 +116,28 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      */
     public void selectPrevious() {
         if (!suggestions.isEmpty()) {
-            suggestions.get(index).setSelected(false);
+            final int newIndex;
             if (index - 1 < 0) {
-                index = suggestions.size() - 1;
+                newIndex = suggestions.size() - 1;
             } else {
-                --index;
+                newIndex = index - 1;
             }
-
-            final var suggestion = suggestions.get(index);
-            final var height     = suggestion.getHeight();
-
-            suggestion.setSelected(true);
-            suggestionPanel.scrollRectToVisible(new Rectangle(suggestion.getX(),
-                                                              suggestion.getY() - height * 2,
-                                                              suggestion.getWidth(),
-                                                              height * 3));
+            select(newIndex);
         }
+    }
+
+    private void select(final int newIndex) {
+        suggestions.get(index).setSelected(false);
+        index = newIndex;
+
+        final var suggestion = suggestions.get(index);
+        final var height     = suggestion.getHeight();
+
+        suggestion.setSelected(true);
+        suggestionPanel.scrollRectToVisible(new Rectangle(suggestion.getX(),
+                                                          suggestion.getY() - height * 2,
+                                                          suggestion.getWidth(),
+                                                          height * 5));
     }
 
     /**
@@ -183,11 +181,38 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      * @param newSuggestions the new suggestions to be displayed
      */
     public void updateSuggestions(final Collection<Suggestion> newSuggestions) {
+        final Suggestion selected;
+        if (!suggestions.isEmpty()) {
+            selected = suggestions.get(index).getRepresented();
+        } else {
+            selected = null;
+        }
         clearSuggestions();
+        index = 0;
+        var found = false;
         for (final var suggestion : newSuggestions) {
             addSuggestion(suggestion);
+            if (!suggestion.equals(selected) && !found) {
+                ++index;
+            } else {
+                found = true;
+            }
         }
-        // FIXME: Don't loose selected suggestion - if removed, select first
+        if (index >= suggestions.size()) {
+            index = 0;
+        }
+        validate();
+        updateSize();
+        select(index);
+    }
+
+    private void updateSize() {
+        if (suggestions.size() > 10) {
+            final var suggestion = suggestions.get(0);
+            setSize(suggestion.getWidth() + 20, suggestion.getHeight() * 10);
+        } else {
+            pack();
+        }
     }
 
     /**
@@ -229,22 +254,16 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
             if (suggestions.isEmpty()) {
                 suggestionLeftPanel.add(noSuggestionsLabel);
             } else {
-                suggestions.get(index).setSelected(true);
+                select(0);
             }
         } else {
             if (suggestions.isEmpty()) {
                 suggestionLeftPanel.remove(noSuggestionsLabel);
             } else {
                 suggestions.get(index).setSelected(false);
-                index = 0;
             }
         }
-        if (suggestions.size() > 10) {
-            final var suggestion = suggestions.get(0);
-            setSize(suggestion.getWidth() + 20, suggestion.getHeight() * 10);
-        } else {
-            pack();
-        }
+        updateSize();
         super.setVisible(b);
     }
 

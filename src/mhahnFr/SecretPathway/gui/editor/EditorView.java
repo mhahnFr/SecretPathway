@@ -292,7 +292,9 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         } catch (BadLocationException exception) {
             exception.printStackTrace();
         }
-        toggleSuggestionMenu();
+        if (suggestionsWindow.isVisible()) {
+            toggleSuggestionMenu();
+        }
     }
 
     /**
@@ -309,17 +311,6 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         m.removeKeyStrokeBinding(Constants.Editor.POPUP_ENTER);
         m.removeKeyStrokeBinding(Constants.Editor.POPUP_REPLACE);
         addSaveCloseActions();
-    }
-
-    private void showSuggestionsOld(final boolean show) {
-        final var visible = suggestionsWindow.isVisible();
-        if ((show && !visible) ||
-            (!show && visible)) {
-            toggleSuggestionMenu();
-        }
-        if (show && visible) {
-            updateSuggestions();
-        }
     }
 
     /**
@@ -362,7 +353,6 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
             System.err.println("-----------------");
         }
         suggestionsWindow.updateSuggestions(suggestions);
-        suggestionsWindow.validate();
         return toReturn;
     }
 
