@@ -255,7 +255,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
             case "\t" -> insertion = "    ";
 
             case "(", "{", "[", "\"", "'" -> {
-                if (isWhitespace(offs)) {
+                if (isSpecial(offs)) {
                     final var closing = getClosingString(str);
                     insertion = str + closing;
                     cursorDelta = -1;
