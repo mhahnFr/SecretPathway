@@ -19,13 +19,31 @@
 
 package mhahnFr.SecretPathway.gui.editor.suggestions;
 
+/**
+ * This class represents a suggestion for a value
+ * returning {@code return} statement.
+ *
+ * @author mhahnFr
+ * @since 23.03.23
+ */
 public class ValueReturnSuggestion extends ReturnSuggestion {
+    /** The suggested return value. */
     private final Object value;
 
+    /**
+     * Constructs this suggestion without a suggested value.
+     */
     public ValueReturnSuggestion() {
         this(null);
     }
 
+    /**
+     * Constructs this suggestion with the given suggested
+     * value. If the given value is {@code null}, no value
+     * is suggested.
+     *
+     * @param value the suggested value
+     */
     public ValueReturnSuggestion(final Object value) {
         this.value = value;
     }

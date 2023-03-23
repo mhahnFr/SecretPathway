@@ -19,6 +19,12 @@
 
 package mhahnFr.SecretPathway.gui.editor.suggestions;
 
+/**
+ * Represents a suggestion for a {@code return} statement.
+ *
+ * @author mhahnFr
+ * @since 23.03.23
+ */
 public class ReturnSuggestion extends StatementSuggestion {
     @Override
     public String getSuggestion() {
