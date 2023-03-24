@@ -355,7 +355,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
             }
 
             default -> {
-                if (str.contains("\n")) {
+                if (str.contains("\n") && !undoIgnore) {
                     final var nlIndex = str.indexOf('\n');
                     insertion = str.substring(0, nlIndex + 1)
                               + str.substring(nlIndex + 1).indent(getPreviousIndent(offs));
@@ -522,7 +522,6 @@ public class SyntaxDocument extends DefaultStyledDocument {
     public void insertSuggestion(int offset,
                                  final Suggestion suggestion,
                                  final boolean    replaceWord) throws BadLocationException {
-//        undoIgnore = true;
         final var suggString = suggestion.getSuggestion();
         final var strLength  = suggString.length();
 
@@ -571,7 +570,6 @@ public class SyntaxDocument extends DefaultStyledDocument {
         if (suggestionShower != null) {
             suggestionShower.endSuggestions();
         }
-//        undoIgnore = false;
     }
 
     @Override
