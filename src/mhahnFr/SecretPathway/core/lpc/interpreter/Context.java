@@ -170,9 +170,9 @@ public class Context extends Instruction {
         toReturn.add(new TypeSuggestion(TokenType.CHAR_KEYWORD));
         toReturn.add(new TypeSuggestion(TokenType.SYMBOL_KEYWORD));
         toReturn.add(new TypeSuggestion(TokenType.VOID));
-        toReturn.add(new TypeSuggestion(TokenType.NIL));
-        toReturn.add(new TypeSuggestion(TokenType.TRUE));
-        toReturn.add(new TypeSuggestion(TokenType.FALSE));
+        toReturn.add(new ValueSuggestion(TokenType.NIL));
+        toReturn.add(new ValueSuggestion(TokenType.TRUE));
+        toReturn.add(new ValueSuggestion(TokenType.FALSE));
 
         if (isGlobalScope(position)) {
             toReturn.add(new InheritSuggestion());
