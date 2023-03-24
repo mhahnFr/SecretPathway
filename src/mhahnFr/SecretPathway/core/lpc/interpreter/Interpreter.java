@@ -19,12 +19,14 @@
 
 package mhahnFr.SecretPathway.core.lpc.interpreter;
 
+import mhahnFr.SecretPathway.core.lpc.parser.Parser;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.*;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.core.lpc.interpreter.highlight.ASTHighlight;
 import mhahnFr.SecretPathway.core.lpc.interpreter.highlight.MessagedHighlight;
 import mhahnFr.SecretPathway.core.lpc.interpreter.highlight.Highlight;
 import mhahnFr.utils.StreamPosition;
+import mhahnFr.utils.StringStream;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +73,62 @@ public class Interpreter implements ASTVisitor {
         return highlights;
     }
 
+    /**
+     * Unwraps the given {@link ASTStrings} and returns the contained
+     * {@link String}.
+     *
+     * @param strings the {@link ASTStrings} to be unwrapped
+     * @return the contained {@link String}
+     */
+    private String unwrapStrings(final ASTStrings strings) {
+        final StringBuilder builder = new StringBuilder();
+
+        final var iterator = strings.getStrings().listIterator();
+        while (iterator.hasNext()) {
+            builder.append(cast(ASTString.class, iterator.next()).getValue());
+        }
+
+        return builder.toString();
+    }
+
+    /**
+     * Creates and returns the {@link Context} for the file
+     * represented by the given {@link ASTStrings}.
+     *
+     * @param name the file name
+     * @return the processed context
+     */
+    private Context createContextFor(final ASTStrings name) {
+        final var fileName = unwrapStrings(name);
+        // TODO: load
+        final var source = "bool comesFromSuper(int no, ...) {}";
+
+        final var ast = new Parser(source).parse();
+        return new Interpreter().createContextFor(ast);
+    }
+
+    /**
+     * Loads and adds the context read from the file represented
+     * by the given {@link ASTStrings} as super context of this
+     * file.
+     *
+     * @param name the file name
+     */
+    private void addInheriting(final ASTStrings name) {
+        current.addSuperContext(createContextFor(name));
+    }
+
+    /**
+     * Loads and adds the context read from the file represented
+     * by the given {@link ASTStrings} as included context of this
+     * file.
+     *
+     * @param name the file name
+     */
+    private void addIncluding(final ASTStrings name) {
+        current.addIncludedContext(createContextFor(name));
+    }
+
     @Override
     public boolean visitType(ASTType type) {
         return type != ASTType.BLOCK               &&
@@ -87,6 +145,7 @@ public class Interpreter implements ASTVisitor {
 
     @Override
     public void visit(ASTExpression expression) {
+        // TODO: super sends
         var highlight = true;
 
         switch (expression.getASTType()) {
@@ -274,6 +333,14 @@ public class Interpreter implements ASTVisitor {
                                                            "Inheriting from nothing"));
                     highlight = false;
                 }
+                addInheriting(cast(ASTStrings.class, inheritance.getInherited()));
+                currentType = new ReturnType(TokenType.VOID);
+            }
+
+            case AST_INCLUDE -> {
+                final var included = (ASTInclude) expression;
+
+                addIncluding(cast(ASTStrings.class, included.getIncluded()));
                 currentType = new ReturnType(TokenType.VOID);
             }
 
