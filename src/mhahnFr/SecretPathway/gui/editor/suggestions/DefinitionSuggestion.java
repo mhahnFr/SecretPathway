@@ -23,20 +23,57 @@ import mhahnFr.SecretPathway.core.lpc.interpreter.Definition;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTTypeDefinition;
 
 /**
- * This record represents a {@link Definition} suggestion.
+ * This class represents a {@link Definition} suggestion.
  *
- * @param type       the (return) type of the suggested definition
- * @param definition the suggested definition
+ * @author mhahnFr
+ * @since 13.03.23
  */
-public record DefinitionSuggestion(ASTTypeDefinition type, Definition definition) implements Suggestion {
+public class DefinitionSuggestion implements Suggestion {
+    /** The (return) type of the suggested definition.    */
+    private final ASTTypeDefinition type;
+    /** The suggested definition.                         */
+    private final Definition definition;
+    /** Indicates whether the suggestion is a super send. */
+    private boolean isSuper;
+
+    /**
+     * Constructs this suggestion using the provided information.
+     *
+     * @param type       the (return) type of the suggested definition
+     * @param definition the suggested definition
+     */
+    public DefinitionSuggestion(final ASTTypeDefinition type,
+                                final Definition        definition) {
+        this.type       = type;
+        this.definition = definition;
+    }
+
+    /**
+     * Sets whether this suggestion comes from a super context.
+     *
+     * @param isSuper whether this suggestion comes from a super context
+     */
+    public void setIsSuperDefinition(final boolean isSuper) {
+        this.isSuper = isSuper;
+    }
+
+    /**
+     * Returns the suggested {@link Definition}.
+     *
+     * @return the suggested {@link Definition}
+     */
+    public Definition getDefinition() {
+        return definition;
+    }
+
     @Override
     public String getSuggestion() {
-        return definition.getName();
+        return (isSuper ? "::" : "") + definition.getName();
     }
 
     @Override
     public String getDescription() {
-        return definition.toString();
+        return (isSuper ? "::" : "") + definition.toString();
     }
 
     @Override

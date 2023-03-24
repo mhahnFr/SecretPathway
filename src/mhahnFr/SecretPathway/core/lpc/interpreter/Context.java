@@ -124,8 +124,7 @@ public class Context extends Instruction {
      * @return the available instructions
      */
     private Collection<Suggestion> availableDefinitions(final int at) {
-        final var toReturn = new HashSet<>(createSuperSuggestions()); // TODO: Add later
-        includedContexts.forEach(c -> toReturn.addAll(c.availableDefinitions(Integer.MAX_VALUE)));
+        final var toReturn = new HashSet<Suggestion>();
 
         for (final var instruction : instructions.entrySet()) {
             if (instruction.getKey() < at) {
@@ -137,6 +136,21 @@ public class Context extends Instruction {
                 }
             }
         }
+
+        final var superSuggestions = createSuperSuggestions();
+        superSuggestions.forEach(s -> {
+            if (s instanceof final DefinitionSuggestion suggestion) {
+                for (final var maybeSuggestion : toReturn) {
+                    if (maybeSuggestion.getSuggestion().equals(suggestion.getSuggestion())) {
+                        suggestion.setIsSuperDefinition(true);
+                        break;
+                    }
+                }
+            }
+        });
+        toReturn.addAll(superSuggestions);
+
+        includedContexts.forEach(c -> toReturn.addAll(c.availableDefinitions(Integer.MAX_VALUE)));
 
         final var definition = queryEnclosingFunction();
         if (definition != null) {
