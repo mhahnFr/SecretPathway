@@ -93,5 +93,9 @@ public final class Constants {
         public static final KeyStroke POPUP_ENTER = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
         /** The keystroke for replacing with the selected suggestion. */
         public static final KeyStroke POPUP_REPLACE = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0);
+        /** The keystroke for undoing an edit action.                 */
+        public static final KeyStroke UNDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.META_DOWN_MASK); // TODO: Platforms
+        /** The keystroke for redoing an edit action.                 */
+        public static final KeyStroke REDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.META_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK); // TODO: Platforms
     }
 }

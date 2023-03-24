@@ -31,10 +31,9 @@ import mhahnFr.utils.gui.DarkTextComponent;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.BadLocationException;
+import javax.swing.undo.UndoManager;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import java.awt.event.*;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -201,6 +200,30 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
             @Override
             public void actionPerformed(ActionEvent e) {
                 toggleSuggestionMenu();
+            }
+        });
+        map.addActionForKeyStroke(Constants.Editor.UNDO, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    document.undo();
+                } catch (BadLocationException ex) {
+                    System.err.println("Should not happen:");
+                    ex.printStackTrace();
+                    System.err.println("------------------");
+                }
+            }
+        });
+        map.addActionForKeyStroke(Constants.Editor.REDO, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    document.redo();
+                } catch (BadLocationException ex) {
+                    System.err.println("Should not happen:");
+                    ex.printStackTrace();
+                    System.err.println("------------------");
+                }
             }
         });
         addSaveCloseActions();

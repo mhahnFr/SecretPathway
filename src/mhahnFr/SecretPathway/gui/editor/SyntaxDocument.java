@@ -71,6 +71,37 @@ public class SyntaxDocument extends DefaultStyledDocument {
     private final ExecutorService thread = Executors.newSingleThreadExecutor();
     /** All previously recognized tokens.                     */
     private final Vector<Token> tokens = new Vector<>();
+    private final UndoableAction[] actions = new UndoableAction[1024];
+    private int actionIndex = -1;
+    private boolean undoIgnore;
+
+    public void undo() throws BadLocationException {
+        if (actionIndex >= 0) {
+            final var edit = actions[actionIndex--];
+
+            undoIgnore = true;
+            if (edit.was(UndoableActionType.INSERT)) {
+                remove(edit.offset(), edit.string().length());
+            } else {
+                insertString(edit.offset(), edit.string(), null);
+            }
+            undoIgnore = false;
+        }
+    }
+
+    public void redo() throws BadLocationException {
+        if (actionIndex < actions.length - 1 && actions[actionIndex + 1] != null) {
+            final var edit = actions[++actionIndex];
+
+            undoIgnore = true;
+            if (edit.was(UndoableActionType.INSERT)) {
+                insertString(edit.offset(), edit.string(), null);
+            } else {
+                remove(edit.offset(), edit.string().length());
+            }
+            undoIgnore = false;
+        }
+    }
 
     /**
      * Returns the currently used caret mover.
@@ -345,6 +376,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
         }
 
         super.insertString(offs, insertion, a);
+        addUndoableAction(UndoableActionType.INSERT, offs, insertion);
         if (suggestionShower != null) {
             if (update)          suggestionShower.updateSuggestions();
             if (begin)           suggestionShower.beginSuggestions();
@@ -355,6 +387,18 @@ public class SyntaxDocument extends DefaultStyledDocument {
             caretMover.move(cursorDelta);
         }
         maybeUpdateHighlight();
+    }
+
+    private void addUndoableAction(final UndoableActionType type, final int offset, final String insertion) {
+        if (undoIgnore) return;
+
+        if (actionIndex + 1 >= actions.length) {
+            for (int i = 0; i < actions.length - 1; ++i) {
+                actions[i] = actions[i + 1];
+            }
+            --actionIndex;
+        }
+        actions[++actionIndex] = new UndoableAction(type, offset, insertion);
     }
 
     /**
@@ -478,6 +522,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
     public void insertSuggestion(int offset,
                                  final Suggestion suggestion,
                                  final boolean    replaceWord) throws BadLocationException {
+//        undoIgnore = true;
         final var suggString = suggestion.getSuggestion();
         final var strLength  = suggString.length();
 
@@ -526,10 +571,12 @@ public class SyntaxDocument extends DefaultStyledDocument {
         if (suggestionShower != null) {
             suggestionShower.endSuggestions();
         }
+//        undoIgnore = false;
     }
 
     @Override
     public void remove(int offs, int len) throws BadLocationException {
+        addUndoableAction(UndoableActionType.REMOVE, offs, getText(offs, len));
         super.remove(offs, len);
 
         if (suggestionShower != null) {
