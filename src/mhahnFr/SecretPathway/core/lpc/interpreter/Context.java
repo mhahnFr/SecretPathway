@@ -271,6 +271,25 @@ public class Context extends Instruction {
 
     /**
      * Returns the {@link Definition} of the named identifier,
+     * as defined in a super context. Returns {@code null} if
+     * no definition with the given name exists in the super
+     * contexts or there are no super context.
+     *
+     * @param name the name of the identifier
+     * @return the definition of the named identifier
+     */
+    public Definition getSuperIdentifier(final String name) {
+        for (final var context : superContexts) {
+            final var identifier = context.getIdentifier(name, Integer.MAX_VALUE);
+            if (identifier != null) {
+                return identifier;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns the {@link Definition} of the named identifier,
      * whose use ends at the given position. If it is not found
      * {@code null} is returned.
      *
@@ -279,6 +298,7 @@ public class Context extends Instruction {
      * @return the found {@link Definition} of the identifier or {@code null}
      */
     public Definition getIdentifier(final String name, final int begin) {
+        // First, search in our context.
         for (final var element : instructions.entrySet()) {
             if (element.getKey() < begin                 &&
                 element.getValue() instanceof Definition &&
@@ -286,10 +306,25 @@ public class Context extends Instruction {
                 return (Definition) element.getValue();
             }
         }
+
+        // If we haven't found the identifier, ask our parent
+        // context, provided we have one.
         if (parent != null) {
             return parent.getIdentifier(name, begin);
         }
-        return null;
+
+        // If we don't have a parent, we might have some
+        // included contexts, so search in them.
+        for (final var context : includedContexts) {
+            final var identifier = context.getIdentifier(name, Integer.MAX_VALUE);
+            if (identifier != null) {
+                return identifier;
+            }
+        }
+
+        // Otherwise, we might have super contexts,
+        // so search in them.
+        return getSuperIdentifier(name);
     }
 
     /**

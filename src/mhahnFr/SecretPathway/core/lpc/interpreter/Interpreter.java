@@ -26,7 +26,6 @@ import mhahnFr.SecretPathway.core.lpc.interpreter.highlight.ASTHighlight;
 import mhahnFr.SecretPathway.core.lpc.interpreter.highlight.MessagedHighlight;
 import mhahnFr.SecretPathway.core.lpc.interpreter.highlight.Highlight;
 import mhahnFr.utils.StreamPosition;
-import mhahnFr.utils.StringStream;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -145,7 +144,6 @@ public class Interpreter implements ASTVisitor {
 
     @Override
     public void visit(ASTExpression expression) {
-        // TODO: super sends
         var highlight = true;
 
         switch (expression.getASTType()) {
@@ -339,8 +337,11 @@ public class Interpreter implements ASTVisitor {
 
             case AST_INCLUDE -> {
                 final var included = (ASTInclude) expression;
+                final var incl     = included.getIncluded();
 
-                addIncluding(cast(ASTStrings.class, included.getIncluded()));
+                if (incl != null) {
+                    addIncluding(cast(ASTStrings.class, incl));
+                }
                 currentType = new ReturnType(TokenType.VOID);
             }
 
@@ -372,7 +373,16 @@ public class Interpreter implements ASTVisitor {
             case AST_SYMBOL          -> currentType = new ReturnType(TokenType.SYMBOL_KEYWORD);
             case AST_BOOL            -> currentType = new ReturnType(TokenType.BOOL);
             case AST_CHARACTER       -> currentType = new ReturnType(TokenType.CHAR_KEYWORD);
-            case UNARY_OPERATOR      -> ((ASTUnaryOperator) expression).getIdentifier().visit(this);
+
+            case UNARY_OPERATOR      -> {
+                final var operation = (ASTUnaryOperator) expression;
+
+                if (operation.getOperatorType() == TokenType.SCOPE) {
+                    visitSuperFunc(operation);
+                } else {
+                    operation.getIdentifier().visit(this);
+                }
+            }
 
             case AST_IF -> {
                 final var i         = (ASTIf) expression;
@@ -470,6 +480,25 @@ public class Interpreter implements ASTVisitor {
                     String.format("Expected %d arguments, got %d",
                             definition.getParameters().size(),
                             arguments.size())));
+        }
+    }
+
+    /**
+     * Visits a super call.
+     *
+     * @param operation the actual super send
+     */
+    private void visitSuperFunc(final ASTUnaryOperator operation) {
+        final var func = cast(ASTFunctionCall.class, operation.getIdentifier());
+        final var id   = current.getSuperIdentifier(cast(ASTName.class, func.getName()).getName());
+
+        if (id instanceof final FunctionDefinition definition) {
+            visitFunctionCall(func, definition);
+        } else {
+            highlights.add(new MessagedHighlight<>(operation.getBegin(),
+                                                   operation.getEnd(),
+                                                   InterpretationType.NOT_FOUND,
+                                                   "Identifier not found"));
         }
     }
 
