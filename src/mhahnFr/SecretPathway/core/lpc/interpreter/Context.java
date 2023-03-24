@@ -21,6 +21,7 @@ package mhahnFr.SecretPathway.core.lpc.interpreter;
 
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTName;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTType;
+import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTTypeDeclaration;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTTypeDefinition;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.gui.editor.suggestions.*;
@@ -35,6 +36,16 @@ import java.util.*;
  * @since 21.02.23
  */
 public class Context extends Instruction {
+    /** The {@code return true;} suggestion.          */
+    private static final Suggestion trueReturnSuggestion  = new ValueReturnSuggestion(true);
+    /** The {@code return false;} suggestion.         */
+    private static final Suggestion falseReturnSuggestion = new ValueReturnSuggestion(false);
+    /** The generic value return suggestion.          */
+    private static final Suggestion valueReturnSuggestion = new ValueReturnSuggestion();
+    /** The {@code return;} suggestion.               */
+    private static final Suggestion voidReturnSuggestion  = new ReturnSuggestion();
+    /** The ellipsis suggestion.                      */
+    private static final Suggestion ellipsisSuggestion    = new PlainSuggestion("...");
     /** The parent context.                           */
     private final Context parent;
     /** The instructions found in this scope context. */
@@ -90,8 +101,8 @@ public class Context extends Instruction {
      * @param at the position
      * @return the available instructions
      */
-    private List<Suggestion> availableDefinitions(final int at) {
-        final var toReturn = new ArrayList<Suggestion>();
+    private Collection<Suggestion> availableDefinitions(final int at) {
+        final var toReturn = new HashSet<Suggestion>();
 
         for (final var instruction : instructions.entrySet()) {
             if (instruction.getKey() < at) {
@@ -105,17 +116,20 @@ public class Context extends Instruction {
         }
 
         final var definition = queryEnclosingFunction();
-        if (definition != null) { // FIXME: Added multiple times.
+        if (definition != null) {
             if (definition.isVariadic()) {
-                toReturn.add(new PlainSuggestion("..."));
+                toReturn.add(ellipsisSuggestion);
             }
-            if (definition.getReturnType().isAssignableFrom(new ReturnType(TokenType.VOID))) {
-                toReturn.add(new ReturnSuggestion());
-            } else if (definition.getReturnType().isAssignableFrom(new ReturnType(TokenType.BOOL))) {
-                toReturn.add(new ValueReturnSuggestion(true));
-                toReturn.add(new ValueReturnSuggestion(false));
+            if (definition.getReturnType() instanceof final ASTTypeDeclaration declaration &&
+                (declaration.getType() == TokenType.VOID || declaration.getType() == TokenType.BOOL)) {
+                if (declaration.getType() == TokenType.VOID) {
+                    toReturn.add(voidReturnSuggestion);
+                } else {
+                    toReturn.add(trueReturnSuggestion);
+                    toReturn.add(falseReturnSuggestion);
+                }
             } else {
-                toReturn.add(new ValueReturnSuggestion());
+                toReturn.add(valueReturnSuggestion);
             }
         }
 
@@ -170,6 +184,7 @@ public class Context extends Instruction {
         toReturn.add(new TypeSuggestion(TokenType.CHAR_KEYWORD));
         toReturn.add(new TypeSuggestion(TokenType.SYMBOL_KEYWORD));
         toReturn.add(new TypeSuggestion(TokenType.VOID));
+        toReturn.add(new TypeSuggestion(TokenType.BOOL));
         toReturn.add(new ValueSuggestion(TokenType.NIL));
         toReturn.add(new ValueSuggestion(TokenType.TRUE));
         toReturn.add(new ValueSuggestion(TokenType.FALSE));
