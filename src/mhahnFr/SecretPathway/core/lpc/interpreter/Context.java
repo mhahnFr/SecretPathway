@@ -48,6 +48,10 @@ public class Context extends Instruction {
     private static final Suggestion ellipsisSuggestion    = new PlainSuggestion("...");
     /** The parent context.                           */
     private final Context parent;
+    /** The inherited contexts.                       */
+    private final List<Context> superContexts = new ArrayList<>();
+    /** The included contexts.                        */
+    private final List<Context> includedContexts = new ArrayList<>();
     /** The instructions found in this scope context. */
     private final NavigableMap<Integer, Instruction> instructions = new TreeMap<>();
 
@@ -96,13 +100,32 @@ public class Context extends Instruction {
     }
 
     /**
+     * Adds a {@link Context} to the included ones.
+     *
+     * @param context the context to be added
+     */
+    public void addIncludedContext(final Context context) {
+        includedContexts.add(context);
+    }
+
+    /**
+     * Adds a {@link Context} as inherited {@link Context}.
+     *
+     * @param context the context to be added
+     */
+    public void addSuperContext(final Context context) {
+        superContexts.add(context);
+    }
+
+    /**
      * Returns the {@link Definition}s available at the given position.
      *
      * @param at the position
      * @return the available instructions
      */
     private Collection<Suggestion> availableDefinitions(final int at) {
-        final var toReturn = new HashSet<Suggestion>();
+        final var toReturn = new HashSet<>(createSuperSuggestions()); // TODO: Add later
+        includedContexts.forEach(c -> toReturn.addAll(c.availableDefinitions(Integer.MAX_VALUE)));
 
         for (final var instruction : instructions.entrySet()) {
             if (instruction.getKey() < at) {
@@ -132,6 +155,26 @@ public class Context extends Instruction {
                 toReturn.add(valueReturnSuggestion);
             }
         }
+
+        return toReturn;
+    }
+
+    /**
+     * Returns the inherited suggestions.
+     *
+     * @return the super suggestions
+     */
+    public Collection<Suggestion> createSuperSuggestions() {
+        final var toReturn = new HashSet<Suggestion>();
+
+        for (final var inherited : superContexts) {
+            toReturn.addAll(inherited.availableDefinitions(Integer.MAX_VALUE));
+        }
+        toReturn.removeIf(s -> s == ellipsisSuggestion    ||
+                               s == voidReturnSuggestion  ||
+                               s == trueReturnSuggestion  ||
+                               s == falseReturnSuggestion ||
+                               s == valueReturnSuggestion);
 
         return toReturn;
     }
