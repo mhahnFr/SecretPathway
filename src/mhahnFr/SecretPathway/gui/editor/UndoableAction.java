@@ -19,7 +19,22 @@
 
 package mhahnFr.SecretPathway.gui.editor;
 
+/**
+ * This record represents an undoable editor action.
+ *
+ * @param type   the type of the action
+ * @param offset the offset of the action
+ * @param string the affected {@link String}
+ * @author mhahnFr
+ * @since 24.03.23
+ */
 public record UndoableAction(UndoableActionType type, int offset, String string) {
+    /**
+     * Returns whether this action was of the given {@link UndoableActionType}.
+     *
+     * @param type the type
+     * @return whether this action was of the given type
+     */
     public boolean was(final UndoableActionType type) {
         return this.type == type;
     }

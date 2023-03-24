@@ -19,6 +19,15 @@
 
 package mhahnFr.SecretPathway.gui.editor;
 
+/**
+ * This enumeration contains the possible undoable action types.
+ *
+ * @author mhahnFr
+ * @since 24.03.23
+ */
 public enum UndoableActionType {
-    INSERT, REMOVE
+    /** Represents an insertion. */
+    INSERT,
+    /** Represents a deletion.   */
+    REMOVE
 }
