@@ -61,6 +61,8 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
     private final JButton closeButton;
     /** The LPC file manager.                                       */
     private final LPCFileManager loader;
+    /** The name of the opened file.                                */
+    private String name;
     /** The optional {@link DisposeListener}.                       */
     private DisposeListener disposeListener;
 
@@ -70,8 +72,22 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
      * @param loader the loader for loading referenced LPC source files
      */
     public EditorView(final LPCFileManager loader) {
+        this(loader, null);
+    }
+
+    /**
+     * Initializes this editor view. If a file name is given,
+     * the given loader is used to load the contents of the file.
+     *
+     * @param loader the file manager
+     * @param name   the name of the opened file
+     */
+    public EditorView(final LPCFileManager loader,
+                      final String         name) {
         super(new BorderLayout());
+
         this.loader = loader;
+        this.name   = name;
         document    = new SyntaxDocument(this.loader);
 
         components.add(new DarkComponent<>(this));
@@ -120,12 +136,31 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         document.setUpdateCallback(this::update);
         document.setCaretMover(delta -> textPane.setCaretPosition(textPane.getCaretPosition() + delta));
         document.setSuggestionShower(this);
+        if (this.name != null) {
+            loadFile();
+        }
 
         final var settings = Settings.getInstance();
         settings.addListener(this);
         setDark(settings.getDarkMode());
         setFontSize(settings.getFontSize());
         addKeyActions();
+    }
+
+    /**
+     * Attempts to load and insert the file this view should represent.
+     * Shows an error message if the file could not be loaded.
+     */
+    private void loadFile() {
+        try {
+            document.insertString(0, loader.load(name), null);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                                          "Could not load file '" + name + "'!",
+                                          Constants.NAME + ": Editor",
+                                          JOptionPane.ERROR_MESSAGE);
+            name = null;
+        }
     }
 
     @Override
@@ -477,15 +512,26 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
     /**
      * Saves the text of the editor by sending a message to the server.
      */
-    private void saveText() {
+    private boolean saveText() {
+        if (name == null) {
+            final var result = JOptionPane.showInputDialog(this,
+                                                           "Enter the name of the file:",
+                                                           Constants.NAME + ": Editor",
+                                                            JOptionPane.PLAIN_MESSAGE);
+            if (result != null && !result.isBlank()) {
+                name = result;
+            } else return false;
+        }
         try {
-            loader.save("", document.getAllText()); // TODO: filename
+            loader.save(name, document.getAllText());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
                                           "Could not save the file!",
                                           Constants.NAME + ": Editor",
                                           JOptionPane.ERROR_MESSAGE);
+            return false;
         }
+        return true;
     }
 
     /**
@@ -500,8 +546,9 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
                                            JOptionPane.ERROR_MESSAGE);
             return;
         }
-        saveText();
-        loader.compile(""); // TODO: filename
+        if (saveText()) {
+            loader.compile(name);
+        }
     }
 
     /**
