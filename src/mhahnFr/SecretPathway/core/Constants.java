@@ -69,6 +69,11 @@ public final class Constants {
      * Constants for use with the editor.
      */
     public static final class Editor {
+        /** The mask deciding whether to use the CMD or the CTRL key. */
+        private static final int metaMask = System.getProperty("os.name").toLowerCase().contains("mac") ?
+                                                KeyEvent.META_DOWN_MASK
+                                            :   KeyEvent.CTRL_DOWN_MASK;
+
         /** The string displayed for the default theme.               */
         public static final String DEFAULT_THEME = "Default";
         /** The string displayed for choosing a theme.                */
@@ -94,8 +99,8 @@ public final class Constants {
         /** The keystroke for replacing with the selected suggestion. */
         public static final KeyStroke POPUP_REPLACE = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0);
         /** The keystroke for undoing an edit action.                 */
-        public static final KeyStroke UNDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.META_DOWN_MASK); // TODO: Platforms
+        public static final KeyStroke UNDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, metaMask);
         /** The keystroke for redoing an edit action.                 */
-        public static final KeyStroke REDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.META_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK); // TODO: Platforms
+        public static final KeyStroke REDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, metaMask | KeyEvent.SHIFT_DOWN_MASK);
     }
 }
