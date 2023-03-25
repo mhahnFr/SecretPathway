@@ -295,6 +295,7 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
                 mainPanel.setVisible(true);
 
                 editorShowing = false;
+                promptField.requestFocusInWindow();
             });
 
             getContentPane().add(editorView);
