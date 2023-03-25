@@ -21,6 +21,7 @@ package mhahnFr.SecretPathway.gui.editor;
 
 import mhahnFr.SecretPathway.core.Constants;
 import mhahnFr.SecretPathway.core.Settings;
+import mhahnFr.SecretPathway.core.lpc.LPCFileManager;
 import mhahnFr.SecretPathway.core.lpc.interpreter.FunctionDefinition;
 import mhahnFr.SecretPathway.gui.editor.suggestions.DefinitionSuggestion;
 import mhahnFr.SecretPathway.gui.editor.suggestions.SuggestionsWindow;
@@ -31,7 +32,6 @@ import mhahnFr.utils.gui.DarkTextComponent;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.BadLocationException;
-import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Rectangle2D;
@@ -50,7 +50,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
     /** The window displaying the available suggestions.            */
     private final SuggestionsWindow suggestionsWindow = new SuggestionsWindow();
     /** The document responsible for highlighting the source code.  */
-    private final SyntaxDocument document = new SyntaxDocument();
+    private final SyntaxDocument document;
     /** The text pane.                                              */
     private final JTextPane textPane;
     /** The status label.                                           */
@@ -59,14 +59,21 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
     private final JButton saveButton;
     /** The button used for closing the editor.                     */
     private final JButton closeButton;
+    /** The LPC file manager.                                       */
+    private final LPCFileManager loader;
     /** The optional {@link DisposeListener}.                       */
     private DisposeListener disposeListener;
 
     /**
      * Initializes this EditorView.
+     *
+     * @param loader the loader for loading referenced LPC source files
      */
-    public EditorView() {
+    public EditorView(final LPCFileManager loader) {
         super(new BorderLayout());
+        this.loader = loader;
+        document    = new SyntaxDocument(this.loader);
+
         components.add(new DarkComponent<>(this));
             textPane = new DarkTextComponent<>(new JTextPane(document), components).getComponent();
             final var scrollPane = new DarkComponent<>(new JScrollPane(textPane), components).getComponent();
@@ -83,13 +90,20 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
                         closeButton = new JButton("Close");
                         closeButton.addActionListener(__ -> dispose());
 
-                        final var compileButton = new JButton("Compile");
-                        compileButton.addActionListener(__ -> compile());
+                        final JButton compileButton;
+                        if (loader.canCompile()) {
+                            compileButton = new JButton("Compile");
+                            compileButton.addActionListener(__ -> compile());
+                        } else {
+                            compileButton = null;
+                        }
 
                         saveButton = new JButton("Save");
                         saveButton.addActionListener(__ -> saveText());
                     pushButtons.add(closeButton);
-                    pushButtons.add(compileButton);
+                    if (compileButton != null) {
+                        pushButtons.add(compileButton);
+                    }
                     pushButtons.add(saveButton);
                 buttons.add(highlight,   BorderLayout.CENTER);
                 buttons.add(pushButtons, BorderLayout.EAST);
@@ -464,8 +478,14 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
      * Saves the text of the editor by sending a message to the server.
      */
     private void saveText() {
-        // TODO: Save the text
-        System.out.println("Saving...");
+        try {
+            loader.save("", document.getAllText()); // TODO: filename
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                                          "Could not save the file!",
+                                          Constants.NAME + ": Editor",
+                                          JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -473,8 +493,15 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
      * a message to the server.
      */
     private void compile() {
-        // TODO: Compile the text
-        System.out.println("Compiling...");
+        if (!loader.canCompile()) {
+            JOptionPane.showMessageDialog(this,
+                                          "Compiling is not supported!",
+                                          Constants.NAME + ": Editor",
+                                           JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        saveText();
+        loader.compile(""); // TODO: filename
     }
 
     /**
