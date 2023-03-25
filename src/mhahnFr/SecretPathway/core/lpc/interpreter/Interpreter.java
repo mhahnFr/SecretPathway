@@ -19,6 +19,7 @@
 
 package mhahnFr.SecretPathway.core.lpc.interpreter;
 
+import mhahnFr.SecretPathway.core.lpc.LPCFileLoader;
 import mhahnFr.SecretPathway.core.lpc.parser.Parser;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.*;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
@@ -39,12 +40,24 @@ import java.util.Vector;
  * @since 21.02.23
  */
 public class Interpreter implements ASTVisitor {
+    /** The loader for referenced source files.     */
+    private final LPCFileLoader loader;
     /** The currently active context.               */
     private Context current;
     /** The current return type of the expression.  */
     private ASTTypeDefinition currentType;
     /** A list with the elements to be highlighted. */
     private List<Highlight<?>> highlights;
+
+    /**
+     * Constructs this interpreter instance using the given
+     * {@link LPCFileLoader}.
+     *
+     * @param loader the loader to be used to load referenced files
+     */
+    public Interpreter(final LPCFileLoader loader) {
+        this.loader = loader;
+    }
 
     /**
      * Creates an execution context for the given list of
@@ -99,11 +112,15 @@ public class Interpreter implements ASTVisitor {
      */
     private Context createContextFor(final ASTStrings name) {
         final var fileName = unwrapStrings(name);
-        // TODO: load
-        final var source = "bool comesFromSuper(int no, ...) {}";
 
-        final var ast = new Parser(source).parse();
-        return new Interpreter().createContextFor(ast);
+        try {
+            final var source = loader.load(fileName);
+
+            final var ast = new Parser(source).parse();
+            return new Interpreter(loader).createContextFor(ast);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**
@@ -113,8 +130,14 @@ public class Interpreter implements ASTVisitor {
      *
      * @param name the file name
      */
-    private void addInheriting(final ASTStrings name) {
-        current.addSuperContext(createContextFor(name));
+    private boolean addInheriting(final ASTStrings name) {
+        final var context = createContextFor(name);
+
+        if (context != null) {
+            current.addSuperContext(context);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -124,8 +147,14 @@ public class Interpreter implements ASTVisitor {
      *
      * @param name the file name
      */
-    private void addIncluding(final ASTStrings name) {
-        current.addIncludedContext(createContextFor(name));
+    private boolean addIncluding(final ASTStrings name) {
+        final var context = createContextFor(name);
+
+        if (context != null) {
+            current.addIncludedContext(context);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -330,8 +359,12 @@ public class Interpreter implements ASTVisitor {
                                                            InterpretationType.WARNING,
                                                            "Inheriting from nothing"));
                     highlight = false;
+                } else if (!addInheriting(cast(ASTStrings.class, inheritance.getInherited()))) {
+                    highlights.add(new MessagedHighlight<>(inheritance.getBegin(),
+                                                           inheritance.getEnd(),
+                                                           InterpretationType.ERROR,
+                                                           "Could not resolve inheritance"));
                 }
-                addInheriting(cast(ASTStrings.class, inheritance.getInherited()));
                 currentType = new ReturnType(TokenType.VOID);
             }
 
@@ -339,8 +372,11 @@ public class Interpreter implements ASTVisitor {
                 final var included = (ASTInclude) expression;
                 final var incl     = included.getIncluded();
 
-                if (incl != null) {
-                    addIncluding(cast(ASTStrings.class, incl));
+                if (incl != null && !addIncluding(cast(ASTStrings.class, incl))) {
+                    highlights.add(new MessagedHighlight<>(included.getBegin(),
+                                                           included.getEnd(),
+                                                           InterpretationType.ERROR,
+                                                           "Could not resolve inclusion"));
                 }
                 currentType = new ReturnType(TokenType.VOID);
             }
