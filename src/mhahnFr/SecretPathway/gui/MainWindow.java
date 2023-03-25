@@ -283,7 +283,7 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
         if (Settings.getInstance().getEditorInlined() && !editorShowing) {
             mainPanel.setVisible(false);
 
-            final var editorView = new EditorView();
+            final var editorView = new EditorView(null); // FIXME: Create manager
             editorView.onDispose(view -> {
                 getContentPane().remove(view);
 
@@ -296,7 +296,7 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
             editorShowing = true;
             editorView.requestFocusInWindow();
         } else {
-            new EditorWindow(this).setVisible(true);
+            new EditorWindow(this, null).setVisible(true); // FIXME: Create manager
         }
     }
 

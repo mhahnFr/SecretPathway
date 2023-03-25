@@ -21,6 +21,7 @@ package mhahnFr.SecretPathway.gui.editor;
 
 import mhahnFr.SecretPathway.core.Constants;
 import mhahnFr.SecretPathway.core.Settings;
+import mhahnFr.SecretPathway.core.lpc.LPCFileManager;
 
 import javax.swing.JFrame;
 import java.awt.Dimension;
@@ -40,12 +41,29 @@ public class EditorWindow extends JFrame {
      * restored if possible, otherwise the location is set to
      * be relative to the given parent.
      *
-     * @param parent the parent to be used if the location cannot be restored
+     * @param parent  the parent to be used if the location cannot be restored
+     * @param manager the LPC file manager
      */
-    public EditorWindow(final JFrame parent) {
-        super(Constants.NAME + ": Editor");
+    public EditorWindow(final JFrame         parent,
+                        final LPCFileManager manager) {
+        this(parent, manager, null);
+    }
 
-        editorView = new EditorView();
+    /**
+     * Constructs this editor window. Size and location are
+     * restored if possible, otherwise the location is set to
+     * be relative to the given parent.
+     *
+     * @param parent  the parent to be used if the location cannot be restored
+     * @param manager the LPC file manager
+     * @param name    the name of the file to be opened
+     */
+    public EditorWindow(final JFrame         parent,
+                        final LPCFileManager manager,
+                        final String         name) {
+        super(Constants.NAME + ": Editor" + (name == null ? "" : " - '" + name + "'"));
+
+        editorView = new EditorView(manager, name);
 
         editorView.onDispose(__ -> internalDispose());
 
