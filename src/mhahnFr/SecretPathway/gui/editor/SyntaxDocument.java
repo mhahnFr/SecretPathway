@@ -49,32 +49,40 @@ import java.util.concurrent.Executors;
  * @since 07.01.23
  */
 public class SyntaxDocument extends DefaultStyledDocument {
-    /** The default underlying style.                         */
+    /** The default underlying style.                                          */
     private final Style def = getLogicalStyle(0);
-    /** Indicates whether the syntax highlighting is enabled. */
+    /** Indicates whether the syntax highlighting is enabled.                  */
     private boolean highlighting;
-    /** The callback to be called after parsing the content.  */
+    /** The callback to be called after parsing the content.                   */
     private Runnable updateCallback;
-    /** The caret mover responsible for moving the caret.     */
+    /** The caret mover responsible for moving the caret.                      */
     private CaretMover caretMover;
-    /** The suggestion shower.                                */
+    /** The suggestion shower.                                                 */
     private SuggestionShower suggestionShower;
-    /** Ignores an insertion.                                 */
+    /** Ignores an insertion.                                                  */
     private Pair<Integer, String> ignore;
-    /** The theme to be used for the syntax highlighting.     */
+    /** The theme to be used for the syntax highlighting.                      */
     private SPTheme theme = Settings.getInstance().getEditorTheme();
-    /** The interpreted context of the source code.           */
+    /** The interpreted context of the source code.                            */
     private volatile Context context;
-    /** The ranges containing syntax errors.                  */
+    /** The ranges containing syntax errors.                                   */
     private volatile List<Highlight<?>> highlights;
-    /** The execution service for interpreting the code.      */
+    /** The execution service for interpreting the code.                       */
     private final ExecutorService thread = Executors.newSingleThreadExecutor();
-    /** All previously recognized tokens.                     */
+    /** All previously recognized tokens.                                      */
     private final Vector<Token> tokens = new Vector<>();
+    /** The array of undoable actions.                                         */
     private final UndoableAction[] actions = new UndoableAction[1024];
+    /** The index in the array of undoable actions.                            */
     private int actionIndex = -1;
+    /** Indicates whether the current action should be registered for undoing. */
     private boolean undoIgnore;
 
+    /**
+     * Undoes the last registered action, if possible.
+     *
+     * @throws BadLocationException if the action position became invalid
+     */
     public void undo() throws BadLocationException {
         if (actionIndex >= 0) {
             final var edit = actions[actionIndex--];
@@ -89,6 +97,11 @@ public class SyntaxDocument extends DefaultStyledDocument {
         }
     }
 
+    /**
+     * Redoes the last undid action, if possible.
+     *
+     * @throws BadLocationException if the action position became invalid
+     */
     public void redo() throws BadLocationException {
         if (actionIndex < actions.length - 1 && actions[actionIndex + 1] != null) {
             final var edit = actions[++actionIndex];
@@ -389,6 +402,13 @@ public class SyntaxDocument extends DefaultStyledDocument {
         maybeUpdateHighlight();
     }
 
+    /**
+     * Adds an undoable action.
+     *
+     * @param type      the type of the action
+     * @param offset    the position of the action
+     * @param insertion the affected text
+     */
     private void addUndoableAction(final UndoableActionType type, final int offset, final String insertion) {
         if (undoIgnore) return;
 
