@@ -20,6 +20,7 @@
 package mhahnFr.SecretPathway.gui.editor;
 
 import mhahnFr.SecretPathway.core.Settings;
+import mhahnFr.SecretPathway.core.lpc.LPCFileManager;
 import mhahnFr.SecretPathway.core.lpc.interpreter.Context;
 import mhahnFr.SecretPathway.core.lpc.interpreter.Interpreter;
 import mhahnFr.SecretPathway.core.lpc.interpreter.highlight.Highlight;
@@ -71,12 +72,23 @@ public class SyntaxDocument extends DefaultStyledDocument {
     private final ExecutorService thread = Executors.newSingleThreadExecutor();
     /** All previously recognized tokens.                                      */
     private final Vector<Token> tokens = new Vector<>();
+    /** The loader used for loading referenced LPC source files.               */
+    private final LPCFileManager loader;
     /** The array of undoable actions.                                         */
     private final UndoableAction[] actions = new UndoableAction[1024];
     /** The index in the array of undoable actions.                            */
     private int actionIndex = -1;
     /** Indicates whether the current action should be registered for undoing. */
     private boolean undoIgnore;
+
+    /**
+     * Constructs this document using the given {@link LPCFileManager}.
+     *
+     * @param loader the loader for loading referenced LPC source files
+     */
+    public SyntaxDocument(final LPCFileManager loader) {
+        this.loader = loader;
+    }
 
     /**
      * Undoes the last registered action, if possible.
@@ -683,7 +695,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
         }
 
         thread.execute(() -> {
-            final var interpreter = new Interpreter();
+            final var interpreter = new Interpreter(loader);
             this.context    = interpreter.createContextFor(new Parser(text).parse());
             this.highlights = interpreter.getHighlights();
             for (final var range : highlights) {
