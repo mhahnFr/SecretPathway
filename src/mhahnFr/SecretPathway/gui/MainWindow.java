@@ -21,9 +21,11 @@ package mhahnFr.SecretPathway.gui;
 
 import mhahnFr.SecretPathway.core.Constants;
 import mhahnFr.SecretPathway.core.Settings;
+import mhahnFr.SecretPathway.core.lpc.LocalFileManager;
 import mhahnFr.SecretPathway.core.net.Connection;
 
 import mhahnFr.SecretPathway.core.net.ConnectionFactory;
+import mhahnFr.SecretPathway.core.protocols.spp.SPPFileManager;
 import mhahnFr.SecretPathway.gui.editor.EditorView;
 import mhahnFr.SecretPathway.gui.editor.EditorWindow;
 import mhahnFr.SecretPathway.gui.helper.MessageReceiver;
@@ -280,10 +282,13 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
      * either inlined or as a separate window.
      */
     private void openEditor() {
+        final var manager = delegate.isSPPEnabled() ? new SPPFileManager(connection)
+                                                    : new LocalFileManager();
+
         if (Settings.getInstance().getEditorInlined() && !editorShowing) {
             mainPanel.setVisible(false);
 
-            final var editorView = new EditorView(null); // FIXME: Create manager
+            final var editorView = new EditorView(manager);
             editorView.onDispose(view -> {
                 getContentPane().remove(view);
 
@@ -296,7 +301,7 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
             editorShowing = true;
             editorView.requestFocusInWindow();
         } else {
-            new EditorWindow(this, null).setVisible(true); // FIXME: Create manager
+            new EditorWindow(this, manager).setVisible(true);
         }
     }
 
