@@ -37,6 +37,7 @@ import java.awt.event.*;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class represents a functional LPC source code editor view.
@@ -63,6 +64,8 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
     private final LPCFileManager loader;
     /** The name of the opened file.                                */
     private String name;
+    /** The contents of the file when it was saved the last time.   */
+    private String lastContent;
     /** The optional {@link DisposeListener}.                       */
     private DisposeListener disposeListener;
 
@@ -153,7 +156,10 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
      */
     private void loadFile() {
         try {
-            document.insertString(0, loader.load(name), null);
+            final var content = loader.load(name);
+
+            document.insertString(0, content, null);
+            lastContent = content;
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
                                           "Could not load file '" + name + "'!",
@@ -522,8 +528,9 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
                 name = result;
             } else return false;
         }
+        final var content = document.getAllText();
         try {
-            loader.save(name, document.getAllText());
+            loader.save(name, content);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
                                           "Could not save the file!",
@@ -531,6 +538,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
                                           JOptionPane.ERROR_MESSAGE);
             return false;
         }
+        lastContent = content;
         return true;
     }
 
@@ -572,7 +580,24 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
     /**
      * Destroys this EditorView.
      */
-    public void dispose() {
+    public boolean dispose() {
+        if (!Objects.equals(lastContent, document.getAllText())) {
+            switch (JOptionPane.showConfirmDialog(this,
+                                                  "There are unsaved changes.\nSave them?",
+                                                  Constants.NAME + ": Editor",
+                                                  JOptionPane.YES_NO_CANCEL_OPTION,
+                                                  JOptionPane.WARNING_MESSAGE)) {
+                case JOptionPane.YES_OPTION -> {
+                    saveText();
+                    return dispose();
+                }
+
+                case JOptionPane.NO_OPTION -> { /* Continue disposing. */ }
+
+                default -> { return false; }
+            }
+        }
+
         suggestionsWindow.dispose();
         removeKeyActions();
         final var settings = Settings.getInstance();
@@ -582,6 +607,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         if (disposeListener != null) {
             disposeListener.onDispose(this);
         }
+        return true;
     }
 
     /**

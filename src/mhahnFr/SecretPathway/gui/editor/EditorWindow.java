@@ -124,7 +124,9 @@ public class EditorWindow extends JFrame {
 
     @Override
     public void dispose() {
-        editorView.dispose();
+        if (!editorView.dispose()) {
+            return;
+        }
 
         internalDispose();
     }
