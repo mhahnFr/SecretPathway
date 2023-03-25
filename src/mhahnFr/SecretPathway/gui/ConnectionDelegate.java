@@ -131,6 +131,16 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
         send(tmpText.getBytes(currentCharset));
     }
 
+    /**
+     * Returns whether the SecretPathwayProtocol (SPP) is currently
+     * active.
+     *
+     * @return whether the SPP is active
+     */
+    public boolean isSPPEnabled() {
+        return protocols.isSPPActive();
+    }
+
     @Override
     public void send(byte[] bytes) {
         threads.execute(() -> connection.send(bytes));

@@ -1,7 +1,7 @@
 /*
  * SecretPathway - A MUD client.
  *
- * Copyright (C) 2022  mhahnFr
+ * Copyright (C) 2022 - 2023  mhahnFr
  *
  * This file is part of the SecretPathway. This program is free software:
  * you can redistribute it and/or modify it under the terms of the
@@ -37,5 +37,15 @@ public class SPPPlugin implements ProtocolPlugin {
     @Override
     public boolean process(byte b, ConnectionSender sender) {
         return b == 0x3;
+    }
+
+    /**
+     * Returns whether the SecretPathwayProtocol (SPP) is
+     * active.
+     *
+     * @return whether the SPP is active
+     */
+    public boolean isActive() {
+        return false; // TODO
     }
 }

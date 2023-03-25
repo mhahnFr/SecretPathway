@@ -1,7 +1,7 @@
 /*
  * SecretPathway - A MUD client.
  *
- * Copyright (C) 2022  mhahnFr
+ * Copyright (C) 2022 - 2023  mhahnFr
  *
  * This file is part of the SecretPathway. This program is free software:
  * you can redistribute it and/or modify it under the terms of the
@@ -20,6 +20,7 @@
 package mhahnFr.SecretPathway.core.protocols;
 
 import mhahnFr.SecretPathway.core.net.ConnectionSender;
+import mhahnFr.SecretPathway.core.protocols.spp.SPPPlugin;
 
 import java.util.Arrays;
 import java.util.Vector;
@@ -93,6 +94,21 @@ public class Protocol {
                     lastPlugin = plugin;
                     return true;
                 }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns whether the SecretPathwayProtocol (SPP) is
+     * currently active.
+     *
+     * @return whether the SPP is active
+     */
+    public boolean isSPPActive() {
+        for (final var plugin : plugins) {
+            if (plugin instanceof final SPPPlugin sppPlugin) {
+                return sppPlugin.isActive();
             }
         }
         return false;
