@@ -25,7 +25,7 @@ package mhahnFr.SecretPathway.core.lpc;
  * @author mhahnFr
  * @since 25.03.23
  */
-public interface LPCFileLoader {
+public interface LPCFileManager {
     /**
      * Loads the file named by the given parameter. If the
      * file could not be loaded, an {@link Exception} is thrown.
@@ -36,4 +36,33 @@ public interface LPCFileLoader {
      * @throws Exception if the file could not be loaded for some reason
      */
     String load(final String fileName) throws Exception;
+
+    /**
+     * Saves the given content in a file with the given name.
+     *
+     * @param fileName the name of the file
+     * @param content  the content of the file
+     * @throws Exception if the file could not be written for some reason
+     */
+    void save(final String fileName, final String content) throws Exception;
+
+    /**
+     * Returns whether this manager can compile files.
+     *
+     * @return whether this instance supports compilations
+     */
+    default boolean canCompile() {
+        return false;
+    }
+
+    /**
+     * Attempts to compile the source file named by the given parameter.
+     * <br>
+     * The default implementation throws an {@link UnsupportedOperationException}.
+     *
+     * @param fileName the file to be compiled
+     */
+    default void compile(final String fileName) {
+        throw new UnsupportedOperationException("Not implemented! Hint: Check using LPCFileManager#canCompile()");
+    }
 }

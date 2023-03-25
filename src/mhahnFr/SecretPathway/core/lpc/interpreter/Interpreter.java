@@ -19,7 +19,7 @@
 
 package mhahnFr.SecretPathway.core.lpc.interpreter;
 
-import mhahnFr.SecretPathway.core.lpc.LPCFileLoader;
+import mhahnFr.SecretPathway.core.lpc.LPCFileManager;
 import mhahnFr.SecretPathway.core.lpc.parser.Parser;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.*;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
@@ -41,7 +41,7 @@ import java.util.Vector;
  */
 public class Interpreter implements ASTVisitor {
     /** The loader for referenced source files.     */
-    private final LPCFileLoader loader;
+    private final LPCFileManager loader;
     /** The currently active context.               */
     private Context current;
     /** The current return type of the expression.  */
@@ -51,11 +51,11 @@ public class Interpreter implements ASTVisitor {
 
     /**
      * Constructs this interpreter instance using the given
-     * {@link LPCFileLoader}.
+     * {@link LPCFileManager}.
      *
      * @param loader the loader to be used to load referenced files
      */
-    public Interpreter(final LPCFileLoader loader) {
+    public Interpreter(final LPCFileManager loader) {
         this.loader = loader;
     }
 
