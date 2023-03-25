@@ -19,6 +19,9 @@
 
 package mhahnFr.SecretPathway.core.lpc;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+
 /**
  * This class represents a file manager for LPC source files
  * found on the disk this application is running on.
@@ -29,12 +32,15 @@ package mhahnFr.SecretPathway.core.lpc;
 public class LocalFileManager implements LPCFileManager {
     @Override
     public String load(String fileName) throws Exception {
-        // TODO: Implement
-        return null;
+        try (final var reader = new BufferedInputStream(new FileInputStream(fileName))) {
+            return new String(reader.readAllBytes(), StandardCharsets.UTF_8);
+        }
     }
 
     @Override
     public void save(String fileName, String content) throws Exception {
-        // TODO: Implement
+        try (final var writer = new BufferedWriter(new FileWriter(fileName))) {
+            writer.write(content);
+        }
     }
 }
