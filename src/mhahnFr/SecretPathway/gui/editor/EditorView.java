@@ -178,6 +178,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
 
     @Override
     public void beginSuperSuggestions() {
+        // TODO: Show only super sends
         beginSuggestions();
     }
 
@@ -294,6 +295,8 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         final var map = textPane.getKeymap();
 
         map.removeKeyStrokeBinding(Constants.Editor.SHOW_SUGGESTIONS);
+        map.removeKeyStrokeBinding(Constants.Editor.UNDO);
+        map.removeKeyStrokeBinding(Constants.Editor.REDO);
     }
 
     /**
