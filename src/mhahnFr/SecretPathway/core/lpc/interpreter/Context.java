@@ -279,6 +279,10 @@ public class Context extends Instruction {
      * @return the definition of the named identifier
      */
     public Definition getSuperIdentifier(final String name) {
+        if (parent != null) {
+            return parent.getSuperIdentifier(name);
+        }
+
         for (final var context : superContexts) {
             final var identifier = context.getIdentifier(name, Integer.MAX_VALUE);
             if (identifier != null) {
