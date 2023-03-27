@@ -135,6 +135,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
 
         textPane.addCaretListener(e -> statusLabel.setText(document.getMessageFor(e.getDot())));
         textPane.addFocusListener(this);
+        addPopupMenu();
 
         document.setUpdateCallback(this::update);
         document.setCaretMover(delta -> textPane.setCaretPosition(textPane.getCaretPosition() + delta));
@@ -148,6 +149,41 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         setDark(settings.getDarkMode());
         setFontSize(settings.getFontSize());
         addKeyActions();
+    }
+
+    private void addPopupMenu() {
+        final var metaMask = System.getProperty("os.name").toLowerCase().contains("mac") ? KeyEvent.META_DOWN_MASK
+                                                                                         : KeyEvent.CTRL_DOWN_MASK;
+
+        final var menu = new JPopupMenu();
+            final var saveItem = new JMenuItem("Save");
+            saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.META_DOWN_MASK));
+            saveItem.addActionListener(__ -> saveText());
+
+            final var compileItem = new JMenuItem("Compile");
+            compileItem.addActionListener(__ -> compile());
+            compileItem.setEnabled(loader.canCompile());
+
+            final var closeItem = new JMenuItem("Close");
+            closeItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0));
+            closeItem.addActionListener(__ -> dispose());
+
+            final var undoItem = new JMenuItem("Undo");
+            undoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, metaMask));
+            undoItem.addActionListener(__ -> undoAction());
+
+            final var redoItem = new JMenuItem("Redo");
+            redoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, metaMask | KeyEvent.SHIFT_DOWN_MASK));
+            redoItem.addActionListener(__ -> redoAction());
+        menu.add(saveItem);
+        menu.add(compileItem);
+        menu.addSeparator();
+        menu.add(closeItem);
+        menu.addSeparator();
+        menu.add(undoItem);
+        menu.add(redoItem);
+
+        textPane.setComponentPopupMenu(menu);
     }
 
     /**
@@ -261,28 +297,37 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         map.addActionForKeyStroke(Constants.Editor.UNDO, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    document.undo();
-                } catch (BadLocationException ex) {
-                    System.err.println("Should not happen:");
-                    ex.printStackTrace();
-                    System.err.println("------------------");
-                }
+                undoAction();
             }
         });
         map.addActionForKeyStroke(Constants.Editor.REDO, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    document.redo();
-                } catch (BadLocationException ex) {
-                    System.err.println("Should not happen:");
-                    ex.printStackTrace();
-                    System.err.println("------------------");
-                }
+                redoAction();
             }
         });
+
         addSaveCloseActions();
+    }
+
+    private void redoAction() {
+        try {
+            document.redo();
+        } catch (BadLocationException ex) {
+            System.err.println("Should not happen:");
+            ex.printStackTrace();
+            System.err.println("------------------");
+        }
+    }
+
+    private void undoAction() {
+        try {
+            document.undo();
+        } catch (BadLocationException ex) {
+            System.err.println("Should not happen:");
+            ex.printStackTrace();
+            System.err.println("------------------");
+        }
     }
 
     /**
