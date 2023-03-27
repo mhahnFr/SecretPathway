@@ -142,6 +142,8 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         document.setSuggestionShower(this);
         if (this.name != null) {
             loadFile();
+        } else {
+            lastContent = "";
         }
 
         final var settings = Settings.getInstance();
