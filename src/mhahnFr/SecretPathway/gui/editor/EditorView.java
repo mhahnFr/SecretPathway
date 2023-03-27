@@ -151,6 +151,9 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         addKeyActions();
     }
 
+    /**
+     * Creates and adds the popup menu to the text pane.
+     */
     private void addPopupMenu() {
         final var metaMask = System.getProperty("os.name").toLowerCase().contains("mac") ? KeyEvent.META_DOWN_MASK
                                                                                          : KeyEvent.CTRL_DOWN_MASK;
@@ -310,6 +313,9 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         addSaveCloseActions();
     }
 
+    /**
+     * Redoes the last undid registered action if possible.
+     */
     private void redoAction() {
         try {
             document.redo();
@@ -320,6 +326,9 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         }
     }
 
+    /**
+     * Undoes the last registered action if possible.
+     */
     private void undoAction() {
         try {
             document.undo();
