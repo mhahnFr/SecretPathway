@@ -311,7 +311,8 @@ public class Interpreter implements ASTVisitor {
                     highlights.add(new MessagedHighlight<>(rhs.getBegin(),
                                                            rhs.getEnd(),
                                                            InterpretationType.TYPE_MISMATCH,
-                                                           lhsType + " is not assignable from " + currentType));
+                                                           Optional.ofNullable(lhsType.toString()).orElse("<< unknown >>") +
+                                                            " is not assignable from " + currentType));
                 }
                 if (op.getOperatorType() != null) {
                     currentType = switch (op.getOperatorType()) {
