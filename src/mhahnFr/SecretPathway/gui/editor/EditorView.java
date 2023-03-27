@@ -36,6 +36,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -66,6 +67,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
     private String name;
     /** The contents of the file when it was saved the last time.   */
     private String lastContent;
+    private boolean onlySupers;
     /** The optional {@link DisposeListener}.                       */
     private DisposeListener disposeListener;
 
@@ -219,7 +221,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
 
     @Override
     public void beginSuperSuggestions() {
-        // TODO: Show only super sends
+        onlySupers = true;
         beginSuggestions();
     }
 
@@ -464,7 +466,8 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
      * @return the beginning position
      */
     private int updateSuggestionsImpl() {
-        final var suggestions = document.getAvailableSuggestions(textPane.getCaretPosition());
+        final var suggestions = onlySupers ? document.getSuperSuggestions()
+                                           : document.getAvailableSuggestions(textPane.getCaretPosition());
         final var position    = textPane.getCaretPosition();
         var toReturn    = position;
         try {
@@ -514,6 +517,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         if (suggestionsWindow.isVisible()) {
             suggestionsWindow.setVisible(false);
             removeSuggestionKeyActions();
+            onlySupers = false;
         } else {
             final Rectangle2D caretPosition;
             try {

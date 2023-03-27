@@ -35,10 +35,7 @@ import mhahnFr.utils.Pair;
 import mhahnFr.utils.StringStream;
 
 import javax.swing.text.*;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -737,11 +734,11 @@ public class SyntaxDocument extends DefaultStyledDocument {
      *
      * @return the super suggestions
      */
-    public Collection<Suggestion> getSuperSuggestions() {
+    public List<Suggestion> getSuperSuggestions() {
         if (context == null) {
             return null;
         }
-        return context.createSuperSuggestions();
+        return new ArrayList<>(context.createSuperSuggestions());
     }
 
     /**
