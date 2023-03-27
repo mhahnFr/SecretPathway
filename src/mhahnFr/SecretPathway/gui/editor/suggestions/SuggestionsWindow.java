@@ -218,17 +218,19 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
             select(index);
         }
         validate();
-        updateSize();
+        updateSize(true);
     }
 
     /**
      * Updates the size of this popup.
+     *
+     * @param pack indicates whether to {@link #pack()}
      */
-    private void updateSize() {
+    private void updateSize(final boolean pack) {
         if (suggestions.size() > 10) {
             final var suggestion = suggestions.get(0);
             setSize(suggestion.getWidth() + 20, suggestion.getHeight() * 10);
-        } else {
+        } else if (pack) {
             pack();
         }
     }
@@ -281,7 +283,7 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
                 suggestions.get(index).setSelected(false);
             }*/
         }
-        updateSize();
+        updateSize(false);
         super.setVisible(b);
     }
 
