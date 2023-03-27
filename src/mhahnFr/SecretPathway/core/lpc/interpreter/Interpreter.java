@@ -130,14 +130,17 @@ public class Interpreter implements ASTVisitor {
      *
      * @param name the file name
      */
-    private boolean addInheriting(final ASTStrings name) {
+    private void addInheriting(final ASTStrings name) {
         final var context = createContextFor(name);
 
-        if (context != null) {
+        if (context == null) {
+            highlights.add(new MessagedHighlight<>(name.getBegin(),
+                                                   name.getEnd(),
+                                                   InterpretationType.ERROR,
+                                                   "Could not resolve inheritance"));
+        } else {
             current.addSuperContext(context);
-            return true;
         }
-        return false;
     }
 
     /**
@@ -147,14 +150,17 @@ public class Interpreter implements ASTVisitor {
      *
      * @param name the file name
      */
-    private boolean addIncluding(final ASTStrings name) {
+    private void addIncluding(final ASTStrings name) {
         final var context = createContextFor(name);
 
-        if (context != null) {
+        if (context == null) {
+            highlights.add(new MessagedHighlight<>(name.getBegin(),
+                                                   name.getEnd(),
+                                                   InterpretationType.ERROR,
+                                                   "Could not resolve inclusion"));
+        } else {
             current.addIncludedContext(context);
-            return true;
         }
-        return false;
     }
 
     @Override
@@ -359,11 +365,8 @@ public class Interpreter implements ASTVisitor {
                                                            InterpretationType.WARNING,
                                                            "Inheriting from nothing"));
                     highlight = false;
-                } else if (!addInheriting(cast(ASTStrings.class, inheritance.getInherited()))) {
-                    highlights.add(new MessagedHighlight<>(inheritance.getBegin(),
-                                                           inheritance.getEnd(),
-                                                           InterpretationType.ERROR,
-                                                           "Could not resolve inheritance"));
+                } else {
+                    addInheriting(cast(ASTStrings.class, inheritance.getInherited()));
                 }
                 currentType = new ReturnType(TokenType.VOID);
             }
@@ -372,11 +375,8 @@ public class Interpreter implements ASTVisitor {
                 final var included = (ASTInclude) expression;
                 final var incl     = included.getIncluded();
 
-                if (incl != null && !addIncluding(cast(ASTStrings.class, incl))) {
-                    highlights.add(new MessagedHighlight<>(included.getBegin(),
-                                                           included.getEnd(),
-                                                           InterpretationType.ERROR,
-                                                           "Could not resolve inclusion"));
+                if (incl != null) {
+                    addIncluding(cast(ASTStrings.class, incl));
                 }
                 currentType = new ReturnType(TokenType.VOID);
             }
