@@ -645,7 +645,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
     public boolean dispose() {
         if (!Objects.equals(lastContent, document.getAllText())) {
             switch (JOptionPane.showConfirmDialog(this,
-                                                  "There are unsaved changes.\nSave them?",
+                                                  "There are unsaved changes.\nDo you want to save them?",
                                                   Constants.NAME + ": Editor",
                                                   JOptionPane.YES_NO_CANCEL_OPTION,
                                                   JOptionPane.WARNING_MESSAGE)) {
