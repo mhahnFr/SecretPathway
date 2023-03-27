@@ -93,15 +93,9 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
             spinnerPanel.add(stepperLabel);
             spinnerPanel.add(stepper);
 
-            final var appearancePanel = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
-                final var appearanceLabel = new DarkComponent<>(new JLabel("Appearance:"), components).getComponent();
+            final var checkBoxes = new DarkComponent<>(new JPanel(new GridLayout(5, 1)), components).getComponent();
+                final var darkBox = new DarkComponent<>(new JCheckBox("Enable dark mode"), components).getComponent();
 
-                final var appearanceBox = new JComboBox<String>();
-                appearanceBox.setEditable(false);
-            appearancePanel.add(appearanceLabel, BorderLayout.WEST);
-            appearancePanel.add(appearanceBox, BorderLayout.CENTER);
-
-            final var checkBoxes = new DarkComponent<>(new JPanel(new GridLayout(4, 1)), components).getComponent();
                 final var editorInlined = new DarkComponent<>(new JCheckBox("Use inlined editor"), components).getComponent();
 
                 final var editorHighlighting = new DarkComponent<>(new JCheckBox("Automatically enable syntax highlighting in the editor"), components).getComponent();
@@ -109,6 +103,7 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
                 final var enableStartTlS = new DarkComponent<>(new JCheckBox("Enable StartTLS"), components).getComponent();
 
                 final var enableUTF8 = new DarkComponent<>(new JCheckBox("Enable UTF-8 by default"), components).getComponent();
+            checkBoxes.add(darkBox);
             checkBoxes.add(editorInlined);
             checkBoxes.add(editorHighlighting);
             checkBoxes.add(enableStartTlS);
@@ -128,7 +123,6 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
             themePanel.add(themeLabel);
             themePanel.add(themeBoxPanel);
         panel.add(spinnerPanel);
-        panel.add(appearancePanel);
         panel.add(checkBoxes);
         panel.add(themePanel);
 
@@ -139,15 +133,8 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
 
         stepper.addChangeListener(__ -> settings.setFontSize((Integer) stepper.getValue()));
 
-//        appearanceBox.addItem(Constants.UI.APPEARANCE_AUTO);
-        appearanceBox.addItem(Constants.UI.APPEARANCE_DARK);
-        appearanceBox.addItem(Constants.UI.APPEARANCE_LIGHT);
-//        if (settings.getAutoDarkMode()) {
-//            appearanceBox.setSelectedItem(Constants.UI.APPEARANCE_AUTO);
-//        } else {
-            appearanceBox.setSelectedItem(settings.getDarkMode() ? Constants.UI.APPEARANCE_DARK : Constants.UI.APPEARANCE_LIGHT);
-//        }
-        appearanceBox.addItemListener(this::appearanceChanged);
+        darkBox.setSelected(settings.getDarkMode());
+        darkBox.addItemListener(__ -> settings.setDarkMode(darkBox.isSelected()));
 
         editorInlined.setSelected(settings.getEditorInlined());
         editorHighlighting.setSelected(settings.getSyntaxHighlighting());
@@ -172,29 +159,6 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
             themeButton.setVisible(false);
         }
         themeBox.addItemListener(this::themeChanged);
-    }
-
-    /**
-     * Stores the new selected appearance. Triggers an appearance
-     * update if necessary.
-     *
-     * @param event the event
-     */
-    private void appearanceChanged(final ItemEvent event) {
-        final var settings = Settings.getInstance();
-        switch ((String) event.getItem()) {
-            case Constants.UI.APPEARANCE_AUTO -> settings.setAutoDarkMode(true);
-
-            case Constants.UI.APPEARANCE_DARK -> {
-                settings.setAutoDarkMode(false);
-                settings.setDarkMode(true);
-            }
-
-            case Constants.UI.APPEARANCE_LIGHT -> {
-                settings.setAutoDarkMode(false);
-                settings.setDarkMode(false);
-            }
-        }
     }
 
     /**
