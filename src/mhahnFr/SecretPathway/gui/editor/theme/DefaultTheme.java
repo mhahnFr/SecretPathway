@@ -19,6 +19,7 @@
 
 package mhahnFr.SecretPathway.gui.editor.theme;
 
+import mhahnFr.SecretPathway.core.lpc.interpreter.InterpretationType;
 import mhahnFr.SecretPathway.core.lpc.interpreter.highlight.HighlightType;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTType;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
@@ -63,6 +64,13 @@ public class DefaultTheme implements SPTheme {
         final var comment = new FStyle();
         comment.setItalic(true);
         comment.setForeground(Color.gray);
+
+        final var warning = new FStyle();
+        warning.setForeground(new Color(192, 192, 0));
+        warning.setUnderlined(true);
+
+        styles.put(InterpretationType.WARNING, warning);
+        styles.put(InterpretationType.NOT_FOUND_BUILTIN, warning);
 
         styles.put(TokenType.IDENTIFIER, id);
 
@@ -123,12 +131,23 @@ public class DefaultTheme implements SPTheme {
 
         final var errorStyle = new FStyle();
         errorStyle.setForeground(Color.red);
-        errorStyle.setUnderlined(true);
+        errorStyle.setBold(true);
 
         styles.put(ASTType.WRONG, errorStyle);
 
+        final var errorStyle2 = new FStyle();
+        errorStyle2.setForeground(Color.red);
+        errorStyle2.setUnderlined(true);
+
+        styles.put(InterpretationType.ERROR, errorStyle2);
+        styles.put(InterpretationType.TYPE_MISMATCH, errorStyle2);
+
+        final var errorStyle3 = new FStyle();
+        errorStyle3.setForeground(Color.red);
+        styles.put(InterpretationType.NOT_FOUND, errorStyle3);
+
         final var missingStyle = new FStyle();
-        missingStyle.setBackground(Color.red);
+        missingStyle.setBackground(new Color(255, 130, 130));
 
         styles.put(ASTType.MISSING, missingStyle);
     }
