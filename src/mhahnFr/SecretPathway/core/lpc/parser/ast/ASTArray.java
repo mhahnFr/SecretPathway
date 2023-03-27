@@ -61,10 +61,7 @@ public class ASTArray extends ASTExpression {
     public void visit(ASTVisitor visitor) {
         if (visitor.maybeVisit(this)) {
             if (content != null) {
-                final var iterator = content.listIterator();
-                while (iterator.hasNext()) {
-                    iterator.next().visit(visitor);
-                }
+                content.forEach(e -> e.visit(visitor));
             }
         }
     }
@@ -75,10 +72,7 @@ public class ASTArray extends ASTExpression {
 
         builder.append(super.describe(indentation)).append(" [\n");
         if (content != null) {
-            final var iterator = content.listIterator();
-            while (iterator.hasNext()) {
-                builder.append(iterator.next().describe(indentation + 4)).append('\n');
-            }
+            content.forEach(e -> builder.append(e.describe(indentation + 4)).append('\n'));
         }
         builder.append(" ".repeat(Math.max(0, indentation))).append(']');
 

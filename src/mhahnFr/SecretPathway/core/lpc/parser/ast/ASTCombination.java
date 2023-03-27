@@ -55,10 +55,7 @@ public class ASTCombination extends ASTExpression {
     @Override
     public void visit(ASTVisitor visitor) {
         if (visitor.maybeVisit(this)) {
-            final var iterator = expressions.listIterator();
-            while (iterator.hasNext()) {
-                iterator.next().visit(visitor);
-            }
+            expressions.forEach(e -> e.visit(visitor));
         }
     }
 

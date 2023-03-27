@@ -95,10 +95,7 @@ public class Interpreter implements ASTVisitor {
     private String unwrapStrings(final ASTStrings strings) {
         final StringBuilder builder = new StringBuilder();
 
-        final var iterator = strings.getStrings().listIterator();
-        while (iterator.hasNext()) {
-            builder.append(cast(ASTString.class, iterator.next()).getValue());
-        }
+        strings.getStrings().forEach(e -> builder.append(cast(ASTString.class, e).getValue()));
 
         return builder.toString();
     }

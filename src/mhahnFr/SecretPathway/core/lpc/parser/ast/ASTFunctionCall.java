@@ -76,10 +76,7 @@ public class ASTFunctionCall extends ASTExpression {
             name.visit(visitor);
 
             if (arguments != null) {
-                final var iterator = arguments.listIterator();
-                while (iterator.hasNext()) {
-                    iterator.next().visit(visitor);
-                }
+                arguments.forEach(e -> e.visit(visitor));
             }
         }
     }

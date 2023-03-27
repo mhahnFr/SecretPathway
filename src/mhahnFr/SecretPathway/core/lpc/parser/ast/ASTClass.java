@@ -109,10 +109,7 @@ public class ASTClass extends ASTExpression {
                 inheritance.visit(visitor);
             }
             if (statements != null) {
-                final var iterator = statements.listIterator();
-                while (iterator.hasNext()) {
-                    iterator.next().visit(visitor);
-                }
+                statements.forEach(e -> e.visit(visitor));
             }
         }
     }

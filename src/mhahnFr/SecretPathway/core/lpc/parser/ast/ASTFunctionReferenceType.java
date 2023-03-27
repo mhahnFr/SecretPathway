@@ -89,10 +89,7 @@ public class ASTFunctionReferenceType extends ASTTypeDefinition {
     public void visit(ASTVisitor visitor) {
         if (visitor.maybeVisit(this)) {
             if (callTypes != null) {
-                final var iterator = callTypes.listIterator();
-                while (iterator.hasNext()) {
-                    iterator.next().visit(visitor);
-                }
+                callTypes.forEach(e -> e.visit(visitor));
             }
         }
     }

@@ -61,10 +61,7 @@ public class ASTMapping extends ASTExpression {
     public void visit(ASTVisitor visitor) {
         if (visitor.maybeVisit(this)) {
             if (content != null) {
-                final var iterator = content.listIterator();
-                while (iterator.hasNext()) {
-                    iterator.next().visit(visitor);
-                }
+                content.forEach(e -> e.visit(visitor));
             }
         }
     }

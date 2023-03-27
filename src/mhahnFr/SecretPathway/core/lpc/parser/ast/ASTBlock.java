@@ -60,10 +60,7 @@ public class ASTBlock extends ASTExpression {
     @Override
     public void visit(ASTVisitor visitor) {
         if (visitor.maybeVisit(this)) {
-            final var iterator = body.listIterator();
-            while (iterator.hasNext()) {
-                iterator.next().visit(visitor);
-            }
+            body.forEach(e -> e.visit(visitor));
         }
     }
 
@@ -72,10 +69,7 @@ public class ASTBlock extends ASTExpression {
         final var builder = new StringBuilder();
 
         builder.append(super.describe(indentation)).append(" {\n");
-        final var iterator = body.listIterator();
-        while (iterator.hasNext()) {
-            builder.append(iterator.next().describe(indentation + 4)).append('\n');
-        }
+        body.forEach(e -> builder.append(e.describe(indentation + 4)).append('\n'));
         builder.append(" ".repeat(Math.max(0, indentation))).append('}');
 
         return builder.toString();

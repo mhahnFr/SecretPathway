@@ -91,10 +91,7 @@ public class ASTVariableDefinition extends ASTExpression {
         if (visitor.maybeVisit(this)) {
 
             if (modifiers != null) {
-                final var iterator = modifiers.listIterator();
-                while (iterator.hasNext()) {
-                    iterator.next().visit(visitor);
-                }
+                modifiers.forEach(e -> e.visit(visitor));
             }
 
             if (type != null) {
@@ -112,10 +109,7 @@ public class ASTVariableDefinition extends ASTExpression {
         builder.append(super.describe(indentation));
         if (modifiers != null) {
             builder.append(" modifiers:\n");
-            final var iterator = modifiers.listIterator();
-            while (iterator.hasNext()) {
-                builder.append(iterator.next().describe(indentation + 4)).append('\n');
-            }
+            modifiers.forEach(e -> builder.append(e.describe(indentation + 4)).append('\n'));
         }
         if (type != null) {
             builder.append((modifiers == null ? "" : " ".repeat(Math.max(0, indentation)))).append(" type:\n")

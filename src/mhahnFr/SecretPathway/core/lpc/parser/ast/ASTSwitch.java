@@ -76,10 +76,7 @@ public class ASTSwitch extends ASTExpression {
         if (visitor.maybeVisit(this)) {
             variableExpression.visit(visitor);
 
-            final var iterator = cases.listIterator();
-            while (iterator.hasNext()) {
-                iterator.next().visit(visitor);
-            }
+            cases.forEach(e -> e.visit(visitor));
         }
     }
 
