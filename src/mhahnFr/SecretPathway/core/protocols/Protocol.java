@@ -113,4 +113,15 @@ public class Protocol {
         }
         return false;
     }
+
+    /**
+     * Activates the {@link SPPPlugin}, if available.
+     */
+    public void activateSPP() {
+        for (final var plugin : plugins) {
+            if (plugin instanceof final SPPPlugin sppPlugin) {
+                sppPlugin.setIsActive(true);
+            }
+        }
+    }
 }

@@ -34,8 +34,10 @@ import java.util.Vector;
  * @since 19.12.22
  */
 public class SPPPlugin implements ProtocolPlugin {
-    /** The buffer for a message in the SPP. */
+    /** The buffer for a message in the SPP.     */
     private final List<Byte> buffer = new Vector<>(256);
+    /** Indicates whether this plugin is active. */
+    private boolean active;
 
     @Override
     public boolean isBegin(byte b) {
@@ -67,6 +69,15 @@ public class SPPPlugin implements ProtocolPlugin {
      * @return whether the SPP is active
      */
     public boolean isActive() {
-        return false; // TODO
+        return active;
+    }
+
+    /**
+     * Sets whether this plugin should be active.
+     *
+     * @param active whether this plugin is active
+     */
+    public void setIsActive(final boolean active) {
+        this.active = active;
     }
 }
