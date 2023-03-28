@@ -29,7 +29,7 @@ import mhahnFr.SecretPathway.core.net.Connection;
  * @author mhahnFr
  * @since 25.03.23
  */
-public class SPPFileManager implements LPCFileManager {
+public class SPPFileManager extends LPCFileManager {
     /** The connection used to communicate with the MUD driver. */
     private final Connection connection;
 

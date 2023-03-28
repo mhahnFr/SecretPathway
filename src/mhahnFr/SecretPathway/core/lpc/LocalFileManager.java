@@ -29,7 +29,7 @@ import java.nio.charset.StandardCharsets;
  * @author mhahnFr
  * @since 25.03.23
  */
-public class LocalFileManager implements LPCFileManager {
+public class LocalFileManager extends LPCFileManager {
     @Override
     public String load(String fileName) throws Exception {
         try (final var reader = new BufferedInputStream(new FileInputStream(fileName))) {

@@ -20,7 +20,6 @@
 package mhahnFr.SecretPathway.core.lpc.interpreter;
 
 import mhahnFr.SecretPathway.core.lpc.LPCFileManager;
-import mhahnFr.SecretPathway.core.lpc.parser.Parser;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.*;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.core.lpc.interpreter.highlight.ASTHighlight;
@@ -111,10 +110,7 @@ public class Interpreter implements ASTVisitor {
         final var fileName = unwrapStrings(name);
 
         try {
-            final var source = loader.load(fileName);
-
-            final var ast = new Parser(source).parse();
-            return new Interpreter(loader).createContextFor(ast);
+            return loader.loadAndParse(fileName);
         } catch (Exception e) {
             return null;
         }

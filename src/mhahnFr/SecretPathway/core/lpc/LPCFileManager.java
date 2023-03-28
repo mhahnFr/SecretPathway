@@ -19,13 +19,22 @@
 
 package mhahnFr.SecretPathway.core.lpc;
 
+import mhahnFr.SecretPathway.core.lpc.interpreter.Context;
+import mhahnFr.SecretPathway.core.lpc.interpreter.Interpreter;
+import mhahnFr.SecretPathway.core.lpc.parser.Parser;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * This interface defines an LPC file loader.
  *
  * @author mhahnFr
  * @since 25.03.23
  */
-public interface LPCFileManager {
+public abstract class LPCFileManager {
+    private final Map<String, Context> cachedContexts = new HashMap<>();
+
     /**
      * Loads the file named by the given parameter. If the
      * file could not be loaded, an {@link Exception} is thrown.
@@ -35,7 +44,18 @@ public interface LPCFileManager {
      * @return the content of the file
      * @throws Exception if the file could not be loaded for some reason
      */
-    String load(final String fileName) throws Exception;
+    public abstract String load(final String fileName) throws Exception;
+
+    public Context loadAndParse(final String fileName) throws Exception {
+        System.out.println(cachedContexts.containsKey(fileName) ? "Cache hit" : "Cache miss");
+        return cachedContexts.getOrDefault(fileName, loadAndParseIntern(fileName));
+    }
+
+    private Context loadAndParseIntern(final String fileName) throws Exception {
+        final var context = new Interpreter(this).createContextFor(new Parser(load(fileName)).parse());
+        cachedContexts.put(fileName, context);
+        return context;
+    }
 
     /**
      * Saves the given content in a file with the given name.
@@ -44,14 +64,14 @@ public interface LPCFileManager {
      * @param content  the content of the file
      * @throws Exception if the file could not be written for some reason
      */
-    void save(final String fileName, final String content) throws Exception;
+    public abstract void save(final String fileName, final String content) throws Exception;
 
     /**
      * Returns whether this manager can compile files.
      *
      * @return whether this instance supports compilations
      */
-    default boolean canCompile() {
+    public boolean canCompile() {
         return false;
     }
 
@@ -62,7 +82,7 @@ public interface LPCFileManager {
      *
      * @param fileName the file to be compiled
      */
-    default void compile(final String fileName) {
+    public void compile(final String fileName) {
         throw new UnsupportedOperationException("Not implemented! Hint: Check using LPCFileManager#canCompile()");
     }
 }
