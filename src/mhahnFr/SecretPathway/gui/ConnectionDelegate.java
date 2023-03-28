@@ -113,6 +113,11 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
         listenFuture = threads.submit(connection::establishConnection);
     }
 
+    @Override
+    public void enableSPP() {
+        protocols.activateSPP();
+    }
+
     /**
      * Sends the given text. Appends a newline character to the given text and
      * inserts the text into the main text pane.

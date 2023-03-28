@@ -54,4 +54,9 @@ public interface ConnectionSender {
      * @param charset the charset to be used
      */
     void setCharset(final Charset charset);
+
+    /**
+     * Requests to activate the SecretPathwayProtocol (SPP).
+     */
+    void enableSPP();
 }

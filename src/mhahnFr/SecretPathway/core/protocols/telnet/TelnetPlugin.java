@@ -129,6 +129,7 @@ public class TelnetPlugin implements ProtocolPlugin {
 
     /** An enumeration containing MUD specific additions. */
     abstract static class MudExtensions {
+        final static short SPP = 103;
     }
 
     /** Indicates whether the currently received telnet sequence ends with IAC SE. */
@@ -292,6 +293,11 @@ public class TelnetPlugin implements ProtocolPlugin {
                 } else {
                     refuse = true;
                 }
+            }
+
+            case MudExtensions.SPP -> {
+                sendSingle(TelnetFunction.DO, MudExtensions.SPP, sender);
+                sender.enableSPP();
             }
 
             default -> refuse = true;
