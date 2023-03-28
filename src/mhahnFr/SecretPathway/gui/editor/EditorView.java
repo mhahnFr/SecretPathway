@@ -162,6 +162,10 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
                                                                                          : KeyEvent.CTRL_DOWN_MASK;
 
         final var menu = new JPopupMenu();
+            final var suggestionsItem = new JMenuItem("Toggle suggestions");
+            suggestionsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, KeyEvent.CTRL_DOWN_MASK));
+            suggestionsItem.addActionListener(__ -> toggleSuggestionMenu());
+
             final var saveItem = new JMenuItem("Save");
             saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.META_DOWN_MASK));
             saveItem.addActionListener(__ -> saveText());
@@ -181,6 +185,8 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
             final var redoItem = new JMenuItem("Redo");
             redoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, metaMask | KeyEvent.SHIFT_DOWN_MASK));
             redoItem.addActionListener(__ -> redoAction());
+        menu.add(suggestionsItem);
+        menu.addSeparator();
         menu.add(saveItem);
         menu.add(compileItem);
         menu.addSeparator();
