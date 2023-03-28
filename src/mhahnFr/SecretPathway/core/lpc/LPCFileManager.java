@@ -33,6 +33,7 @@ import java.util.Map;
  * @since 25.03.23
  */
 public abstract class LPCFileManager {
+    /** A mapping with the cached contexts, mapped to their file name. */
     private final Map<String, Context> cachedContexts = new HashMap<>();
 
     /**
@@ -46,11 +47,28 @@ public abstract class LPCFileManager {
      */
     public abstract String load(final String fileName) throws Exception;
 
+    /**
+     * Loads and parses the file named by the given parameter. The result
+     * of the parsing is returned and cached for later use.
+     *
+     * @param fileName the name of the file to load and parse
+     * @return the {@link Context} of the interpretation
+     * @throws Exception if an error happens during resolving
+     * @see #load(String)
+     */
     public Context loadAndParse(final String fileName) throws Exception {
-        System.out.println(cachedContexts.containsKey(fileName) ? "Cache hit" : "Cache miss");
         return cachedContexts.getOrDefault(fileName, loadAndParseIntern(fileName));
     }
 
+    /**
+     * Loads and parses the file named by the given parameter. Does not touch
+     * the cache.
+     *
+     * @param fileName the name of the file to load and parse
+     * @return the {@link Context} of the interpretation
+     * @throws Exception if an error happens during resolving
+     * @see #load(String)
+     */
     private Context loadAndParseIntern(final String fileName) throws Exception {
         final var context = new Interpreter(this).createContextFor(new Parser(load(fileName)).parse());
         cachedContexts.put(fileName, context);
