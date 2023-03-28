@@ -435,10 +435,12 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
             if (suggestion != null) {
                 document.insertSuggestion(textPane.getCaretPosition(), suggestion, replace);
                 if (suggestion instanceof final DefinitionSuggestion definitionSuggestion &&
-                        definitionSuggestion.getDefinition() instanceof FunctionDefinition) {
+                        definitionSuggestion.getDefinition() instanceof final FunctionDefinition functionDefinition) {
                     // TODO: argument stumps
                     document.insertString(textPane.getCaretPosition(), "()", null);
-                    textPane.setCaretPosition(textPane.getCaretPosition() - 1);
+                    if (!functionDefinition.getParameters().isEmpty()) {
+                        textPane.setCaretPosition(textPane.getCaretPosition() - 1);
+                    }
                 }
             }
         } catch (BadLocationException exception) {
