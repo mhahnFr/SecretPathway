@@ -60,18 +60,24 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
      * Constructs this window.
      */
     public SuggestionsWindow() {
-        suggestionPanel = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
-        final var scrollPane = new DarkComponent<>(new JScrollPane(suggestionPanel), components).getComponent();
-            suggestionLeftPanel = new DarkComponent<>(new JPanel(new GridLayout(0, 1)), components).getComponent();
+        final var wrapperPanel = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
+            suggestionPanel = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
+            final var scrollPane = new DarkComponent<>(new JScrollPane(suggestionPanel), components).getComponent();
+                suggestionLeftPanel = new DarkComponent<>(new JPanel(new GridLayout(0, 1)), components).getComponent();
 
-            suggestionRightPanel = new DarkComponent<>(new JPanel(new GridLayout(0, 1)), components).getComponent();
-        suggestionPanel.add(suggestionLeftPanel, BorderLayout.CENTER);
-        suggestionPanel.add(suggestionRightPanel, BorderLayout.EAST);
+                suggestionRightPanel = new DarkComponent<>(new JPanel(new GridLayout(0, 1)), components).getComponent();
+            suggestionPanel.add(suggestionLeftPanel,  BorderLayout.CENTER);
+            suggestionPanel.add(suggestionRightPanel, BorderLayout.EAST);
+
+            final var insertionLabel = new DarkComponent<>(new JLabel("Insert using <ENTER> or replace using <TAB>"), components).getComponent();
+            insertionLabel.setForeground(Color.gray);
+        wrapperPanel.add(scrollPane,   BorderLayout.CENTER);
+        wrapperPanel.add(insertionLabel, BorderLayout.SOUTH);
 
         noSuggestionsLabel = new DarkComponent<>(new JLabel("No suggestions available"), components).getComponent();
         noSuggestionsLabel.setBorder(new EmptyBorder(0, 5, 0, 5));
 
-        getContentPane().add(scrollPane);
+        getContentPane().add(wrapperPanel);
 
         Settings.getInstance().addDarkModeListener(this);
         darkModeToggled(Settings.getInstance().getDarkMode());
