@@ -21,6 +21,11 @@ package mhahnFr.SecretPathway.core.protocols.spp;
 
 import mhahnFr.SecretPathway.core.net.ConnectionSender;
 import mhahnFr.SecretPathway.core.protocols.ProtocolPlugin;
+import mhahnFr.utils.ByteHelper;
+
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * This class acts as plugin for the SecretPathwayProtocol (SPP).
@@ -29,14 +34,30 @@ import mhahnFr.SecretPathway.core.protocols.ProtocolPlugin;
  * @since 19.12.22
  */
 public class SPPPlugin implements ProtocolPlugin {
+    /** The buffer for a message in the SPP. */
+    private final List<Byte> buffer = new Vector<>(256);
+
     @Override
     public boolean isBegin(byte b) {
-        return b == 0x2;
+        return b == 0x02;
     }
 
     @Override
     public boolean process(byte b, ConnectionSender sender) {
-        return b == 0x3;
+        if (b == 0x03) {
+            processBuffer();
+            buffer.clear();
+            return false;
+        }
+        buffer.add(b);
+        return true;
+    }
+
+    /**
+     * Handles the received SPP message.
+     */
+    private void processBuffer() {
+        System.out.println(new String(ByteHelper.castToByte(buffer.toArray(new Byte[0])), StandardCharsets.UTF_8));
     }
 
     /**
