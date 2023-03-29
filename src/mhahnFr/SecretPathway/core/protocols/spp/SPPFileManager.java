@@ -22,6 +22,8 @@ package mhahnFr.SecretPathway.core.protocols.spp;
 import mhahnFr.SecretPathway.core.lpc.LPCFileManager;
 import mhahnFr.SecretPathway.core.net.Connection;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * This class represents an LPC file manager using the
  * SecretPathwayProtocol (SPP).
@@ -42,15 +44,37 @@ public class SPPFileManager extends LPCFileManager {
         this.connection = connection;
     }
 
-    @Override
-    public String load(String fileName) throws Exception {
-        // TODO: Implement
-        return null;
+    /**
+     * Sends a message in the SPP.
+     *
+     * @param message the message to be sent
+     */
+    private void send(final String message) {
+        final var bytes = message.getBytes(StandardCharsets.UTF_8);
+
+        final var sendBytes = new byte[bytes.length + 3];
+
+        sendBytes[0]                    = 0x02;
+        System.arraycopy(bytes, 0, sendBytes, 1, bytes.length);
+        sendBytes[sendBytes.length - 2] = 0x03;
+        sendBytes[sendBytes.length - 1] = (byte) '\n';
+
+        connection.send(sendBytes);
     }
 
     @Override
-    public void save(String fileName, String content) throws Exception {
-        // TODO: Implement
+    public String load(String fileName) {
+        send("file:fetch:" + fileName);
+
+        // TODO: Answer?
+        return "inherit;\npublic string name = \"" + fileName + "\";\n" +
+               "public string provider = \"SPPFileManager\";";
+    }
+
+    @Override
+    public void save(String fileName, String content) {
+        send("file:store:" + fileName + ":" + content);
+        // TODO: Answer?
     }
 
     @Override
@@ -60,6 +84,6 @@ public class SPPFileManager extends LPCFileManager {
 
     @Override
     public void compile(String fileName) {
-        // TODO: Implement
+        send("file:compile:" + fileName);
     }
 }
