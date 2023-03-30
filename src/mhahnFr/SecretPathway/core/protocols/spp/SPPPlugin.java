@@ -39,9 +39,14 @@ import java.util.Vector;
 public class SPPPlugin implements ProtocolPlugin {
     /** The buffer for a message in the SPP.     */
     private final List<Byte> buffer = new Vector<>(256);
+    private final Map<Object, Pair<String, String>> fetchers = new HashMap<>();
+    private final ConnectionSender sender;
     /** Indicates whether this plugin is active. */
     private boolean active;
-    private final Map<Object, Pair<String, String>> fetchers = new HashMap<>();
+
+    public SPPPlugin(final ConnectionSender sender) {
+        this.sender = sender;
+    }
 
     @Override
     public boolean isBegin(byte b) {
@@ -114,7 +119,7 @@ public class SPPPlugin implements ProtocolPlugin {
         sendBytes[sendBytes.length - 2] = 0x03;
         sendBytes[sendBytes.length - 1] = (byte) '\n';
 
-        // sender.send(sendBytes); // TODO
+         sender.send(sendBytes);
     }
 
     private void registerFetcher(final Object id, final String fileName) {
