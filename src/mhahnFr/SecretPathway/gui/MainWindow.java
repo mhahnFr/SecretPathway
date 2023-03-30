@@ -273,6 +273,11 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
         setPreferredSize(new Dimension(750, 500));
     }
 
+    /**
+     * Sets whether the password mode should be enabled.
+     *
+     * @param enabled whether to enable the password mode
+     */
     public void setPasswordModeEnabled(final boolean enabled) {
         passwordMode = enabled;
 
@@ -313,6 +318,12 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
         openEditor(null);
     }
 
+    /**
+     * Opens the editor, according to {@link Settings#getEditorInlined()}
+     * either inlined ar as a separate window.
+     *
+     * @param file the file to be opened
+     */
     public void openEditor(final String file) {
         final var manager = delegate.isSPPEnabled() ? new SPPFileManager(delegate.getSppPlugin())
                                                     : new LocalFileManager();

@@ -84,6 +84,7 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
     private Charset currentCharset = Settings.getInstance().useUTF8() ? StandardCharsets.UTF_8 : StandardCharsets.US_ASCII;
     /** A buffer used for broken unicode characters.                               */
     private final Vector<Byte> unicodeBuffer = new Vector<>();
+    /** The SP plugin.                                                             */
     private final SPPPlugin sppPlugin = new SPPPlugin(this);
 
     /**
@@ -119,6 +120,11 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
         protocols.activateSPP();
     }
 
+    /**
+     * Returns the used {@link SPPPlugin}.
+     *
+     * @return the used {@link SPPPlugin}
+     */
     public SPPPlugin getSppPlugin() {
         return sppPlugin;
     }
