@@ -59,4 +59,6 @@ public interface ConnectionSender {
      * Requests to activate the SecretPathwayProtocol (SPP).
      */
     void enableSPP();
+
+    void setPasswordMode(final boolean enabled);
 }

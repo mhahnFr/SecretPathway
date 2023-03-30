@@ -65,12 +65,14 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
     private JLabel messageLabel;
     /** The panel displaying the normal view.                             */
     private JPanel mainPanel;
+    private JPanel promptWrapperPanel;
     /** The timer for the message overlay.                                */
     private Timer messageTimer;
     /** Indicates whether the dark mode is active.                        */
     private boolean dark;
     /** Indicates whether the editor is currently inlined.                */
     private boolean editorShowing;
+    private boolean passwordMode;
 
     /**
      * Constructs a MainWindow. The given connection is used to connect to a MUD if given,
@@ -246,15 +248,17 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
 
             final var promptPanel = new DarkComponent<>(new JPanel(), components).getComponent();
             promptPanel.setLayout(new BoxLayout(promptPanel, BoxLayout.X_AXIS));
-                promptField = new DarkTextComponent<>(new HintTextField("Enter some text..."), components).getComponent();
-                promptField.setFont(Constants.UI.FONT);
-                promptField.setActionCommand(Constants.Actions.SEND);
-                promptField.addActionListener(this);
+                promptWrapperPanel = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
+                    promptField = new DarkTextComponent<>(new HintTextField("Enter some text..."), components).getComponent();
+                    promptField.setFont(Constants.UI.FONT);
+                    promptField.setActionCommand(Constants.Actions.SEND);
+                    promptField.addActionListener(this);
+                promptWrapperPanel.add(promptField, BorderLayout.CENTER);
 
                 final var sendButton = new JButton("Send");
                 sendButton.setActionCommand(Constants.Actions.SEND);
                 sendButton.addActionListener(this);
-            promptPanel.add(promptField);
+            promptPanel.add(promptWrapperPanel);
             promptPanel.add(sendButton);
 
         mainPanel.add(messageLabel, BorderLayout.NORTH);
@@ -269,11 +273,35 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
         setPreferredSize(new Dimension(750, 500));
     }
 
+    public void setPasswordModeEnabled(final boolean enabled) {
+        passwordMode = enabled;
+
+        final var hadFocus = promptField.hasFocus();
+
+        final JTextField newField;
+        if (enabled) {
+            newField = new DarkTextComponent<>(new JPasswordField(), components).getComponent();
+        } else {
+            newField = new DarkTextComponent<>(new HintTextField("Enter something..."), components).getComponent();
+        }
+        newField.setActionCommand(Constants.Actions.SEND);
+        newField.addActionListener(this);
+        components.removeIf(c -> c.getComponent() == promptField);
+        promptWrapperPanel.remove(promptField);
+        promptField = newField;
+        promptWrapperPanel.add(promptField);
+        validate();
+
+        if (hadFocus) {
+            promptField.requestFocusInWindow();
+        }
+    }
+
     /**
      * Sends the text currently in the prompt text field. Clears the text field.
      */
     private void sendText() {
-        delegate.send(promptField.getText());
+        delegate.send(promptField.getText(), passwordMode);
         promptField.setText("");
     }
 

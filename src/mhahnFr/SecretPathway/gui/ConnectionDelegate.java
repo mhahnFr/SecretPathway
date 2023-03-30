@@ -127,18 +127,17 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
      * Sends the given text. Appends a newline character to the given text and
      * inserts the text into the main text pane.
      *
-     * @param text the text to be sent
+     * @param text    the text to be sent
+     * @param pwdMode whether to prevent the text from being displayed
      */
-    void send(final String text) {
-        final var tmpText = text + '\n';
-
+    void send(final String text, final boolean pwdMode) {
         final var document = pane.getDocument();
         try {
-            document.insertString(document.getLength(), tmpText, null);
+            document.insertString(document.getLength(), (pwdMode ? "*".repeat(text.length()) : text) + '\n', null);
         } catch (BadLocationException e) {
             throw new RuntimeException(e);
         }
-        send(tmpText.getBytes(currentCharset));
+        send((text + '\n').getBytes(currentCharset));
     }
 
     /**
@@ -149,6 +148,11 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
      */
     public boolean isSPPEnabled() {
         return protocols.isSPPActive();
+    }
+
+    @Override
+    public void setPasswordMode(boolean enabled) {
+        ((MainWindow) receiver).setPasswordModeEnabled(enabled);
     }
 
     @Override

@@ -95,6 +95,13 @@ public class SPPPlugin implements ProtocolPlugin {
         }
     }
 
+    private void handlePromptCommand(final String command) {
+        switch (command) {
+            case "normal"   -> sender.setPasswordMode(false);
+            case "password" -> sender.setPasswordMode(true);
+        }
+    }
+
     /**
      * Handles the received SPP message.
      */
@@ -102,10 +109,13 @@ public class SPPPlugin implements ProtocolPlugin {
         final var str = new String(ByteHelper.castToByte(buffer.toArray(new Byte[0])), StandardCharsets.UTF_8);
 
         final var index = str.indexOf(':');
-        final var code = str.substring(0, index);
+
+        final String code      = str.substring(0, index),
+                     remainder = str.substring(index + 1);
+
         switch (code) {
-            case "promptField" -> {} // TODO
-            case "file" -> handleFileCommand(str.substring(index + 1));
+            case "promptField" -> handlePromptCommand(remainder);
+            case "file"        -> handleFileCommand(remainder);
         }
     }
 
