@@ -142,11 +142,11 @@ public class SPPPlugin implements ProtocolPlugin {
 
     public void saveFile(final String fileName,
                          final String content) {
-        // TODO
+        send("file:store:" + fileName + ":" + content);
     }
 
     public void compileFile(final String fileName) {
-        // TODO
+        send("file:compile:" + fileName);
     }
 
     /**
