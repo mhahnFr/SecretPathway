@@ -123,7 +123,7 @@ public class SPPPlugin implements ProtocolPlugin {
     }
 
     private void registerFetcher(final Object id, final String fileName) {
-        fetchers.put(new Pair<>(id, fileName), null);
+        fetchers.put(id, new Pair<>(fileName, null));
     }
 
     private boolean fetcherWaiting(final Object fetcher) {
@@ -131,11 +131,11 @@ public class SPPPlugin implements ProtocolPlugin {
     }
 
     public String fetchFile(final Object id,
-                            final String fileName) throws InterruptedException {
+                            final String fileName) {
         send("file:fetch:" + fileName);
         registerFetcher(id, fileName);
         while (fetcherWaiting(id)) {
-            Thread.sleep(100);
+            Thread.onSpinWait();
         }
         return fetchers.get(id).getSecond();
     }

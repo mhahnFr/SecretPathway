@@ -57,7 +57,11 @@ public abstract class LPCFileManager {
      * @see #load(String)
      */
     public Context loadAndParse(final String fileName) throws Exception {
-        return cachedContexts.getOrDefault(fileName, loadAndParseIntern(fileName));
+        final var toReturn = cachedContexts.get(fileName);
+        if (toReturn == null) {
+            return loadAndParseIntern(fileName);
+        }
+        return toReturn;
     }
 
     /**
