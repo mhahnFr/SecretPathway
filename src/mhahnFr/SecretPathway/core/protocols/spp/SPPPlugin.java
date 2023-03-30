@@ -37,13 +37,20 @@ import java.util.Vector;
  * @since 19.12.22
  */
 public class SPPPlugin implements ProtocolPlugin {
-    /** The buffer for a message in the SPP.     */
+    /** The buffer for a message in the SPP.                                */
     private final List<Byte> buffer = new Vector<>(256);
+    /** A map with all registered fetchers that are waiting for a response. */
     private final Map<Object, Pair<String, String>> fetchers = new HashMap<>();
+    /** The sender used for sending messages. */
     private final ConnectionSender sender;
-    /** Indicates whether this plugin is active. */
+    /** Indicates whether this plugin is active.                            */
     private boolean active;
 
+    /**
+     * Constructs this plugin using the given sender.
+     *
+     * @param sender the sender used for sending messages
+     */
     public SPPPlugin(final ConnectionSender sender) {
         this.sender = sender;
     }
@@ -64,6 +71,12 @@ public class SPPPlugin implements ProtocolPlugin {
         return true;
     }
 
+    /**
+     * Updates the result of a fetching.
+     *
+     * @param fileName the requested file
+     * @param newValue the result
+     */
     private void setFetchedValue(final String fileName, final Pair<String, String> newValue) {
         for (final var entry : fetchers.entrySet()) {
             if (entry.getValue().getFirst().equals(fileName)) {
@@ -72,6 +85,11 @@ public class SPPPlugin implements ProtocolPlugin {
         }
     }
 
+    /**
+     * Updates a fetched file.
+     *
+     * @param message the SPP message
+     */
     private void putFetchedFile(final String message) {
         final var index = message.indexOf(':');
         final var fileName = message.substring(0, index);
@@ -80,10 +98,20 @@ public class SPPPlugin implements ProtocolPlugin {
         setFetchedValue(fileName, new Pair<>(fileName, content));
     }
 
+    /**
+     * Updates a fetched file as an error.
+     *
+     * @param message the SPP message
+     */
     private void putErrorFile(final String message) {
         setFetchedValue(message, null);
     }
 
+    /**
+     * Handles an incoming file command of the SPP.
+     *
+     * @param command the command
+     */
     private void handleFileCommand(final String command) {
         final var index = command.indexOf(':');
         final var code = command.substring(0, index);
@@ -95,6 +123,11 @@ public class SPPPlugin implements ProtocolPlugin {
         }
     }
 
+    /**
+     * Handles a prompt command of the SPP.
+     *
+     * @param command the command
+     */
     private void handlePromptCommand(final String command) {
         switch (command) {
             case "normal"   -> sender.setPasswordMode(false);
@@ -120,6 +153,11 @@ public class SPPPlugin implements ProtocolPlugin {
         }
     }
 
+    /**
+     * Sends the given message in the SPP.
+     *
+     * @param message the message to be sent
+     */
     private void send(final String message) {
         final var bytes = message.getBytes(StandardCharsets.UTF_8);
 
@@ -133,10 +171,25 @@ public class SPPPlugin implements ProtocolPlugin {
          sender.send(sendBytes);
     }
 
+    /**
+     * Registers a fetcher for the given file name.
+     *
+     * @param id       the ID of the fetcher
+     * @param fileName the awaited file
+     */
     private void registerFetcher(final Object id, final String fileName) {
         fetchers.put(id, new Pair<>(fileName, null));
     }
 
+    /**
+     * Returns whether the given fetcher needs to wait. If
+     * an error happens, the fetcher will be unregistered,
+     * the {@link Exception} is then rethrown.
+     *
+     * @param fetcher the fetcher
+     * @return whether the fetcher still has to wait
+     * @see #unregisterFetcher(Object)
+     */
     private boolean fetcherWaiting(final Object fetcher) {
         try {
             return fetchers.get(fetcher).getSecond() == null;
@@ -146,10 +199,23 @@ public class SPPPlugin implements ProtocolPlugin {
         }
     }
 
+    /**
+     * Unregisters the given fetcher.
+     *
+     * @param fetcher the fetcher to be unregistered
+     */
     private void unregisterFetcher(final Object fetcher) {
         fetchers.remove(fetcher);
     }
 
+    /**
+     * Fetches the given file. The current thread is blocked
+     * until a response is received.
+     *
+     * @param id       the ID of the fetcher
+     * @param fileName the file to be fetched
+     * @return the fetched file
+     */
     public String fetchFile(final Object id,
                             final String fileName) {
         send("file:fetch:" + fileName);
@@ -162,11 +228,22 @@ public class SPPPlugin implements ProtocolPlugin {
         return result;
     }
 
+    /**
+     * Saves the given file with the given content.
+     *
+     * @param fileName the file to be saved
+     * @param content  the new content of the file
+     */
     public void saveFile(final String fileName,
                          final String content) {
         send("file:store:" + fileName + ":" + content);
     }
 
+    /**
+     * Compiles the given file.
+     *
+     * @param fileName the file to be compiled
+     */
     public void compileFile(final String fileName) {
         send("file:compile:" + fileName);
     }
