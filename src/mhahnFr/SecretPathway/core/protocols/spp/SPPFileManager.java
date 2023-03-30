@@ -49,7 +49,6 @@ public class SPPFileManager extends LPCFileManager {
     @Override
     public void save(String fileName, String content) {
         plugin.saveFile(fileName, content);
-        // TODO: Answer?
     }
 
     @Override

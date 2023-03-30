@@ -86,6 +86,14 @@ public abstract class ASTExpression {
         visitor.visit(this);
     }
 
+    /**
+     * Describes this AST node using the given indentation.
+     * Subclasses might want to override this method to describe
+     * contained subexpression.
+     *
+     * @param indentation the level of the indentation
+     * @return a {@link String} describing this AST node human-readable
+     */
     public String describe(final int indentation) {
         return " ".repeat(Math.max(0, indentation)) + type + " [" + begin.position() + " - " + end.position() + "]";
     }

@@ -26,6 +26,8 @@ import mhahnFr.SecretPathway.gui.editor.suggestions.Suggestion;
  * This record represents a {@link TokenType} suggestion.
  *
  * @param type the type to suggest
+ * @author mhahnFr
+ * @since 13.03.23
  */
 public record TypeSuggestion(TokenType type) implements Suggestion {
     @Override

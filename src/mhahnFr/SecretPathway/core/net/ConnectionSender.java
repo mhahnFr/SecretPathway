@@ -60,7 +60,18 @@ public interface ConnectionSender {
      */
     void enableSPP();
 
+    /**
+     * Sets whether the password mode of the SPP connection
+     * should be activated.
+     *
+     * @param enabled whether the password mode should be enabled
+     */
     void setPasswordMode(final boolean enabled);
 
+    /**
+     * Opens an editor for the given path.
+     *
+     * @param path the file to be opened
+     */
     void openEditor(final String path);
 }

@@ -23,6 +23,8 @@ package mhahnFr.SecretPathway.gui.editor.suggestions;
  * This record represents a plain text suggestion.
  *
  * @param suggestion the actual suggestion
+ * @author mhahnFr
+ * @since 13.03.23
  */
 public record PlainSuggestion(String suggestion) implements Suggestion {
     @Override
