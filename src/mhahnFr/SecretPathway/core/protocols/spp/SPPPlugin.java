@@ -116,6 +116,7 @@ public class SPPPlugin implements ProtocolPlugin {
         switch (code) {
             case "promptField" -> handlePromptCommand(remainder);
             case "file"        -> handleFileCommand(remainder);
+            case "editor"      -> sender.openEditor(remainder.isBlank() ? null : remainder);
         }
     }
 
@@ -137,7 +138,16 @@ public class SPPPlugin implements ProtocolPlugin {
     }
 
     private boolean fetcherWaiting(final Object fetcher) {
-        return fetchers.get(fetcher).getSecond() == null;
+        try {
+            return fetchers.get(fetcher).getSecond() == null;
+        } catch (Exception e) {
+           unregisterFetcher(fetcher);
+           throw e;
+        }
+    }
+
+    private void unregisterFetcher(final Object fetcher) {
+        fetchers.remove(fetcher);
     }
 
     public String fetchFile(final Object id,
@@ -147,7 +157,9 @@ public class SPPPlugin implements ProtocolPlugin {
         while (fetcherWaiting(id)) {
             Thread.onSpinWait();
         }
-        return fetchers.get(id).getSecond();
+        final var result = fetchers.get(id).getSecond();
+        unregisterFetcher(id);
+        return result;
     }
 
     public void saveFile(final String fileName,
