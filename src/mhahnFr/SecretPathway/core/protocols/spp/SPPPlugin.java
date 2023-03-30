@@ -22,9 +22,12 @@ package mhahnFr.SecretPathway.core.protocols.spp;
 import mhahnFr.SecretPathway.core.net.ConnectionSender;
 import mhahnFr.SecretPathway.core.protocols.ProtocolPlugin;
 import mhahnFr.utils.ByteHelper;
+import mhahnFr.utils.Pair;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -38,6 +41,7 @@ public class SPPPlugin implements ProtocolPlugin {
     private final List<Byte> buffer = new Vector<>(256);
     /** Indicates whether this plugin is active. */
     private boolean active;
+    private final Map<Object, Pair<String, String>> fetchers = new HashMap<>();
 
     @Override
     public boolean isBegin(byte b) {
@@ -55,11 +59,89 @@ public class SPPPlugin implements ProtocolPlugin {
         return true;
     }
 
+    private void setFetchedValue(final String fileName, final Pair<String, String> newValue) {
+        for (final var entry : fetchers.entrySet()) {
+            if (entry.getValue().getFirst().equals(fileName)) {
+                entry.setValue(newValue);
+            }
+        }
+    }
+
+    private void putFetchedFile(final String message) {
+        final var index = message.indexOf(':');
+        final var fileName = message.substring(0, index);
+        final var content = message.substring(index + 1);
+
+        setFetchedValue(fileName, new Pair<>(fileName, content));
+    }
+
+    private void putErrorFile(final String message) {
+        setFetchedValue(message, null);
+    }
+
+    private void handleFileCommand(final String command) {
+        final var index = command.indexOf(':');
+        final var code = command.substring(0, index);
+        final var remainder = command.substring(index + 1);
+
+        switch (code) {
+            case "fetch" -> putFetchedFile(remainder);
+            case "error" -> putErrorFile(remainder);
+        }
+    }
+
     /**
      * Handles the received SPP message.
      */
     private void processBuffer() {
-        System.out.println(new String(ByteHelper.castToByte(buffer.toArray(new Byte[0])), StandardCharsets.UTF_8));
+        final var str = new String(ByteHelper.castToByte(buffer.toArray(new Byte[0])), StandardCharsets.UTF_8);
+
+        final var index = str.indexOf(':');
+        final var code = str.substring(0, index);
+        switch (code) {
+            case "promptField" -> {} // TODO
+            case "file" -> handleFileCommand(str.substring(index + 1));
+        }
+    }
+
+    private void send(final String message) {
+        final var bytes = message.getBytes(StandardCharsets.UTF_8);
+
+        final var sendBytes = new byte[bytes.length + 3];
+
+        sendBytes[0] = 0x02;
+        System.arraycopy(bytes, 0, sendBytes, 1, bytes.length);
+        sendBytes[sendBytes.length - 2] = 0x03;
+        sendBytes[sendBytes.length - 1] = (byte) '\n';
+
+        // sender.send(sendBytes); // TODO
+    }
+
+    private void registerFetcher(final Object id, final String fileName) {
+        fetchers.put(new Pair<>(id, fileName), null);
+    }
+
+    private boolean fetcherWaiting(final Object fetcher) {
+        return fetchers.get(fetcher).getSecond() == null;
+    }
+
+    public String fetchFile(final Object id,
+                            final String fileName) throws InterruptedException {
+        send("file:fetch:" + fileName);
+        registerFetcher(id, fileName);
+        while (fetcherWaiting(id)) {
+            Thread.sleep(100);
+        }
+        return fetchers.get(id).getSecond();
+    }
+
+    public void saveFile(final String fileName,
+                         final String content) {
+        // TODO
+    }
+
+    public void compileFile(final String fileName) {
+        // TODO
     }
 
     /**
