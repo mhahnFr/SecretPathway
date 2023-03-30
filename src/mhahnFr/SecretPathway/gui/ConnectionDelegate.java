@@ -84,6 +84,7 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
     private Charset currentCharset = Settings.getInstance().useUTF8() ? StandardCharsets.UTF_8 : StandardCharsets.US_ASCII;
     /** A buffer used for broken unicode characters.                               */
     private final Vector<Byte> unicodeBuffer = new Vector<>();
+    private final SPPPlugin sppPlugin = new SPPPlugin();
 
     /**
      * Constructs this delegate.
@@ -104,7 +105,7 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
 
         defaultStyle = this.pane.getLogicalStyle();
         current = new FStyle();
-        protocols = new Protocol(this, new SPPPlugin(),
+        protocols = new Protocol(this, sppPlugin,
                                        new TelnetPlugin(),
                                        new ANSIPlugin(this));
 
@@ -116,6 +117,10 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
     @Override
     public void enableSPP() {
         protocols.activateSPP();
+    }
+
+    public SPPPlugin getSppPlugin() {
+        return sppPlugin;
     }
 
     /**

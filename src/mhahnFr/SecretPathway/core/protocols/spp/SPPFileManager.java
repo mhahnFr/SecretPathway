@@ -20,9 +20,6 @@
 package mhahnFr.SecretPathway.core.protocols.spp;
 
 import mhahnFr.SecretPathway.core.lpc.LPCFileManager;
-import mhahnFr.SecretPathway.core.net.Connection;
-
-import java.nio.charset.StandardCharsets;
 
 /**
  * This class represents an LPC file manager using the
@@ -32,48 +29,26 @@ import java.nio.charset.StandardCharsets;
  * @since 25.03.23
  */
 public class SPPFileManager extends LPCFileManager {
-    /** The connection used to communicate with the MUD driver. */
-    private final Connection connection;
+    /** The plugin used to communicate with the MUD driver. */
+    private final SPPPlugin plugin;
 
     /**
-     * Constructs this file manager using the given {@link Connection}.
+     * Constructs this file manager using the given {@link SPPPlugin}.
      *
-     * @param connection the connection used for communicating
+     * @param plugin the plugin used for communicating
      */
-    public SPPFileManager(final Connection connection) {
-        this.connection = connection;
-    }
-
-    /**
-     * Sends a message in the SPP.
-     *
-     * @param message the message to be sent
-     */
-    private void send(final String message) {
-        final var bytes = message.getBytes(StandardCharsets.UTF_8);
-
-        final var sendBytes = new byte[bytes.length + 3];
-
-        sendBytes[0]                    = 0x02;
-        System.arraycopy(bytes, 0, sendBytes, 1, bytes.length);
-        sendBytes[sendBytes.length - 2] = 0x03;
-        sendBytes[sendBytes.length - 1] = (byte) '\n';
-
-        connection.send(sendBytes);
+    public SPPFileManager(final SPPPlugin plugin) {
+        this.plugin = plugin;
     }
 
     @Override
-    public String load(String fileName) {
-        send("file:fetch:" + fileName);
-
-        // TODO: Answer?
-        return "inherit;\npublic string name = \"" + fileName + "\";\n" +
-               "public string provider = \"SPPFileManager\";";
+    public String load(String fileName) throws InterruptedException {
+        return plugin.fetchFile(this, fileName);
     }
 
     @Override
     public void save(String fileName, String content) {
-        send("file:store:" + fileName + ":" + content);
+        plugin.saveFile(fileName, content);
         // TODO: Answer?
     }
 
@@ -84,6 +59,6 @@ public class SPPFileManager extends LPCFileManager {
 
     @Override
     public void compile(String fileName) {
-        send("file:compile:" + fileName);
+        plugin.compileFile(fileName);
     }
 }

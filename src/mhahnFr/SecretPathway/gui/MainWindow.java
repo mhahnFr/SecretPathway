@@ -282,7 +282,7 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
      * either inlined or as a separate window.
      */
     private void openEditor() {
-        final var manager = delegate.isSPPEnabled() ? new SPPFileManager(connection)
+        final var manager = delegate.isSPPEnabled() ? new SPPFileManager(delegate.getSppPlugin())
                                                     : new LocalFileManager();
 
         if (Settings.getInstance().getEditorInlined() && !editorShowing) {
