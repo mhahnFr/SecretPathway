@@ -61,4 +61,6 @@ public interface ConnectionSender {
     void enableSPP();
 
     void setPasswordMode(final boolean enabled);
+
+    void openEditor(final String path);
 }

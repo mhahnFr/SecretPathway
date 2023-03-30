@@ -151,6 +151,11 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
     }
 
     @Override
+    public void openEditor(String path) {
+        ((MainWindow) receiver).openEditor(path);
+    }
+
+    @Override
     public void setPasswordMode(boolean enabled) {
         ((MainWindow) receiver).setPasswordModeEnabled(enabled);
     }

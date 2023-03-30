@@ -42,7 +42,7 @@ public class SPPFileManager extends LPCFileManager {
     }
 
     @Override
-    public String load(String fileName) throws InterruptedException {
+    public String load(String fileName) {
         return plugin.fetchFile(this, fileName);
     }
 
