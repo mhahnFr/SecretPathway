@@ -5,14 +5,14 @@ functional LPC source code editor.
 ### Screenshots
 <p align="center">
     <picture>
-        <source srcset="https://raw.githubusercontent.com/mhahnFr/SecretPathway/main/screeenshots/main_view-light.png" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)" />
-        <source srcset="https://raw.githubusercontent.com/mhahnFr/SecretPathway/main/screeenshots/main_view-dark.png" media="(prefers-color-scheme: dark)" />
-        <img src="https://raw.githubusercontent.com/mhahnFr/SecretPathway/main/screeenshots/main_view-light.png" alt="Main View" />
+        <source srcset="https://raw.githubusercontent.com/mhahnFr/SecretPathway/main/screenshots/main_view-light.png" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)" />
+        <source srcset="https://raw.githubusercontent.com/mhahnFr/SecretPathway/main/screenshots/main_view-dark.png" media="(prefers-color-scheme: dark)" />
+        <img src="https://raw.githubusercontent.com/mhahnFr/SecretPathway/main/screenshots/main_view-light.png" alt="Main View" />
     </picture>
     <picture>
-        <source srcset="https://raw.githubusercontent.com/mhahnFr/SecretPathway/main/screeenshots/editor-light.png" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)" />
-        <source srcset="https://raw.githubusercontent.com/mhahnFr/SecretPathway/main/screeenshots/editor-dark.png" media="(prefers-color-scheme: dark)" />
-        <img src="https://raw.githubusercontent.com/mhahnFr/SecretPathway/main/screeenshots/editor-light.png" alt="Editor" />
+        <source srcset="https://raw.githubusercontent.com/mhahnFr/SecretPathway/main/screenshots/editor-light.png" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)" />
+        <source srcset="https://raw.githubusercontent.com/mhahnFr/SecretPathway/main/screenshots/editor-dark.png" media="(prefers-color-scheme: dark)" />
+        <img src="https://raw.githubusercontent.com/mhahnFr/SecretPathway/main/screenshots/editor-light.png" alt="Editor" />
     </picture>
 </p>
 
