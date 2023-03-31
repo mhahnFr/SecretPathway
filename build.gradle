@@ -29,4 +29,5 @@ jar {
 
 dependencies {
     implementation project(':JUtilities')
-    jutils project(':JUtilities')}
+    jutils project(':JUtilities')
+}
