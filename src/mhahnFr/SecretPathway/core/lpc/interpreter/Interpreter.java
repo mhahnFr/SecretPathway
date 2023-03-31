@@ -454,6 +454,7 @@ public class Interpreter implements ASTVisitor {
 
             case FUNCTION_REFERENCE -> {
                 for (final var type : ((ASTFunctionReferenceType) expression).getCallTypes()) {
+                    // FIXME: Can be an ASTFunctionReferenceType as well
                     maybeWrongVoid(cast(ASTTypeDefinition.class, type));
                 }
             }

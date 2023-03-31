@@ -691,6 +691,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
             tokens.add(token);
         }
 
+        final var roTokens = new Vector<>(tokens);
         thread.execute(() -> {
             final var interpreter = new Interpreter(loader);
             this.context    = interpreter.createContextFor(new Parser(text).parse());
@@ -702,7 +703,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
                             style.asStyle(def), false);
                 }
             }
-            for (final var t : tokens) {
+            for (final var t : roTokens) {
                 if (t.is(TokenType.COMMENT_LINE) || t.is(TokenType.COMMENT_BLOCK)) {
                     final var style = theme.styleFor(t.type());
                     setCharacterAttributes(t.begin(), t.end() - t.begin(),
