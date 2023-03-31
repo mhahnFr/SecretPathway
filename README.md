@@ -2,6 +2,20 @@
 The SecretPathway is a MUD client, written in Java. It features a fully
 functional LPC source code editor.
 
+### Screenshots
+<p align="center">
+    <picture>
+        <source srcset="https://raw.githubusercontent.com/mhahnFr/SecretPathway/main/screeenshots/main_view-light.png" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)" />
+        <source srcset="https://raw.githubusercontent.com/mhahnFr/SecretPathway/main/screeenshots/main_view-dark.png" media="(prefers-color-scheme: dark)" />
+        <img src="https://raw.githubusercontent.com/mhahnFr/SecretPathway/main/screeenshots/main_view-light.png" alt="Main View" />
+    </picture>
+    <picture>
+        <source srcset="https://raw.githubusercontent.com/mhahnFr/SecretPathway/main/screeenshots/editor-light.png" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)" />
+        <source srcset="https://raw.githubusercontent.com/mhahnFr/SecretPathway/main/screeenshots/editor-dark.png" media="(prefers-color-scheme: dark)" />
+        <img src="https://raw.githubusercontent.com/mhahnFr/SecretPathway/main/screeenshots/editor-light.png" alt="Editor" />
+    </picture>
+</p>
+
 ## Usage
 To use this client, you can either download an executable [here][1].
 Make sure you have installed a Java Runtime Environment in version 15 or higher.
