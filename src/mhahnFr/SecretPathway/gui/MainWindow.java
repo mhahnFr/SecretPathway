@@ -72,6 +72,7 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
     private boolean dark;
     /** Indicates whether the editor is currently inlined.                */
     private boolean editorShowing;
+    /** Indicates whether the password mode is currently active.          */
     private boolean passwordMode;
 
     /**
@@ -283,12 +284,14 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
 
         final var hadFocus = promptField.hasFocus();
 
-        final JTextField newField;
+        final DarkTextComponent<? extends JTextField> newDarkField;
         if (enabled) {
-            newField = new DarkTextComponent<>(new JPasswordField(), components).getComponent();
+            newDarkField = new DarkTextComponent<>(new JPasswordField(), components);
         } else {
-            newField = new DarkTextComponent<>(new HintTextField("Enter something..."), components).getComponent();
+            newDarkField = new DarkTextComponent<>(new HintTextField("Enter something..."), components);
         }
+        newDarkField.setDark(dark);
+        final var newField = newDarkField.getComponent();
         newField.setActionCommand(Constants.Actions.SEND);
         newField.addActionListener(this);
         components.removeIf(c -> c.getComponent() == promptField);
