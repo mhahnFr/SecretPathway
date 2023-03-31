@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+}
+
+group 'mhahnFr'
+version '1.0.0'
+
+configurations {
+    jutils
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+    }
+}
+
+jar {
+    dependsOn configurations.jutils
+    manifest {
+        attributes 'Main-Class': 'mhahnFr.SecretPathway.SecretPathway'
+    }
+    from {
+        configurations.jutils.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+dependencies {
+    implementation project(':JUtilities')
+    jutils project(':JUtilities')}
