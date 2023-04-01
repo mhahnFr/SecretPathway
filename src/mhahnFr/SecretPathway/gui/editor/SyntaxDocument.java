@@ -757,11 +757,13 @@ public class SyntaxDocument extends DefaultStyledDocument {
      * @return the message at that position
      */
     public String getMessageFor(int position) {
-        for (final var entry : highlights) {
-            if (position >= entry.getBegin() && position <= entry.getEnd()
-                    && entry instanceof MessagedHighlight<?>
-                    && !isInToken(position, TokenType.COMMENT_BLOCK, TokenType.COMMENT_LINE)) {
-                return ((MessagedHighlight<?>) entry).getMessage();
+        if (highlights != null) {
+            for (final var entry : highlights) {
+                if (position >= entry.getBegin() && position <= entry.getEnd()
+                        && entry instanceof MessagedHighlight<?>
+                        && !isInToken(position, TokenType.COMMENT_BLOCK, TokenType.COMMENT_LINE)) {
+                    return ((MessagedHighlight<?>) entry).getMessage();
+                }
             }
         }
         return "";

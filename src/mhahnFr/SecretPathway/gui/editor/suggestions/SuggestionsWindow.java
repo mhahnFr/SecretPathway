@@ -69,7 +69,8 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
             suggestionPanel.add(suggestionLeftPanel,  BorderLayout.CENTER);
             suggestionPanel.add(suggestionRightPanel, BorderLayout.EAST);
 
-            final var insertionLabel = new DarkComponent<>(new JLabel("Insert using <ENTER> or replace using <TAB>"), components).getComponent();
+            final var insertionLabel = new JLabel("Insert using <ENTER> or replace using <TAB>");
+            insertionLabel.setOpaque(false);
             insertionLabel.setForeground(Color.gray);
         wrapperPanel.add(scrollPane,   BorderLayout.CENTER);
         wrapperPanel.add(insertionLabel, BorderLayout.SOUTH);
