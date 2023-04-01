@@ -854,7 +854,8 @@ public class Parser {
      * @see #parseCast(int)
      */
     private ASTExpression parseMaybeCast(final int priority) {
-        if (next.type() == TokenType.RIGHT_PAREN && (isType(current.type()) || current.type() == TokenType.IDENTIFIER)) {
+        if ((next.type() == TokenType.RIGHT_PAREN && (isType(current.type()) || current.type() == TokenType.IDENTIFIER))
+            || isType(current.type()) && (next.is(TokenType.LEFT_PAREN) || next.is(TokenType.LEFT_BRACKET) || next.is(TokenType.RIGHT_BRACKET) || next.is(TokenType.STAR))) {
             return parseCast(priority);
         }
         return null;
