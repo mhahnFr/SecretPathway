@@ -17,6 +17,12 @@ sourceSets {
     }
 }
 
+tasks.register('deploy', Exec) {
+    dependsOn(jar)
+
+    commandLine 'jpackage', '--input', 'build/libs', '--name', project.name, '--main-jar', 'SecretPathway-' + version + '.jar'
+}
+
 jar {
     dependsOn configurations.jutils
     manifest {
