@@ -118,7 +118,7 @@ public class ASTTypeDeclaration extends ASTTypeDefinition {
         if (type == null) {
             return null;
         }
-        return switch (type) {
+        final var typeString = switch (type) {
             case CHAR_KEYWORD   -> "char";
             case INT_KEYWORD    -> "int";
             case STRING_KEYWORD -> "string";
@@ -127,5 +127,6 @@ public class ASTTypeDeclaration extends ASTTypeDefinition {
 
             default             -> type.toString().toLowerCase();
         };
+        return typeString == null ? null : typeString + (isArray ? "[]" : "");
     }
 }
