@@ -24,6 +24,7 @@ import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.SecretPathway.core.net.ConnectionFactory;
 import mhahnFr.SecretPathway.gui.MainWindow;
 
+import javax.swing.*;
 import java.awt.EventQueue;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -144,10 +145,18 @@ public class SecretPathway {
      * Enables appearance related settings.
      */
     private void setAppearance() {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
+                 UnsupportedLookAndFeelException e) {
+            System.err.println("Could not set platform L&F: Will use default");
+            e.printStackTrace();
+            System.err.println("--------------------------");
+        }
+
         final var settings = Settings.getInstance();
 
         if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-
             if (settings.getDarkMode()) {
                 System.setProperty("apple.awt.application.appearance", "NSAppearanceNameDarkAqua");
             } else {
