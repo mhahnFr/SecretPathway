@@ -21,7 +21,6 @@ package mhahnFr.SecretPathway.core.lpc.parser.ast;
 
 import mhahnFr.utils.StreamPosition;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
