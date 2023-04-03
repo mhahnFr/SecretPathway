@@ -21,6 +21,9 @@ package mhahnFr.SecretPathway.core.lpc.parser.ast;
 
 import mhahnFr.utils.StreamPosition;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * This class represents a {@code for} loop as an AST node.
  *
@@ -117,5 +120,15 @@ public class ASTFor extends ASTExpression {
                 afterExpression.describe(indentation + 4) + "\n" +
                 indent + "Body:\n" +
                 body.describe(indentation + 4);
+    }
+
+    @Override
+    public boolean hasSubExpressions() {
+        return true;
+    }
+
+    @Override
+    public List<ASTExpression> getSubExpressions() {
+        return Arrays.asList(initExpression, condition, afterExpression, body);
     }
 }

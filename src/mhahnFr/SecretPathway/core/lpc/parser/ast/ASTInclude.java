@@ -21,6 +21,10 @@ package mhahnFr.SecretPathway.core.lpc.parser.ast;
 
 import mhahnFr.utils.StreamPosition;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * This class represents an include statement.
  *
@@ -69,5 +73,15 @@ public class ASTInclude extends ASTExpression {
     public String describe(int indentation) {
         return super.describe(indentation) + " included:\n" +
                 (included == null ? " ".repeat(Math.max(0, indentation + 4)) + "nothing" : included.describe(indentation + 4));
+    }
+
+    @Override
+    public boolean hasSubExpressions() {
+        return true;
+    }
+
+    @Override
+    public List<ASTExpression> getSubExpressions() {
+        return Collections.singletonList(included);
     }
 }

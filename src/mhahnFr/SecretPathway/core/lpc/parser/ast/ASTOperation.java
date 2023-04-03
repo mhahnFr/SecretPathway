@@ -21,6 +21,9 @@ package mhahnFr.SecretPathway.core.lpc.parser.ast;
 
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * This class represents an operation as an AST node.
  *
@@ -93,5 +96,15 @@ public class ASTOperation extends ASTExpression {
                lhs.describe(indentation + 4) + '\n' +
                " ".repeat(Math.max(0, indentation)) + operatorType + "\n" +
                rhs.describe(indentation + 4);
+    }
+
+    @Override
+    public boolean hasSubExpressions() {
+        return true;
+    }
+
+    @Override
+    public List<ASTExpression> getSubExpressions() {
+        return Arrays.asList(lhs, rhs);
     }
 }

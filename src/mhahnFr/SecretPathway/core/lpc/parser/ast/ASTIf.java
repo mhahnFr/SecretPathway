@@ -21,6 +21,9 @@ package mhahnFr.SecretPathway.core.lpc.parser.ast;
 
 import mhahnFr.utils.StreamPosition;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * This class represents an {@code if} statement as an AST node.
  *
@@ -103,5 +106,19 @@ public class ASTIf extends ASTExpression {
                 indent + "Instruction:\n" +
                 instruction.describe(indentation + 4) +
                 (elseInstruction == null ? "" : "\n" + indent + "Else:\n" + elseInstruction.describe(indentation + 4));
+    }
+
+    @Override
+    public boolean hasSubExpressions() {
+        return true;
+    }
+
+    @Override
+    public List<ASTExpression> getSubExpressions() {
+        if (elseInstruction == null) {
+            return Arrays.asList(condition, instruction);
+        } else {
+            return Arrays.asList(condition, instruction, elseInstruction);
+        }
     }
 }

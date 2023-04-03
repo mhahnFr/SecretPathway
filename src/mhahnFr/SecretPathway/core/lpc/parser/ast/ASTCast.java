@@ -21,6 +21,9 @@ package mhahnFr.SecretPathway.core.lpc.parser.ast;
 
 import mhahnFr.utils.StreamPosition;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * This class represents a cast as an AST node.
  *
@@ -81,5 +84,15 @@ public class ASTCast extends ASTExpression {
         return super.describe(indentation) + "\n" +
                 type.describe(indentation + 4) + "\n" +
                 cast.describe(indentation + 4);
+    }
+
+    @Override
+    public boolean hasSubExpressions() {
+        return true;
+    }
+
+    @Override
+    public List<ASTExpression> getSubExpressions() {
+        return Arrays.asList(type, cast);
     }
 }

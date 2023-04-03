@@ -21,6 +21,9 @@ package mhahnFr.SecretPathway.core.lpc.parser.ast;
 
 import mhahnFr.utils.StreamPosition;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * This class represents an inheritance node.
  *
@@ -69,5 +72,15 @@ public class ASTInheritance extends ASTExpression {
     public String describe(int indentation) {
         return super.describe(indentation) + " inheriting from:\n" +
                 (inherited == null ? " ".repeat(Math.max(0, indentation + 4)) + "nothing" : inherited.describe(indentation + 4));
+    }
+
+    @Override
+    public boolean hasSubExpressions() {
+        return true;
+    }
+
+    @Override
+    public List<ASTExpression> getSubExpressions() {
+        return Collections.singletonList(inherited);
     }
 }

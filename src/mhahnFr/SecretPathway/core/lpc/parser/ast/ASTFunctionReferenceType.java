@@ -182,4 +182,14 @@ public class ASTFunctionReferenceType extends ASTTypeDefinition {
         }
         return false;
     }
+
+    @Override
+    public boolean hasSubExpressions() {
+        return true;
+    }
+
+    @Override
+    public List<ASTExpression> getSubExpressions() {
+        return callTypes;
+    }
 }

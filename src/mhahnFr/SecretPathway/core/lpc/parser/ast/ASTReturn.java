@@ -21,6 +21,9 @@ package mhahnFr.SecretPathway.core.lpc.parser.ast;
 
 import mhahnFr.utils.StreamPosition;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * This class represents a return statement as an AST node.
  *
@@ -65,5 +68,15 @@ public class ASTReturn extends ASTExpression {
     @Override
     public String describe(int indentation) {
         return super.describe(indentation) + "\n" + (returned == null ? " ".repeat(Math.max(0, indentation + 4)) : returned.describe(indentation + 4));
+    }
+
+    @Override
+    public boolean hasSubExpressions() {
+        return true;
+    }
+
+    @Override
+    public List<ASTExpression> getSubExpressions() {
+        return Collections.singletonList(returned);
     }
 }

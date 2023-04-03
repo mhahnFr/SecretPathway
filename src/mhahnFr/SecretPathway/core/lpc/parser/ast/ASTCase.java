@@ -19,6 +19,10 @@
 
 package mhahnFr.SecretPathway.core.lpc.parser.ast;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
+
 /**
  * This class represents a switch case statement as an AST node.
  *
@@ -91,5 +95,18 @@ public class ASTCase extends ASTExpression {
             }
         }
         return builder.toString();
+    }
+
+    @Override
+    public boolean hasSubExpressions() {
+        return true;
+    }
+
+    @Override
+    public List<ASTExpression> getSubExpressions() {
+        final var expressions = new Vector<ASTExpression>(this.expressions.length + 1);
+        expressions.add(caseStatement);
+        expressions.addAll(Arrays.asList(this.expressions));
+        return expressions;
     }
 }

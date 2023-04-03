@@ -19,6 +19,9 @@
 
 package mhahnFr.SecretPathway.core.lpc.parser.ast;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * This class represents a declared function parameter
  * as an AST node.
@@ -78,5 +81,15 @@ public class ASTParameter extends ASTExpression {
                type.describe(indentation + 4) + "\n" +
                " ".repeat(Math.max(0, indentation)) + "name:\n" +
                name.describe(indentation + 4);
+    }
+
+    @Override
+    public boolean hasSubExpressions() {
+        return true;
+    }
+
+    @Override
+    public List<ASTExpression> getSubExpressions() {
+        return Arrays.asList(type, name);
     }
 }

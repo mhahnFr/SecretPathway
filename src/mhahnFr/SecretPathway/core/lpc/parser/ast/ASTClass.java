@@ -22,6 +22,7 @@ package mhahnFr.SecretPathway.core.lpc.parser.ast;
 import mhahnFr.utils.StreamPosition;
 
 import java.util.List;
+import java.util.Vector;
 
 /**
  * This class represents a class definition as an AST node.
@@ -140,5 +141,23 @@ public class ASTClass extends ASTExpression {
             }
         }
         return builder.toString();
+    }
+
+    @Override
+    public boolean hasSubExpressions() {
+        return true;
+    }
+
+    @Override
+    public List<ASTExpression> getSubExpressions() {
+        final var toReturn = new Vector<ASTExpression>((statements == null ? 0 : statements.size()) + 2);
+        toReturn.add(name);
+        if (inheritance != null) {
+            toReturn.add(inheritance);
+        }
+        if (statements != null) {
+            toReturn.addAll(statements);
+        }
+        return toReturn;
     }
 }

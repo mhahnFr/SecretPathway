@@ -21,6 +21,8 @@ package mhahnFr.SecretPathway.core.lpc.parser.ast;
 
 import mhahnFr.utils.StreamPosition;
 
+import java.util.List;
+
 /**
  * This class represents a node in the AST.
  *
@@ -96,5 +98,29 @@ public abstract class ASTExpression {
      */
     public String describe(final int indentation) {
         return " ".repeat(Math.max(0, indentation)) + type + " [" + begin.position() + " - " + end.position() + "]";
+    }
+
+    /**
+     * Returns whether this AST node contains other expressions.
+     * They can be queried using {@link #getSubExpressions()}.
+     *
+     * @return whether this node contains sub-expressions
+     * @see #getSubExpressions()
+     */
+    public boolean hasSubExpressions() {
+        return false;
+    }
+
+    /**
+     * Returns all sub-expressions of this node. The order
+     * of the sub-expressions is not defined. If this node
+     * does not contain sub-expressions, {@code null} is returned.
+     * Check for sub-expressions using {@link #hasSubExpressions()}.
+     *
+     * @return a list with all sub-expressions
+     * @see #hasSubExpressions()
+     */
+    public List<ASTExpression> getSubExpressions() {
+        return null;
     }
 }

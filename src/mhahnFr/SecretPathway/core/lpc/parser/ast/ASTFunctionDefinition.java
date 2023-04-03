@@ -20,6 +20,7 @@
 package mhahnFr.SecretPathway.core.lpc.parser.ast;
 
 import java.util.List;
+import java.util.Vector;
 
 /**
  * This class represents a function definition as an AST node.
@@ -148,5 +149,21 @@ public class ASTFunctionDefinition extends ASTExpression {
         }
         builder.append(indent).append("body:\n").append(body.describe(indentation + 4));
         return builder.toString();
+    }
+
+    @Override
+    public boolean hasSubExpressions() {
+        return true;
+    }
+
+    @Override
+    public List<ASTExpression> getSubExpressions() {
+        final var toReturn = new Vector<ASTExpression>(modifiers.size() + parameters.size() + 3);
+        toReturn.addAll(modifiers);
+        toReturn.add(type);
+        toReturn.add(name);
+        toReturn.addAll(parameters);
+        toReturn.add(body);
+        return toReturn;
     }
 }

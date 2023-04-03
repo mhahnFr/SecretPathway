@@ -21,6 +21,9 @@ package mhahnFr.SecretPathway.core.lpc.parser.ast;
 
 import mhahnFr.utils.StreamPosition;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * This class represents a {@code try catch} statement as an AST node.
  *
@@ -102,5 +105,19 @@ public class ASTTryCatch extends ASTExpression {
                                                   exceptionVariable.describe(indentation + 4) + "\n") +
                 indent + "Caught:\n" +
                 catchExpression.describe(indentation + 4);
+    }
+
+    @Override
+    public boolean hasSubExpressions() {
+        return true;
+    }
+
+    @Override
+    public List<ASTExpression> getSubExpressions() {
+        if (exceptionVariable == null) {
+            return Arrays.asList(tryExpression, catchExpression);
+        } else {
+            return Arrays.asList(tryExpression, exceptionVariable, catchExpression);
+        }
     }
 }

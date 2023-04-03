@@ -19,6 +19,9 @@
 
 package mhahnFr.SecretPathway.core.lpc.parser.ast;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * This class represents a subscript expression as an AST node.
  *
@@ -59,5 +62,15 @@ public class ASTSubscript extends ASTExpression {
     @Override
     public String describe(int indentation) {
         return super.describe(indentation) + "\n" + expression.describe(indentation + 4);
+    }
+
+    @Override
+    public boolean hasSubExpressions() {
+        return true;
+    }
+
+    @Override
+    public List<ASTExpression> getSubExpressions() {
+        return Collections.singletonList(expression);
     }
 }

@@ -22,6 +22,9 @@ package mhahnFr.SecretPathway.core.lpc.parser.ast;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.utils.StreamPosition;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * This class represents a unary operator as AST node.
  *
@@ -79,5 +82,15 @@ public class ASTUnaryOperator extends ASTExpression {
     public String describe(int indentation) {
         return super.describe(indentation) + " " + operatorType + "\n" +
                identifier.describe(indentation + 4);
+    }
+
+    @Override
+    public boolean hasSubExpressions() {
+        return true;
+    }
+
+    @Override
+    public List<ASTExpression> getSubExpressions() {
+        return Collections.singletonList(identifier);
     }
 }

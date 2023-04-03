@@ -22,6 +22,7 @@ package mhahnFr.SecretPathway.core.lpc.parser.ast;
 import mhahnFr.utils.StreamPosition;
 
 import java.util.List;
+import java.util.Vector;
 
 /**
  * This class represents a complete switch statement as an AST node.
@@ -97,5 +98,18 @@ public class ASTSwitch extends ASTExpression {
         }
 
         return builder.toString();
+    }
+
+    @Override
+    public boolean hasSubExpressions() {
+        return true;
+    }
+
+    @Override
+    public List<ASTExpression> getSubExpressions() {
+        final var toReturn = new Vector<ASTExpression>(cases.size() + 1);
+        toReturn.add(variableExpression);
+        toReturn.addAll(cases);
+        return toReturn;
     }
 }

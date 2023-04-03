@@ -78,4 +78,14 @@ public class ASTArray extends ASTExpression {
 
         return builder.toString();
     }
+
+    @Override
+    public boolean hasSubExpressions() {
+        return true;
+    }
+
+    @Override
+    public List<ASTExpression> getSubExpressions() {
+        return content;
+    }
 }
