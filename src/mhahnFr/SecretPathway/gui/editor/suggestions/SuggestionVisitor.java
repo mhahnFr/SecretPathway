@@ -21,28 +21,79 @@ package mhahnFr.SecretPathway.gui.editor.suggestions;
 
 import mhahnFr.SecretPathway.core.lpc.parser.ast.*;
 
+/**
+ * This class represents an AST visitor, querying additional
+ * information necessary for showing more relevant suggestions.
+ *
+ * @author mhahnFr
+ * @since 04.04.23
+ */
 public class SuggestionVisitor {
+    /** The type of the suggestions to be shown. */
     private SuggestionType type = SuggestionType.ANY;
+    /** The position for visiting.               */
     private int position = -1;
+    /** The expected return type.                */
     private ASTTypeDefinition returnType;
 
+    /**
+     * Returns the requested return type at the last visited
+     * position. Returns {@code null} if no return type is
+     * expected.
+     *
+     * @return the requested return type
+     * @see #getPosition()
+     * @see #visit(ASTExpression, int)
+     */
     public ASTTypeDefinition getType() {
         return returnType;
     }
 
+    /**
+     * Returns the type of suggestions determined at the last
+     * visited position.
+     *
+     * @return the type of suggestions
+     * @see #getPosition()
+     * @see #visit(ASTExpression, int)
+     */
     public SuggestionType getSuggestionType() {
         return type;
     }
 
+    /**
+     * Returns the position that was previously used for visiting.
+     *
+     * @return the last used position
+     */
     public int getPosition() {
         return position;
     }
 
+    /**
+     * Visits the given AST node at the given position. Returns
+     * the {@link SuggestionType} determined after visiting.
+     *
+     * @param node     the AST node to be visited
+     * @param position the position
+     * @return the type of suggestions that should be shown
+     * @see #getPosition()
+     * @see #getSuggestionType()
+     */
     public SuggestionType visit(final ASTExpression node, final int position) {
         this.position = position;
         return (type = visitImpl(node, position));
     }
 
+    /**
+     * Performs the actual visiting. Returns the determined
+     * {@link SuggestionType}.
+     *
+     * @param node     the AST node to be visited
+     * @param position the position
+     * @return the type of suggestions that should be shown
+     * @see #visit(ASTExpression, int)
+     */
     private SuggestionType visitImpl(final ASTExpression node, final int position) {
         System.out.println("Generating for: " + node.getASTType());
 
