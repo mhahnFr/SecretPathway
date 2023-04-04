@@ -2,6 +2,7 @@ plugins {
     id 'java'
 }
 
+sourceCompatibility = 19
 group 'mhahnFr'
 version '1.0.0'
 
