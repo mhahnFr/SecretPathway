@@ -31,6 +31,7 @@ import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Tokenizer;
 import mhahnFr.SecretPathway.gui.editor.suggestions.Suggestion;
+import mhahnFr.SecretPathway.gui.editor.suggestions.SuggestionType;
 import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
 import mhahnFr.utils.Pair;
 import mhahnFr.utils.StringStream;
@@ -787,7 +788,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
         return null;
     }
 
-    private ASTType visit(final ASTExpression node, final int position) {
+    private SuggestionType visit(final ASTExpression node, final int position) {
         switch (node.getASTType()) {
             case FUNCTION_DEFINITION -> {
                 final var func = (ASTFunctionDefinition) node;
@@ -796,11 +797,11 @@ public class SyntaxDocument extends DefaultStyledDocument {
                 final var funcParameters = func.getParameters();
                 if (funcModifiers != null && !funcModifiers.isEmpty() &&
                         position <= funcModifiers.get(func.getModifiers().size() - 1).getEnd().position()) {
-                    return ASTType.MODIFIER;
+                    return SuggestionType.MODIFIER;
                 } else if (position <= func.getType().getEnd().position()) {
-                    return ASTType.TYPE;
+                    return SuggestionType.TYPE;
                 } else if (position <= func.getName().getEnd().position()) {
-                    return ASTType.NAME;
+                    return SuggestionType.LITERAL;
                 } else if (!funcParameters.isEmpty() &&
                         position <= funcParameters.get(funcParameters.size() - 1).getEnd().position()) {
                     for (final var parameter : funcParameters) {
@@ -819,11 +820,11 @@ public class SyntaxDocument extends DefaultStyledDocument {
                 final var varModifiers = variable.getModifiers();
                 if (varModifiers != null && !varModifiers.isEmpty() &&
                         position <= varModifiers.get(varModifiers.size() - 1).getEnd().position()) {
-                    return ASTType.MODIFIER;
+                    return SuggestionType.MODIFIER;
                 } else if (position <= variable.getType().getEnd().position()) {
-                    return ASTType.TYPE;
+                    return SuggestionType.TYPE;
                 } else {
-                    return ASTType.NAME;
+                    return SuggestionType.LITERAL;
                 }
             }
 
@@ -845,21 +846,22 @@ public class SyntaxDocument extends DefaultStyledDocument {
                 final var param = (ASTParameter) node;
 
                 if (position <= param.getType().getEnd().position()) {
-                    return ASTType.TYPE;
+                    return SuggestionType.TYPE;
                 } else {
-                    return ASTType.NAME;
+                    return SuggestionType.LITERAL;
                 }
             }
 
             // TODO: More to come...
         }
-        return null;
+        System.out.println("Unhandled AST type: " + node.getASTType());
+        return SuggestionType.ANY;
     }
 
-    public ASTType getASTTypeFor(final int position) {
+    public SuggestionType getASTTypeFor(final int position) {
         for (final var node : ast) {
             if (position >= node.getBegin().position() && position <= node.getEnd().position()) {
-                final ASTType[] type = new ASTType[1];
+                final var type = new SuggestionType[1];
                 node.visit(new ASTVisitor() {
                     @Override
                     public void visit(ASTExpression expression) {
@@ -874,7 +876,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
                 return type[0];
             }
         }
-        return null;
+        return SuggestionType.ANY;
     }
 
     /**

@@ -19,10 +19,7 @@
 
 package mhahnFr.SecretPathway.core.lpc.interpreter;
 
-import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTName;
-import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTType;
-import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTTypeDeclaration;
-import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTTypeDefinition;
+import mhahnFr.SecretPathway.core.lpc.parser.ast.*;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.gui.editor.suggestions.*;
 import mhahnFr.utils.StreamPosition;
@@ -229,41 +226,63 @@ public class Context extends Instruction {
      * Returns a list with the available suggestions at the given position.
      *
      * @param position the position
+     * @param type     the desired type
      * @return a list with suggestions
      */
-    public List<Suggestion> createSuggestions(final int position) {
-        final var toReturn = new ArrayList<>(availableDefinitions(position));
+    public List<Suggestion> createSuggestions(final int position, final SuggestionType type) {
+        System.out.println("Desired type: " + type);
 
-        toReturn.add(new TypeSuggestion(TokenType.OBJECT));
-        toReturn.add(new TypeSuggestion(TokenType.ANY));
-        toReturn.add(new TypeSuggestion(TokenType.INT_KEYWORD));
-        toReturn.add(new TypeSuggestion(TokenType.STRING));
-        toReturn.add(new TypeSuggestion(TokenType.CHAR_KEYWORD));
-        toReturn.add(new TypeSuggestion(TokenType.SYMBOL_KEYWORD));
-        toReturn.add(new TypeSuggestion(TokenType.VOID));
-        toReturn.add(new TypeSuggestion(TokenType.BOOL));
-        toReturn.add(new ValueSuggestion(TokenType.NIL));
-        toReturn.add(new ValueSuggestion(TokenType.TRUE));
-        toReturn.add(new ValueSuggestion(TokenType.FALSE));
+        final var toReturn = new ArrayList<Suggestion>();
+        if (type == SuggestionType.LITERAL) { return toReturn; }
+
+        if (type == SuggestionType.ANY || type == SuggestionType.IDENTIFIER) {
+            toReturn.addAll(availableDefinitions(position));
+        }
+
+        if (type == SuggestionType.ANY || type == SuggestionType.TYPE) {
+            toReturn.add(new TypeSuggestion(TokenType.OBJECT));
+            toReturn.add(new TypeSuggestion(TokenType.ANY));
+            toReturn.add(new TypeSuggestion(TokenType.INT_KEYWORD));
+            toReturn.add(new TypeSuggestion(TokenType.STRING));
+            toReturn.add(new TypeSuggestion(TokenType.CHAR_KEYWORD));
+            toReturn.add(new TypeSuggestion(TokenType.SYMBOL_KEYWORD));
+            toReturn.add(new TypeSuggestion(TokenType.VOID));
+            toReturn.add(new TypeSuggestion(TokenType.BOOL));
+        }
+
+        if (type == SuggestionType.ANY || type == SuggestionType.IDENTIFIER) {
+            toReturn.add(new ValueSuggestion(TokenType.NIL));
+            toReturn.add(new ValueSuggestion(TokenType.TRUE));
+            toReturn.add(new ValueSuggestion(TokenType.FALSE));
+        }
 
         if (isGlobalScope(position)) {
-            toReturn.add(new InheritSuggestion());
-            toReturn.add(new IncludeSuggestion());
-            toReturn.add(new TypeSuggestion(TokenType.PRIVATE));
-            toReturn.add(new TypeSuggestion(TokenType.PROTECTED));
-            toReturn.add(new TypeSuggestion(TokenType.PUBLIC));
-            toReturn.add(new TypeSuggestion(TokenType.OVERRIDE));
-            toReturn.add(new TypeSuggestion(TokenType.NOSAVE));
-            toReturn.add(new TypeSuggestion(TokenType.DEPRECATED));
+            if (type == SuggestionType.ANY) {
+                toReturn.add(new InheritSuggestion());
+                toReturn.add(new IncludeSuggestion());
+            }
+
+            if (type == SuggestionType.ANY || type == SuggestionType.MODIFIER) {
+                toReturn.add(new TypeSuggestion(TokenType.PRIVATE));
+                toReturn.add(new TypeSuggestion(TokenType.PROTECTED));
+                toReturn.add(new TypeSuggestion(TokenType.PUBLIC));
+                toReturn.add(new TypeSuggestion(TokenType.OVERRIDE));
+                toReturn.add(new TypeSuggestion(TokenType.NOSAVE));
+                toReturn.add(new TypeSuggestion(TokenType.DEPRECATED));
+            }
         } else {
-            toReturn.add(new NewSuggestion());
-            toReturn.add(new ParenthesizedSuggestion(TokenType.IF));
-            toReturn.add(new TrySuggestion());
-            toReturn.add(new ParenthesizedSuggestion(TokenType.FOR));
-            toReturn.add(new ParenthesizedSuggestion(TokenType.FOREACH));
-            toReturn.add(new ParenthesizedSuggestion(TokenType.WHILE));
-            toReturn.add(new DoSuggestion());
-            toReturn.add(new SwitchSuggestion());
+            if (type == SuggestionType.ANY || type == SuggestionType.IDENTIFIER) {
+                toReturn.add(new NewSuggestion());
+            }
+            if (type == SuggestionType.ANY) {
+                toReturn.add(new ParenthesizedSuggestion(TokenType.IF));
+                toReturn.add(new TrySuggestion());
+                toReturn.add(new ParenthesizedSuggestion(TokenType.FOR));
+                toReturn.add(new ParenthesizedSuggestion(TokenType.FOREACH));
+                toReturn.add(new ParenthesizedSuggestion(TokenType.WHILE));
+                toReturn.add(new DoSuggestion());
+                toReturn.add(new SwitchSuggestion());
+            }
         }
 
         return toReturn;
