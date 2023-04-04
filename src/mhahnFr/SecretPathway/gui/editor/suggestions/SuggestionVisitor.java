@@ -44,6 +44,7 @@ public class SuggestionVisitor {
     }
 
     private SuggestionType visitImpl(final ASTExpression node, final int position) {
+        System.out.println("Generating for: " + node.getASTType());
         switch (node.getASTType()) {
             case FUNCTION_DEFINITION -> {
                 final var func = (ASTFunctionDefinition) node;
@@ -128,10 +129,16 @@ public class SuggestionVisitor {
                         return param.hasSubExpressions() ? visit(param, position) : SuggestionType.IDENTIFIER;
                     }
                 }
-                if (position < call.getEnd().position() /* && ! returns void */) {
-                    return SuggestionType.LITERAL_IDENTIFIER;
+                return SuggestionType.LITERAL_IDENTIFIER;
+            }
+
+            case CAST -> {
+                final var c = (ASTCast) node;
+
+                if (position <= c.getType().getEnd().position()) {
+                    return SuggestionType.TYPE;
                 }
-                return SuggestionType.LITERAL;
+                return SuggestionType.LITERAL_IDENTIFIER;
             }
 
             default -> {
