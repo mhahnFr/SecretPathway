@@ -76,6 +76,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
     private final Vector<Token> tokens = new Vector<>();
     /** The loader used for loading referenced LPC source files.               */
     private final LPCFileManager loader;
+    /** The AST visitor for querying additional suggestion information.        */
     private final SuggestionVisitor visitor = new SuggestionVisitor();
     /** The array of undoable actions.                                         */
     private final UndoableAction[] actions = new UndoableAction[1024];
@@ -759,6 +760,13 @@ public class SyntaxDocument extends DefaultStyledDocument {
         setCharacterAttributes(0, getLength(), def, true);
     }
 
+    /**
+     * Visits the AST at the given position, if the
+     * AST has not previously been visited at the same
+     * position.
+     *
+     * @param position the position to be visited
+     */
     private void maybeVisit(final int position) {
         if (visitor.getPosition() != position) {
             for (final var node : ast) {
@@ -770,11 +778,25 @@ public class SyntaxDocument extends DefaultStyledDocument {
         }
     }
 
+    /**
+     * Returns the {@link ASTTypeDefinition} that is expected
+     * at the given position.
+     *
+     * @param position the position
+     * @return the requested return type
+     */
     public Optional<ASTTypeDefinition> getRequestedType(final int position) {
         maybeVisit(position);
         return Optional.ofNullable(visitor.getType());
     }
 
+    /**
+     * Returns the {@link SuggestionType} requested for the given
+     * position.
+     *
+     * @param position the position
+     * @return the type of suggestions to be shown
+     */
     public SuggestionType getASTTypeFor(final int position) {
         maybeVisit(position);
         return visitor.getSuggestionType();
