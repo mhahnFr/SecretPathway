@@ -233,8 +233,6 @@ public class Context extends Instruction {
      * @return a list with suggestions
      */
     public List<Suggestion> createSuggestions(final int position, final SuggestionType type) {
-        System.out.println("Desired type: " + type);
-
         final var toReturn = new ArrayList<Suggestion>();
         if (type == SuggestionType.LITERAL) { return toReturn; }
 

@@ -95,8 +95,6 @@ public class SuggestionVisitor {
      * @see #visit(ASTExpression, int)
      */
     private SuggestionType visitImpl(final ASTExpression node, final int position) {
-        System.out.println("Generating for: " + node.getASTType());
-
         returnType = null;
         switch (node.getASTType()) {
             case FUNCTION_DEFINITION -> {

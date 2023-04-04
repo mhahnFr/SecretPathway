@@ -145,15 +145,6 @@ public class SecretPathway {
      * Enables appearance related settings.
      */
     private void setAppearance() {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
-                 UnsupportedLookAndFeelException e) {
-            System.err.println("Could not set platform L&F: Will use default");
-            e.printStackTrace();
-            System.err.println("--------------------------");
-        }
-
         final var settings = Settings.getInstance();
 
         if (System.getProperty("os.name").toLowerCase().contains("mac")) {
@@ -162,6 +153,15 @@ public class SecretPathway {
             } else {
                 System.setProperty("apple.awt.application.appearance", "system");
             }
+        }
+
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
+                 UnsupportedLookAndFeelException e) {
+            System.err.println("Could not set platform L&F: Will use default");
+            e.printStackTrace();
+            System.err.println("--------------------------");
         }
     }
 
