@@ -22,6 +22,7 @@ package mhahnFr.SecretPathway.gui.editor.suggestions;
 public enum SuggestionType {
     LITERAL,
     ANY,
+    LITERAL_IDENTIFIER,
     IDENTIFIER,
     TYPE,
     MODIFIER

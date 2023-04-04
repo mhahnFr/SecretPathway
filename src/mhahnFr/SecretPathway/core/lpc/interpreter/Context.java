@@ -117,10 +117,11 @@ public class Context extends Instruction {
     /**
      * Returns the {@link Definition}s available at the given position.
      *
-     * @param at the position
+     * @param at   the position
+     * @param type the type
      * @return the available instructions
      */
-    private Collection<Suggestion> availableDefinitions(final int at) {
+    private Collection<Suggestion> availableDefinitions(final int at, final SuggestionType type) {
         final var toReturn = new HashSet<Suggestion>();
 
         for (final var instruction : instructions.entrySet()) {
@@ -129,7 +130,7 @@ public class Context extends Instruction {
                 if (value instanceof final Definition definition) {
                     toReturn.add(new DefinitionSuggestion(definition.getReturnType(), definition));
                 } else if (value instanceof Context && at < value.getEnd()) {
-                    toReturn.addAll(((Context) value).availableDefinitions(at));
+                    toReturn.addAll(((Context) value).availableDefinitions(at, type));
                 }
             }
         }
@@ -147,23 +148,25 @@ public class Context extends Instruction {
         });
         toReturn.addAll(superSuggestions);
 
-        includedContexts.forEach(c -> toReturn.addAll(c.availableDefinitions(Integer.MAX_VALUE)));
+        includedContexts.forEach(c -> toReturn.addAll(c.availableDefinitions(Integer.MAX_VALUE, type)));
 
         final var definition = queryEnclosingFunction();
         if (definition != null) {
             if (definition.isVariadic()) {
                 toReturn.add(ellipsisSuggestion);
             }
-            if (definition.getReturnType() instanceof final ASTTypeDeclaration declaration &&
-                (declaration.getType() == TokenType.VOID || declaration.getType() == TokenType.BOOL)) {
-                if (declaration.getType() == TokenType.VOID) {
-                    toReturn.add(voidReturnSuggestion);
+            if (type == SuggestionType.ANY) {
+                if (definition.getReturnType() instanceof final ASTTypeDeclaration declaration &&
+                        (declaration.getType() == TokenType.VOID || declaration.getType() == TokenType.BOOL)) {
+                    if (declaration.getType() == TokenType.VOID) {
+                        toReturn.add(voidReturnSuggestion);
+                    } else {
+                        toReturn.add(trueReturnSuggestion);
+                        toReturn.add(falseReturnSuggestion);
+                    }
                 } else {
-                    toReturn.add(trueReturnSuggestion);
-                    toReturn.add(falseReturnSuggestion);
+                    toReturn.add(valueReturnSuggestion);
                 }
-            } else {
-                toReturn.add(valueReturnSuggestion);
             }
         }
 
@@ -179,7 +182,7 @@ public class Context extends Instruction {
         final var toReturn = new HashSet<Suggestion>();
 
         for (final var inherited : superContexts) {
-            toReturn.addAll(inherited.availableDefinitions(Integer.MAX_VALUE));
+            toReturn.addAll(inherited.availableDefinitions(Integer.MAX_VALUE, null));
         }
         toReturn.removeIf(s -> s == ellipsisSuggestion    ||
                                s == voidReturnSuggestion  ||
@@ -235,8 +238,8 @@ public class Context extends Instruction {
         final var toReturn = new ArrayList<Suggestion>();
         if (type == SuggestionType.LITERAL) { return toReturn; }
 
-        if (type == SuggestionType.ANY || type == SuggestionType.IDENTIFIER) {
-            toReturn.addAll(availableDefinitions(position));
+        if (type == SuggestionType.ANY || type == SuggestionType.IDENTIFIER || type == SuggestionType.LITERAL_IDENTIFIER) {
+            toReturn.addAll(availableDefinitions(position, type));
         }
 
         if (type == SuggestionType.ANY || type == SuggestionType.TYPE) {
@@ -250,7 +253,7 @@ public class Context extends Instruction {
             toReturn.add(new TypeSuggestion(TokenType.BOOL));
         }
 
-        if (type == SuggestionType.ANY || type == SuggestionType.IDENTIFIER) {
+        if (type == SuggestionType.ANY || type == SuggestionType.LITERAL_IDENTIFIER) {
             toReturn.add(new ValueSuggestion(TokenType.NIL));
             toReturn.add(new ValueSuggestion(TokenType.TRUE));
             toReturn.add(new ValueSuggestion(TokenType.FALSE));
@@ -271,7 +274,7 @@ public class Context extends Instruction {
                 toReturn.add(new TypeSuggestion(TokenType.DEPRECATED));
             }
         } else {
-            if (type == SuggestionType.ANY || type == SuggestionType.IDENTIFIER) {
+            if (type == SuggestionType.ANY || type == SuggestionType.IDENTIFIER || type == SuggestionType.LITERAL_IDENTIFIER) {
                 toReturn.add(new NewSuggestion());
             }
             if (type == SuggestionType.ANY) {

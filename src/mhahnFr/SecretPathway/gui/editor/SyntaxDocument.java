@@ -839,7 +839,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
             }
 
             case AST_INHERITANCE, AST_INCLUDE -> {
-                // Stop: File resolving
+                return SuggestionType.LITERAL;
             }
 
             case PARAMETER -> {
@@ -852,9 +852,43 @@ public class SyntaxDocument extends DefaultStyledDocument {
                 }
             }
 
-            // TODO: More to come...
+            case AST_RETURN -> {
+                final var ret      = (ASTReturn) node;
+                final var returned = ret.getReturned();
+
+                if (returned != null &&
+                        position >= returned.getBegin().position() && position <= returned.getEnd().position()) {
+                    return returned.hasSubExpressions() ? visit(returned, position) : SuggestionType.IDENTIFIER;
+                }
+            }
+
+            case FUNCTION_CALL -> {
+                final var call = (ASTFunctionCall) node;
+
+                if (position <= call.getName().getEnd().position()) {
+                    return SuggestionType.IDENTIFIER;
+                }
+                for (final var param : call.getArguments()) {
+                    if (position >= param.getBegin().position() && position <= param.getEnd().position()) {
+                        return param.hasSubExpressions() ? visit(param, position) : SuggestionType.IDENTIFIER;
+                    }
+                }
+                if (position < call.getEnd().position() /* && ! returns void */) {
+                    return SuggestionType.LITERAL_IDENTIFIER;
+                }
+                return SuggestionType.LITERAL;
+            }
+
+            default -> {
+                if (node.hasSubExpressions()) {
+                    for (final var subNode : node.getSubExpressions()) {
+                        if (position >= subNode.getBegin().position() && position <= subNode.getEnd().position()) {
+                            return visit(subNode, position);
+                        }
+                    }
+                }
+            }
         }
-        System.out.println("Unhandled AST type: " + node.getASTType());
         return SuggestionType.ANY;
     }
 
