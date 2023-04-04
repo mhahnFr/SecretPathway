@@ -32,6 +32,7 @@ import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Tokenizer;
 import mhahnFr.SecretPathway.gui.editor.suggestions.Suggestion;
 import mhahnFr.SecretPathway.gui.editor.suggestions.SuggestionType;
+import mhahnFr.SecretPathway.gui.editor.suggestions.SuggestionVisitor;
 import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
 import mhahnFr.utils.Pair;
 import mhahnFr.utils.StringStream;
@@ -75,6 +76,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
     private final Vector<Token> tokens = new Vector<>();
     /** The loader used for loading referenced LPC source files.               */
     private final LPCFileManager loader;
+    private final SuggestionVisitor visitor = new SuggestionVisitor();
     /** The array of undoable actions.                                         */
     private final UndoableAction[] actions = new UndoableAction[1024];
     /** The index in the array of undoable actions.                            */
@@ -788,129 +790,25 @@ public class SyntaxDocument extends DefaultStyledDocument {
         return null;
     }
 
-    private SuggestionType visit(final ASTExpression node, final int position) {
-        switch (node.getASTType()) {
-            case FUNCTION_DEFINITION -> {
-                final var func = (ASTFunctionDefinition) node;
-
-                final var funcModifiers  = func.getModifiers();
-                final var funcParameters = func.getParameters();
-                if (funcModifiers != null && !funcModifiers.isEmpty() &&
-                        position <= funcModifiers.get(func.getModifiers().size() - 1).getEnd().position()) {
-                    return SuggestionType.MODIFIER;
-                } else if (position <= func.getType().getEnd().position()) {
-                    return SuggestionType.TYPE;
-                } else if (position <= func.getName().getEnd().position()) {
-                    return SuggestionType.LITERAL;
-                } else if (!funcParameters.isEmpty() &&
-                        position <= funcParameters.get(funcParameters.size() - 1).getEnd().position()) {
-                    for (final var parameter : funcParameters) {
-                        if (position >= parameter.getBegin().position() && position <= parameter.getEnd().position()) {
-                            return visit(parameter, position);
-                        }
-                    }
-                } else {
-                    return visit(func.getBody(), position);
-                }
-            }
-
-            case VARIABLE_DEFINITION -> {
-                final var variable = (ASTVariableDefinition) node;
-
-                final var varModifiers = variable.getModifiers();
-                if (varModifiers != null && !varModifiers.isEmpty() &&
-                        position <= varModifiers.get(varModifiers.size() - 1).getEnd().position()) {
-                    return SuggestionType.MODIFIER;
-                } else if (position <= variable.getType().getEnd().position()) {
-                    return SuggestionType.TYPE;
-                } else {
-                    return SuggestionType.LITERAL;
-                }
-            }
-
-            case OPERATION -> {
-                final var op = (ASTOperation) node;
-
-                if (position <= op.getLhs().getEnd().position()) {
-                    return visit(op.getLhs(), position);
-                } else {
-                    return visit(op.getRhs(), position);
-                }
-            }
-
-            case AST_INHERITANCE, AST_INCLUDE -> {
-                return SuggestionType.LITERAL;
-            }
-
-            case PARAMETER -> {
-                final var param = (ASTParameter) node;
-
-                if (position <= param.getType().getEnd().position()) {
-                    return SuggestionType.TYPE;
-                } else {
-                    return SuggestionType.LITERAL;
-                }
-            }
-
-            case AST_RETURN -> {
-                final var ret      = (ASTReturn) node;
-                final var returned = ret.getReturned();
-
-                if (returned != null &&
-                        position >= returned.getBegin().position() && position <= returned.getEnd().position()) {
-                    return returned.hasSubExpressions() ? visit(returned, position) : SuggestionType.IDENTIFIER;
-                }
-            }
-
-            case FUNCTION_CALL -> {
-                final var call = (ASTFunctionCall) node;
-
-                if (position <= call.getName().getEnd().position()) {
-                    return SuggestionType.IDENTIFIER;
-                }
-                for (final var param : call.getArguments()) {
-                    if (position >= param.getBegin().position() && position <= param.getEnd().position()) {
-                        return param.hasSubExpressions() ? visit(param, position) : SuggestionType.IDENTIFIER;
-                    }
-                }
-                if (position < call.getEnd().position() /* && ! returns void */) {
-                    return SuggestionType.LITERAL_IDENTIFIER;
-                }
-                return SuggestionType.LITERAL;
-            }
-
-            default -> {
-                if (node.hasSubExpressions()) {
-                    for (final var subNode : node.getSubExpressions()) {
-                        if (position >= subNode.getBegin().position() && position <= subNode.getEnd().position()) {
-                            return visit(subNode, position);
-                        }
-                    }
+    private void maybeVisit(final int position) {
+        if (visitor.getPosition() != position) {
+            for (final var node : ast) {
+                if (position >= node.getBegin().position() && position <= node.getEnd().position()) {
+                    visitor.visit(node, position);
+                    break;
                 }
             }
         }
-        return SuggestionType.ANY;
+    }
+
+    public Optional<ASTTypeDefinition> getRequestedType(final int position) {
+        maybeVisit(position);
+        return Optional.ofNullable(visitor.getType());
     }
 
     public SuggestionType getASTTypeFor(final int position) {
-        for (final var node : ast) {
-            if (position >= node.getBegin().position() && position <= node.getEnd().position()) {
-                final var type = new SuggestionType[1];
-                node.visit(new ASTVisitor() {
-                    @Override
-                    public void visit(ASTExpression expression) {
-                        type[0] = SyntaxDocument.this.visit(expression, position);
-                    }
-
-                    @Override
-                    public boolean visitType(ASTType type) {
-                        return false;
-                    }
-                });
-                return type[0];
-            }
-        }
-        return SuggestionType.ANY;
+        maybeVisit(position);
+        return visitor.getSuggestionType();
     }
 
     /**
