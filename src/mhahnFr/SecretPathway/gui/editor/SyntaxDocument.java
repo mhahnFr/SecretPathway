@@ -26,7 +26,7 @@ import mhahnFr.SecretPathway.core.lpc.interpreter.Interpreter;
 import mhahnFr.SecretPathway.core.lpc.interpreter.highlight.Highlight;
 import mhahnFr.SecretPathway.core.lpc.interpreter.highlight.MessagedHighlight;
 import mhahnFr.SecretPathway.core.lpc.parser.Parser;
-import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTExpression;
+import mhahnFr.SecretPathway.core.lpc.parser.ast.*;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Token;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Tokenizer;
@@ -731,7 +731,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
         if (context == null) {
             return null;
         }
-        return context.createSuggestions(position);
+        return context.createSuggestions(position, getASTTypeFor(position));
     }
 
     /**
@@ -782,6 +782,96 @@ public class SyntaxDocument extends DefaultStyledDocument {
         for (final var node : ast) {
             if (position >= node.getBegin().position() && position <= node.getEnd().position()) {
                 return getASTNodeFor(position, node);
+            }
+        }
+        return null;
+    }
+
+    private ASTType visit(final ASTExpression node, final int position) {
+        switch (node.getASTType()) {
+            case FUNCTION_DEFINITION -> {
+                final var func = (ASTFunctionDefinition) node;
+
+                final var funcModifiers  = func.getModifiers();
+                final var funcParameters = func.getParameters();
+                if (funcModifiers != null && !funcModifiers.isEmpty() &&
+                        position <= funcModifiers.get(func.getModifiers().size() - 1).getEnd().position()) {
+                    return ASTType.MODIFIER;
+                } else if (position <= func.getType().getEnd().position()) {
+                    return ASTType.TYPE;
+                } else if (position <= func.getName().getEnd().position()) {
+                    return ASTType.NAME;
+                } else if (!funcParameters.isEmpty() &&
+                        position <= funcParameters.get(funcParameters.size() - 1).getEnd().position()) {
+                    for (final var parameter : funcParameters) {
+                        if (position >= parameter.getBegin().position() && position <= parameter.getEnd().position()) {
+                            return visit(parameter, position);
+                        }
+                    }
+                } else {
+                    return visit(func.getBody(), position);
+                }
+            }
+
+            case VARIABLE_DEFINITION -> {
+                final var variable = (ASTVariableDefinition) node;
+
+                final var varModifiers = variable.getModifiers();
+                if (varModifiers != null && !varModifiers.isEmpty() &&
+                        position <= varModifiers.get(varModifiers.size() - 1).getEnd().position()) {
+                    return ASTType.MODIFIER;
+                } else if (position <= variable.getType().getEnd().position()) {
+                    return ASTType.TYPE;
+                } else {
+                    return ASTType.NAME;
+                }
+            }
+
+            case OPERATION -> {
+                final var op = (ASTOperation) node;
+
+                if (position <= op.getLhs().getEnd().position()) {
+                    return visit(op.getLhs(), position);
+                } else {
+                    return visit(op.getRhs(), position);
+                }
+            }
+
+            case AST_INHERITANCE, AST_INCLUDE -> {
+                // Stop: File resolving
+            }
+
+            case PARAMETER -> {
+                final var param = (ASTParameter) node;
+
+                if (position <= param.getType().getEnd().position()) {
+                    return ASTType.TYPE;
+                } else {
+                    return ASTType.NAME;
+                }
+            }
+
+            // TODO: More to come...
+        }
+        return null;
+    }
+
+    public ASTType getASTTypeFor(final int position) {
+        for (final var node : ast) {
+            if (position >= node.getBegin().position() && position <= node.getEnd().position()) {
+                final ASTType[] type = new ASTType[1];
+                node.visit(new ASTVisitor() {
+                    @Override
+                    public void visit(ASTExpression expression) {
+                        type[0] = SyntaxDocument.this.visit(expression, position);
+                    }
+
+                    @Override
+                    public boolean visitType(ASTType type) {
+                        return false;
+                    }
+                });
+                return type[0];
             }
         }
         return null;
