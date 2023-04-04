@@ -759,40 +759,6 @@ public class SyntaxDocument extends DefaultStyledDocument {
         setCharacterAttributes(0, getLength(), def, true);
     }
 
-    /**
-     * Queries and returns the AST node the given position is in.
-     *
-     * @param position the position
-     * @param begin    the starting node for the recursive search
-     * @return the found node
-     */
-    private ASTExpression getASTNodeFor(final int position, final ASTExpression begin) {
-        if (begin.hasSubExpressions()) {
-            for (final var node : begin.getSubExpressions()) {
-                if (position >= node.getBegin().position() && position <= node.getEnd().position()) {
-                    return getASTNodeFor(position, node);
-                }
-            }
-        }
-        return begin;
-    }
-
-    /**
-     * Returns the AST node containing the given position. Returns
-     * {@code null} if the given position is outside the AST.
-     *
-     * @param position the position
-     * @return the found AST node
-     */
-    private ASTExpression getASTNodeFor(final int position) {
-        for (final var node : ast) {
-            if (position >= node.getBegin().position() && position <= node.getEnd().position()) {
-                return getASTNodeFor(position, node);
-            }
-        }
-        return null;
-    }
-
     private void maybeVisit(final int position) {
         if (visitor.getPosition() != position) {
             for (final var node : ast) {
