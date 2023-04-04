@@ -557,6 +557,8 @@ public class SyntaxDocument extends DefaultStyledDocument {
     public void insertSuggestion(int offset,
                                  final Suggestion suggestion,
                                  final boolean    replaceWord) throws BadLocationException {
+        highlighting = false;
+
         final var suggString = suggestion.getSuggestion();
         final var strLength  = suggString.length();
 
@@ -577,6 +579,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
         }
         final var indent = getPreviousIndent(offset);
 
+        highlighting = true;
         insertString(offset, str, null);
 
         final int toMove;
