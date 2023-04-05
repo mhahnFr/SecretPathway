@@ -21,15 +21,34 @@ package mhahnFr.SecretPathway.gui.editor.suggestions;
 
 import java.util.Arrays;
 
+/**
+ * This enumeration contains all possible suggestion types.
+ *
+ * @author mhahnFr
+ * @since 04.04.23
+ */
 public enum SuggestionType {
+    /** Represents a literal value, no suggestions.    */
     LITERAL,
+    /** Represents anything, all kinds of suggestions. */
     ANY,
+    /** Represents identifiers and literal values.     */
     LITERAL_IDENTIFIER,
+    /** Represents identifiers.                        */
     IDENTIFIER,
+    /** Represents types.                              */
     TYPE,
+    /** Represents modifiers.                          */
     MODIFIER,
+    /** Represents modifiers and types.                */
     TYPE_MODIFIER;
 
+    /**
+     * Returns whether this suggestion type is one of the given types.
+     *
+     * @param other the other types
+     * @return whether this type is one of the given ones
+     */
     public boolean is(final SuggestionType... other) {
         return Arrays.asList(other).contains(this);
     }
