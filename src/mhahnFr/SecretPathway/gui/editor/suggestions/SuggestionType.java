@@ -19,11 +19,18 @@
 
 package mhahnFr.SecretPathway.gui.editor.suggestions;
 
+import java.util.Arrays;
+
 public enum SuggestionType {
     LITERAL,
     ANY,
     LITERAL_IDENTIFIER,
     IDENTIFIER,
     TYPE,
-    MODIFIER
+    MODIFIER,
+    TYPE_MODIFIER;
+
+    public boolean is(final SuggestionType... other) {
+        return Arrays.asList(other).contains(this);
+    }
 }

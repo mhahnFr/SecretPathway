@@ -240,7 +240,7 @@ public class Context extends Instruction {
             toReturn.addAll(availableDefinitions(position, type));
         }
 
-        if (type == SuggestionType.ANY || type == SuggestionType.TYPE) {
+        if (type.is(SuggestionType.ANY, SuggestionType.TYPE, SuggestionType.TYPE_MODIFIER)) {
             toReturn.add(new TypeSuggestion(TokenType.OBJECT));
             toReturn.add(new TypeSuggestion(TokenType.ANY));
             toReturn.add(new TypeSuggestion(TokenType.INT_KEYWORD));
@@ -263,7 +263,7 @@ public class Context extends Instruction {
                 toReturn.add(new IncludeSuggestion());
             }
 
-            if (type == SuggestionType.ANY || type == SuggestionType.MODIFIER) {
+            if (type.is(SuggestionType.ANY, SuggestionType.MODIFIER, SuggestionType.TYPE_MODIFIER)) {
                 toReturn.add(new TypeSuggestion(TokenType.PRIVATE));
                 toReturn.add(new TypeSuggestion(TokenType.PROTECTED));
                 toReturn.add(new TypeSuggestion(TokenType.PUBLIC));

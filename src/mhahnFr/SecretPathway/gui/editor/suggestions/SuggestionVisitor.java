@@ -82,7 +82,10 @@ public class SuggestionVisitor {
      */
     public SuggestionType visit(final ASTExpression node, final int position) {
         this.position = position;
-        return (type = visitImpl(node, position));
+//        return (type = visitImpl(node, position));
+        type = visitImpl(node, position);
+        System.out.println(type);
+        return type;
     }
 
     /**
@@ -95,6 +98,7 @@ public class SuggestionVisitor {
      * @see #visit(ASTExpression, int)
      */
     private SuggestionType visitImpl(final ASTExpression node, final int position) {
+        System.out.print("Type for: " + node.getASTType() + ": ");
         returnType = null;
         switch (node.getASTType()) {
             case FUNCTION_DEFINITION -> {
@@ -104,9 +108,9 @@ public class SuggestionVisitor {
                 final var funcParameters = func.getParameters();
                 if (funcModifiers != null && !funcModifiers.isEmpty() &&
                         position <= funcModifiers.get(func.getModifiers().size() - 1).getEnd().position()) {
-                    return SuggestionType.MODIFIER;
+                    return SuggestionType.TYPE_MODIFIER;
                 } else if (position <= func.getType().getEnd().position()) {
-                    return SuggestionType.TYPE;
+                    return SuggestionType.TYPE_MODIFIER;
                 } else if (position <= func.getName().getEnd().position()) {
                     return SuggestionType.LITERAL;
                 } else if (!funcParameters.isEmpty() &&
@@ -126,11 +130,14 @@ public class SuggestionVisitor {
 
                 final var varModifiers = variable.getModifiers();
                 if (varModifiers != null && !varModifiers.isEmpty() &&
+                        position >= varModifiers.get(0).getBegin().position() &&
                         position <= varModifiers.get(varModifiers.size() - 1).getEnd().position()) {
-                    return SuggestionType.MODIFIER;
-                } else if (position <= variable.getType().getEnd().position()) {
-                    return SuggestionType.TYPE;
-                } else {
+                    return SuggestionType.TYPE_MODIFIER;
+                } else if (position >= variable.getType().getBegin().position() &&
+                        position <= variable.getType().getEnd().position()) {
+                    return SuggestionType.TYPE_MODIFIER;
+                } else if (position >= variable.getName().getBegin().position() &&
+                        position <= variable.getName().getEnd().position()) {
                     return SuggestionType.LITERAL;
                 }
             }
@@ -195,6 +202,8 @@ public class SuggestionVisitor {
 //                returnType = c.getType() as ASTReturnDefinition;
                 return SuggestionType.LITERAL_IDENTIFIER;
             }
+
+            // TODO: Missing, Wrong
 
             default -> {
                 if (node.hasSubExpressions()) {
