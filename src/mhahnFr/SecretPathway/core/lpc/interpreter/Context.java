@@ -234,9 +234,9 @@ public class Context extends Instruction {
      */
     public List<Suggestion> createSuggestions(final int position, final SuggestionType type) {
         final var toReturn = new ArrayList<Suggestion>();
-        if (type == SuggestionType.LITERAL) { return toReturn; }
+        if (type.is(SuggestionType.LITERAL)) { return toReturn; }
 
-        if (type == SuggestionType.ANY || type == SuggestionType.IDENTIFIER || type == SuggestionType.LITERAL_IDENTIFIER) {
+        if (type.is(SuggestionType.ANY, SuggestionType.IDENTIFIER, SuggestionType.LITERAL_IDENTIFIER)) {
             toReturn.addAll(availableDefinitions(position, type));
         }
 
@@ -251,14 +251,14 @@ public class Context extends Instruction {
             toReturn.add(new TypeSuggestion(TokenType.BOOL));
         }
 
-        if (type == SuggestionType.ANY || type == SuggestionType.LITERAL_IDENTIFIER) {
+        if (type.is(SuggestionType.ANY, SuggestionType.LITERAL_IDENTIFIER)) {
             toReturn.add(new ValueSuggestion(TokenType.NIL));
             toReturn.add(new ValueSuggestion(TokenType.TRUE));
             toReturn.add(new ValueSuggestion(TokenType.FALSE));
         }
 
         if (isGlobalScope(position)) {
-            if (type == SuggestionType.ANY) {
+            if (type.is(SuggestionType.ANY)) {
                 toReturn.add(new InheritSuggestion());
                 toReturn.add(new IncludeSuggestion());
             }
@@ -272,10 +272,10 @@ public class Context extends Instruction {
                 toReturn.add(new TypeSuggestion(TokenType.DEPRECATED));
             }
         } else {
-            if (type == SuggestionType.ANY || type == SuggestionType.IDENTIFIER || type == SuggestionType.LITERAL_IDENTIFIER) {
+            if (type.is(SuggestionType.ANY, SuggestionType.IDENTIFIER, SuggestionType.LITERAL_IDENTIFIER)) {
                 toReturn.add(new NewSuggestion());
             }
-            if (type == SuggestionType.ANY) {
+            if (type.is(SuggestionType.ANY)) {
                 toReturn.add(new ParenthesizedSuggestion(TokenType.IF));
                 toReturn.add(new TrySuggestion());
                 toReturn.add(new ParenthesizedSuggestion(TokenType.FOR));
