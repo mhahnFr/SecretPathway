@@ -119,8 +119,9 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
      * @param newValue the new value of the changed setting
      */
     private void settingsListener(final String key, final Object newValue) {
-        if (key.equals(Settings.Keys.FONT_SIZE)) {
-            changeFontSize((Integer) newValue);
+        switch (key) {
+            case Settings.Keys.FONT_SIZE -> changeFontSize((Integer) newValue);
+            case Settings.Keys.NATIVE_LF -> SwingUtilities.updateComponentTreeUI(this);
         }
     }
 

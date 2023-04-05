@@ -156,7 +156,8 @@ public class SecretPathway {
         }
 
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            UIManager.setLookAndFeel(settings.getNativeLookAndFeel() ? UIManager.getSystemLookAndFeelClassName()
+                                                                     : UIManager.getCrossPlatformLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
                  UnsupportedLookAndFeelException e) {
             System.err.println("Could not set platform L&F: Will use default");

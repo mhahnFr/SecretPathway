@@ -47,7 +47,7 @@ import java.util.Objects;
  * @author mhahnFr
  * @since 09.01.23
  */
-public class SettingsWindow extends JDialog implements DarkModeListener {
+public class SettingsWindow extends JDialog implements SettingsListener {
     /** The list with all documents enabling their dark mode.     */
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
     /** Convenience reference to the settings object.             */
@@ -69,12 +69,21 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
 
         createContent();
 
-        Settings.getInstance().addDarkModeListener(this);
+        final var settings = Settings.getInstance();
+        settings.addListener(this);
 
-        setDark(Settings.getInstance().getDarkMode());
+        setDark(settings.getDarkMode());
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setResizable(false);
+    }
+
+    @Override
+    public void settingChanged(final String key, final Object newValue) {
+        switch (key) {
+            case Settings.Keys.DARK_MODE -> setDark((Boolean) newValue);
+            case Settings.Keys.NATIVE_LF -> SwingUtilities.updateComponentTreeUI(this);
+        }
     }
 
     /**
@@ -271,13 +280,8 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
     }
 
     @Override
-    public void darkModeToggled(boolean dark) {
-        setDark(dark);
-    }
-
-    @Override
     public void dispose() {
-        settings.removeDarkModeListener(this);
+        settings.removeListener(this);
 
         final var selected = themeBox.getSelectedItem();
         if (!Objects.equals(selected, Constants.Editor.CHOOSE_THEME)) {
