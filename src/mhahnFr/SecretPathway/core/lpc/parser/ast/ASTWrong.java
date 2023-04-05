@@ -19,6 +19,7 @@
 
 package mhahnFr.SecretPathway.core.lpc.parser.ast;
 
+import mhahnFr.SecretPathway.core.lpc.interpreter.highlight.HighlightType;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Token;
 
 /**
@@ -27,7 +28,7 @@ import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.Token;
  * @author mhahnFr
  * @since 26.01.23
  */
-public class ASTWrong extends ASTExpression {
+public class ASTWrong extends ASTHole {
     /** The message about this wrong node. */
     private final String message;
 
@@ -35,12 +36,14 @@ public class ASTWrong extends ASTExpression {
      * Constructs this AST node using the given {@link Token}
      * and the given message.
      *
-     * @param token   the represented token
-     * @param message the reason why the token is wrong
+     * @param token    the represented token
+     * @param message  the reason why the token is wrong
+     * @param expected the instead expected AST type
      */
-    public ASTWrong(final Token  token,
-                    final String message) {
-        super(token.beginPos(), token.endPos(), ASTType.WRONG);
+    public ASTWrong(final Token        token,
+                    final String       message,
+                    final HighlightType expected) {
+        super(token.beginPos(), token.endPos(), message, ASTType.WRONG, expected);
 
         this.message = message;
     }

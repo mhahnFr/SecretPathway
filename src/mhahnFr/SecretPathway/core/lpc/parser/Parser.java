@@ -117,7 +117,7 @@ public class Parser {
         advance();
         if (current.type() != TokenType.STRING) {
             return combine(new ASTInclude(previous.beginPos(), current.beginPos(), null),
-                           new ASTMissing(previous.endPos(), current.beginPos(), "Expected a string literal"));
+                           new ASTMissing(previous.endPos(), current.beginPos(), "Expected a string literal", TokenType.STRING));
         } else {
             final var begin   = previous.beginPos();
             final var strings = parseStrings();
@@ -142,7 +142,7 @@ public class Parser {
             advance();
         } else if (next.type() == TokenType.SEMICOLON && current.type() != TokenType.STRING) {
             toReturn = combine(new ASTInheritance(previous.beginPos(), next.endPos(), null),
-                               new ASTWrong(current, "Expected a string literal"));
+                               new ASTWrong(current, "Expected a string literal", TokenType.STRING));
             advance();
         } else if (current.type() == TokenType.STRING) {
             final var begin   = previous.beginPos();
@@ -150,7 +150,7 @@ public class Parser {
             toReturn = assertSemicolon(new ASTInheritance(begin, (current.type() == TokenType.SEMICOLON ? current : previous).endPos(), strings));
         } else if (current.type() != TokenType.SEMICOLON && next.type() != TokenType.SEMICOLON) {
             return combine(new ASTInheritance(previous.beginPos(), previous.endPos(), null),
-                           new ASTMissing(previous.endPos(), current.beginPos(), "Expected ';'"));
+                           new ASTMissing(previous.endPos(), current.beginPos(), "Expected ';'", TokenType.SEMICOLON));
         } else {
             toReturn = new ASTInheritance(previous.beginPos(), next.endPos(), null);
             advance();
@@ -186,22 +186,22 @@ public class Parser {
                 inheritance = null;
             } else {
                 inheritance = combine(new ASTInheritance(current.beginPos(), current.endPos(), null),
-                                      new ASTWrong(current, "Expected a string literal"));
+                                      new ASTWrong(current, "Expected a string literal", TokenType.STRING));
             }
             return assertSemicolon(new ASTClass(begin, name, inheritance));
         } else if (current.type() != TokenType.LEFT_CURLY) {
-            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '{'"));
+            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '{'", TokenType.LEFT_CURLY));
         } else {
             advance();
         }
         final var statements = parse(TokenType.RIGHT_CURLY);
         if (current.type() != TokenType.RIGHT_CURLY) {
-            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '}'"));
+            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '}'", TokenType.RIGHT_CURLY));
         } else {
             advance();
         }
         if (current.type() != TokenType.SEMICOLON) {
-            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ';'"));
+            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ';'", TokenType.SEMICOLON));
         } else {
             advance();
         }
@@ -241,7 +241,7 @@ public class Parser {
                 toReturn.add(new ASTModifier(current));
             } else if (isModifier(next.type())) {
                 toReturn.add(combine(new ASTModifier(current.beginPos(), current.endPos()),
-                                     new ASTWrong(current, "Expected a modifier")));
+                                     new ASTWrong(current, "Expected a modifier", ASTType.MODIFIER)));
             } else {
                 break;
             }
@@ -286,19 +286,19 @@ public class Parser {
         if (isType(type.type()) || type.type() == TokenType.IDENTIFIER) {
             final var parts = new Vector<ASTExpression>(2);
             if (type.type() == TokenType.IDENTIFIER) {
-                parts.add(new ASTWrong(type, "Wrong type"));
+                parts.add(new ASTWrong(type, "Wrong type", ASTType.TYPE));
             }
             advance();
             boolean array = true;
             if (current.type() == TokenType.STAR || current.type() == TokenType.RIGHT_BRACKET) {
                 if (current.type() == TokenType.RIGHT_BRACKET) {
-                    parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '['"));
+                    parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '['", TokenType.LEFT_BRACKET));
                 }
                 advance();
             } else if (current.type() == TokenType.LEFT_BRACKET && next.type() == TokenType.RIGHT_BRACKET) {
                 advance(2);
             } else if (current.type() == TokenType.LEFT_BRACKET && next.type() != TokenType.RIGHT_BRACKET) {
-                parts.add(new ASTMissing(current.endPos(), next.beginPos(), "Missing ']'"));
+                parts.add(new ASTMissing(current.endPos(), next.beginPos(), "Missing ']'", TokenType.RIGHT_BRACKET));
                 advance();
             } else {
                 array = false;
@@ -312,7 +312,7 @@ public class Parser {
                 while (current.type() != TokenType.RIGHT_PAREN && !isStopToken(current)
                                                                && current.type() != TokenType.LEFT_CURLY) {
                     if (current == lastToken) {
-                        parts.add(new ASTWrong(current, "Unexpected token 5"));
+                        parts.add(new ASTWrong(current, "Unexpected token 5", null));
                         advance();
                         continue;
                     } else {
@@ -323,7 +323,7 @@ public class Parser {
                         current.type() == TokenType.RANGE) {
                         final var ellipsis = new ASTEllipsis(current);
                         if (current.type() != TokenType.ELLIPSIS) {
-                            callTypes.add(combine(ellipsis, new ASTWrong(current, "Expected '...'")));
+                            callTypes.add(combine(ellipsis, new ASTWrong(current, "Expected '...'", TokenType.ELLIPSIS)));
                         } else {
                             callTypes.add(ellipsis);
                         }
@@ -333,16 +333,16 @@ public class Parser {
                     callTypes.add(parseType());
 
                     if (current.type() != TokenType.RIGHT_PAREN && current.type() != TokenType.COMMA) {
-                        parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ','"));
+                        parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ','", TokenType.COMMA));
                     } else if (current.type() == TokenType.COMMA) {
                         advance();
                     }
                 }
                 if (previous.type() == TokenType.COMMA) {
-                    parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing type"));
+                    parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing type", ASTType.TYPE));
                 }
                 if (current.type() != TokenType.RIGHT_PAREN) {
-                    parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'"));
+                    parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'", TokenType.RIGHT_PAREN));
                 } else {
                     advance();
                 }
@@ -355,7 +355,7 @@ public class Parser {
             return toReturn;
         } else {
             return combine(new ASTTypeDeclaration(previous.endPos(), current.beginPos()),
-                           new ASTMissing(previous.endPos(), current.beginPos(), "Missing type"));
+                           new ASTMissing(previous.endPos(), current.beginPos(), "Missing type", ASTType.TYPE));
         }
     }
 
@@ -397,14 +397,14 @@ public class Parser {
 
         if (isStopToken(current)) {
             toReturn = combine(new ASTName(previous.endPos(), current.beginPos()),
-                               new ASTMissing(previous.endPos(), current.beginPos(), "Missing name"));
+                               new ASTMissing(previous.endPos(), current.beginPos(), "Missing name", ASTType.NAME));
         } else if (current.type() == TokenType.OPERATOR) {
             final var begin = current.beginPos();
             advance();
 
             final ASTExpression part;
             if (!isOperator(current.type())) {
-                part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing operator");
+                part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing operator", ASTType.OPERATOR_NAME);
             } else {
                 part = null;
                 advance();
@@ -417,7 +417,7 @@ public class Parser {
             }
         } else if (current.type() != TokenType.IDENTIFIER) {
             toReturn = combine(new ASTName(current.beginPos(), current.endPos()),
-                               new ASTWrong(current, "Expected a name"));
+                               new ASTWrong(current, "Expected a name", ASTType.NAME));
             advance();
         } else {
             toReturn = new ASTName(current);
@@ -451,7 +451,7 @@ public class Parser {
             advance();
             toReturn = assertSemicolon(new ASTOperation(variable, parseBlockExpression(99), TokenType.ASSIGNMENT));
         } else {
-            toReturn = combine(variable, new ASTMissing(previous.endPos(), current.beginPos(), "Missing ';'"));
+            toReturn = combine(variable, new ASTMissing(previous.endPos(), current.beginPos(), "Missing ';'", TokenType.SEMICOLON));
         }
 
         return toReturn;
@@ -473,7 +473,7 @@ public class Parser {
                                                              next.type() == TokenType.LEFT_CURLY)) {
                     toReturn.add(new ASTEllipsis(current));
                     if (next.type() == TokenType.LEFT_CURLY) {
-                        toReturn.add(new ASTMissing(current.endPos(), next.beginPos(), "Expected ')'"));
+                        toReturn.add(new ASTMissing(current.endPos(), next.beginPos(), "Expected ')'", TokenType.RIGHT_PAREN));
                         advance();
                     } else {
                         advance(2);
@@ -487,10 +487,10 @@ public class Parser {
                 if (current.type() != TokenType.IDENTIFIER) {
                     if (current.type() == TokenType.COMMA || current.type() == TokenType.RIGHT_PAREN) {
                         name = combine(new ASTName(previous.endPos(), current.beginPos()),
-                                       new ASTMissing(previous.endPos(), current.beginPos(), "Parameter's name missing"));
+                                       new ASTMissing(previous.endPos(), current.beginPos(), "Parameter's name missing", ASTType.NAME));
                     } else {
                         name = combine(new ASTName(current.beginPos(), current.endPos()),
-                                       new ASTWrong(current, "Expected parameter's name"));
+                                       new ASTWrong(current, "Expected parameter's name", ASTType.NAME));
                         advance();
                     }
                 } else {
@@ -503,12 +503,12 @@ public class Parser {
                 if (current.type() == TokenType.RIGHT_PAREN || current.type() == TokenType.LEFT_CURLY) {
                     stop = true;
                     if (current.type() == TokenType.LEFT_CURLY) {
-                        toReturn.add(new ASTMissing(previous.endPos(), current.beginPos(), "Expected ')'"));
+                        toReturn.add(new ASTMissing(previous.endPos(), current.beginPos(), "Expected ')'", TokenType.RIGHT_PAREN));
                     } else {
                         advance();
                     }
                 } else if (current.type() != TokenType.COMMA) {
-                    toReturn.add(new ASTMissing(previous.endPos(), current.beginPos(), "Expected ','"));
+                    toReturn.add(new ASTMissing(previous.endPos(), current.beginPos(), "Expected ','", TokenType.COMMA));
                 } else {
                     advance();
                 }
@@ -529,13 +529,13 @@ public class Parser {
         final var parts = new Vector<ASTExpression>(2);
 
         if (current.type() != TokenType.LEFT_PAREN) {
-            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '('"));
+            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '('", TokenType.LEFT_PAREN));
         } else {
             advance();
         }
         final var expression = parseBlockExpression(99);
         if (current.type() != TokenType.RIGHT_PAREN) {
-            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'"));
+            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'", TokenType.RIGHT_PAREN));
         } else {
             advance();
         }
@@ -601,7 +601,7 @@ public class Parser {
 
         final ASTExpression part;
         if (current.type() != TokenType.WHILE) {
-            part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing 'while'");
+            part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing 'while'", TokenType.WHILE);
         } else {
             part = null;
             advance();
@@ -628,7 +628,7 @@ public class Parser {
         advance();
 
         if (current.type() != TokenType.LEFT_PAREN) {
-            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '('"));
+            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '('", TokenType.LEFT_PAREN));
         } else {
             advance();
         }
@@ -638,7 +638,7 @@ public class Parser {
                 advance();
                 final var expression = parseBlockExpression(99);
                 if (current.type() != TokenType.RIGHT_PAREN) {
-                    parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'"));
+                    parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'", TokenType.RIGHT_PAREN));
                 } else {
                     advance();
                 }
@@ -656,7 +656,7 @@ public class Parser {
         final var after          = parseBlockExpression(99);
 
         if (current.type() != TokenType.RIGHT_PAREN) {
-            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'"));
+            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'", TokenType.RIGHT_PAREN));
         } else {
             advance();
         }
@@ -682,7 +682,7 @@ public class Parser {
 
         final ASTExpression part;
         if (current.type() != TokenType.LEFT_CURLY) {
-            part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing '{'");
+            part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing '{'", TokenType.LEFT_CURLY);
         } else {
             part = null;
             advance();
@@ -702,7 +702,7 @@ public class Parser {
 
                 lastCase = parseBlockExpression(99);
                 if (current.type() != TokenType.COLON) {
-                    lastCase = combine(lastCase, new ASTMissing(previous.endPos(), current.beginPos(), "Missing ':'"));
+                    lastCase = combine(lastCase, new ASTMissing(previous.endPos(), current.beginPos(), "Missing ':'", TokenType.COLON));
                 } else {
                     advance();
                 }
@@ -713,7 +713,7 @@ public class Parser {
                 lastCase = new ASTDefault(current);
                 advance();
                 if (current.type() != TokenType.COLON) {
-                    lastCase = combine(lastCase, new ASTMissing(previous.endPos(), current.beginPos(), "Missing ':'"));
+                    lastCase = combine(lastCase, new ASTMissing(previous.endPos(), current.beginPos(), "Missing ':'", TokenType.COLON));
                 } else {
                     advance();
                 }
@@ -767,7 +767,7 @@ public class Parser {
 
         final var toTry = parseInstruction();
         if (current.type() != TokenType.CATCH) {
-            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing 'catch'"));
+            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing 'catch'", TokenType.CATCH));
         } else {
             advance();
         }
@@ -775,14 +775,14 @@ public class Parser {
         final ASTExpression exception;
         if (current.type() == TokenType.LEFT_PAREN || current.type() == TokenType.RIGHT_PAREN) {
             if (current.type() != TokenType.LEFT_PAREN) {
-                parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '('"));
+                parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '('", TokenType.LEFT_PAREN));
             } else {
                 advance();
             }
             if (current.type() != TokenType.RIGHT_PAREN) {
                 exception = parseFancyVariableDeclaration();
                 if (current.type() != TokenType.RIGHT_PAREN) {
-                    parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'"));
+                    parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'", TokenType.RIGHT_PAREN));
                 } else {
                     advance();
                 }
@@ -814,7 +814,7 @@ public class Parser {
         final var begin = previous.beginPos();
 
         if (current.type() != TokenType.LEFT_PAREN) {
-            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '('"));
+            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '('", TokenType.LEFT_PAREN));
         } else {
             advance();
         }
@@ -823,13 +823,13 @@ public class Parser {
         final List<ASTExpression> arguments;
         if (current.type() != TokenType.RIGHT_PAREN) {
             if (current.type() != TokenType.COMMA) {
-                parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ','"));
+                parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ','", TokenType.COMMA));
             } else {
                 advance();
             }
             arguments = parseCallArguments(TokenType.RIGHT_PAREN);
             if (current.type() != TokenType.RIGHT_PAREN) {
-                parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'"));
+                parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'", TokenType.RIGHT_PAREN));
             } else {
                 advance();
             }
@@ -873,7 +873,7 @@ public class Parser {
 
         final ASTExpression part;
         if (current.type() != TokenType.RIGHT_PAREN) {
-            part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'");
+            part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'", TokenType.RIGHT_PAREN);
         } else {
             part = null;
             advance();
@@ -913,7 +913,7 @@ public class Parser {
 
         advance();
         if (previous.type() != TokenType.ELLIPSIS) {
-            return combine(ellipsis, new ASTWrong(previous, "Expected '...'"));
+            return combine(ellipsis, new ASTWrong(previous, "Expected '...'", TokenType.ELLIPSIS));
         }
         return ellipsis;
     }
@@ -938,7 +938,7 @@ public class Parser {
 
                         final ASTExpression part;
                         if (current.type() != TokenType.RIGHT_PAREN) {
-                            part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'");
+                            part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'", TokenType.RIGHT_PAREN);
                         } else {
                             part = null;
                             advance();
@@ -1005,7 +1005,7 @@ public class Parser {
                 if (cast == null) {
                     final var expression = parseBlockExpression(99);
                     if (current.type() != TokenType.RIGHT_PAREN) {
-                        toReturn = combine(expression, new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'"));
+                        toReturn = combine(expression, new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'", TokenType.RIGHT_PAREN));
                     } else {
                         advance();
                         toReturn = expression;
@@ -1018,7 +1018,7 @@ public class Parser {
             case TRUE,
                  FALSE -> { toReturn = new ASTBool(current); advance(); }
 
-            default -> toReturn = new ASTMissing(previous.endPos(), current.beginPos(), "Missing expression");
+            default -> toReturn = new ASTMissing(previous.endPos(), current.beginPos(), "Missing expression", null);
         }
         return toReturn;
     }
@@ -1036,7 +1036,7 @@ public class Parser {
 
         final ASTExpression part;
         if (current.type() != TokenType.RIGHT_BRACKET) {
-            part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing ']'");
+            part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing ']'", TokenType.RIGHT_BRACKET);
         } else {
             part = null;
             advance();
@@ -1062,7 +1062,7 @@ public class Parser {
 
         final ASTExpression part;
         if (current.type() != TokenType.RIGHT_CURLY) {
-            part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing '}'");
+            part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing '}'", TokenType.RIGHT_CURLY);
         } else {
             part = null;
             advance();
@@ -1088,7 +1088,7 @@ public class Parser {
         Token lastToken = null;
         while (current.type() != end && !isStopToken(current)) {
             if (current == lastToken) {
-                list.add(new ASTWrong(current, "Unexpected token 4"));
+                list.add(new ASTWrong(current, "Unexpected token 4", null));
                 advance();
                 continue;
             } else {
@@ -1096,13 +1096,13 @@ public class Parser {
             }
             list.add(parseBlockExpression(99));
             if (current.type() != TokenType.COMMA && current.type() != end) {
-                list.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ','"));
+                list.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ','", TokenType.COMMA));
             } else if (current.type() == TokenType.COMMA) {
                 advance();
             }
         }
         if (previous.type() == TokenType.COMMA) {
-            list.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing expression"));
+            list.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing expression", null));
         }
 
         return list;
@@ -1123,7 +1123,7 @@ public class Parser {
         final var name = parseName();
 
         if (current.type() != TokenType.LEFT_PAREN) {
-            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '('"));
+            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '('", TokenType.LEFT_PAREN));
         } else {
             advance();
         }
@@ -1131,7 +1131,7 @@ public class Parser {
         final var arguments = parseCallArguments(TokenType.RIGHT_PAREN);
 
         if (current.type() != TokenType.RIGHT_PAREN) {
-            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'"));
+            parts.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing ')'", TokenType.RIGHT_PAREN));
         } else {
             advance();
         }
@@ -1165,7 +1165,7 @@ public class Parser {
 
             final var result = new ASTOperation(expression, rhs, TokenType.RANGE);
             if (current.type() != TokenType.RIGHT_BRACKET) {
-                toReturn = new ASTSubscript(combine(result, new ASTMissing(previous.endPos(), current.beginPos(), "Missing ']'")));
+                toReturn = new ASTSubscript(combine(result, new ASTMissing(previous.endPos(), current.beginPos(), "Missing ']'", TokenType.RIGHT_BRACKET)));
             } else {
                 advance();
                 toReturn = new ASTSubscript(result);
@@ -1173,7 +1173,7 @@ public class Parser {
         } else {
             final ASTExpression part;
             if (current.type() != TokenType.RIGHT_BRACKET) {
-                part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing ']'");
+                part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing ']'", TokenType.RIGHT_BRACKET);
             } else {
                 part = null;
                 advance();
@@ -1209,7 +1209,7 @@ public class Parser {
 
         final ASTExpression part;
         if (current.type() != TokenType.COLON) {
-            part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing ':'");
+            part = new ASTMissing(previous.endPos(), current.beginPos(), "Missing ':'", TokenType.COMMA);
         } else {
             part = null;
             advance();
@@ -1334,7 +1334,7 @@ public class Parser {
             if (next.type() != TokenType.IDENTIFIER) {
                 lhs = new ASTUnaryOperator(current.beginPos(), TokenType.AMPERSAND,
                         combine(new ASTName(current.endPos(), next.beginPos()),
-                                new ASTMissing(current.endPos(), next.beginPos(), "Missing identifier!")));
+                                new ASTMissing(current.endPos(), next.beginPos(), "Missing identifier!", TokenType.IDENTIFIER)));
             } else {
                 advance();
                 lhs = new ASTUnaryOperator(previous.beginPos(), TokenType.AMPERSAND, new ASTName(current));
@@ -1367,7 +1367,7 @@ public class Parser {
         Token lastToken = null;
         for (TokenType operatorType = current.type(); isOperator(operatorType) && !isStopToken(current); operatorType = current.type()) {
             if (current == lastToken) {
-                previousExpression = combine(previousExpression, new ASTWrong(current, "Unexpected token 3"));
+                previousExpression = combine(previousExpression, new ASTWrong(current, "Unexpected token 3", null));
                 advance();
                 continue;
             } else {
@@ -1391,7 +1391,7 @@ public class Parser {
         final ASTExpression toReturn;
 
         if (current.type() != TokenType.SEMICOLON) {
-            toReturn = combine(expression, new ASTMissing(previous.endPos(), current.beginPos(), "Missing ';'"));
+            toReturn = combine(expression, new ASTMissing(previous.endPos(), current.beginPos(), "Missing ';'", TokenType.SEMICOLON));
         } else {
             advance();
             toReturn = expression;
@@ -1435,7 +1435,7 @@ public class Parser {
                 advance();
                 type = parseType();
             } else if (next.type() == TokenType.ASSIGNMENT && (current.type() == TokenType.IDENTIFIER || isType(current.type()))) {
-                final var missing = new ASTMissing(previous.endPos(), current.beginPos(), "Missing ':'");
+                final var missing = new ASTMissing(previous.endPos(), current.beginPos(), "Missing ':'", TokenType.COLON);
                 type = combine(parseType(), missing);
             } else {
                 type = null;
@@ -1524,7 +1524,7 @@ public class Parser {
         final var begin = current.beginPos();
 
         if (current.type() != TokenType.LEFT_CURLY) {
-            block.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '{'"));
+            block.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '{'", TokenType.LEFT_CURLY));
         } else {
             advance();
         }
@@ -1533,7 +1533,7 @@ public class Parser {
         while (current.type() != TokenType.RIGHT_CURLY
             && current.type() != TokenType.EOF) {
             if (current == lastToken) {
-                block.add(new ASTWrong(current, "Unexpected token 2"));
+                block.add(new ASTWrong(current, "Unexpected token 2", null));
                 advance();
                 continue;
             } else {
@@ -1542,7 +1542,7 @@ public class Parser {
             block.add(parseInstruction());
         }
         if (current.type() == TokenType.EOF) {
-            block.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '}'"));
+            block.add(new ASTMissing(previous.endPos(), current.beginPos(), "Missing '}'", TokenType.RIGHT_CURLY));
         } else {
             advance();
         }
@@ -1616,7 +1616,7 @@ public class Parser {
         Token lastToken = null;
         while (current.type() != TokenType.EOF && current.type() != end) {
             if (current == lastToken) {
-                expressions.add(new ASTWrong(current, "Unexpected token 1"));
+                expressions.add(new ASTWrong(current, "Unexpected token 1", null));
                 advance();
                 continue;
             } else {

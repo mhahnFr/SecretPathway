@@ -19,6 +19,7 @@
 
 package mhahnFr.SecretPathway.core.lpc.parser.ast;
 
+import mhahnFr.SecretPathway.core.lpc.interpreter.highlight.HighlightType;
 import mhahnFr.utils.StreamPosition;
 
 /**
@@ -27,21 +28,23 @@ import mhahnFr.utils.StreamPosition;
  * @author mhahnFr
  * @since 26.01.23
  */
-public class ASTMissing extends ASTExpression {
+public class ASTMissing extends ASTHole {
     /** The message about the missing node. */
     private final String message;
 
     /**
      * Constructs this AST node using the given information.
      *
-     * @param begin   the beginning position
-     * @param end     the end position
-     * @param message the message what node is missing
+     * @param begin    the beginning position
+     * @param end      the end position
+     * @param message  the message what node is missing
+     * @param expected the instead expected AST type
      */
     public ASTMissing(final StreamPosition begin,
                       final StreamPosition end,
-                      final String         message) {
-        super(begin, end, ASTType.MISSING);
+                      final String         message,
+                      final HighlightType  expected) {
+        super(begin, end, message, ASTType.MISSING, expected);
 
         this.message = message;
     }
