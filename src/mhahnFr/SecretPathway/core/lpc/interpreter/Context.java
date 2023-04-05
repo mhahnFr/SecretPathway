@@ -225,6 +225,15 @@ public class Context extends Instruction {
         }
     }
 
+    public Instruction queryEnclosingFunction(final int position) {
+        for (final var entry : instructions.entrySet()) {
+            if (position >= entry.getKey() && position <= entry.getValue().getEnd() && entry.getValue() instanceof Context) {
+                return instructions.lowerEntry(entry.getKey()).getValue();
+            }
+        }
+        return null;
+    }
+
     /**
      * Returns a list with the available suggestions at the given position.
      *
