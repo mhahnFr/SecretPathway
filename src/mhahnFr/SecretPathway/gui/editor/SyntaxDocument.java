@@ -39,6 +39,7 @@ import mhahnFr.utils.StringStream;
 
 import javax.swing.text.*;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -767,13 +768,11 @@ public class SyntaxDocument extends DefaultStyledDocument {
      *
      * @param position the position to be visited
      */
-    private void maybeVisit(final int position) {
-        if (visitor.getPosition() != position) {
-            for (final var node : ast) {
-                if (position >= node.getBegin().position() && position <= node.getEnd().position()) {
-                    visitor.visit(node, position);
-                    break;
-                }
+    private void visit(final int position) {
+        for (final var node : ast) {
+            if (position >= node.getBegin().position() && position <= node.getEnd().position()) {
+                visitor.visit(node, position);
+                break;
             }
         }
     }
@@ -786,7 +785,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
      * @return the requested return type
      */
     public Optional<ASTTypeDefinition> getRequestedType(final int position) {
-        maybeVisit(position);
+        visit(position);
         return Optional.ofNullable(visitor.getType());
     }
 
@@ -798,7 +797,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
      * @return the type of suggestions to be shown
      */
     public SuggestionType getASTTypeFor(final int position) {
-        maybeVisit(position);
+        visit(position);
         return visitor.getSuggestionType();
     }
 

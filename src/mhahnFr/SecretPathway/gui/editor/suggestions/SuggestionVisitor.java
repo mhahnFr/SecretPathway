@@ -34,6 +34,8 @@ public class SuggestionVisitor {
     private SuggestionType type = SuggestionType.ANY;
     /** The position for visiting.               */
     private int position = -1;
+    /** The node lastly visited.                 */
+    private ASTExpression lastVisited = null;
     /** The expected return type.                */
     private ASTTypeDefinition returnType;
 
@@ -43,7 +45,6 @@ public class SuggestionVisitor {
      * expected.
      *
      * @return the requested return type
-     * @see #getPosition()
      * @see #visit(ASTExpression, int)
      */
     public ASTTypeDefinition getType() {
@@ -55,20 +56,10 @@ public class SuggestionVisitor {
      * visited position.
      *
      * @return the type of suggestions
-     * @see #getPosition()
      * @see #visit(ASTExpression, int)
      */
     public SuggestionType getSuggestionType() {
         return type;
-    }
-
-    /**
-     * Returns the position that was previously used for visiting.
-     *
-     * @return the last used position
-     */
-    public int getPosition() {
-        return position;
     }
 
     /**
@@ -78,15 +69,17 @@ public class SuggestionVisitor {
      * @param node     the AST node to be visited
      * @param position the position
      * @return the type of suggestions that should be shown
-     * @see #getPosition()
      * @see #getSuggestionType()
      */
     public SuggestionType visit(final ASTExpression node, final int position) {
-        this.position = position;
-//        return (type = visitImpl(node, position));
-        type = visitImpl(node, position);
-        System.out.println(type);
-        return type;
+        if (this.position    == position &&
+            this.lastVisited == node) {
+            return type;
+        }
+
+        this.position    = position;
+        this.lastVisited = node;
+        return (type = visitImpl(node, position));
     }
 
     /**
@@ -99,7 +92,6 @@ public class SuggestionVisitor {
      * @see #visit(ASTExpression, int)
      */
     private SuggestionType visitImpl(final ASTExpression node, final int position) {
-        System.out.print("Type for: " + node.getASTType() + ": ");
         returnType = null;
         switch (node.getASTType()) {
             case FUNCTION_DEFINITION -> {
