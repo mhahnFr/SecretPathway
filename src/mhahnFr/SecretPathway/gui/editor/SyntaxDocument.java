@@ -771,7 +771,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
     private void visit(final int position) {
         for (final var node : ast) {
             if (position >= node.getBegin().position() && position <= node.getEnd().position()) {
-                visitor.visit(node, position);
+                visitor.visit(node, position, context);
                 break;
             }
         }

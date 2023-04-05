@@ -19,8 +19,14 @@
 
 package mhahnFr.SecretPathway.gui.editor.suggestions;
 
+import mhahnFr.SecretPathway.core.lpc.interpreter.Context;
+import mhahnFr.SecretPathway.core.lpc.interpreter.Definition;
+import mhahnFr.SecretPathway.core.lpc.interpreter.FunctionDefinition;
+import mhahnFr.SecretPathway.core.lpc.interpreter.ReturnType;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.*;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
+
+import java.util.List;
 
 /**
  * This class represents an AST visitor, querying additional
@@ -45,7 +51,7 @@ public class SuggestionVisitor {
      * expected.
      *
      * @return the requested return type
-     * @see #visit(ASTExpression, int)
+     * @see #visit(ASTExpression, int, Context)
      */
     public ASTTypeDefinition getType() {
         return returnType;
@@ -56,7 +62,7 @@ public class SuggestionVisitor {
      * visited position.
      *
      * @return the type of suggestions
-     * @see #visit(ASTExpression, int)
+     * @see #visit(ASTExpression, int, Context)
      */
     public SuggestionType getSuggestionType() {
         return type;
@@ -68,10 +74,11 @@ public class SuggestionVisitor {
      *
      * @param node     the AST node to be visited
      * @param position the position
+     * @param context  the interpretation context
      * @return the type of suggestions that should be shown
      * @see #getSuggestionType()
      */
-    public SuggestionType visit(final ASTExpression node, final int position) {
+    public SuggestionType visit(final ASTExpression node, final int position, final Context context) {
         if (this.position    == position &&
             this.lastVisited == node) {
             return type;
@@ -79,7 +86,12 @@ public class SuggestionVisitor {
 
         this.position    = position;
         this.lastVisited = node;
-        return (type = visitImpl(node, position));
+        returnType       = null;
+        type = visitImpl(node, position, context);
+//        return (type = visitImpl(node, position, context));
+        System.out.println(type);
+        System.out.println("Expected return type: " + returnType);
+        return type;
     }
 
     /**
@@ -88,11 +100,12 @@ public class SuggestionVisitor {
      *
      * @param node     the AST node to be visited
      * @param position the position
+     * @param context  the interpretation context
      * @return the type of suggestions that should be shown
-     * @see #visit(ASTExpression, int)
+     * @see #visit(ASTExpression, int, Context)
      */
-    private SuggestionType visitImpl(final ASTExpression node, final int position) {
-        returnType = null;
+    private SuggestionType visitImpl(final ASTExpression node, final int position, final Context context) {
+        System.out.print("Type for: " + node.getASTType() + ": ");
         switch (node.getASTType()) {
             case FUNCTION_DEFINITION -> {
                 final var func = (ASTFunctionDefinition) node;
@@ -110,17 +123,18 @@ public class SuggestionVisitor {
                         position <= funcParameters.get(funcParameters.size() - 1).getEnd().position()) {
                     for (final var parameter : funcParameters) {
                         if (position >= parameter.getBegin().position() && position <= parameter.getEnd().position()) {
-                            return visit(parameter, position);
+                            return visitImpl(parameter, position, context);
                         }
                     }
                 } else {
-                    return visit(func.getBody(), position);
+                    return visitImpl(func.getBody(), position, context);
                 }
             }
 
             case VARIABLE_DEFINITION -> {
                 final var variable = (ASTVariableDefinition) node;
 
+                // FIXME: Not necessarily a variable - use StreamPosition!
                 final var varModifiers = variable.getModifiers();
                 if (varModifiers != null && !varModifiers.isEmpty() &&
                         position >= varModifiers.get(0).getBegin().position() &&
@@ -138,11 +152,23 @@ public class SuggestionVisitor {
             case OPERATION -> {
                 final var op = (ASTOperation) node;
 
-                // TODO: Maybe set expected type
+                if (op.getOperatorType() == TokenType.ASSIGNMENT) {
+                    final var lhs = op.getLhs();
+                    switch (lhs.getASTType()) {
+                        case VARIABLE_DEFINITION -> returnType = cast(ASTTypeDefinition.class, ((ASTVariableDefinition) lhs).getType());
+                        case NAME -> {
+                            // FIXME: Scoping
+                            final var def = context.getIdentifier(((ASTName) lhs).getName(), position);
+                            if (def != null) {
+                                returnType = def.getReturnType();
+                            }
+                        }
+                    }
+                }
                 if (position <= op.getLhs().getEnd().position()) {
-                    return visit(op.getLhs(), position);
+                    return visitImpl(op.getLhs(), position, context);
                 } else {
-                    return visit(op.getRhs(), position);
+                    return visitImpl(op.getRhs(), position, context);
                 }
             }
 
@@ -164,10 +190,16 @@ public class SuggestionVisitor {
                 final var ret      = (ASTReturn) node;
                 final var returned = ret.getReturned();
 
+                final var func = context.queryEnclosingFunction(position);
+                if (func != null) {
+                    returnType = func.getReturnType();
+                }
                 if (returned != null &&
                         position >= returned.getBegin().position() && position <= returned.getEnd().position()) {
-                    // TODO: Expected type?
-                    return returned.hasSubExpressions() ? visit(returned, position) : SuggestionType.IDENTIFIER;
+                    if (returned.hasSubExpressions()) {
+                        return visitImpl(returned, position, context);
+                    }
+                    return SuggestionType.LITERAL_IDENTIFIER;
                 }
             }
 
@@ -177,11 +209,38 @@ public class SuggestionVisitor {
                 if (position <= call.getName().getEnd().position()) {
                     return SuggestionType.IDENTIFIER;
                 }
-                for (final var param : call.getArguments()) {
+
+                final var func = context.getIdentifier(cast(ASTName.class, call.getName()).getName(), position);
+                final List<Definition> args;
+                final FunctionDefinition funcDef;
+                if (func instanceof final FunctionDefinition def) {
+                    args    = def.getParameters();
+                    funcDef = def;
+                } else {
+                    args    = null;
+                    funcDef = null;
+                }
+
+                final var callArgs = call.getArguments();
+                for (int i = 0; i < callArgs.size(); ++i) {
+                    final var param = callArgs.get(i);
+
                     if (position >= param.getBegin().position() && position <= param.getEnd().position()) {
-                        // TODO: Expected type?
-                        return param.hasSubExpressions() ? visit(param, position) : SuggestionType.IDENTIFIER;
+                        if (param.hasSubExpressions()) {
+                            return visitImpl(param, position, context);
+                        }
+                        if (funcDef != null) {
+                            if (i < args.size()) {
+                                returnType = args.get(i).getReturnType();
+                            } else if (funcDef.isVariadic()) {
+                                returnType = new ReturnType(TokenType.ANY);
+                            }
+                        }
+                        return SuggestionType.IDENTIFIER;
                     }
+                }
+                if (returnType == null && args != null && !args.isEmpty()) {
+                    returnType = args.get(0).getReturnType();
                 }
                 return SuggestionType.LITERAL_IDENTIFIER;
             }
@@ -192,7 +251,7 @@ public class SuggestionVisitor {
                 if (position <= c.getType().getEnd().position()) {
                     return SuggestionType.TYPE;
                 }
-//                returnType = c.getType() as ASTReturnDefinition;
+                returnType = cast(ASTTypeDefinition.class, c.getType());
                 return SuggestionType.LITERAL_IDENTIFIER;
             }
 
@@ -212,12 +271,25 @@ public class SuggestionVisitor {
                 if (node.hasSubExpressions()) {
                     for (final var subNode : node.getSubExpressions()) {
                         if (position >= subNode.getBegin().position() && position <= subNode.getEnd().position()) {
-                            return visit(subNode, position);
+                            return visitImpl(subNode, position, context);
                         }
                     }
                 }
             }
         }
         return SuggestionType.ANY;
+    }
+
+    private <T extends ASTExpression> T cast(final Class<T> type, final ASTExpression expression) {
+        if (type.isAssignableFrom(expression.getClass())) {
+            return type.cast(expression);
+        } else if (expression instanceof final ASTCombination combination) {
+            for (final var e : combination.getExpressions()) {
+                if (type.isAssignableFrom(e.getClass())) {
+                    return type.cast(e);
+                }
+            }
+        }
+        throw new IllegalArgumentException("Given expression is neither a combination nor " + type + "!");
     }
 }
