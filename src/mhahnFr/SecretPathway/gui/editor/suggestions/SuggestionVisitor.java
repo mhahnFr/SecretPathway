@@ -20,6 +20,7 @@
 package mhahnFr.SecretPathway.gui.editor.suggestions;
 
 import mhahnFr.SecretPathway.core.lpc.parser.ast.*;
+import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 
 /**
  * This class represents an AST visitor, querying additional
@@ -203,7 +204,17 @@ public class SuggestionVisitor {
                 return SuggestionType.LITERAL_IDENTIFIER;
             }
 
-            // TODO: Missing, Wrong
+            case MISSING, WRONG -> {
+                final var hole = (ASTHole) node;
+
+                if (hole.getExpected() == ASTType.NAME) {
+                    return SuggestionType.LITERAL;
+                } else if (hole.getExpected() == ASTType.TYPE) {
+                    return SuggestionType.TYPE;
+                } else if (hole.getExpected() == TokenType.IDENTIFIER) {
+                    return SuggestionType.IDENTIFIER;
+                }
+            }
 
             default -> {
                 if (node.hasSubExpressions()) {

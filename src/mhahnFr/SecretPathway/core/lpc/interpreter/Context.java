@@ -258,10 +258,8 @@ public class Context extends Instruction {
         }
 
         if (isGlobalScope(position)) {
-            if (type.is(SuggestionType.ANY)) {
-                toReturn.add(new InheritSuggestion());
-                toReturn.add(new IncludeSuggestion());
-            }
+            toReturn.add(new InheritSuggestion());
+            toReturn.add(new IncludeSuggestion());
 
             if (type.is(SuggestionType.ANY, SuggestionType.MODIFIER, SuggestionType.TYPE_MODIFIER)) {
                 toReturn.add(new TypeSuggestion(TokenType.PRIVATE));
