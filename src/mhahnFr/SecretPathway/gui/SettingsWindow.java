@@ -23,9 +23,9 @@ import mhahnFr.SecretPathway.core.Constants;
 import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
 import mhahnFr.SecretPathway.gui.editor.theme.json.JSONTheme;
+import mhahnFr.utils.SettingsListener;
 import mhahnFr.utils.StringStream;
 import mhahnFr.utils.gui.DarkComponent;
-import mhahnFr.utils.gui.DarkModeListener;
 import mhahnFr.utils.json.JSONParser;
 
 import javax.swing.*;
@@ -93,8 +93,10 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
             spinnerPanel.add(stepperLabel);
             spinnerPanel.add(stepper);
 
-            final var checkBoxes = new DarkComponent<>(new JPanel(new GridLayout(5, 1)), components).getComponent();
+            final var checkBoxes = new DarkComponent<>(new JPanel(new GridLayout(6, 1)), components).getComponent();
                 final var darkBox = new DarkComponent<>(new JCheckBox("Enable dark mode"), components).getComponent();
+
+                final var nativeLF = new DarkComponent<>(new JCheckBox("Use native Look & Feel"), components).getComponent();
 
                 final var editorInlined = new DarkComponent<>(new JCheckBox("Use inlined editor"), components).getComponent();
 
@@ -104,6 +106,7 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
 
                 final var enableUTF8 = new DarkComponent<>(new JCheckBox("Enable UTF-8 by default"), components).getComponent();
             checkBoxes.add(darkBox);
+            checkBoxes.add(nativeLF);
             checkBoxes.add(editorInlined);
             checkBoxes.add(editorHighlighting);
             checkBoxes.add(enableStartTlS);
@@ -134,13 +137,14 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
         stepper.addChangeListener(__ -> settings.setFontSize((Integer) stepper.getValue()));
 
         darkBox.setSelected(settings.getDarkMode());
-        darkBox.addItemListener(__ -> settings.setDarkMode(darkBox.isSelected()));
-
+        nativeLF.setSelected(settings.getNativeLookAndFeel());
         editorInlined.setSelected(settings.getEditorInlined());
         editorHighlighting.setSelected(settings.getSyntaxHighlighting());
         enableStartTlS.setSelected(settings.getStartTLS());
         enableUTF8.setSelected(settings.useUTF8());
 
+        darkBox.addItemListener(__ -> settings.setDarkMode(darkBox.isSelected()));
+        nativeLF.addItemListener(this::updateLookAndFeel);
         editorInlined.addItemListener(__ -> settings.setEditorInlined(editorInlined.isSelected()));
         editorHighlighting.addItemListener(__ -> settings.setSyntaxHighlighting(editorHighlighting.isSelected()));
         enableStartTlS.addItemListener(__ -> settings.setStartTLS(enableStartTlS.isSelected()));
@@ -159,6 +163,33 @@ public class SettingsWindow extends JDialog implements DarkModeListener {
             themeButton.setVisible(false);
         }
         themeBox.addItemListener(this::themeChanged);
+    }
+
+    /**
+     * Updates the Look & Feel.
+     *
+     * @param event the item event
+     */
+    private void updateLookAndFeel(final ItemEvent event) {
+        final var settings  = Settings.getInstance();
+        final var activated = event.getStateChange() == ItemEvent.SELECTED;
+
+        if (settings.getNativeLookAndFeel() != activated) {
+            try {
+                UIManager.setLookAndFeel(activated ? UIManager.getSystemLookAndFeelClassName()
+                                                   : UIManager.getCrossPlatformLookAndFeelClassName());
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+                System.err.println("Could not set L&F:");
+                e.printStackTrace();
+                System.err.println("------------------");
+                JOptionPane.showMessageDialog(this,
+                                              "Could not change the Look&Feel!\n" +
+                                              "Restart " + Constants.NAME + " to apply the change.",
+                                              Constants.NAME + ": Settings",
+                                              JOptionPane.ERROR_MESSAGE);
+            }
+            settings.setNativeLookAndFeel(activated);
+        }
     }
 
     /**

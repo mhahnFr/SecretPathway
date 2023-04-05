@@ -286,6 +286,25 @@ public final class Settings {
     }
 
     /**
+     * Returns whether to use the native Look & Feel implementation.
+     *
+     * @return whether the native L&F should be used
+     */
+    public boolean getNativeLookAndFeel() {
+        return preferences.getInt(Keys.NATIVE_LF, 1) == 1;
+    }
+
+    /**
+     * Sets whether to use the native Look & Feel implementation.
+     *
+     * @param enabled whether the native L&F should be used
+     */
+    public void setNativeLookAndFeel(final boolean enabled) {
+        callListeners(Keys.NATIVE_LF, enabled);
+        preferences.putInt(Keys.NATIVE_LF, enabled ? 1 : 0);
+    }
+
+    /**
      * Stores the given hostname.
      *
      * @param hostname the hostname to store
@@ -563,5 +582,7 @@ public final class Settings {
         public static final String EDITOR_WINDOW_WIDTH        = BUNDLE_ID + ".editorWindowWidth";
         /** The key used to store the height of the editor window.          */
         public static final String EDITOR_WINDOW_HEIGHT       = BUNDLE_ID + ".editorWindowHeight";
+        /** The key used to store the usage of the native Look&Feel usage.  */
+        public static final String NATIVE_LF                  = BUNDLE_ID + ".nativeLookAndFeel";
     }
 }
