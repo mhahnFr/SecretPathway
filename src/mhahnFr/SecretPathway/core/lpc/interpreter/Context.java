@@ -43,6 +43,7 @@ public class Context extends Instruction {
     private static final Suggestion voidReturnSuggestion  = new ReturnSuggestion();
     /** The ellipsis suggestion.                      */
     private static final Suggestion ellipsisSuggestion    = new PlainSuggestion("...");
+    private static final Suggestion thisSuggestion        = new ThisSuggestion();
     /** The parent context.                           */
     private final Context parent;
     /** The inherited contexts.                       */
@@ -152,6 +153,7 @@ public class Context extends Instruction {
 
         final var definition = queryEnclosingFunction();
         if (definition != null) {
+            toReturn.add(thisSuggestion);
             if (definition.isVariadic()) {
                 toReturn.add(ellipsisSuggestion);
             }
@@ -188,7 +190,8 @@ public class Context extends Instruction {
                                s == voidReturnSuggestion  ||
                                s == trueReturnSuggestion  ||
                                s == falseReturnSuggestion ||
-                               s == valueReturnSuggestion);
+                               s == valueReturnSuggestion ||
+                               s == thisSuggestion);
 
         return toReturn;
     }
