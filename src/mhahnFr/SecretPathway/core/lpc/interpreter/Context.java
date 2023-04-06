@@ -322,6 +322,17 @@ public class Context extends Instruction {
         return null;
     }
 
+    public Definition digOutIdentifier(final String name, final int position) {
+        final var subEntry = instructions.lowerEntry(position);
+        if (subEntry == null) {
+            return null;
+        }
+        if (subEntry.getValue() instanceof final Context subContext) {
+            return subContext.digOutIdentifier(name, position);
+        }
+        return getIdentifier(name, position);
+    }
+
     /**
      * Returns the {@link Definition} of the named identifier,
      * whose use ends at the given position. If it is not found
