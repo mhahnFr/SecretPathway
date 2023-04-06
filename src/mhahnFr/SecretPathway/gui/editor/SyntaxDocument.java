@@ -776,6 +776,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
                 break;
             }
         }
+        visitor.visit(ast.get(ast.size() - 1), position, context);
     }
 
     /**
