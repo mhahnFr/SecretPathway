@@ -24,7 +24,14 @@ import mhahnFr.SecretPathway.core.lpc.interpreter.ReturnType;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTTypeDefinition;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 
+/**
+ * This class represents a {@code this} suggestion.
+ *
+ * @author mhahnFr
+ * @since 06.04.23
+ */
 public class ThisSuggestion implements Suggestion {
+    /** The return tpe of this suggestion. */
     private static final ASTTypeDefinition type = new ReturnType(TokenType.OBJECT);
 
     @Override
