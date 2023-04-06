@@ -410,7 +410,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
         addUndoableAction(UndoableActionType.INSERT, offs, insertion);
         if (suggestionShower != null) {
             if (update)          suggestionShower.updateSuggestions();
-            if (begin)           suggestionShower.beginSuggestions();
+            if (begin)           computeSuggestionContext(offs + cursorDelta, true);
             else if (superBegin) suggestionShower.beginSuperSuggestions();
             else if (end)        suggestionShower.endSuggestions();
         }
@@ -802,11 +802,25 @@ public class SyntaxDocument extends DefaultStyledDocument {
         return visitor.getSuggestionType();
     }
 
-    public void computeSuggestionContext(final int position) {
+    private void computeSuggestionContext(final int position, final boolean begin) {
         threads.execute(() -> {
             visit(position);
-            EventQueue.invokeLater(() -> suggestionShower.updateSuggestionContext(visitor.getSuggestionType(), visitor.getType()));
+            EventQueue.invokeLater(() -> {
+                final var type = visitor.getSuggestionType();
+
+                if (begin && type != SuggestionType.LITERAL) {
+                    suggestionShower.beginSuggestions();
+                } else if (type == SuggestionType.LITERAL) {
+                    suggestionShower.endSuggestions();
+                } else {
+                    suggestionShower.updateSuggestionContext(type, visitor.getType());
+                }
+            });
         });
+    }
+
+    public void computeSuggestionContext(final int position) {
+        computeSuggestionContext(position, false);
     }
 
     /**
