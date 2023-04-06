@@ -23,7 +23,9 @@ import mhahnFr.SecretPathway.core.Constants;
 import mhahnFr.SecretPathway.core.Settings;
 import mhahnFr.SecretPathway.core.lpc.LPCFileManager;
 import mhahnFr.SecretPathway.core.lpc.interpreter.FunctionDefinition;
+import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTTypeDefinition;
 import mhahnFr.SecretPathway.gui.editor.suggestions.DefinitionSuggestion;
+import mhahnFr.SecretPathway.gui.editor.suggestions.SuggestionType;
 import mhahnFr.SecretPathway.gui.editor.suggestions.SuggestionsWindow;
 import mhahnFr.utils.SettingsListener;
 import mhahnFr.utils.gui.DarkComponent;
@@ -256,7 +258,12 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
 
     @Override
     public void updateSuggestions() {
-        updateSuggestionsImpl();
+        updateSuggestionsImpl(null, null);
+    }
+
+    @Override
+    public void updateSuggestionContext(final SuggestionType type, final ASTTypeDefinition expected) {
+        updateSuggestionsImpl(type, expected);
     }
 
     @Override
@@ -282,7 +289,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         } else {
             statusLabel.setText(document.getMessageFor(textPane.getCaretPosition()));
             if (suggestionsWindow.isVisible()) {
-                updateSuggestionsImpl();
+                updateSuggestionsImpl(null, null);
             }
         }
     }
@@ -489,12 +496,33 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
      *
      * @return the beginning position
      */
-    private int updateSuggestionsImpl() {
+    private int updateSuggestionsImpl(final SuggestionType type, final ASTTypeDefinition expected) {
+        final var caretPosition = textPane.getCaretPosition();
+
         final var suggestions = onlySupers ? document.getSuperSuggestions()
-                                           : document.getAvailableSuggestions(textPane.getCaretPosition());
-        final var position    = textPane.getCaretPosition();
-        var toReturn    = position;
+                                           : document.getAvailableSuggestions(caretPosition);
+
+        if (type == null && expected == null) {
+            document.computeSuggestionContext(caretPosition);
+        }
+
+        final var position = textPane.getCaretPosition();
+        var toReturn       = position;
         try {
+            if (expected != null) {
+                suggestions.sort((a, b) -> {
+                    final var aa = a.getRightSite();
+                    final var bb = b.getRightSite();
+
+                    if (Objects.equals(aa, expected.toString())) {
+                        return -1;
+                    } else if (Objects.equals(bb, expected.toString())) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                });
+            }
             if (document.isInWord(position)) {
                 final var begin = document.getWordBegin(position);
                 toReturn = begin;
@@ -545,7 +573,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         } else {
             final Rectangle2D caretPosition;
             try {
-                caretPosition = textPane.modelToView2D(updateSuggestionsImpl());
+                caretPosition = textPane.modelToView2D(updateSuggestionsImpl(null, null));
             } catch (BadLocationException e) {
                 System.err.println("Impossible error:");
                 e.printStackTrace();

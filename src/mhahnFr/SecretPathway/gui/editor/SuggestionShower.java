@@ -19,6 +19,9 @@
 
 package mhahnFr.SecretPathway.gui.editor;
 
+import mhahnFr.SecretPathway.core.lpc.parser.ast.ASTTypeDefinition;
+import mhahnFr.SecretPathway.gui.editor.suggestions.SuggestionType;
+
 /**
  * This interface defines how the user can be showered with
  * {@link mhahnFr.SecretPathway.gui.editor.suggestions.Suggestion}s.
@@ -31,6 +34,8 @@ public interface SuggestionShower {
      * Called when the suggestions should be updated.
      */
     void updateSuggestions();
+
+    void updateSuggestionContext(final SuggestionType type, final ASTTypeDefinition expected);
 
     /**
      * Called when the shower of suggestions should start.

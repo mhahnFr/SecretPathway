@@ -38,6 +38,7 @@ import mhahnFr.utils.Pair;
 import mhahnFr.utils.StringStream;
 
 import javax.swing.text.*;
+import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -739,7 +740,7 @@ public class SyntaxDocument extends DefaultStyledDocument {
         if (context == null) {
             return null;
         }
-        return context.createSuggestions(position, getASTTypeFor(position));
+        return context.createSuggestions(position, visitor.getSuggestionType());
     }
 
     /**
@@ -799,6 +800,13 @@ public class SyntaxDocument extends DefaultStyledDocument {
     public SuggestionType getASTTypeFor(final int position) {
         visit(position);
         return visitor.getSuggestionType();
+    }
+
+    public void computeSuggestionContext(final int position) {
+        thread.execute(() -> {
+            visit(position);
+            EventQueue.invokeLater(() -> suggestionShower.updateSuggestionContext(visitor.getSuggestionType(), visitor.getType()));
+        });
     }
 
     /**
