@@ -134,7 +134,10 @@ public class SuggestionVisitor {
             case VARIABLE_DEFINITION -> {
                 final var variable = (ASTVariableDefinition) node;
 
-                // FIXME: Not necessarily a variable - use StreamPosition!
+                if (!variable.getType().getEnd().isOnSameLine(variable.getName().getBegin())) {
+                    // Assume this expression is not intended to be a variable definition.
+                    return SuggestionType.ANY;
+                }
                 final var varModifiers = variable.getModifiers();
                 if (varModifiers != null && !varModifiers.isEmpty() &&
                         position >= varModifiers.get(0).getBegin().position() &&
