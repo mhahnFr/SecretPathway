@@ -53,6 +53,7 @@ public class ASTWrong extends ASTHole {
      *
      * @return the error message
      */
+    @Override
     public String getMessage() {
         return message;
     }
