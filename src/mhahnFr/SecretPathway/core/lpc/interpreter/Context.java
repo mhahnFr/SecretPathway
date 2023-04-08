@@ -43,6 +43,7 @@ public class Context extends Instruction {
     private static final Suggestion voidReturnSuggestion  = new ReturnSuggestion();
     /** The ellipsis suggestion.                      */
     private static final Suggestion ellipsisSuggestion    = new PlainSuggestion("...");
+    /** The {@code this} suggestion.                  */
     private static final Suggestion thisSuggestion        = new ThisSuggestion();
     /** The parent context.                           */
     private final Context parent;
@@ -228,6 +229,16 @@ public class Context extends Instruction {
         }
     }
 
+    /**
+     * Returns the enclosing function of the given position.
+     * Returns {@code null} if the given position is in the global scope.
+     * <br>
+     * Note: Checking whether a position is in the global scope using this
+     * method is quite expensive, consider using {@link #isGlobalScope(int)}.
+     *
+     * @param position the position
+     * @return the enclosing function if there is one
+     */
     public Instruction queryEnclosingFunction(final int position) {
         for (final var entry : instructions.entrySet()) {
             if (position >= entry.getKey() && position <= entry.getValue().getEnd() && entry.getValue() instanceof Context) {
@@ -322,6 +333,17 @@ public class Context extends Instruction {
         return null;
     }
 
+    /**
+     * Returns the {@link Definition} of the named identifier, which
+     * can be used at the given position.
+     * <br>
+     * This method is designed to find an identifier declared at some
+     * position, while only having access to the global {@link Context}.
+     *
+     * @param name     the name of the searched identifier
+     * @param position the position, prior to which it should have been declared
+     * @return the {@link Definition} of the identifier or {@code null} if it was not found
+     */
     public Definition digOutIdentifier(final String name, final int position) {
         final var subEntry = instructions.lowerEntry(position);
         if (subEntry != null && subEntry.getValue() instanceof final Context subContext) {
