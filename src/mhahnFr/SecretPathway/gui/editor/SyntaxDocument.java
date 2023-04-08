@@ -779,30 +779,6 @@ public class SyntaxDocument extends DefaultStyledDocument {
         visitor.visit(ast.get(ast.size() - 1), position, context);
     }
 
-    /**
-     * Returns the {@link ASTTypeDefinition} that is expected
-     * at the given position.
-     *
-     * @param position the position
-     * @return the requested return type
-     */
-    public Optional<ASTTypeDefinition> getRequestedType(final int position) {
-        visit(position);
-        return Optional.ofNullable(visitor.getType());
-    }
-
-    /**
-     * Returns the {@link SuggestionType} requested for the given
-     * position.
-     *
-     * @param position the position
-     * @return the type of suggestions to be shown
-     */
-    public SuggestionType getASTTypeFor(final int position) {
-        visit(position);
-        return visitor.getSuggestionType();
-    }
-
     private void computeSuggestionContext(final int position, final boolean begin) {
         threads.execute(() -> {
             visit(position);
