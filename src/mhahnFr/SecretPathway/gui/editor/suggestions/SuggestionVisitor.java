@@ -133,7 +133,7 @@ public class SuggestionVisitor {
 
                 if (!variable.getType().getEnd().isOnSameLine(variable.getName().getBegin())) {
                     // Assume this expression is not intended to be a variable definition.
-                    return SuggestionType.ANY;
+                    return context.isGlobalScope(position) ? SuggestionType.TYPE_MODIFIER : SuggestionType.ANY;
                 }
                 final var varModifiers = variable.getModifiers();
                 if (varModifiers != null && !varModifiers.isEmpty() &&

@@ -202,7 +202,7 @@ public class Context extends Instruction {
      * @param position the position to be checked
      * @return whether the position is in global scope
      */
-    private boolean isGlobalScope(final int position) {
+    public boolean isGlobalScope(final int position) {
         for (final var instruction : instructions.entrySet()) {
             if (instruction.getKey() < position && instruction.getValue().getEnd() > position) {
                 return !(instruction.getValue() instanceof Context);
