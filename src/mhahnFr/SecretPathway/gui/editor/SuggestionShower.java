@@ -35,6 +35,12 @@ public interface SuggestionShower {
      */
     void updateSuggestions();
 
+    /**
+     * Called when the suggestion context has been computed.
+     *
+     * @param type     the type of suggestions to be shown
+     * @param expected the expected return type
+     */
     void updateSuggestionContext(final SuggestionType type, final ASTTypeDefinition expected);
 
     /**
