@@ -779,6 +779,14 @@ public class SyntaxDocument extends DefaultStyledDocument {
         visitor.visit(ast.get(ast.size() - 1), position, context);
     }
 
+    /**
+     * Computes the suggestion types for the given position.
+     * This is done in a background thread, once it finishes,
+     * it calls out to the {@link #suggestionShower}.
+     *
+     * @param position the position
+     * @param begin    whether the suggestions should be displayed automatically
+     */
     private void computeSuggestionContext(final int position, final boolean begin) {
         threads.execute(() -> {
             visit(position);
@@ -796,6 +804,11 @@ public class SyntaxDocument extends DefaultStyledDocument {
         });
     }
 
+    /**
+     * Computes the suggestions for the given position.
+     *
+     * @param position the position
+     */
     public void computeSuggestionContext(final int position) {
         computeSuggestionContext(position, false);
     }
