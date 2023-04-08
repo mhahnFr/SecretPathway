@@ -84,11 +84,7 @@ public class SuggestionVisitor {
         this.position    = position;
         this.lastVisited = node;
         returnType       = null;
-        type = visitImpl(node, position, context);
-//        return (type = visitImpl(node, position, context));
-        System.out.println(type);
-        System.out.println("Expected return type: " + returnType);
-        return type;
+        return (type = visitImpl(node, position, context));
     }
 
     /**
@@ -102,7 +98,6 @@ public class SuggestionVisitor {
      * @see #visit(ASTExpression, int, Context)
      */
     private SuggestionType visitImpl(final ASTExpression node, final int position, final Context context) {
-        System.out.print("Type for: " + node.getASTType() + ": ");
         switch (node.getASTType()) {
             case FUNCTION_DEFINITION -> {
                 final var func = (ASTFunctionDefinition) node;
@@ -279,6 +274,15 @@ public class SuggestionVisitor {
         return SuggestionType.ANY;
     }
 
+    /**
+     * Casts the given {@link ASTExpression} to the given {@link Class}.
+     * If the given expression is a {@link ASTCombination}, it is unwrapped.
+     *
+     * @param type       the class to which to cast
+     * @param expression the expression to be cast or unwrapped
+     * @return The cast or unwrapped expression
+     * @param <T> The actual type of the expression, passed as parameter by the given class
+     */
     private <T extends ASTExpression> T cast(final Class<T> type, final ASTExpression expression) {
         if (type.isAssignableFrom(expression.getClass())) {
             return type.cast(expression);
