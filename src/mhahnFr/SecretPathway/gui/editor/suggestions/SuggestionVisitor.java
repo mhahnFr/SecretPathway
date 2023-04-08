@@ -19,10 +19,7 @@
 
 package mhahnFr.SecretPathway.gui.editor.suggestions;
 
-import mhahnFr.SecretPathway.core.lpc.interpreter.Context;
-import mhahnFr.SecretPathway.core.lpc.interpreter.Definition;
-import mhahnFr.SecretPathway.core.lpc.interpreter.FunctionDefinition;
-import mhahnFr.SecretPathway.core.lpc.interpreter.ReturnType;
+import mhahnFr.SecretPathway.core.lpc.interpreter.*;
 import mhahnFr.SecretPathway.core.lpc.parser.ast.*;
 import mhahnFr.SecretPathway.core.lpc.parser.tokenizer.TokenType;
 
@@ -160,8 +157,7 @@ public class SuggestionVisitor {
                     switch (lhs.getASTType()) {
                         case VARIABLE_DEFINITION -> returnType = cast(ASTTypeDefinition.class, ((ASTVariableDefinition) lhs).getType());
                         case NAME -> {
-                            // FIXME: Scoping
-                            final var def = context.getIdentifier(((ASTName) lhs).getName(), position);
+                            final var def = context.digOutIdentifier(((ASTName) lhs).getName(), position);
                             if (def != null) {
                                 returnType = def.getReturnType();
                             }

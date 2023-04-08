@@ -324,10 +324,7 @@ public class Context extends Instruction {
 
     public Definition digOutIdentifier(final String name, final int position) {
         final var subEntry = instructions.lowerEntry(position);
-        if (subEntry == null) {
-            return null;
-        }
-        if (subEntry.getValue() instanceof final Context subContext) {
+        if (subEntry != null && subEntry.getValue() instanceof final Context subContext) {
             return subContext.digOutIdentifier(name, position);
         }
         return getIdentifier(name, position);
