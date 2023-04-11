@@ -58,10 +58,10 @@ public class SuggestionLabel {
         suggestionLabel = new DarkComponent<>(new JLabel(suggestion.getDescription()), components).getComponent();
         suggestionLabel.setFont(Constants.UI.FONT);
         suggestionLabel.setOpaque(true);
-        suggestionLabel.setBorder(new EmptyBorder(0, 5, 0, 5));
+        suggestionLabel.setBorder(new EmptyBorder(1, 5, 1, 5));
 
         typeLabel = new JLabel("", SwingConstants.TRAILING);
-        typeLabel.setBorder(new EmptyBorder(0, 0, 0, 5));
+        typeLabel.setBorder(new EmptyBorder(1, 0, 1, 5));
         typeLabel.setFont(Constants.UI.FONT);
         typeLabel.setOpaque(false);
 

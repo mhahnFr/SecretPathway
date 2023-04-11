@@ -51,6 +51,8 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
     private final JPanel suggestionRightPanel;
     /** The label indicating that no suggestions are available. */
     private final JLabel noSuggestionsLabel;
+    /** A label explaining the usage of the suggestion window.  */
+    private final JLabel insertionLabel;
     /** The index of the currently selected suggestion.         */
     private int index;
     /** Whether the dark mode is enabled.                       */
@@ -69,7 +71,8 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
             suggestionPanel.add(suggestionLeftPanel,  BorderLayout.CENTER);
             suggestionPanel.add(suggestionRightPanel, BorderLayout.EAST);
 
-            final var insertionLabel = new JLabel("Insert using <ENTER> or replace using <TAB>");
+            insertionLabel = new JLabel("Insert using <ENTER> or replace using <TAB>");
+            insertionLabel.setBorder(new EmptyBorder(0, 5, 0, 5));
             insertionLabel.setOpaque(false);
             insertionLabel.setForeground(Color.gray);
         wrapperPanel.add(scrollPane,   BorderLayout.CENTER);
@@ -224,21 +227,53 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
             }
             select(index);
         }
+        updateSize();
         validate();
-        updateSize(true);
+    }
+
+    /**
+     * Calculates the preferred size of this window.
+     * Does not perform any UI actions.
+     *
+     * @return the calculated {@link Dimension}
+     */
+    private Dimension calculateSize() {
+        int biggestLeftWidth  = 0,
+            biggestRightWidth = 0,
+            biggestHeight     = 0;
+        for (final var suggestion : suggestions) {
+            final Dimension preferredLeftSize  = suggestion.getLeftPart().getPreferredSize(),
+                            preferredRightSize = suggestion.getRightPart().getPreferredSize();
+
+            final int leftWidth  = preferredLeftSize.width,
+                      rightWidth = preferredRightSize.width,
+                      height     = Math.max(preferredLeftSize.height, preferredRightSize.height);
+
+            if (biggestLeftWidth < leftWidth) {
+                biggestLeftWidth = leftWidth;
+            }
+            if (biggestRightWidth < rightWidth) {
+                biggestRightWidth = rightWidth;
+            }
+            if (biggestHeight < height) {
+                biggestHeight = height;
+            }
+        }
+        return new Dimension(biggestLeftWidth + biggestRightWidth + 10, biggestHeight);
     }
 
     /**
      * Updates the size of this popup.
-     *
-     * @param pack indicates whether to {@link #pack()}
      */
-    private void updateSize(final boolean pack) {
+    private void updateSize() {
+        final var calcSize = calculateSize();
         if (suggestions.size() > 10) {
-            final var suggestion = suggestions.get(0);
-            setSize(suggestion.getWidth() + 20, suggestion.getHeight() * 10);
-        } else if (pack) {
-            pack();
+            setSize(Math.max(calcSize.width + 20, insertionLabel.getPreferredSize().width),
+                    calcSize.height * 10);
+        } else {
+            final var count = suggestions.size();
+            setSize(Math.max(calcSize.width, insertionLabel.getPreferredSize().width),
+                    calcSize.height * count + insertionLabel.getPreferredSize().height + 5);
         }
     }
 
@@ -290,7 +325,7 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
                 suggestions.get(index).setSelected(false);
             }*/
         }
-        updateSize(false);
+        updateSize();
         super.setVisible(b);
     }
 

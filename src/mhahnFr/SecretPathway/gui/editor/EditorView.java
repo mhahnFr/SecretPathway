@@ -584,7 +584,6 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
             final var panePosition = textPane.getLocationOnScreen();
             suggestionsWindow.setLocation((int) (caretPosition.getX() + panePosition.x),
                                           (int) (caretPosition.getY() + panePosition.y + Settings.getInstance().getFontSize() + 5));
-            suggestionsWindow.pack();
             suggestionsWindow.setVisible(true);
         }
     }
