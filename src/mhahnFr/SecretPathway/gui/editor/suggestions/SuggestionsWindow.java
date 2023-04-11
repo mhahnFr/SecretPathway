@@ -228,7 +228,6 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
             select(index);
         }
         updateSize();
-        validate();
     }
 
     /**
@@ -260,6 +259,18 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
             }
         }
         return new Dimension(biggestLeftWidth + biggestRightWidth + 10, biggestHeight);
+    }
+
+    @Override
+    public void setSize(int width, int height) {
+        final int originalWidth  = getWidth(),
+                  originalHeight = getHeight();
+
+        if (width != originalWidth || originalHeight != height) {
+            super.setSize(width, height);
+            validate();
+            repaint();
+        }
     }
 
     /**
