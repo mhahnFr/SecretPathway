@@ -64,6 +64,13 @@ public interface Suggestion {
         return "";
     }
 
+    /**
+     * Checks the given other {@link Suggestion} for equality
+     * with this suggestion.
+     *
+     * @param other the other suggestion to be compared
+     * @return whether the given suggestion is equal to this one
+     */
     default boolean equals(final Suggestion other) {
         return other != null &&
                Objects.equals(getSuggestion(),  other.getSuggestion())  &&
