@@ -57,6 +57,8 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
     private int index;
     /** Whether the dark mode is enabled.                       */
     private boolean dark;
+    /** Indicates whether the user has changed the selection.   */
+    private boolean selectionChanged;
 
     /**
      * Constructs this window.
@@ -112,6 +114,7 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
             } else {
                 newIndex = index + 1;
             }
+            selectionChanged = true;
             select(newIndex);
         }
     }
@@ -132,6 +135,7 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
             } else {
                 newIndex = index - 1;
             }
+            selectionChanged = true;
             select(newIndex);
         }
     }
@@ -210,7 +214,7 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
         var found = false;
         for (final var suggestion : newSuggestions) {
             addSuggestion(suggestion);
-            if (!suggestion.equals(selected) && !found) {
+            if (!found && !suggestion.equals(selected)) {
                 ++index;
             } else {
                 found = true;
@@ -218,16 +222,17 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
         }
         if (suggestions.isEmpty()) {
             suggestionLeftPanel.add(noSuggestionsLabel);
+            updateSize();
         } else {
             if (selected == null) {
                 suggestionLeftPanel.remove(noSuggestionsLabel);
             }
-            if (index >= suggestions.size()) {
+            if (!selectionChanged || !found || index >= suggestions.size()) {
                 index = 0;
             }
+            updateSize();
             select(index);
         }
-        updateSize();
     }
 
     /**
@@ -327,14 +332,11 @@ public class SuggestionsWindow extends JWindow implements DarkModeListener {
             if (suggestions.isEmpty()) {
                 suggestionLeftPanel.add(noSuggestionsLabel);
             } else {
+                selectionChanged = false;
                 select(0);
             }
-        } else {
-            if (suggestions.isEmpty()) {
-                suggestionLeftPanel.remove(noSuggestionsLabel);
-            }/* else {
-                suggestions.get(index).setSelected(false);
-            }*/
+        } else if (suggestions.isEmpty()) {
+            suggestionLeftPanel.remove(noSuggestionsLabel);
         }
         updateSize();
         super.setVisible(b);

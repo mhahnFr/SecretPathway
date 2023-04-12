@@ -19,6 +19,8 @@
 
 package mhahnFr.SecretPathway.gui.editor.suggestions;
 
+import java.util.Objects;
+
 /**
  * This interface defines a suggestion.
  *
@@ -60,5 +62,13 @@ public interface Suggestion {
      */
     default String getRightSite() {
         return "";
+    }
+
+    default boolean equals(final Suggestion other) {
+        return other != null &&
+               Objects.equals(getSuggestion(),  other.getSuggestion())  &&
+               Objects.equals(getDescription(), other.getDescription()) &&
+               Objects.equals(getRightSite(),   other.getRightSite())   &&
+               getRelativeCursorPosition() == other.getRelativeCursorPosition();
     }
 }
