@@ -1418,7 +1418,7 @@ public class Parser {
 
     /**
      * Parses a variable declaration ({@code <type> <name>} or {@code let <name> : <type>}).
-     * Let declarations fo not need a type definition: {@code let <name>}.
+     * Let declarations do not need a type definition: {@code let <name>}.
      *
      * @return the AST representation of the variable declaration
      */
