@@ -385,6 +385,13 @@ public class SyntaxDocument extends DefaultStyledDocument {
                 insertion = str;
             }
 
+            case "." -> {
+                if (isInWord(offs - 1)) {
+                    begin = true;
+                }
+                insertion = str;
+            }
+
             default -> {
                 if (str.contains("\n") && !undoIgnore) {
                     final var nlIndex = str.indexOf('\n');
