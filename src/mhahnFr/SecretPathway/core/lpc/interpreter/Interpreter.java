@@ -256,17 +256,15 @@ public class Interpreter implements ASTVisitor {
                 final var name = cast(ASTName.class, fc.getName());
                 name.visit(this);
                 final var id = current.getIdentifier(name.getName(), name.getBegin().position());
-                if (id instanceof final FunctionDefinition definition &&
-                    fc.getArguments() != null) {
-                    visitFunctionCall(fc, definition);
-                    currentType = id.getReturnType();
+                if (id != null && !id.isEmpty()) {
+                    currentType = visitFunctionCall(fc, id);
                 }
             }
 
             case NAME -> {
                 final var name = (ASTName) expression;
                 final var identifier = current.getIdentifier(name.getName(), expression.getBegin().position());
-                if (identifier == null) {
+                if (identifier == null || identifier.isEmpty()) {
                     if (name.getName() != null && name.getName().startsWith("$")) {
                         highlights.add(new MessagedHighlight<>(name.getBegin(),
                                                                name.getEnd(),
@@ -282,8 +280,8 @@ public class Interpreter implements ASTVisitor {
                 } else {
                     highlights.add(new Highlight<>(expression.getBegin().position(),
                                                    expression.getEnd().position(),
-                                                   identifier.getType()));
-                    currentType = identifier.getReturnType();
+                                                   identifier.get(0).getType()));
+                    currentType = identifier.get(0).getReturnType();
                 }
                 highlight = false;
             }
@@ -466,13 +464,31 @@ public class Interpreter implements ASTVisitor {
         }
     }
 
+    private ASTTypeDefinition visitFunctionCall(final ASTFunctionCall fc, final List<Definition> definitions) {
+        for (final var definition : definitions) {
+            if (definition instanceof final FunctionDefinition fd &&
+                    (fd.getParameters().size() == fc.getArguments().size() || fd.isVariadic())) {
+                // TODO: Maybe check types
+                visitFunctionCallImpl(fc, fd);
+                return fd.getReturnType();
+            }
+        }
+        for (final var definition : definitions) {
+            if (definition instanceof final FunctionDefinition fd) {
+                visitFunctionCallImpl(fc, fd);
+                return fd.getReturnType();
+            }
+        }
+        return null;
+    }
+
     /**
      * Visits a function call.
      *
      * @param fc         the actual function call
      * @param definition the fetched {@link Definition} of the function
      */
-    private void visitFunctionCall(final ASTFunctionCall fc, final FunctionDefinition definition) {
+    private void visitFunctionCallImpl(final ASTFunctionCall fc, final FunctionDefinition definition) {
         final var arguments = fc.getArguments();
         final var it  = arguments.listIterator();
         final var it2 = definition.getParameters().listIterator();
@@ -523,8 +539,8 @@ public class Interpreter implements ASTVisitor {
         final var func = cast(ASTFunctionCall.class, operation.getIdentifier());
         final var id   = current.getSuperIdentifier(cast(ASTName.class, func.getName()).getName());
 
-        if (id instanceof final FunctionDefinition definition) {
-            visitFunctionCall(func, definition);
+        if (id != null && !id.isEmpty()) {
+            visitFunctionCall(func, id);
         } else {
             highlights.add(new MessagedHighlight<>(operation.getBegin(),
                                                    operation.getEnd(),

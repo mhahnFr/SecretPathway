@@ -154,7 +154,7 @@ public class SuggestionVisitor {
                         case NAME -> {
                             final var def = context.digOutIdentifier(((ASTName) lhs).getName(), position);
                             if (def != null) {
-                                returnType = def.getReturnType();
+                                returnType = def.get(0).getReturnType();
                             }
                         }
                     }
