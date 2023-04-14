@@ -464,6 +464,14 @@ public class Interpreter implements ASTVisitor {
         }
     }
 
+    /**
+     * Visits a function call. The given definitions are expected to
+     * match the name of the given function call.
+     *
+     * @param fc          the function call to visit
+     * @param definitions the possible definitions of the function
+     * @return the determined return type
+     */
     private ASTTypeDefinition visitFunctionCall(final ASTFunctionCall fc, final List<Definition> definitions) {
         for (final var definition : definitions) {
             if (definition instanceof final FunctionDefinition fd &&
