@@ -70,7 +70,7 @@ public class AboutDialog extends JDialog implements DarkModeListener {
             final var spacer = new DarkComponent<>(new JPanel(), components).getComponent();
 
             final var bottomPanel = new DarkComponent<>(new JPanel(new GridLayout(3, 1)), components).getComponent();
-            bottomPanel.add(new DarkComponent<>(new JLabel("<html>© Copyright 2022 (<u>https://www.github.com/mhahnFr</u>)</html>",              SwingConstants.CENTER), components).getComponent());
+            bottomPanel.add(new DarkComponent<>(new JLabel("<html>© Copyright 2022 - 2023 (<u>https://www.github.com/mhahnFr</u>)</html>",       SwingConstants.CENTER), components).getComponent());
             bottomPanel.add(new DarkComponent<>(new JLabel("<html>Licensed under the terms of the <b>GPL 3.0</b>.</html>",                       SwingConstants.CENTER), components).getComponent());
             bottomPanel.add(new DarkComponent<>(new JLabel("<html>More information: <u>https://www.github.com/mhahnFr/SecretPathway</u></html>", SwingConstants.CENTER), components).getComponent());
 
