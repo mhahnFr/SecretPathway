@@ -20,7 +20,7 @@
 package mhahnFr.SecretPathway.gui.editor.suggestions;
 
 import mhahnFr.SecretPathway.core.Settings;
-import mhahnFr.utils.gui.DarkComponent;
+import mhahnFr.utils.gui.components.DarkComponent;
 import mhahnFr.utils.gui.DarkModeListener;
 
 import javax.swing.*;

@@ -29,10 +29,10 @@ import mhahnFr.SecretPathway.core.protocols.spp.SPPFileManager;
 import mhahnFr.SecretPathway.gui.editor.EditorView;
 import mhahnFr.SecretPathway.gui.editor.EditorWindow;
 import mhahnFr.SecretPathway.gui.helper.MessageReceiver;
-import mhahnFr.utils.gui.DarkComponent;
-import mhahnFr.utils.gui.DarkTextComponent;
+import mhahnFr.utils.gui.components.DarkComponent;
+import mhahnFr.utils.gui.components.DarkTextComponent;
 import mhahnFr.utils.gui.DocumentAdapter;
-import mhahnFr.utils.gui.HintTextField;
+import mhahnFr.utils.gui.components.HintTextField;
 import mhahnFr.utils.gui.menu.MenuFactory;
 import mhahnFr.utils.gui.menu.MenuFrame;
 

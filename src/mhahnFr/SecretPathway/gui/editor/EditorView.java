@@ -28,9 +28,9 @@ import mhahnFr.SecretPathway.gui.editor.suggestions.DefinitionSuggestion;
 import mhahnFr.SecretPathway.gui.editor.suggestions.SuggestionType;
 import mhahnFr.SecretPathway.gui.editor.suggestions.SuggestionsWindow;
 import mhahnFr.utils.SettingsListener;
-import mhahnFr.utils.gui.DarkComponent;
-import mhahnFr.utils.gui.DarkTextComponent;
-import mhahnFr.utils.gui.HintTextField;
+import mhahnFr.utils.gui.components.DarkComponent;
+import mhahnFr.utils.gui.components.DarkTextComponent;
+import mhahnFr.utils.gui.components.HintTextField;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

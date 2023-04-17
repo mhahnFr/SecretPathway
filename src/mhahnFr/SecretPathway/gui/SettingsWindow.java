@@ -25,7 +25,7 @@ import mhahnFr.SecretPathway.gui.editor.theme.SPTheme;
 import mhahnFr.SecretPathway.gui.editor.theme.json.JSONTheme;
 import mhahnFr.utils.SettingsListener;
 import mhahnFr.utils.StringStream;
-import mhahnFr.utils.gui.DarkComponent;
+import mhahnFr.utils.gui.components.DarkComponent;
 import mhahnFr.utils.json.JSONParser;
 
 import javax.swing.*;

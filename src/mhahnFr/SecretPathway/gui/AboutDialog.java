@@ -21,7 +21,7 @@ package mhahnFr.SecretPathway.gui;
 
 import mhahnFr.SecretPathway.core.Constants;
 import mhahnFr.SecretPathway.core.Settings;
-import mhahnFr.utils.gui.DarkComponent;
+import mhahnFr.utils.gui.components.DarkComponent;
 import mhahnFr.utils.gui.DarkModeListener;
 
 import javax.swing.*;
