@@ -31,6 +31,7 @@ import mhahnFr.utils.SettingsListener;
 import mhahnFr.utils.gui.components.DarkComponent;
 import mhahnFr.utils.gui.components.DarkTextComponent;
 import mhahnFr.utils.gui.components.HintTextField;
+import mhahnFr.utils.gui.components.SearchReplacePanel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -63,6 +64,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
     private final JButton saveButton;
     /** The button used for closing the editor.                     */
     private final JButton closeButton;
+    private final SearchReplacePanel searchPanel;
     /** The LPC file manager.                                       */
     private final LPCFileManager loader;
     /** The name of the opened file.                                */
@@ -99,40 +101,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         document    = new SyntaxDocument(this.loader);
 
         components.add(new DarkComponent<>(this));
-            final var searchReplacePanel = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
-                final var fields = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
-                    final var searchText = new DarkTextComponent<>(new HintTextField("Search..."), components).getComponent();
-
-                    final var replaceText = new DarkTextComponent<>(new HintTextField("Replace..."), components).getComponent();
-                fields.add(searchText, BorderLayout.NORTH);
-                fields.add(replaceText, BorderLayout.SOUTH);
-
-                final var controls = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
-                    final var searchPanel = new DarkComponent<>(new JPanel(), components).getComponent();
-                    searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.X_AXIS));
-                        final var previousButton = new JButton("^");
-
-                        final var nextButton = new JButton("v");
-
-                        final var allButton = new JButton("Mark all");
-
-                        final var replaceBox = new DarkComponent<>(new JCheckBox("Replace"), components).getComponent();
-                    searchPanel.add(previousButton);
-                    searchPanel.add(nextButton);
-                    searchPanel.add(allButton);
-                    searchPanel.add(replaceBox);
-
-                    final var replacePanel = new DarkComponent<>(new JPanel(), components).getComponent();
-                    replacePanel.setLayout(new BoxLayout(replacePanel, BoxLayout.X_AXIS));
-                        final var replaceButton = new JButton("Replace");
-
-                        final var replaceAllButton = new JButton("Replace All");
-                    replacePanel.add(replaceButton);
-                    replacePanel.add(replaceAllButton);
-                controls.add(searchPanel,  BorderLayout.NORTH);
-                controls.add(replacePanel, BorderLayout.SOUTH);
-            searchReplacePanel.add(fields,   BorderLayout.CENTER);
-            searchReplacePanel.add(controls, BorderLayout.EAST);
+            searchPanel = new SearchReplacePanel();
 
             textPane = new DarkTextComponent<>(new JTextPane(document), components).getComponent();
             final var scrollPane = new DarkComponent<>(new JScrollPane(textPane), components).getComponent();
@@ -168,12 +137,13 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
                 buttons.add(pushButtons, BorderLayout.EAST);
             south.add(statusLabel);
             south.add(buttons);
-        add(searchReplacePanel, BorderLayout.NORTH);
-        add(scrollPane,         BorderLayout.CENTER);
-        add(south,              BorderLayout.SOUTH);
+        add(searchPanel, BorderLayout.NORTH);
+        add(scrollPane,  BorderLayout.CENTER);
+        add(south,       BorderLayout.SOUTH);
         setBorder(new EmptyBorder(5, 5, 5, 5));
 
 
+        searchPanel.install(textPane);
         textPane.addCaretListener(e -> statusLabel.setText(document.getMessageFor(e.getDot())));
         textPane.addFocusListener(this);
         addPopupMenu();
@@ -662,6 +632,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
      * @param dark whether to use the dark mode
      */
     public void setDark(final boolean dark) {
+        searchPanel.darkModeToggled(dark);
         for (final var component : components) {
             component.setDark(dark);
         }
