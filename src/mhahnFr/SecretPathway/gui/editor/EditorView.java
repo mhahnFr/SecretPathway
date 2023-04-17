@@ -69,6 +69,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
     private String name;
     /** The contents of the file when it was saved the last time.   */
     private String lastContent;
+    /** Indicates whether to create only super suggestions.         */
     private boolean onlySupers;
     /** The optional {@link DisposeListener}.                       */
     private DisposeListener disposeListener;
