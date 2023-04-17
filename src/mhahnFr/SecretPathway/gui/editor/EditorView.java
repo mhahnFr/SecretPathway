@@ -144,6 +144,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
 
 
         searchPanel.install(textPane);
+        searchPanel.setVisible(false);
         textPane.addCaretListener(e -> statusLabel.setText(document.getMessageFor(e.getDot())));
         textPane.addFocusListener(this);
         addPopupMenu();
