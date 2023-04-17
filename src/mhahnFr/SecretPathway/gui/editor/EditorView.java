@@ -364,13 +364,19 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         map.addActionForKeyStroke(Constants.Editor.SEARCH, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO
+                searchPanel.setVisible(!searchPanel.isVisible());
+                searchPanel.setReplace(false);
             }
         });
         map.addActionForKeyStroke(Constants.Editor.REPLACE, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO
+                if (searchPanel.isVisible() /* && !searchPanel.isReplace() */) {
+                    searchPanel.setReplace(true);
+                } else {
+                    searchPanel.setVisible(!searchPanel.isVisible());
+                    searchPanel.setReplace(true);
+                }
             }
         });
 
