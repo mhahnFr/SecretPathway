@@ -102,5 +102,9 @@ public final class Constants {
         public static final KeyStroke UNDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, metaMask);
         /** The keystroke for redoing an edit action.                 */
         public static final KeyStroke REDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, metaMask | KeyEvent.SHIFT_DOWN_MASK);
+        /** The keystroke for searching in the text.                  */
+        public static final KeyStroke SEARCH = KeyStroke.getKeyStroke(KeyEvent.VK_F, metaMask);
+        /** The keystroke for replacing in the text.                  */
+        public static final KeyStroke REPLACE = KeyStroke.getKeyStroke(KeyEvent.VK_R, metaMask);
     }
 }

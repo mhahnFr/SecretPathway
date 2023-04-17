@@ -187,6 +187,14 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
             final var redoItem = new JMenuItem("Redo");
             redoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, metaMask | KeyEvent.SHIFT_DOWN_MASK));
             redoItem.addActionListener(__ -> redoAction());
+
+            final var searchItem = new JMenuItem("Search");
+            searchItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, metaMask));
+            searchItem.addActionListener(null); // TODO
+
+            final var replaceItem = new JMenuItem("Replace");
+            replaceItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, metaMask));
+            replaceItem.addActionListener(null); // TODO
         menu.add(suggestionsItem);
         menu.addSeparator();
         menu.add(saveItem);
@@ -195,6 +203,9 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         menu.add(closeItem);
         menu.addSeparator();
         menu.add(undoItem);
+        menu.add(redoItem);
+        menu.addSeparator();
+        menu.add(searchItem);
         menu.add(redoItem);
 
         textPane.setComponentPopupMenu(menu);
@@ -342,6 +353,18 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
                 redoAction();
             }
         });
+        map.addActionForKeyStroke(Constants.Editor.SEARCH, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO
+            }
+        });
+        map.addActionForKeyStroke(Constants.Editor.REPLACE, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO
+            }
+        });
 
         addSaveCloseActions();
     }
@@ -384,6 +407,8 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         map.removeKeyStrokeBinding(Constants.Editor.SHOW_SUGGESTIONS);
         map.removeKeyStrokeBinding(Constants.Editor.UNDO);
         map.removeKeyStrokeBinding(Constants.Editor.REDO);
+        map.removeKeyStrokeBinding(Constants.Editor.SEARCH);
+        map.removeKeyStrokeBinding(Constants.Editor.REPLACE);
     }
 
     /**
