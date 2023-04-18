@@ -169,16 +169,13 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
      * Creates and adds the popup menu to the text pane.
      */
     private void addPopupMenu() {
-        final var metaMask = System.getProperty("os.name").toLowerCase().contains("mac") ? KeyEvent.META_DOWN_MASK
-                                                                                         : KeyEvent.CTRL_DOWN_MASK;
-
         final var menu = new JPopupMenu();
             final var suggestionsItem = new JMenuItem("Toggle suggestions");
-            suggestionsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, KeyEvent.CTRL_DOWN_MASK));
+            suggestionsItem.setAccelerator(Constants.Editor.SHOW_SUGGESTIONS);
             suggestionsItem.addActionListener(__ -> toggleSuggestionMenu());
 
             final var saveItem = new JMenuItem("Save");
-            saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.META_DOWN_MASK));
+            saveItem.setAccelerator(Constants.Editor.SAVE_KEY);
             saveItem.addActionListener(__ -> saveText());
 
             final var compileItem = new JMenuItem("Compile");
@@ -186,23 +183,23 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
             compileItem.setEnabled(loader.canCompile());
 
             final var closeItem = new JMenuItem("Close");
-            closeItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0));
+            closeItem.setAccelerator(Constants.Editor.CLOSE_KEY);
             closeItem.addActionListener(__ -> dispose());
 
             final var undoItem = new JMenuItem("Undo");
-            undoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, metaMask));
+            undoItem.setAccelerator(Constants.Editor.UNDO);
             undoItem.addActionListener(__ -> undoAction());
 
             final var redoItem = new JMenuItem("Redo");
-            redoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, metaMask | KeyEvent.SHIFT_DOWN_MASK));
+            redoItem.setAccelerator(Constants.Editor.REDO);
             redoItem.addActionListener(__ -> redoAction());
 
             final var searchItem = new JMenuItem("Search");
-            searchItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, metaMask));
+            searchItem.setAccelerator(Constants.Editor.SEARCH);
             searchItem.addActionListener(null); // TODO
 
             final var replaceItem = new JMenuItem("Replace");
-            replaceItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, metaMask));
+            replaceItem.setAccelerator(Constants.Editor.REPLACE);
             replaceItem.addActionListener(null); // TODO
         menu.add(suggestionsItem);
         menu.addSeparator();
