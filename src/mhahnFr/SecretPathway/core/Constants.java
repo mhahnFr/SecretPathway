@@ -105,6 +105,6 @@ public final class Constants {
         /** The keystroke for searching in the text.                  */
         public static final KeyStroke SEARCH = KeyStroke.getKeyStroke(KeyEvent.VK_F, metaMask);
         /** The keystroke for replacing in the text.                  */
-        public static final KeyStroke REPLACE = KeyStroke.getKeyStroke(KeyEvent.VK_R, metaMask);
+        public static final KeyStroke REPLACE = KeyStroke.getKeyStroke(KeyEvent.VK_F, metaMask | KeyEvent.SHIFT_DOWN_MASK);
     }
 }
