@@ -196,11 +196,11 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
 
             final var searchItem = new JMenuItem("Search");
             searchItem.setAccelerator(Constants.Editor.SEARCH);
-            searchItem.addActionListener(null); // TODO
+            searchItem.addActionListener(__ -> searchAction());
 
             final var replaceItem = new JMenuItem("Replace");
             replaceItem.setAccelerator(Constants.Editor.REPLACE);
-            replaceItem.addActionListener(null); // TODO
+            replaceItem.addActionListener(__ -> replaceAction());
         menu.add(suggestionsItem);
         menu.addSeparator();
         menu.add(saveItem);
@@ -362,23 +362,31 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         map.addActionForKeyStroke(Constants.Editor.SEARCH, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                searchPanel.setVisible(!searchPanel.isVisible());
-                searchPanel.setReplace(false);
+                searchAction();
             }
         });
         map.addActionForKeyStroke(Constants.Editor.REPLACE, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (searchPanel.isVisible() && !searchPanel.isReplace()) {
-                    searchPanel.setReplace(true);
-                } else {
-                    searchPanel.setVisible(!searchPanel.isVisible());
-                    searchPanel.setReplace(true);
-                }
+                replaceAction();
             }
         });
 
         addSaveCloseActions();
+    }
+
+    private void searchAction() {
+        searchPanel.setVisible(!searchPanel.isVisible());
+        searchPanel.setReplace(false);
+    }
+
+    private void replaceAction() {
+        if (searchPanel.isVisible() && !searchPanel.isReplace()) {
+            searchPanel.setReplace(true);
+        } else {
+            searchPanel.setVisible(!searchPanel.isVisible());
+            searchPanel.setReplace(true);
+        }
     }
 
     /**
