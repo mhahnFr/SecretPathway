@@ -64,6 +64,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
     private final JButton saveButton;
     /** The button used for closing the editor.                     */
     private final JButton closeButton;
+    /** The {@link SearchReplacePanel} used by this editor.         */
     private final SearchReplacePanel searchPanel;
     /** The LPC file manager.                                       */
     private final LPCFileManager loader;
@@ -375,11 +376,17 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         addSaveCloseActions();
     }
 
+    /**
+     * Toggles the {@link #searchPanel} in searching mode.
+     */
     private void searchAction() {
         searchPanel.setVisible(!searchPanel.isVisible());
         searchPanel.setReplace(false);
     }
 
+    /**
+     * Toggles the {@link #searchPanel} in replacing mode.
+     */
     private void replaceAction() {
         if (searchPanel.isVisible() && !searchPanel.isReplace()) {
             searchPanel.setReplace(true);
