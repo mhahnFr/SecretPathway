@@ -2,7 +2,6 @@ plugins {
     id 'java'
 }
 
-sourceCompatibility = 19
 group 'mhahnFr'
 version '1.0.0'
 
@@ -21,7 +20,15 @@ sourceSets {
 tasks.register('deploy', Exec) {
     dependsOn(jar)
 
-    commandLine 'jpackage', '--input', 'build/libs', '--name', project.name, '--main-jar', 'SecretPathway-' + version + '.jar'
+    commandLine 'jpackage', '--input', 'build/libs',
+                            '--name', project.name,
+                            '--main-jar', project.name + '-' + version + '.jar',
+                            '--copyright', 'Copyright © 2022 - 2023 mhahnFr',
+                            '--app-version', version,
+                            '--description', 'A MUD client',
+                            '--vendor', project.group,
+                            '--about-url', 'https://github.com/mhahnFr/SecretPathway',
+                            '--license-file', 'LICENSE'
 }
 
 jar {
