@@ -30,10 +30,12 @@ import java.awt.event.KeyEvent;
  * @author mhahnFr
  */
 public final class Constants {
-    /** The name to be used inside the project. */
+    /** The name to be used inside the project.        */
     public static final String NAME    = "SecretPathway";
-    /** The version as String.                  */
+    /** The version as String.                         */
     public static final String VERSION = "1.0";
+    /** Indicates whether the app is running on macOS. */
+    public static final boolean IS_MAC = System.getProperty("os.name").toLowerCase().contains("mac");
 
     /**
      * Constants for use with actions.
@@ -70,9 +72,7 @@ public final class Constants {
      */
     public static final class Editor {
         /** The mask deciding whether to use the CMD or the CTRL key. */
-        private static final int metaMask = System.getProperty("os.name").toLowerCase().contains("mac") ?
-                                                KeyEvent.META_DOWN_MASK
-                                            :   KeyEvent.CTRL_DOWN_MASK;
+        private static final int metaMask = IS_MAC ? KeyEvent.META_DOWN_MASK : KeyEvent.CTRL_DOWN_MASK;
 
         /** The string displayed for the default theme.               */
         public static final String DEFAULT_THEME = "Default";

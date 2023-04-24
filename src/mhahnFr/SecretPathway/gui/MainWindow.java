@@ -65,6 +65,7 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
     private JLabel messageLabel;
     /** The panel displaying the normal view.                             */
     private JPanel mainPanel;
+    /** The wrapper panel allowing to exchange the prompt field.          */
     private JPanel promptWrapperPanel;
     /** The timer for the message overlay.                                */
     private Timer messageTimer;
@@ -200,6 +201,7 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
      * Creates the menu bar.
      */
     private void createMenuBar() {
+        MenuFactory.initializationArguments(Constants.IS_MAC);
         final var menuFactory = MenuFactory.getInstance();
 
         menuFactory.setMenuProvider(new SharedMenuProvider());
