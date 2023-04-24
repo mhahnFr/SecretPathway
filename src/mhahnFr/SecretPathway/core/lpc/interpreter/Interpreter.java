@@ -255,16 +255,16 @@ public class Interpreter implements ASTVisitor {
 
                 final var name = cast(ASTName.class, fc.getName());
                 name.visit(this);
-                final var id = current.getIdentifier(name.getName(), name.getBegin().position());
-                if (id != null && !id.isEmpty()) {
+                final var id = current.getIdentifiers(name.getName(), name.getBegin().position());
+                if (!id.isEmpty()) {
                     currentType = visitFunctionCall(fc, id);
                 }
             }
 
             case NAME -> {
                 final var name = (ASTName) expression;
-                final var identifier = current.getIdentifier(name.getName(), expression.getBegin().position());
-                if (identifier == null || identifier.isEmpty()) {
+                final var identifier = current.getIdentifiers(name.getName(), expression.getBegin().position());
+                if (identifier.isEmpty()) {
                     if (name.getName() != null && name.getName().startsWith("$")) {
                         highlights.add(new MessagedHighlight<>(name.getBegin(),
                                                                name.getEnd(),
@@ -545,9 +545,9 @@ public class Interpreter implements ASTVisitor {
      */
     private void visitSuperFunc(final ASTUnaryOperator operation) {
         final var func = cast(ASTFunctionCall.class, operation.getIdentifier());
-        final var id   = current.getSuperIdentifier(cast(ASTName.class, func.getName()).getName());
+        final var id   = current.getSuperIdentifiers(cast(ASTName.class, func.getName()).getName());
 
-        if (id != null && !id.isEmpty()) {
+        if (!id.isEmpty()) {
             visitFunctionCall(func, id);
         } else {
             highlights.add(new MessagedHighlight<>(operation.getBegin(),

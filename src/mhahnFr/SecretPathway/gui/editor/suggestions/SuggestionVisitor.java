@@ -152,9 +152,9 @@ public class SuggestionVisitor {
                     switch (lhs.getASTType()) {
                         case VARIABLE_DEFINITION -> returnType = cast(ASTTypeDefinition.class, ((ASTVariableDefinition) lhs).getType());
                         case NAME -> {
-                            final var def = context.digOutIdentifier(((ASTName) lhs).getName(), position);
-                            if (def != null) {
-                                returnType = def.get(0).getReturnType();
+                            final var defs = context.digOutIdentifiers(((ASTName) lhs).getName(), position);
+                            if (!defs.isEmpty()) {
+                                returnType = defs.get(0).getReturnType();
                             }
                         }
                     }
@@ -204,7 +204,7 @@ public class SuggestionVisitor {
                     return SuggestionType.IDENTIFIER;
                 }
 
-                final var func = context.getIdentifier(cast(ASTName.class, call.getName()).getName(), position);
+                final var func = context.getIdentifiers(cast(ASTName.class, call.getName()).getName(), position);
                 final List<Definition> args;
                 final FunctionDefinition funcDef;
                 if (func instanceof final FunctionDefinition def) {

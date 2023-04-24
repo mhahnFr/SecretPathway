@@ -319,18 +319,18 @@ public class Context extends Instruction {
      * @param name the name of the identifier
      * @return the definition of the named identifier
      */
-    public List<Definition> getSuperIdentifier(final String name) {
+    public List<Definition> getSuperIdentifiers(final String name) {
         if (parent != null) {
-            return parent.getSuperIdentifier(name);
+            return parent.getSuperIdentifiers(name);
         }
 
         for (final var context : superContexts) {
-            final var identifier = context.getIdentifier(name, Integer.MAX_VALUE);
-            if (identifier != null && !identifier.isEmpty()) {
+            final var identifier = context.getIdentifiers(name, Integer.MAX_VALUE);
+            if (!identifier.isEmpty()) {
                 return identifier;
             }
         }
-        return null;
+        return List.of();
     }
 
     /**
@@ -344,12 +344,12 @@ public class Context extends Instruction {
      * @param position the position, prior to which it should have been declared
      * @return the {@link Definition} of the identifier or {@code null} if it was not found
      */
-    public List<Definition> digOutIdentifier(final String name, final int position) {
+    public List<Definition> digOutIdentifiers(final String name, final int position) {
         final var subEntry = instructions.lowerEntry(position);
         if (subEntry != null && subEntry.getValue() instanceof final Context subContext) {
-            return subContext.digOutIdentifier(name, position);
+            return subContext.digOutIdentifiers(name, position);
         }
-        return getIdentifier(name, position);
+        return getIdentifiers(name, position);
     }
 
     /**
@@ -361,7 +361,7 @@ public class Context extends Instruction {
      * @param begin the beginning search position
      * @return the found {@link Definition} of the identifier or {@code null}
      */
-    public List<Definition> getIdentifier(final String name, final int begin) {
+    public List<Definition> getIdentifiers(final String name, final int begin) {
         // First, search in our context.
         final var definitions = new ArrayList<Definition>();
         for (final var element : instructions.entrySet()) {
@@ -378,21 +378,21 @@ public class Context extends Instruction {
         // If we haven't found the identifier, ask our parent
         // context, provided we have one.
         if (parent != null) {
-            return parent.getIdentifier(name, begin);
+            return parent.getIdentifiers(name, begin);
         }
 
         // If we don't have a parent, we might have some
         // included contexts, so search in them.
         for (final var context : includedContexts) {
-            final var identifier = context.getIdentifier(name, Integer.MAX_VALUE);
-            if (identifier != null && !identifier.isEmpty()) {
+            final var identifier = context.getIdentifiers(name, Integer.MAX_VALUE);
+            if (!identifier.isEmpty()) {
                 return identifier;
             }
         }
 
         // Otherwise, we might have super contexts,
         // so search in them.
-        return getSuperIdentifier(name);
+        return getSuperIdentifiers(name);
     }
 
     /**
