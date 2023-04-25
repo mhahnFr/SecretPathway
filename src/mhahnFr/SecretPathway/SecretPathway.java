@@ -38,10 +38,12 @@ import java.util.NoSuchElementException;
  * @author mhahnFr
  */
 public class SecretPathway {
-    /** The hostname or the IP address to connect to. */
+    /** The hostname or the IP address to connect to.                */
     private String  hostname;
-    /** The port to use for the connection.           */
+    /** The port to use for the connection.                          */
     private Integer port;
+    /** Indicates whether the settings for deploying should be used. */
+    private boolean deploy;
 
     /**
      * Prints a help text.
@@ -62,6 +64,9 @@ public class SecretPathway {
             
             -p
             --port     The port to use to connect
+            
+            -d
+            --deploy   Activates settings for deploying the app
             """);
     }
 
@@ -72,7 +77,7 @@ public class SecretPathway {
         System.out.println("""
             SecretPathway - A MUD client.
             
-            Copyright (C) 2022  mhahnFr
+            Copyright (C) 2022 - 2023  mhahnFr
             
             This file is part of the SecretPathway. This program is free software:
             you can redistribute it and/or modify it under the terms of the
@@ -138,7 +143,7 @@ public class SecretPathway {
      */
     private void openWindow() {
         setAppearance();
-        EventQueue.invokeLater(() -> new MainWindow(ConnectionFactory.create(hostname, port)).setVisible(true));
+        EventQueue.invokeLater(() -> new MainWindow(ConnectionFactory.create(hostname, port), deploy).setVisible(true));
     }
 
     /**
@@ -167,6 +172,14 @@ public class SecretPathway {
     }
 
     /**
+     * Activates the settings used when this app
+     * is deployed.
+     */
+    private void activateDeploying() {
+        deploy = true;
+    }
+
+    /**
      * Processes the given arguments.
      *
      * @param args the arguments
@@ -181,6 +194,7 @@ public class SecretPathway {
                 case "-v", "--version"               -> printVersion();
                 case "-a", "--address", "--hostname" -> setHostname(it);
                 case "-p", "--port"                  -> setPort(it);
+                case "-d", "--deploy"                -> activateDeploying();
 
                 default -> System.err.println("Argument \"" + arg + "\" dropped.");
             }

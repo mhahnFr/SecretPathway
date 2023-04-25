@@ -53,6 +53,8 @@ import java.util.List;
 public class MainWindow extends MenuFrame implements ActionListener, MessageReceiver {
     /** A list with the components that should be capable to become dark. */
     private final List<DarkComponent<? extends JComponent>> components = new ArrayList<>();
+    /** Indicates whether the settings for a deployed app should be used. */
+    private final boolean deploy;
     /** The connection associated with this window.                       */
     private Connection connection;
     /** The delegate of the connection.                                   */
@@ -83,7 +85,8 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
      *
      * @param connection the {@link Connection} instance used as connection
      */
-    public MainWindow(Connection connection) {
+    public MainWindow(Connection connection, final boolean deploy) {
+        this.deploy     = deploy;
         this.connection = connection == null ? restoreOrPromptConnection() : connection;
 
         setTitle(Constants.NAME + ": " + this.connection.getName());
@@ -201,7 +204,7 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
      * Creates the menu bar.
      */
     private void createMenuBar() {
-        MenuFactory.initializationArguments(Constants.IS_MAC);
+        MenuFactory.initializationArguments(Constants.IS_MAC && deploy);
         final var menuFactory = MenuFactory.getInstance();
 
         menuFactory.setMenuProvider(new SharedMenuProvider());
