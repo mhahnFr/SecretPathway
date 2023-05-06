@@ -30,7 +30,6 @@ import mhahnFr.SecretPathway.gui.editor.suggestions.SuggestionsWindow;
 import mhahnFr.utils.SettingsListener;
 import mhahnFr.utils.gui.components.DarkComponent;
 import mhahnFr.utils.gui.components.DarkTextComponent;
-import mhahnFr.utils.gui.components.HintTextField;
 import mhahnFr.utils.gui.components.SearchReplacePanel;
 
 import javax.swing.*;
