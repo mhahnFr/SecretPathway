@@ -50,6 +50,8 @@ import java.util.concurrent.Future;
  * @author mhahnFr
  */
 public class ConnectionDelegate implements ConnectionListener, ConnectionSender {
+    /** The style used for user input.                                             */
+    private final FStyle inputStyle;
     /** The underlying connection to be controlled.                                */
     private final Connection connection;
     /** The default style used by the main text pane.                              */
@@ -104,6 +106,8 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
 
         this.connection.setConnectionListener(this);
 
+        inputStyle = new FStyle();
+        inputStyle.setForeground(Color.gray);
         defaultStyle = this.pane.getLogicalStyle();
         current = new FStyle();
         protocols = new Protocol(this, sppPlugin,
@@ -139,7 +143,7 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
     void send(final String text, final boolean pwdMode) {
         final var document = pane.getDocument();
         try {
-            document.insertString(document.getLength(), (pwdMode ? "*".repeat(text.length()) : text) + '\n', null);
+            document.insertString(document.getLength(), (pwdMode ? "*".repeat(text.length()) : text) + '\n', inputStyle.asStyle(defaultStyle));
         } catch (BadLocationException e) {
             throw new RuntimeException(e);
         }
@@ -154,6 +158,11 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
      */
     public boolean isSPPEnabled() {
         return protocols.isSPPActive();
+    }
+
+    @Override
+    public void setPromptText(String text) {
+        EventQueue.invokeLater(() -> ((MainWindow) receiver).setPromptText(text));
     }
 
     @Override

@@ -39,6 +39,7 @@ import mhahnFr.utils.gui.menu.MenuFrame;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -65,6 +66,7 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
     private JTextField promptField;
     /** The label for the message overlay.                                */
     private JLabel messageLabel;
+    private JLabel promptLabel;
     /** The panel displaying the normal view.                             */
     private JPanel mainPanel;
     /** The wrapper panel allowing to exchange the prompt field.          */
@@ -255,6 +257,8 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
 
             final var promptPanel = new DarkComponent<>(new JPanel(), components).getComponent();
             promptPanel.setLayout(new BoxLayout(promptPanel, BoxLayout.X_AXIS));
+                promptLabel = new DarkComponent<>(new JLabel(), components).getComponent();
+
                 promptWrapperPanel = new DarkComponent<>(new JPanel(new BorderLayout()), components).getComponent();
                     promptField = new DarkTextComponent<>(new HintTextField("Enter some text..."), components).getComponent();
                     promptField.setFont(Constants.UI.FONT);
@@ -265,6 +269,7 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
                 final var sendButton = new JButton("Send");
                 sendButton.setActionCommand(Constants.Actions.SEND);
                 sendButton.addActionListener(this);
+            promptPanel.add(promptLabel);
             promptPanel.add(promptWrapperPanel);
             promptPanel.add(sendButton);
 
@@ -278,6 +283,15 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
 
         setMinimumSize  (new Dimension(300, 200));
         setPreferredSize(new Dimension(750, 500));
+    }
+
+    /**
+     * Sets the prompt text.
+     *
+     * @param text the new text to be displayed
+     */
+    public void setPromptText(final String text) {
+        promptLabel.setText(text);
     }
 
     /**
@@ -315,6 +329,15 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
      * Sends the text currently in the prompt text field. Clears the text field.
      */
     private void sendText() {
+        final var prompt = promptLabel.getText();
+        if (!prompt.isEmpty()) {
+            final var doc = mainPane.getDocument();
+            try {
+                doc.insertString(doc.getLength(), prompt + (prompt.charAt(prompt.length() - 1) == ' ' ? "" : " "), null);
+            } catch (BadLocationException e) {
+                throw new RuntimeException(e);
+            }
+        }
         delegate.send(promptField.getText(), passwordMode);
         promptField.setText("");
     }

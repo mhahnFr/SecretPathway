@@ -148,6 +148,7 @@ public class SPPPlugin implements ProtocolPlugin {
 
         switch (code) {
             case "promptField" -> handlePromptCommand(remainder);
+            case "prompt"      -> sender.setPromptText(remainder.isEmpty() ? null : remainder);
             case "file"        -> handleFileCommand(remainder);
             case "editor"      -> sender.openEditor(remainder.isBlank() ? null : remainder);
         }
