@@ -166,8 +166,8 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
     }
 
     @Override
-    public void openEditor(String path) {
-        ((MainWindow) receiver).openEditor(path);
+    public void openEditor(String path, String content) {
+        ((MainWindow) receiver).openEditor(path, content);
     }
 
     @Override

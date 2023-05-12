@@ -347,7 +347,7 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
      * either inlined or as a separate window.
      */
     public void openEditor() {
-        openEditor(null);
+        openEditor(null, null);
     }
 
     /**
@@ -356,14 +356,14 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
      *
      * @param file the file to be opened
      */
-    public void openEditor(final String file) {
+    public void openEditor(final String file, final String content) {
         final var manager = delegate.isSPPEnabled() ? new SPPFileManager(delegate.getSppPlugin())
                                                     : new LocalFileManager();
 
         if (Settings.getInstance().getEditorInlined() && !editorShowing) {
             mainPanel.setVisible(false);
 
-            final var editorView = new EditorView(manager, file);
+            final var editorView = new EditorView(manager, file, content);
             editorView.onDispose(view -> {
                 getContentPane().remove(view);
 
@@ -378,7 +378,7 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
             validate();
             editorView.requestFocusInWindow();
         } else {
-            new EditorWindow(this, manager, file).setVisible(true);
+            new EditorWindow(this, manager, file, content).setVisible(true);
         }
     }
 

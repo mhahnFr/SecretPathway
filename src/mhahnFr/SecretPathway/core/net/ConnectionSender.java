@@ -73,7 +73,7 @@ public interface ConnectionSender {
      *
      * @param path the file to be opened
      */
-    void openEditor(final String path);
+    void openEditor(final String path, final String content);
 
     /**
      * Sets the prompt text displayed beneath the user input field.

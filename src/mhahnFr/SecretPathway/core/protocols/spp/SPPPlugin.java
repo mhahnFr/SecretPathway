@@ -150,8 +150,18 @@ public class SPPPlugin implements ProtocolPlugin {
             case "promptField" -> handlePromptCommand(remainder);
             case "prompt"      -> sender.setPromptText(remainder.isEmpty() ? null : remainder);
             case "file"        -> handleFileCommand(remainder);
-            case "editor"      -> sender.openEditor(remainder.isBlank() ? null : remainder);
+            case "editor"      -> handleEditorCommand(remainder);
+//            case "editor"      -> sender.openEditor(remainder.isBlank() ? null : remainder);
         }
+    }
+
+    private void handleEditorCommand(final String message) {
+        final var index = message.indexOf(':');
+
+        final String path    = message.substring(0, index),
+                     content = message.substring(index + 1);
+
+        sender.openEditor(path, content);
     }
 
     /**

@@ -82,7 +82,7 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
      * @param loader the loader for loading referenced LPC source files
      */
     public EditorView(final LPCFileManager loader) {
-        this(loader, null);
+        this(loader, null, null);
     }
 
     /**
@@ -93,7 +93,8 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
      * @param name   the name of the opened file
      */
     public EditorView(final LPCFileManager loader,
-                      final String         name) {
+                      final String         name,
+                      final String         content) {
         super(new BorderLayout());
 
         this.loader = loader;
@@ -152,8 +153,13 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         document.setUpdateCallback(this::update);
         document.setCaretMover(delta -> textPane.setCaretPosition(textPane.getCaretPosition() + delta));
         document.setSuggestionShower(this);
-        if (this.name != null) {
-            loadFile();
+        if (content != null) {
+            lastContent = content;
+            try {
+                document.insertString(0, content, null);
+            } catch (BadLocationException e) {
+                throw new RuntimeException(e);
+            }
         } else {
             lastContent = "";
         }

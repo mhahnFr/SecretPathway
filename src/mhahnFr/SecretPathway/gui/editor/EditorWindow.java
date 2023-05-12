@@ -46,7 +46,7 @@ public class EditorWindow extends JFrame {
      */
     public EditorWindow(final JFrame         parent,
                         final LPCFileManager manager) {
-        this(parent, manager, null);
+        this(parent, manager, null, null);
     }
 
     /**
@@ -60,10 +60,11 @@ public class EditorWindow extends JFrame {
      */
     public EditorWindow(final JFrame         parent,
                         final LPCFileManager manager,
-                        final String         name) {
+                        final String         name,
+                        final String         content) {
         super(Constants.NAME + ": Editor" + (name == null ? "" : " - '" + name + "'"));
 
-        editorView = new EditorView(manager, name);
+        editorView = new EditorView(manager, name, content);
 
         editorView.onDispose(__ -> internalDispose());
 
