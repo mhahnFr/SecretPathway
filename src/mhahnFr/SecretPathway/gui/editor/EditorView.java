@@ -153,6 +153,13 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         document.setUpdateCallback(this::update);
         document.setCaretMover(delta -> textPane.setCaretPosition(textPane.getCaretPosition() + delta));
         document.setSuggestionShower(this);
+
+        final var settings = Settings.getInstance();
+        settings.addListener(this);
+        setDark(settings.getDarkMode());
+        setFontSize(settings.getFontSize());
+        addKeyActions();
+
         if (content != null) {
             lastContent = content;
             try {
@@ -163,12 +170,6 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
         } else {
             lastContent = "";
         }
-
-        final var settings = Settings.getInstance();
-        settings.addListener(this);
-        setDark(settings.getDarkMode());
-        setFontSize(settings.getFontSize());
-        addKeyActions();
     }
 
     /**
