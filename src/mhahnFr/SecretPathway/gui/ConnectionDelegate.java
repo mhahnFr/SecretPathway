@@ -211,11 +211,12 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
      * Starts a timer to reconnect to the connection. Only started if none is running and the connection
      * has never been established.
      */
-    private void maybeRetry() {
+    private boolean maybeRetry() {
         if (firstReceive && (reconnectTimer == null || !reconnectTimer.isRunning())) {
             reconnectTimer = new Timer(2500, __ -> listenFuture = threads.submit(connection::establishConnection));
             reconnectTimer.start();
         }
+        return firstReceive;
     }
 
     /**
@@ -401,12 +402,15 @@ public class ConnectionDelegate implements ConnectionListener, ConnectionSender 
     public void handleError(Exception exception) {
         EventQueue.invokeLater(() -> receiver.showMessageFrom(this, "Error happened: " + exception.getLocalizedMessage(), Color.red, 0));
         printException(exception);
-        maybeRetry();
+        if (!maybeRetry()) {
+            protocols.onConnectionError();
+        }
     }
 
     @Override
     public void handleEOF(Exception exception) {
         stopTimer();
+        protocols.onConnectionError();
         EventQueue.invokeLater(() -> receiver.showMessageFrom(this, "Connection closed.", Color.yellow, 0));
         printException(exception);
     }

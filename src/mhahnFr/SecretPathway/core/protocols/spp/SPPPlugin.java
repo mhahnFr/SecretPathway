@@ -40,11 +40,12 @@ public class SPPPlugin implements ProtocolPlugin {
     /** The buffer for a message in the SPP.                                */
     private final List<Byte> buffer = new Vector<>(256);
     /** A map with all registered fetchers that are waiting for a response. */
-    private final Map<Object, Pair<String, String>> fetchers = new HashMap<>();
+    private final Map<Object, Pair<String, String>> fetchers = new HashMap<>(); // FIXME: Multithreading?
     /** The sender used for sending messages. */
     private final ConnectionSender sender;
     /** Indicates whether this plugin is active.                            */
     private boolean active;
+    private boolean connectionError;
 
     /**
      * Constructs this plugin using the given sender.
@@ -69,6 +70,12 @@ public class SPPPlugin implements ProtocolPlugin {
         }
         buffer.add(b);
         return true;
+    }
+
+    @Override
+    public void onConnectionError() {
+        connectionError = true;
+        fetchers.clear();
     }
 
     /**
@@ -151,7 +158,6 @@ public class SPPPlugin implements ProtocolPlugin {
             case "prompt"      -> sender.setPromptText(remainder.isEmpty() ? null : remainder);
             case "file"        -> handleFileCommand(remainder);
             case "editor"      -> handleEditorCommand(remainder);
-//            case "editor"      -> sender.openEditor(remainder.isBlank() ? null : remainder);
         }
     }
 
@@ -230,6 +236,8 @@ public class SPPPlugin implements ProtocolPlugin {
     public String fetchFile(final Object id,
                             final String fileName,
                             final String referrer) {
+        if (connectionError) return null;
+
         send("file:fetch:" + fileName + ":" + (referrer == null ? "/" : referrer));
         registerFetcher(id, fileName);
         while (fetcherWaiting(id)) {

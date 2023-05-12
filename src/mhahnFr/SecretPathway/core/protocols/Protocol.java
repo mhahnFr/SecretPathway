@@ -124,4 +124,10 @@ public class Protocol {
             }
         }
     }
+
+    public void onConnectionError() {
+        for (final var plugin : plugins) {
+            plugin.onConnectionError();
+        }
+    }
 }
