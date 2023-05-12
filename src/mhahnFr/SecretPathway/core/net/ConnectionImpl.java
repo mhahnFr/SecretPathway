@@ -100,7 +100,10 @@ public class ConnectionImpl extends Connection {
 
         while (!closed) {
             try {
-                length = in.read(buffer);
+                if ((length = in.read(buffer)) <= 0) {
+                    close();
+                    throw new IOException("Connection closed by peer");
+                }
                 if (listener != null) {
                     listener.receive(buffer, length);
                 } else {
