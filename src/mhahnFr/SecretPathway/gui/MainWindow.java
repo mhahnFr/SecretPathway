@@ -314,6 +314,7 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
         final var newField = newDarkField.getComponent();
         newField.setActionCommand(Constants.Actions.SEND);
         newField.addActionListener(this);
+        newField.setFont(Constants.UI.FONT);
         components.removeIf(c -> c.getComponent() == promptField);
         promptWrapperPanel.remove(promptField);
         promptField = newField;
