@@ -357,6 +357,11 @@ public class MainWindow extends MenuFrame implements ActionListener, MessageRece
      * @param file the file to be opened
      */
     public void openEditor(final String file, final String content) {
+        if (!EventQueue.isDispatchThread()) {
+            EventQueue.invokeLater(() -> openEditor(file, content));
+            return;
+        }
+
         final var manager = delegate.isSPPEnabled() ? new SPPFileManager(delegate.getSppPlugin())
                                                     : new LocalFileManager();
 

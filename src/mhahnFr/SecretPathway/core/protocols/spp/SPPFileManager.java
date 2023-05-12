@@ -42,8 +42,8 @@ public class SPPFileManager extends LPCFileManager {
     }
 
     @Override
-    public String load(String fileName) {
-        return plugin.fetchFile(this, fileName);
+    public String load(String fileName, String referrer) {
+        return plugin.fetchFile(this, fileName, referrer);
     }
 
     @Override

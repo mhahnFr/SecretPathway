@@ -110,7 +110,8 @@ public class Interpreter implements ASTVisitor {
         final var fileName = unwrapStrings(name);
 
         try {
-            return loader.loadAndParse(fileName);
+            // TODO: referrer is current.getFileGlobal().getFileName()
+            return loader.loadAndParse(fileName, "/");
         } catch (Exception e) {
             return null;
         }

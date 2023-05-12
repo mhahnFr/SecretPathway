@@ -227,37 +227,37 @@ public class EditorView extends JPanel implements SettingsListener, FocusListene
      * Attempts to load and insert the file this view should represent.
      * Shows an error message if the file could not be loaded.
      */
-    private void loadFile() {
-        statusLabel.setText("Loading \"" + name + "\" ...");
-        new Thread(() -> {
-            String content = null;
-            try {
-                content = loader.load(name);
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this,
-                        "Could not load file '" + name + "'!",
-                        Constants.NAME + ": Editor",
-                        JOptionPane.ERROR_MESSAGE);
-                name = null;
-            }
-            final var contentCopy = content;
-            EventQueue.invokeLater(() -> {
-                if (contentCopy == null) {
-                    statusLabel.setText("Loading failed!");
-                } else {
-                    try {
-                        document.insertString(0, contentCopy, null);
-                        lastContent = contentCopy;
-                    } catch (Exception e) {
-                        System.err.println("Should not happen:");
-                        e.printStackTrace();
-                        System.err.println("------------------");
-                    }
-                    statusLabel.setText("Loading \"" + name + "\" done.");
-                }
-            });
-        }).start();
-    }
+//    private void loadFile() {
+//        statusLabel.setText("Loading \"" + name + "\" ...");
+//        new Thread(() -> {
+//            String content = null;
+//            try {
+//                content = loader.load(name);
+//            } catch (Exception e) {
+//                JOptionPane.showMessageDialog(this,
+//                        "Could not load file '" + name + "'!",
+//                        Constants.NAME + ": Editor",
+//                        JOptionPane.ERROR_MESSAGE);
+//                name = null;
+//            }
+//            final var contentCopy = content;
+//            EventQueue.invokeLater(() -> {
+//                if (contentCopy == null) {
+//                    statusLabel.setText("Loading failed!");
+//                } else {
+//                    try {
+//                        document.insertString(0, contentCopy, null);
+//                        lastContent = contentCopy;
+//                    } catch (Exception e) {
+//                        System.err.println("Should not happen:");
+//                        e.printStackTrace();
+//                        System.err.println("------------------");
+//                    }
+//                    statusLabel.setText("Loading \"" + name + "\" done.");
+//                }
+//            });
+//        }).start();
+//    }
 
     @Override
     public void beginSuggestions() {
