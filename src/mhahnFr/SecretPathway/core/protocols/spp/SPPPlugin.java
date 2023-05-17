@@ -167,7 +167,7 @@ public class SPPPlugin implements ProtocolPlugin {
         final String path    = message.substring(0, index),
                      content = message.substring(index + 1);
 
-        sender.openEditor(path, content);
+        sender.openEditor(path.isBlank() ? null : path, content.isBlank() ? null : content);
     }
 
     /**
