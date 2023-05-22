@@ -45,7 +45,7 @@ public abstract class LPCFileManager {
      * @return the content of the file
      * @throws Exception if the file could not be loaded for some reason
      */
-    public abstract String load(final String fileName, String referrer) throws Exception;
+    public abstract String load(final String fileName) throws Exception;
 
     /**
      * Loads and parses the file named by the given parameter. The result
@@ -71,10 +71,10 @@ public abstract class LPCFileManager {
      * @param fileName the name of the file to load and parse
      * @return the {@link Context} of the interpretation
      * @throws Exception if an error happens during resolving
-     * @see #load(String, String)
+     * @see #load(String)
      */
     private Context loadAndParseIntern(final String fileName, final String referrer) throws Exception {
-        final var context = new Interpreter(this).createContextFor(new Parser(load(fileName, referrer)).parse());
+        final var context = new Interpreter(this).createContextFor(new Parser(load(fileName)).parse());
         cachedContexts.put(fileName, context);
         return context;
     }

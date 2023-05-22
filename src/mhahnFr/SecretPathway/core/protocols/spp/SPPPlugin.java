@@ -234,11 +234,10 @@ public class SPPPlugin implements ProtocolPlugin {
      * @return the fetched file
      */
     public String fetchFile(final Object id,
-                            final String fileName,
-                            final String referrer) {
+                            final String fileName) {
         if (connectionError) return null;
 
-        send("file:fetch:" + fileName + ":" + (referrer == null ? "/" : referrer));
+        send("file:fetch:" + fileName);
         registerFetcher(id, fileName);
         while (fetcherWaiting(id)) {
             Thread.onSpinWait();

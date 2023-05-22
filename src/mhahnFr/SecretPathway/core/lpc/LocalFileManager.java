@@ -31,7 +31,7 @@ import java.nio.charset.StandardCharsets;
  */
 public class LocalFileManager extends LPCFileManager {
     @Override
-    public String load(String fileName, String referrer) throws Exception {
+    public String load(String fileName) throws Exception {
         try (final var reader = new BufferedInputStream(new FileInputStream(fileName))) {
             return new String(reader.readAllBytes(), StandardCharsets.UTF_8);
         }
