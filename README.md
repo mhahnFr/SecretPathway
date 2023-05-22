@@ -18,7 +18,7 @@ functional LPC source code editor.
 
 ## Usage
 To use this client, you can either download an executable [here][1].
-Make sure you have installed a Java Runtime Environment in version 15 or higher.
+Make sure you have installed a Java Runtime Environment in version 17 or higher.
 To run it simply open the `.jar` file.
 
 Or you can build it from source:
@@ -32,7 +32,7 @@ Basic ANSI escape codes are supported, including **256-Bit**, **RGB** and **defa
 The *SecretPathwayProtocol* (**SPP**) is also supported, read its documentation in the [wiki][4].
 
 ### Final notes
-For **macOS**, an optimized version is available [here][3]
+For **macOS**, an optimized version is available [here][3].
 
 This project is licensed under the terms of the GPL 3.0.
 
