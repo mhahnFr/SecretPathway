@@ -17,14 +17,18 @@ functional LPC source code editor.
 </p>
 
 ## Usage
-To use this client, you can either download an executable [here][1].
-Make sure you have installed a Java Runtime Environment in version 17 or higher.
-To run it simply open the `.jar` file.
+To use this client, you can download an executable or an installation image [here][1].
 
-Or you can build it from source:
+To use a `.jar` executable, make sure you have installed a Java Runtime Environment
+in version 17 or higher.
+
+You can also build it from source:
 - Clone: `git clone --recursive https://www.github.com/mhahnFr/SecretPathway.git && cd SecretPathway`
 - Build: `./gradlew jar` *(on Windows: `gradlew.bat jar`)*
 - Run: `java -jar build/libs/SecretPathway-1.0.0.jar`
+
+You can also create an installation image for your operating system by running
+`./gradlew deploy` *(on Windows: `gradlew.bat deploy`)*.
 
 ## Supported protocols
 Basic ANSI escape codes are supported, including **256-Bit**, **RGB** and **default** colours.
